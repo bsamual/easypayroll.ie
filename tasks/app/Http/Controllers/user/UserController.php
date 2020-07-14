@@ -119,7 +119,8 @@ class UserController extends Controller {
 	public function dashboard()
 
 	{
-
+		echo 'sdhgshdgsd';
+		exit;
 		$time_job = DB::table('task_job')->get();
 
 		$tasks = DB::table('time_task')->where('task_type', 0)->get();
