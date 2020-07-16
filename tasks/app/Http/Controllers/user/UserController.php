@@ -1,49 +1,26 @@
 <?php namespace App\Http\Controllers\user;
-
 use App\Http\Controllers\Controller;
-
 use DB;
-
 use Input;
-
 use Redirect;
-
 use App\Year;
-
 use App\Week;
-
 use App\Task;
-
 use App\Classified;
-
 use App\User;
-
 use App\Vatclients;
-
 use App\Task_Job;
-
 use App\CmClients;
-
 use App\Job_Break_Time;
-
 use Session;
-
 use URL;
-
 use PDF;
-
 use Response;
-
 use PHPExcel; 
-
 use PHPExcel_IOFactory;
-
 use PHPExcel_Cell;
-
 use PHPMailer\PHPMailer\PHPMailer;
-
 use PHPMailer\PHPMailer\Exception;
-
 class UserController extends Controller {
 
 	/*
