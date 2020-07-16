@@ -205,7 +205,8 @@ class Payep30Controller extends Controller {
 
 						for($i=0; $i<=11; $i++)
 						{
-							$month_liabilities = 'month_liabilities_'.$i;
+							$iii = $i+1;
+							$month_liabilities = 'month_liabilities_'.$iii;
 							for($wk=1; $wk<=53;$wk++)
 							{
 								$insertdata['week'.$wk] = '';
