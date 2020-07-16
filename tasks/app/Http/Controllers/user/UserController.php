@@ -22,17 +22,11 @@ use PHPExcel_Cell;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 class UserController extends Controller {
-
 	/*
-
 	|--------------------------------------------------------------------------
-
 	| Welcome Controller
-
 	|--------------------------------------------------------------------------
-
 	|
-
 	| This controller renders the "marketing page" for the application and
 
 	| is configured to only allow guests. Like most of the other sample
