@@ -57,6 +57,32 @@ class CrmController extends Controller {
 	{
 		$client = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();
 
+		$get_list = DB::table('request_client')->get();
+		if(count($get_list))
+		{
+			foreach($get_list as $list)
+			{
+				  $check_purchase = DB::table('request_purchase_invoice')->where('request_id',$list->request_id)->count();
+	              $check_purchase_attached = DB::table('request_purchase_attached')->where('request_id',$list->request_id)->count(); 
+
+	              $check_sales = DB::table('request_sales_invoice')->where('request_id',$list->request_id)->count();
+	              $check_sales_attached = DB::table('request_sales_attached')->where('request_id',$list->request_id)->count();
+
+	              $check_bank = DB::table('request_bank_statement')->where('request_id',$list->request_id)->count();
+
+	              $check_cheque = DB::table('request_cheque')->where('request_id',$list->request_id)->count();
+	              $check_cheque_attached = DB::table('request_cheque_attached')->where('request_id',$list->request_id)->count();
+
+	              $check_others = DB::table('request_others')->where('request_id',$list->request_id)->count();
+	              $countval = $check_purchase + $check_purchase_attached + $check_sales + $check_sales_attached + $check_bank + $check_cheque + $check_cheque_attached + $check_others;
+
+	              if($countval == 0)
+	              {
+	              	DB::table('request_client')->where('request_id',$list->request_id)->delete();
+	              }
+			}
+		}
+
 		return view('user/crm/crm', array('title' => 'Client Request System', 'clientlist' => $client));
 	}
 
