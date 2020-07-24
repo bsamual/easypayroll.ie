@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_infile.js'); ?>'></script>
 <style>
 
@@ -360,7 +359,7 @@ body.loading .modal_load {
 
     }
 
-    @media print {
+    @media  print {
 
       body * {
 
@@ -392,7 +391,7 @@ a:hover{text-decoration: underline;}
 .blinking{
     animation:blinkingText 0.8s infinite;
 }
-@keyframes blinkingText{
+@keyframes  blinkingText{
     0%{     background: #f00;    }
     49%{    background: #000; }
     50%{    background: #f00; }
@@ -1557,4 +1556,5 @@ $(document).ready(function() {
   $('.table-fixed-header').fixedHeader();
 });
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

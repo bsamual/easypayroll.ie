@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 <script src="<?php echo URL::to('assets/js/jquery.dataTables.min.js'); ?>"></script>
@@ -377,7 +376,7 @@ body.loading .modal_load {
 
     }
 
-    @media print {
+    @media  print {
 
       body * {
 
@@ -4947,4 +4946,5 @@ $( "#create_task_form" ).validate({
 
 
 
-@stop
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
