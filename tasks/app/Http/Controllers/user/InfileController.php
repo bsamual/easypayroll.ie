@@ -15,8 +15,6 @@ use Hash;
 use ZipArchive;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-
 class InfileController extends Controller {
 
 

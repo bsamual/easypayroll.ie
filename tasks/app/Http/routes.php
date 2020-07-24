@@ -76,8 +76,6 @@ Route::post('/admin/update_user_setting', 'admin\AdminController@update_user_set
 
 Route::post('/admin/update_email_setting', 'admin\AdminController@update_email_setting');
 
-
-
 Route::get('/admin/manage_year', 'admin\YearController@manageyear');
 
 Route::get('/admin/deactive_year/{id?}', 'admin\YearController@deactiveyear');

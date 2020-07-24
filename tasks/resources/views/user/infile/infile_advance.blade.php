@@ -2,10 +2,8 @@
 @section('content')
 <script src='<?php echo URL::to('assets/js/table-fixed-header_infile.js'); ?>'></script>
 <style>
-
 .file_attachment_div{width:100%;}
 .fa-sort{cursor:pointer;}
-
 .user_td_class{
   word-wrap: break-word; white-space:normal; min-width:150px; max-width: 150px;
 }

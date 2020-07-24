@@ -1682,19 +1682,10 @@ elseif(Session::has('countupdated'))
 
 
 <div class="modal_load"></div>
-
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
-
 <input type="hidden" name="show_alert" id="show_alert" value="">
-
 <input type="hidden" name="pagination" id="pagination" value="1">
-
 <input type="hidden" name="hidden_file_id" id="hidden_file_id" value="">
-
-
-
-
-
 
 
 <script>
