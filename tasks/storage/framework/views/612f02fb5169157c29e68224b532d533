@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
@@ -384,7 +383,7 @@ input:checked + .slider:before {
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item waves-effect waves-light" style="width:15%;text-align: center">
           <a href="<?php echo URL::to('user/task_manager'); ?>" class="nav-link">
-            <spam id="open_task_count">Your Open Tasks (<?php echo count($open_task_count); ?>)</spam>
+            <spam id="open_task_count">Your Open Tasks (<?php echo count($user_tasks); ?>)</spam>
             <spam id="authored_task_count" style="display:none">Your Authored Tasks (<?php echo count($authored_task_count); ?>)</spam>
           </a>
         </li>
@@ -3040,4 +3039,6 @@ Dropzone.options.imageUpload1 = {
     },
 };
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

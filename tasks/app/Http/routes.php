@@ -1594,6 +1594,7 @@ Route::post('/user/copy_task_details', 'user\TaskmanagerController@copy_task_det
 Route::post('/user/get_taskmanager_task_files', 'user\TaskmanagerController@get_taskmanager_task_files');
 
 Route::post('/user/refresh_taskmanager', 'user\TaskmanagerController@refresh_taskmanager');
+Route::post('/user/refresh_parktask', 'user\TaskmanagerController@refresh_parktask');
 Route::post('/user/taskmanager_mark_complete', 'user\TaskmanagerController@taskmanager_mark_complete');
 Route::post('/user/taskmanager_mark_incomplete', 'user\TaskmanagerController@taskmanager_mark_incomplete');
 
