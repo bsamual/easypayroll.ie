@@ -70,8 +70,9 @@
  elseif($page_segment == "directmessaging_page_three") { $title = 'Message Us'; }
  elseif($page_segment == "messageus_groups") { $title = 'Message Us'; }
  elseif($page_segment == "messageus_saved_messages") { $title = 'Message Us'; }
+
+ elseif($page_segment == "opening_balance_manager") { $title = 'Opening Balance Manager'; }  
  
-  
  else{ $title = 'Easypayroll'; }
  ?>
 <title><?php echo $title; ?></title>
@@ -309,13 +310,13 @@
                     <li class="<?php if($segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/directmessaging')?>">MessageUs System</a></li>
                     <li class="<?php if(($segment1 == "client_management")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_management'); ?>">Client Mangement</a></li>
                     <li class="<?php if(($segment1 == "aml_system")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/aml_system'); ?>">AML System</a></li>
-                     <li class="dropdown-submenu <?php if($segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management") { echo 'active'; } ?>">
+                     <li class="dropdown-submenu <?php if($segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "opening_balance_manager") { echo 'active'; } ?>">
                         <a class="dropdown-item" tabindex="-1" href="#">Accounts</a>
                         <ul class="dropdown-menu">
                             <li class="<?php if(($segment1 == "client_statements")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_statements'); ?>">Client Statements</a></li>
                             <li class="<?php if(($segment1 == "receipt_management")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/receipt_management'); ?>">Receipt Management</a></li>
                             <li class="<?php if(($segment1 == "invoice_management")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/invoice_management'); ?>">Invoice Management</a></li>
-                            <li class="<?php if(($segment1 == "client_statements")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_statements'); ?>">Opening Balances</a></li>
+                            <li class="<?php if(($segment1 == "opening_balance_manager")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/opening_balance_manager'); ?>">Opening Balances</a></li>
                         </ul>
                     </li>
                 </ul>

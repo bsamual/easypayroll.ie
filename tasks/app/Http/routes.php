@@ -1649,3 +1649,6 @@ Route::post('/user/yearend_export_to_csv', 'user\YearendController@yearend_expor
 Route::post('/user/update_pms_groups', 'user\MessageusController@update_pms_groups');
 
 
+/*----Opening Balance System------*/
+Route::get('/user/opening_balance_manager', 'user\OpeningbalanceController@opening_balance_manager');
+Route::get('/user/client_opening_balance_manager', 'user\OpeningbalanceController@client_opening_balance_manager');
