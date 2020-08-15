@@ -1,13 +1,5 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
-#client_table td, #client_table th{ text-align:left; background: #fff }
-.inactive_client td { color:#f00; }
-.messageus_attachment_a, #messageus_attachment_p{
-  font-weight:700;
-  text-decoration: underline;
-  color:blue;
-}
 .inactive_client td { color:#f00; }
 .table td, .table th{ text-align:left; background: #fff }
 /* Chrome, Safari, Edge, Opera */
@@ -33,7 +25,7 @@ input[type=number] {
 .modal_load {
     display:    none;
     position:   fixed;
-    z-index:    9999999999;
+    z-index:    999999;
     top:        0;
     left:       0;
     height:     100%;
@@ -47,26 +39,6 @@ body.loading {
     overflow: hidden;   
 }
 body.loading .modal_load {
-    display: block;
-}
-
-.modal_load_refresh {
-    display:    none;
-    position:   fixed;
-    z-index:    99999999999;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
-                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
-                50% 50% 
-                no-repeat;
-}
-body.loading_refresh {
-    overflow: hidden;   
-}
-body.loading_refresh .modal_load_refresh {
     display: block;
 }
 .file_attachment_div{width:100%;}
@@ -193,39 +165,7 @@ input:checked + .slider:before {
 
 <link rel="stylesheet" href="<?php echo URL::to('ckeditor/samples/css/samples.css'); ?>">
 <link rel="stylesheet" href="<?php echo URL::to('ckeditor/samples/toolbarconfigurator/lib/codemirror/neo.css'); ?> ">
-<div class="modal fade send_message_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
-  <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">Select Username</h4>
-          </div>
-          <div class="modal-body" style="min-height: 100px;">  
-            <div class="col-md-12">
-              <h5>Select From Username:</h5>
-            </div>
-            <div class="col-md-12">
-              <select name="select_from" class="form-control select_from">
-                <option value="">Select User</option>        
-                  <?php
-                  $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
-                  if(count($userlist)){
-                    foreach ($userlist as $user) {
-                  ?>
-                    <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
-                  <?php
-                    }
-                  }
-                  ?>
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <input type="button" class="common_black_button send_message_button" id="send_message_button" value="Submit">
-          </div>
-        </div>
-  </div>
-</div>
+
 <div class="content_section">
 	<div id="fixed-header" style="width:100%;background: #fff;margin-top: -16px;">
 	  <div class="page_title" style="z-index:999;margin-top:20px">
@@ -254,143 +194,165 @@ input:checked + .slider:before {
   </div>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-      <div class="row" style="background: #c7c7c7;">
-        <div class="col-md-6" style="padding:20px">
-          <div class="col-md-12">
-            <h5 style="font-weight:800">Message Summary:</h5>
+      <div class="col-md-12" style="background: #c7c7c7;padding:20px">
+        <div class="col-md-12">
+          <h5>Send Message To:</h5>
+          <?php
+          $message_details = DB::table('messageus')->where('id',$_GET['message_id'])->first();
+          ?>
+          <div class="col-md-12"><input type="radio" name="group_type" class="group_type" id="group_type_1" value="1" checked><label for="group_type_1">All Clients</label></div>
+          <div class="col-md-12"><input type="radio" name="group_type" class="group_type" id="group_type_2" value="2" <?php if($message_details->group_type == "2") { echo 'checked'; } ?>><label for="group_type_2">Active Clients</label></div>
+          <div class="col-md-12"><input type="radio" name="group_type" class="group_type" id="group_type_3" value="3" <?php if($message_details->group_type == "3") { echo 'checked'; } ?>><label for="group_type_3">Inactive Clients</label></div>
+          <div class="col-md-3">
+            <input type="radio" name="group_type" class="group_type" id="group_type_4" value="4" <?php if($message_details->group_type == "4") { echo 'checked'; } ?>><label for="group_type_4">Group</label>
           </div>
-          <div class="col-md-12" style="margin-top:10px">
-            <h5 style="font-weight:800">Message Subject: </h5>
-            <input type="text" name="message_subject" class="form-control message_subject" value="<?php echo $message_details->subject; ?>" disabled style="background: #fff !important">
-          </div>
-          <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Message Body: </h5>
-            <div style="width:100%;background: #fff;min-height:500px;padding:10px">
-              <?php echo $message_details->message; ?>
-            </div>
+          <div class="col-md-9 group_select_div" style="<?php if($message_details->group_type == "4") { echo 'display:block'; } else { echo 'display:none'; } ?>">
+            <select name="select_group" class="select_group form-control" style="width:40%;">
+              <option value="">Select Group</option>
+              <?php
+              $groups = DB::table('messageus_groups')->get();
+              if(count($groups))
+              {
+                foreach($groups as $group)
+                {
+                  if($message_details->group_id == $group->id) { $selected = 'selected'; }
+                  else { $selected = ''; }
+                  echo '<option value="'.$group->id.'" '.$selected.'>'.$group->group_name.'</option>';
+
+                }
+              }
+              ?>
+            </select>
           </div>
         </div>
-        <div class="col-md-6" style="padding:20px">
-          <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Attached Files: </h5>
-            <?php
-            $fileoutput = '';
-            $files = DB::table('messageus_files')->where('message_id',$_GET['message_id'])->get();
-            if(count($files))
-            {
-              foreach($files as $file)
+        <div class="col-md-12" style="margin-top:20px">
+          <h5 style="font-weight:800">List of Clients to Send this Message to: <spam class="error error_subject"></spam> </h5>
+          <div class="table-responsive" style="min-height:400px;max-height: 300px;overflow-y: scroll;">
+          <table class="table" id="client_table">
+            <thead>
+              <tr>
+                <th colspan="3">
+                  <input type="checkbox" name="select_all_client" class="select_all_client" value="1" id="select_all_client" ><label for="select_all_client">Select All Clients</label>
+
+                  <input type="checkbox" name="deselect_all_inactive_client" class="deselect_all_inactive_client" value="1" id="deselect_all_inactive_client" ><label for="deselect_all_inactive_client">Deselect all Inactive Clients</label>
+                </th>
+                <th colspan="2" style="text-align: center !important">Email Address</th>
+              </tr>
+              <tr>
+                <th style=""></th>
+                <th>Code</th>
+                <th>Details</th>
+                <th>Primary Email</th>
+                <th>Secondary Email</th>
+              </tr>
+            </thead>
+            <tbody id="clients_tbody">
+              <?php
+              $client_ids = explode(",",$message_details->client_ids);
+              $primary_emails = explode(",",$message_details->primary_emails);
+              $secondary_emails = explode(",",$message_details->secondary_emails);
+
+              $i = 1;
+              if(count($clients))
               {
-                $fileoutput.="<div class='messageus_attachment' style='width:100%'><a href='".URL::to('/')."/".$file->url."/".$file->filename."' class='messageus_attachment_a' download>".$file->filename."</a></div>";
-              }
-            }
-            echo $fileoutput;
-            ?>
-          </div>
-          <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Selected Clients: </h5>
-            <div class="table-responsive" id="table_responsive_div" style="max-height: 500px;">
-              <table class="table" id="client_table">
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Details</th>
-                    <th>Primary Email</th>
-                    <th>Secondary Email</th>
-                  </tr>
-                </thead>
-                <tbody id="clients_tbody">
-                  <?php
-                  $clientoutput = '';
-                  $clients = explode(",",$message_details->client_ids);
-                  $primary = explode(",",$message_details->primary_emails);
-                  $secondary = explode(",",$message_details->secondary_emails);
-                  $company_client = '';
-                  if(count($clients))
+                foreach($clients as $client)
+                {
+                  $grp_cls = '';
+                  if(count($groups))
                   {
-                    foreach($clients as $client)
+                    foreach($groups as $group)
                     {
-                      $client_details = DB::table('cm_clients')->where('client_id',$client)->first();
-                      if($client_details->active == "2")
+                      $group_clients = explode(",",$group->client_ids);
+                      if(in_array($client->client_id,$group_clients))
                       {
-                        $cls = 'inactive_client';
-                      }
-                      else{
-                        $cls = 'active_client';
-                      }
-                      if(in_array($client_details->email,$primary))
-                      {
-                        $pri_email = $client_details->email;
-                      }
-                      else{
-                        $pri_email = '';
-                      }
-                      if(in_array($client_details->email2,$secondary))
-                      {
-                        $sec_email = $client_details->email2;
-                      }
-                      else{
-                        $sec_email = '';
-                      }
-                      $clientoutput.='<tr class="'.$cls.'">
-                        <td>'.$client_details->client_id.'</td>
-                        <td>'.$client_details->company.'</td>
-                        <td>'.$pri_email.'</td>
-                        <td>'.$sec_email.'</td>
-                      </tr>';
-                      if($company_client == "")
-                      {
-                        $company_client = $client_details->company;
-                      }
-                      else{
-                        $company_client = $company_client.'||'.$client_details->company;
+                        if($grp_cls == "")
+                        {
+                          $grp_cls = 'group_'.$group->id;
+                        }
+                        else{
+                          $grp_cls = $grp_cls.' group_'.$group->id;
+                        }
                       }
                     }
                   }
-                  echo $clientoutput;
+
+                  if($client->active == "2") { $cls = 'inactive_client'; }
+                  else{ $cls = 'active_client'; }
+
+                  
+                  if(in_array($client->client_id,$client_ids)) { $client_selected = 'checked'; }
+                  else { $client_selected = ''; }
+
+                  if(in_array($client->email,$primary_emails)) { $primary_selected = 'checked'; }
+                  else { $primary_selected = ''; }
+
+                  if(in_array($client->email2,$secondary_emails)) { $secondary_selected = 'checked'; }
+                  else { $secondary_selected = ''; }
                   ?>
-                </tbody>
-              </table>
-              <input type="hidden" name="company_client" id="company_client" value="<?php echo $company_client; ?>">
-            </div>
+                  <tr class="client_tr <?php echo $cls; ?> <?php echo $grp_cls; ?>">
+                    <td><input type="checkbox" name="select_client" class="select_client" value="<?php echo $client->client_id; ?>" id="select_client_<?php echo $client->client_id; ?>" <?php echo $client_selected; ?>><label for="select_client_<?php echo $client->client_id; ?>">&nbsp;</label></td>
+                    <td><?php echo $client->client_id; ?></td>
+                    <td><?php echo $client->company; ?></td>
+                    <td>
+                      <?php
+                      if($client->email != "")
+                      {
+                        ?>
+                        <input type="checkbox" name="primary_email" class="primary_email" value="<?php echo $client->email; ?>" id="primary_email_<?php echo $client->client_id; ?>" <?php echo $primary_selected; ?>>
+                        <?php
+                      }
+                      ?>
+                      <label for="primary_email_<?php echo $client->client_id; ?>"><?php echo $client->email; ?></label>
+                    </td>
+                    <td>
+                      <?php
+                      if($client->email2 != "")
+                      {
+                        ?>
+                        <input type="checkbox" name="secondary_email" class="secondary_email" value="<?php echo $client->email2; ?>" id="secondary_email_<?php echo $client->client_id; ?>" <?php echo $secondary_selected; ?>>
+                        <?php
+                      }
+                      ?>
+                      <label for="secondary_email_<?php echo $client->client_id; ?>"><?php echo $client->email2; ?></label>
+                    </td>
+                  </tr>
+                  <?php
+                }
+              }
+              ?>
+            </tbody>
+          </table>
           </div>
         </div>
-        <div class="col-md-12" style="padding:20px">
-          <div class="col-md-12" style="margin-top:20px">
-            <a href="<?php echo URL::to('user/directmessaging?message_id='.$_GET['message_id']); ?>" class="common_black_button" style="font-size:20px;float:right;width:20%"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to Message Screen</a><br/><br/><br/>
-            <a href="javascript:" class="common_black_button send_message_later" style="font-size:20px;float:right;width:20%">Send Message Later <i class="fa fa-arrow-right" aria-hidden="true"></i></a><br/><br/><br/>
-            <a href="javascript:" class="common_black_button send_message_now" style="font-size:20px;float:right;width:20%">Send Message Now</a>
-          </div>
+        
+        <div class="col-md-12" style="margin-top:20px">
+          <a href="<?php echo URL::to('user/directmessaging?message_id='.$_GET['message_id']); ?>" class="common_black_button" style="font-size:20px;float: left;">Back to Message Screen</a>
+          <a href="javascript:" class="common_black_button send_message_page2" style="font-size:20px;float:right">Summary and Send</a>
         </div>
       </div>
     </div>
   </div>
 </div>
 <div class="modal_load"></div>
-<div class="modal_load_refresh" style="text-align: center;">
-  <p style="font-size:25px;font-weight: 600;margin-top: 28%;">Sending Message <span id="refresh_first"></span> of <span id="refresh_last"></span> to <span id="refresh_taskname"></span></p>
-</div>
-<?php
-  $message_details = DB::table('messageus')->where('id',$_GET['message_id'])->first();
-?>
 <script>
-var table_heigth = $("#client_table").height();
-if(table_heigth > 500)
-{
-  $("#table_responsive_div").css("overflow-y","scroll");
-}
+
 $(function(){
   $.ajaxSetup({async:false});
-    $('#client_table').DataTable({
-        fixedHeader: {
-          headerOffset: 75
-        },
-        autoWidth: true,
-        scrollX: false,
-        fixedColumns: false,
-        searching: false,
-        paging: false,
-        info: false
-    });
+  $('#client_table').DataTable({
+      fixedHeader: {
+        headerOffset: 75
+      },
+      autoWidth: true,
+      scrollX: false,
+      fixedColumns: false,
+      searching: false,
+      paging: false,
+      info: false
+  });
+  <?php if($message_details->group_type == "1") { ?>$(".client_tr").show(); <?php } 
+   elseif($message_details->group_type == "2") { ?>$(".client_tr").hide(); $(".active_client").show(); <?php } 
+   elseif($message_details->group_type == "3") { ?>$(".client_tr").hide(); $(".inactive_client").show(); <?php } 
+   elseif($message_details->group_type == "4") { ?>$(".client_tr").hide(); $(".group_<?php echo $message_details->group_id ?>").show(); <?php } ?>
 });
 $('body').on('hidden.bs.popover', function (e) {
     $(e.target).data("bs.popover").inState = { click: false, hover: false, focus: false }
@@ -401,121 +363,172 @@ $('html').on('click', function(e) {
   }
 });
 $(window).change(function(e){
-  if($(e.target).hasClass('select_from'))
+  if($(e.target).hasClass('select_group'))
   {
-    var from = $(e.target).val();
-    $.ajax({
-      url:"<?php echo URL::to('user/choose_messageus_from'); ?>",
-      type:"post",
-      data:{from:from,message_id:"<?php echo $_GET['message_id']; ?>"},
-      success:function(result)
-      {
-        
-      }
-    })
+    var grp_id = $(e.target).val();
+    $(".select_client").prop("checked",false);
+    $(".primary_email").prop("checked",false);
+    $(".secondary_email").prop("checked",false);
+    $(".select_all_client").prop("checked",false);
+    $(".deselect_all_inactive_client").prop("checked",false);
+    
+    $(".client_tr").hide();
+    $(".group_"+grp_id).show();
   }
 })
-function sendotheremails(message_id,from,clientsval,othercompany)
-{
-  var clients = clientsval.split(",");
-  var companynames = othercompany.split("||");
-  if(clientsval != "")
-  {
-    var first = $("#refresh_first").html();
-    var countfirst = parseInt(first) + 1;
-
-    $("#refresh_first").html(countfirst);
-    $("#refresh_taskname").html(companynames[0]);
-
-    var firstclient = clients[0];
-    $.ajax({
-      url:"<?php echo URL::to('user/send_message_now'); ?>",
-      type:"post",
-      data:{message_id:message_id,from:from,client_id:firstclient},
-      success: function(result) {
-        clients.splice(0, 1);
-        companynames.splice(0, 1);
-        var otherclients = clients.join(',');
-        var othercompany = companynames.join('||');
-
-        if(otherclients == "")
-        {
-          $("body").removeClass("loading_refresh");
-          window.location.replace("<?php echo URL::to('user/directmessaging?mail_send=1'); ?>");
-        }
-        else{
-          sendotheremails(message_id,from,otherclients,othercompany);
-        }
-      }
-    });
-  }
-}
 $(window).click(function(e) {
-  if($(e.target).hasClass('send_message_later'))
+  if($(e.target).hasClass('select_all_client'))
   {
-      $("body").addClass("loading");
-      setTimeout(function() {
-        $.ajax({
-          url:"<?php echo URL::to('user/send_message_later'); ?>",
-          type:"post",
-          data:{message_id:"<?php echo $_GET['message_id']; ?>"},
-          success:function(result)
-          {
-            window.location.replace("<?php echo URL::to('user/directmessaging?mail_saved=1'); ?>");
-          }
-        })
-      },1000);
-  }
-  if($(e.target).hasClass('send_message_now'))
-  {
-      $(".send_message_modal").modal("show");
-  }
-  if($(e.target).hasClass('send_message_button'))
-  {
-    var message_id = "<?php echo $_GET['message_id']; ?>";
-    var client_ids = "<?php echo $message_details->client_ids; ?>";
-    var from = $(".select_from").val();
-    var clientnames = $("#company_client").val();
-
-    if(from == "")
+    if($(e.target).is(":checked"))
     {
-      alert("Please select the user from dropdown");
+      $(".select_client:visible").prop("checked",true);
+      $(".primary_email:visible").prop("checked",true);
+      $(".secondary_email:visible").prop("checked",true);
     }
     else{
-      var clients = client_ids.split(",");
-      var companynames = clientnames.split("||");
+      $(".select_client:visible").prop("checked",false);
+      $(".primary_email:visible").prop("checked",false);
+      $(".secondary_email:visible").prop("checked",false);
+    }
+    $(".deselect_all_inactive_client").prop("checked",false);
+  }
+  if($(e.target).hasClass('deselect_all_inactive_client'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".inactive_client").find(".select_client").prop("checked",false);
+      $(".inactive_client").find(".primary_email").prop("checked",false);
+      $(".inactive_client").find(".secondary_email").prop("checked",false);
+    }
+    $(".select_all_client").prop("checked",false);
+  }
+  if($(e.target).hasClass('select_client'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(e.target).parents("tr").find(".primary_email").prop("checked",true);
+      $(e.target).parents("tr").find(".secondary_email").prop("checked",true);
+    }
+    else{
+      $(e.target).parents("tr").find(".primary_email").prop("checked",false);
+      $(e.target).parents("tr").find(".secondary_email").prop("checked",false);
+    }
+  }
+  if($(e.target).hasClass('primary_email'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(e.target).parents("tr").find(".select_client").prop("checked",true);
+    }
+    else{
+      if($(e.target).parents("tr").find(".secondary_email").is(":checked"))
+      {
+        $(e.target).parents("tr").find(".select_client").prop("checked",true);
+      }
+      else{
+        $(e.target).parents("tr").find(".select_client").prop("checked",false);
+      }
+    }
+  }
+  if($(e.target).hasClass('secondary_email'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(e.target).parents("tr").find(".select_client").prop("checked",true);
+    }
+    else{
+      if($(e.target).parents("tr").find(".primary_email").is(":checked"))
+      {
+        $(e.target).parents("tr").find(".select_client").prop("checked",true);
+      }
+      else{
+        $(e.target).parents("tr").find(".select_client").prop("checked",false);
+      }
+    }
+  }
+  if($(e.target).hasClass('group_type'))
+  {
+    $(".select_client").prop("checked",false);
+    $(".primary_email").prop("checked",false);
+    $(".secondary_email").prop("checked",false);
+    $(".select_all_client").prop("checked",false);
+    $(".deselect_all_inactive_client").prop("checked",false);
 
-      $("#refresh_first").html("1");
-      $("#refresh_last").html(clients.length);
-      $("#refresh_taskname").html(companynames[0]);
-
-      $("body").addClass("loading_refresh");
+    var value = $(".group_type:checked").val();
+    if(value == "4")
+    {
+      $(".client_tr").hide();
+      $(".group_select_div").show();
+    }
+    else{
+      if(value == "1")
+      {
+        $(".client_tr").show();
+      }
+      else if(value == "2")
+      {
+        $(".client_tr").hide();
+        $(".active_client").show();
+      }
+      else if(value == "3")
+      {
+        $(".client_tr").hide();
+        $(".inactive_client").show();
+      }
+      $(".group_select_div").hide();
+    }
+  }
+  if($(e.target).hasClass('send_message_page2'))
+  {
+    var primary_emails = "";
+    var secondary_emails = "";
+    var client_ids = '';
+    $(".primary_email:checked").each(function() {
+      if(primary_emails == "")
+      {
+        primary_emails = $(this).val();
+      }
+      else{
+        primary_emails = primary_emails+","+$(this).val();
+      }
+    });
+    $(".secondary_email:checked").each(function() {
+      if(secondary_emails == "")
+      {
+        secondary_emails = $(this).val();
+      }
+      else{
+        secondary_emails = secondary_emails+","+$(this).val();
+      }
+    });   
+    $(".select_client:checked").each(function() {
+      if(client_ids == "")
+      {
+        client_ids = $(this).val();
+      }
+      else{
+        client_ids = client_ids+","+$(this).val();
+      }
+    });    
+    if(primary_emails == "" && secondary_emails == "")
+    {
+      alert("Please Select atleast any one of the client email address to send the email");
+      return false;
+    }
+    else{
+      $("body").addClass("loading");
       setTimeout(function() {
-        
-        if(clients != "")
-        {
-          var firstclient = clients[0];
-          $.ajax({
-            url:"<?php echo URL::to('user/send_message_now'); ?>",
-            type:"post",
-            data:{message_id:message_id,from:from,client_id:firstclient},
-            success: function(result) {
-              clients.splice(0, 1);
-              companynames.splice(0, 1);
-              var otherclients = clients.join(',');
-              var othercompany = companynames.join('||');
-
-              if(otherclients == "")
-              {
-                $("body").removeClass("loading_refresh");
-                window.location.replace("<?php echo URL::to('user/directmessaging?mail_send=1'); ?>");
-              }
-              else{
-                sendotheremails(message_id,from,otherclients,othercompany);
-              }
-            }
-          });
-        }
+        var group_type = $(".group_type:checked").val();
+        var group_id = $(".select_group").val();
+        $.ajax({
+          url:"<?php echo URL::to('user/save_message_page_two'); ?>",
+          type:"post",
+          data:{primary_emails:primary_emails,secondary_emails:secondary_emails,client_ids:client_ids,message_id:"<?php echo $_GET['message_id']; ?>",group_type:group_type,group_id:group_id},
+          success:function(result)
+          {
+            window.location.replace("<?php echo URL::to('user/directmessaging_page_three?message_id='.$_GET['message_id']); ?>");
+          }
+        })
       },1000);
     }
   }
@@ -718,4 +731,6 @@ Dropzone.options.imageUpload1 = {
     },
 };
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

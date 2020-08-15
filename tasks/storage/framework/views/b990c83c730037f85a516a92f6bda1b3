@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
 .liability_class{
   cursor:pointer;
@@ -2302,5 +2301,7 @@ $(".ros_class").blur(function(){
     },1000);
 });
 </script>
-@stop
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

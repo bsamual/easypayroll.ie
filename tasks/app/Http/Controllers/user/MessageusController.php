@@ -310,42 +310,94 @@ class MessageusController extends Controller {
 	{
 		$message_id = Input::get('message_id');
 		$message_details = DB::table('messageus')->where('id',$message_id)->first();
+		$primary_emails = explode(',',$message_details->primary_emails);
+		$secondary_emails = explode(',',$message_details->secondary_emails);
 
 		$from = Input::get('from');
-		$email = Input::get('email');
-		$to = trim($email);
-		
-		$datamessage['message_from'] = $from;
-		$datamessage['date_sent'] = date('Y-m-d H:i:s');
-		$datamessage['status'] = 1;
-		$datamessage['draft_status'] = 0;
-		DB::table('messageus')->where('id',$message_id)->update($datamessage);
+		$client_id = Input::get('client_id');
 
-		$user_details = DB::table('user')->where('user_id',$from)->first();
-		$user_email = $user_details->email;
-		
-		$dataemail['logo'] = URL::to('assets/images/easy_payroll_logo.png');
-		$dataemail['message'] = $message_details->message;
-		$subject_email = $message_details->subject;
+		$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+		$pemail = $client_details->email;
+		$semail = $client_details->email2;
 
-		$contentmessage = view('emails/messageus/create_messageus_email', $dataemail)->render();
-		
-		$email = new PHPMailer();
-		$email->SetFrom($user_email);
-		$email->Subject   = $subject_email;
-		$email->Body      = $contentmessage;
-		$email->AddCC('tasks@gbsco.ie');
-		$email->IsHTML(true);
-		$email->AddAddress( $to );
-		$files = DB::table('messageus_files')->where('message_id',$message_id)->get();
-		if(count($files))
+		if($pemail != "")
 		{
-			foreach($files as $file)
+			if(in_array($pemail, $primary_emails))
 			{
-				$email->AddAttachment( $file->url.'/'.$file->filename , $file->filename );
+				$to = trim($pemail);
+			
+				$datamessage['message_from'] = $from;
+				$datamessage['date_sent'] = date('Y-m-d H:i:s');
+				$datamessage['status'] = 1;
+				$datamessage['draft_status'] = 0;
+				DB::table('messageus')->where('id',$message_id)->update($datamessage);
+
+				$user_details = DB::table('user')->where('user_id',$from)->first();
+				$user_email = $user_details->email;
+				
+				$dataemail['logo'] = URL::to('assets/images/easy_payroll_logo.png');
+				$dataemail['message'] = $message_details->message;
+				$subject_email = $message_details->subject;
+
+				$contentmessage = view('emails/messageus/create_messageus_email', $dataemail)->render();
+				
+				$email = new PHPMailer();
+				$email->SetFrom($user_email);
+				$email->Subject   = $subject_email;
+				$email->Body      = $contentmessage;
+				$email->AddCC('tasks@gbsco.ie');
+				$email->IsHTML(true);
+				$email->AddAddress( $to );
+				$files = DB::table('messageus_files')->where('message_id',$message_id)->get();
+				if(count($files))
+				{
+					foreach($files as $file)
+					{
+						$email->AddAttachment( $file->url.'/'.$file->filename , $file->filename );
+					}
+				}
+				$email->Send();
 			}
 		}
-		$email->Send();
+		if($semail != "")
+		{
+			if(in_array($semail, $secondary_emails))
+			{
+				$to = trim($semail);
+			
+				$datamessage['message_from'] = $from;
+				$datamessage['date_sent'] = date('Y-m-d H:i:s');
+				$datamessage['status'] = 1;
+				$datamessage['draft_status'] = 0;
+				DB::table('messageus')->where('id',$message_id)->update($datamessage);
+
+				$user_details = DB::table('user')->where('user_id',$from)->first();
+				$user_email = $user_details->email;
+				
+				$dataemail['logo'] = URL::to('assets/images/easy_payroll_logo.png');
+				$dataemail['message'] = $message_details->message;
+				$subject_email = $message_details->subject;
+
+				$contentmessage = view('emails/messageus/create_messageus_email', $dataemail)->render();
+				
+				$email = new PHPMailer();
+				$email->SetFrom($user_email);
+				$email->Subject   = $subject_email;
+				$email->Body      = $contentmessage;
+				$email->AddCC('tasks@gbsco.ie');
+				$email->IsHTML(true);
+				$email->AddAddress( $to );
+				$files = DB::table('messageus_files')->where('message_id',$message_id)->get();
+				if(count($files))
+				{
+					foreach($files as $file)
+					{
+						$email->AddAttachment( $file->url.'/'.$file->filename , $file->filename );
+					}
+				}
+				$email->Send();
+			}
+		}
 	}
 	public function create_group_name()
 	{

@@ -3302,6 +3302,7 @@ class Payep30Controller extends Controller {
 		$task_year = DB::table('year')->where('year_name',$year_details->year_name)->first();
 		$get_rows = DB::table('paye_task_update')->where('year_id',$task_year->year_id)->groupBy('task_enumber')->get();
 		$task_id = '';
+		$task_name = '';
 		if(count($get_rows))
 		{
 			foreach($get_rows as $row)
@@ -3312,13 +3313,15 @@ class Payep30Controller extends Controller {
 					if($task_id == "")
 					{
 						$task_id = $get_task_id->id;
+						$task_name = $get_task_id->task_name;
 					}
 					else{
 						$task_id = $task_id.','.$get_task_id->id;
+						$task_name = $task_name.'||'.$get_task_id->task_name;
 					}
 				}
 			}
 		}
-		echo $task_id;
+		echo json_encode(array("task_id" => $task_id, "task_name" => $task_name));
 	}
 }

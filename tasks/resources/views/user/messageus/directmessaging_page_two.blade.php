@@ -415,6 +415,38 @@ $(window).click(function(e) {
       $(e.target).parents("tr").find(".secondary_email").prop("checked",false);
     }
   }
+  if($(e.target).hasClass('primary_email'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(e.target).parents("tr").find(".select_client").prop("checked",true);
+    }
+    else{
+      if($(e.target).parents("tr").find(".secondary_email").is(":checked"))
+      {
+        $(e.target).parents("tr").find(".select_client").prop("checked",true);
+      }
+      else{
+        $(e.target).parents("tr").find(".select_client").prop("checked",false);
+      }
+    }
+  }
+  if($(e.target).hasClass('secondary_email'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(e.target).parents("tr").find(".select_client").prop("checked",true);
+    }
+    else{
+      if($(e.target).parents("tr").find(".primary_email").is(":checked"))
+      {
+        $(e.target).parents("tr").find(".select_client").prop("checked",true);
+      }
+      else{
+        $(e.target).parents("tr").find(".select_client").prop("checked",false);
+      }
+    }
+  }
   if($(e.target).hasClass('group_type'))
   {
     $(".select_client").prop("checked",false);

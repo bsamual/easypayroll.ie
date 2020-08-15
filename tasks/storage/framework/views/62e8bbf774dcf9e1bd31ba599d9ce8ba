@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
 #client_table td, #client_table th{ text-align:left; background: #fff }
 .inactive_client td { color:#f00; }
@@ -718,4 +717,6 @@ Dropzone.options.imageUpload1 = {
     },
 };
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

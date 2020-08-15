@@ -63,8 +63,9 @@ class OpeningbalanceController extends Controller {
 	}
 	public function client_opening_balance_manager()
 	{
+		$client_id = Input::get('client_id');
 		$client = DB::table('cm_clients')->where('client_id',$client_id)->first();
-		return view('user/opening_balance/client_opening_balance_manager', array('title' => 'Client Opening Balance Manager', 'client_details' => $client, 'classlist' => $class, 'userlist' => $user));
+		return view('user/opening_balance/client_opening_balance_manager', array('title' => 'Client Opening Balance Manager', 'client_details' => $client,'client_id' => $client_id));
 	}
 
 	public function update_aml_incomplete_status()

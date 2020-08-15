@@ -1,15 +1,19 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
-#client_table td, #client_table th{ text-align:left; background: #fff }
-.inactive_client td { color:#f00; }
+.fa-trash, .fa-text-width, .fa-ellipsis-h { margin-left:10px; }
+.add_attachment_comment{
+    width: 100px;
+    margin-top: 10px;
+    clear: both;
+    float: left;
+    font-weight: 600;
+    font-size: 16px;
+}
 .messageus_attachment_a, #messageus_attachment_p{
   font-weight:700;
   text-decoration: underline;
   color:blue;
 }
-.inactive_client td { color:#f00; }
-.table td, .table th{ text-align:left; background: #fff }
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -33,7 +37,7 @@ input[type=number] {
 .modal_load {
     display:    none;
     position:   fixed;
-    z-index:    9999999999;
+    z-index:    999999;
     top:        0;
     left:       0;
     height:     100%;
@@ -47,26 +51,6 @@ body.loading {
     overflow: hidden;   
 }
 body.loading .modal_load {
-    display: block;
-}
-
-.modal_load_refresh {
-    display:    none;
-    position:   fixed;
-    z-index:    99999999999;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
-                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
-                50% 50% 
-                no-repeat;
-}
-body.loading_refresh {
-    overflow: hidden;   
-}
-body.loading_refresh .modal_load_refresh {
     display: block;
 }
 .file_attachment_div{width:100%;}
@@ -186,6 +170,9 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+/*.messageus_attachment:nth-child(n+9) {
+   display:none;
+}*/
 </style>
 <script src="<?php echo URL::to('ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('ckeditor/samples/js/sample.js'); ?>"></script>
@@ -193,39 +180,7 @@ input:checked + .slider:before {
 
 <link rel="stylesheet" href="<?php echo URL::to('ckeditor/samples/css/samples.css'); ?>">
 <link rel="stylesheet" href="<?php echo URL::to('ckeditor/samples/toolbarconfigurator/lib/codemirror/neo.css'); ?> ">
-<div class="modal fade send_message_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
-  <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">Select Username</h4>
-          </div>
-          <div class="modal-body" style="min-height: 100px;">  
-            <div class="col-md-12">
-              <h5>Select From Username:</h5>
-            </div>
-            <div class="col-md-12">
-              <select name="select_from" class="form-control select_from">
-                <option value="">Select User</option>        
-                  <?php
-                  $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
-                  if(count($userlist)){
-                    foreach ($userlist as $user) {
-                  ?>
-                    <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
-                  <?php
-                    }
-                  }
-                  ?>
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <input type="button" class="common_black_button send_message_button" id="send_message_button" value="Submit">
-          </div>
-        </div>
-  </div>
-</div>
+
 <div class="content_section">
 	<div id="fixed-header" style="width:100%;background: #fff;margin-top: -16px;">
 	  <div class="page_title" style="z-index:999;margin-top:20px">
@@ -257,108 +212,70 @@ input:checked + .slider:before {
       <div class="row" style="background: #c7c7c7;">
         <div class="col-md-6" style="padding:20px">
           <div class="col-md-12">
-            <h5 style="font-weight:800">Message Summary:</h5>
-          </div>
-          <div class="col-md-12" style="margin-top:10px">
-            <h5 style="font-weight:800">Message Subject: </h5>
-            <input type="text" name="message_subject" class="form-control message_subject" value="<?php echo $message_details->subject; ?>" disabled style="background: #fff !important">
+            <h5 style="font-weight:800">Message Subject: <spam class="error error_subject"></spam> </h5>
+            <input type="text" name="message_subject" class="form-control message_subject" value="<?php echo $subject; ?>">
           </div>
           <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Message Body: </h5>
-            <div style="width:100%;background: #fff;min-height:500px;padding:10px">
-              <?php echo $message_details->message; ?>
-            </div>
+            <h5 style="font-weight:800">Message Body: <spam class="error error_body"></spam></h5>
+            <textarea name="message_body" class="form-control message_body" id="editor_2"><?php echo $message_body; ?></textarea>
           </div>
         </div>
         <div class="col-md-6" style="padding:20px">
-          <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Attached Files: </h5>
-            <?php
-            $fileoutput = '';
-            $files = DB::table('messageus_files')->where('message_id',$_GET['message_id'])->get();
-            if(count($files))
-            {
-              foreach($files as $file)
-              {
-                $fileoutput.="<div class='messageus_attachment' style='width:100%'><a href='".URL::to('/')."/".$file->url."/".$file->filename."' class='messageus_attachment_a' download>".$file->filename."</a></div>";
-              }
-            }
-            echo $fileoutput;
-            ?>
-          </div>
-          <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Selected Clients: </h5>
-            <div class="table-responsive" id="table_responsive_div" style="max-height: 500px;">
-              <table class="table" id="client_table">
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Details</th>
-                    <th>Primary Email</th>
-                    <th>Secondary Email</th>
-                  </tr>
-                </thead>
-                <tbody id="clients_tbody">
-                  <?php
-                  $clientoutput = '';
-                  $clients = explode(",",$message_details->client_ids);
-                  $primary = explode(",",$message_details->primary_emails);
-                  $secondary = explode(",",$message_details->secondary_emails);
-                  $company_client = '';
-                  if(count($clients))
+          <div class="col-md-12">
+            <div class="col-md-4" style="padding:10px;background: #ff0">
+              <div class="image_div_attachments" >
+                <form action="<?php echo URL::to('user/messageus_upload_images_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload1" style="clear:both;min-height:250px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                          <?php
+                          if(isset($_GET['message_id']))
+                          {
+                            $messageid = $_GET['message_id'];
+                          }
+                          else{
+                            $messageid = '';
+                          }
+                          ?>
+                          <input name="message_id" type="hidden" value="<?php echo $messageid; ?>">
+                      </form>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <h4 style="font-weight:800">Files to be appended to this message:</h4>
+              <div id="add_attachments_div">
+                <?php
+                $fileoutput = '';
+                if(isset($_GET['message_id']))
+                {
+                  $files = DB::table('messageus_files')->where('message_id',$_GET['message_id'])->get();
+                  if(count($files))
                   {
-                    foreach($clients as $client)
+                    foreach($files as $file)
                     {
-                      $client_details = DB::table('cm_clients')->where('client_id',$client)->first();
-                      if($client_details->active == "2")
-                      {
-                        $cls = 'inactive_client';
-                      }
-                      else{
-                        $cls = 'active_client';
-                      }
-                      if(in_array($client_details->email,$primary))
-                      {
-                        $pri_email = $client_details->email;
-                      }
-                      else{
-                        $pri_email = '';
-                      }
-                      if(in_array($client_details->email2,$secondary))
-                      {
-                        $sec_email = $client_details->email2;
-                      }
-                      else{
-                        $sec_email = '';
-                      }
-                      $clientoutput.='<tr class="'.$cls.'">
-                        <td>'.$client_details->client_id.'</td>
-                        <td>'.$client_details->company.'</td>
-                        <td>'.$pri_email.'</td>
-                        <td>'.$sec_email.'</td>
-                      </tr>';
-                      if($company_client == "")
-                      {
-                        $company_client = $client_details->company;
-                      }
-                      else{
-                        $company_client = $company_client.'||'.$client_details->company;
-                      }
+                      if($file->content == "") { $display="style='display:none'"; }
+                      else{ $display="style='display:initial'"; }
+                      $fileoutput.="<div class='messageus_attachment' style='width:100%'>
+                        <a href='".URL::to('/')."/".$file->url."/".$file->filename."' class='messageus_attachment_a' download>".$file->filename."</a> 
+                        <a href='javascript:' class='fa fa-trash remove_dropzone_attach' data-task='".$file->id."'></a> 
+                        <a href='javascript:' class='fa fa-text-width notes_attachment' data-task='".$file->id."'></a>
+                        <a href='javascript:' class='fa fa-ellipsis-h attach_content attach_content_".$file->id."' title='".$file->content."' ".$display."></a>
+                      </div>";
                     }
                   }
-                  echo $clientoutput;
-                  ?>
-                </tbody>
-              </table>
-              <input type="hidden" name="company_client" id="company_client" value="<?php echo $company_client; ?>">
+                }
+                echo $fileoutput;
+                ?>
+              </div>
+              <a href="javascript:" class="fa fa-ellipsis-h view_attachments" data-placement="right" data-popover-content="#add_attachments_div" data-toggle="popover" data-trigger="click" tabindex="0" data-original-title="View all Attachments" style="display:none"></a>
             </div>
+          </div>
+          <div class="col-md-12" id="attachment_content_div" style="margin-top:20px;display:none">
+            <h5 id="attachment_content_title" style="font-weight:800"></h5>
+            <textarea name="attachment_content" class="form-control attachment_content" id="editor_1"></textarea>
+            <a href="javascript:" class="common_black_button add_attachment_comment">Save</a>
           </div>
         </div>
         <div class="col-md-12" style="padding:20px">
           <div class="col-md-12" style="margin-top:20px">
-            <a href="<?php echo URL::to('user/directmessaging?message_id='.$_GET['message_id']); ?>" class="common_black_button" style="font-size:20px;float:right;width:20%"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back to Message Screen</a><br/><br/><br/>
-            <a href="javascript:" class="common_black_button send_message_later" style="font-size:20px;float:right;width:20%">Send Message Later <i class="fa fa-arrow-right" aria-hidden="true"></i></a><br/><br/><br/>
-            <a href="javascript:" class="common_black_button send_message_now" style="font-size:20px;float:right;width:20%">Send Message Now</a>
+            <a href="javascript:" class="common_black_button send_message_page1" style="font-size:20px;float:right">Choose who to Send this message to</a>
           </div>
         </div>
       </div>
@@ -366,30 +283,40 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="modal_load"></div>
-<div class="modal_load_refresh" style="text-align: center;">
-  <p style="font-size:25px;font-weight: 600;margin-top: 28%;">Sending Message <span id="refresh_first"></span> of <span id="refresh_last"></span> to <span id="refresh_taskname"></span></p>
-</div>
-<?php
-  $message_details = DB::table('messageus')->where('id',$_GET['message_id'])->first();
-?>
 <script>
-var table_heigth = $("#client_table").height();
-if(table_heigth > 500)
+<?php
+if(isset($_GET['mail_send']))
 {
-  $("#table_responsive_div").css("overflow-y","scroll");
+  ?>
+  $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>Email sent Successfully</p>", fixed:true});
+  <?php
 }
+if(isset($_GET['mail_saved']))
+{
+  ?>
+  $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>Message Saved Successfully</p>", fixed:true});
+  <?php
+}
+?>
 $(function(){
   $.ajaxSetup({async:false});
-    $('#client_table').DataTable({
-        fixedHeader: {
-          headerOffset: 75
+  CKEDITOR.replace('editor_2',
+ {
+  height: '500px',
+  enterMode: CKEDITOR.ENTER_BR,
+  shiftEnterMode: CKEDITOR.ENTER_P,
+  autoParagraph: false,
+ });
+    $("[data-toggle=popover]").popover({
+        html : true,
+        content: function() {
+          var content = $(this).attr("data-popover-content");
+          return $(content).children(".popover-body").html();
         },
-        autoWidth: true,
-        scrollX: false,
-        fixedColumns: false,
-        searching: false,
-        paging: false,
-        info: false
+        title: function() {
+          var title = $(this).attr("data-popover-content");
+          return $(title).children(".popover-heading").html();
+        }
     });
 });
 $('body').on('hidden.bs.popover', function (e) {
@@ -400,122 +327,89 @@ $('html').on('click', function(e) {
     $('[data-original-title]').popover('hide');
   }
 });
-$(window).change(function(e){
-  if($(e.target).hasClass('select_from'))
-  {
-    var from = $(e.target).val();
-    $.ajax({
-      url:"<?php echo URL::to('user/choose_messageus_from'); ?>",
-      type:"post",
-      data:{from:from,message_id:"<?php echo $_GET['message_id']; ?>"},
-      success:function(result)
-      {
-        
-      }
-    })
-  }
-})
-function sendotheremails(message_id,from,clientsval,othercompany)
-{
-  var clients = clientsval.split(",");
-  var companynames = othercompany.split("||");
-  if(clientsval != "")
-  {
-    var first = $("#refresh_first").html();
-    var countfirst = parseInt(first) + 1;
-
-    $("#refresh_first").html(countfirst);
-    $("#refresh_taskname").html(companynames[0]);
-
-    var firstclient = clients[0];
-    $.ajax({
-      url:"<?php echo URL::to('user/send_message_now'); ?>",
-      type:"post",
-      data:{message_id:message_id,from:from,client_id:firstclient},
-      success: function(result) {
-        clients.splice(0, 1);
-        companynames.splice(0, 1);
-        var otherclients = clients.join(',');
-        var othercompany = companynames.join('||');
-
-        if(otherclients == "")
-        {
-          $("body").removeClass("loading_refresh");
-          window.location.replace("<?php echo URL::to('user/directmessaging?mail_send=1'); ?>");
-        }
-        else{
-          sendotheremails(message_id,from,otherclients,othercompany);
-        }
-      }
-    });
-  }
-}
 $(window).click(function(e) {
-  if($(e.target).hasClass('send_message_later'))
+  if($(e.target).hasClass('add_attachment_comment'))
   {
-      $("body").addClass("loading");
-      setTimeout(function() {
-        $.ajax({
-          url:"<?php echo URL::to('user/send_message_later'); ?>",
-          type:"post",
-          data:{message_id:"<?php echo $_GET['message_id']; ?>"},
-          success:function(result)
+    $("body").addClass("loading");
+    setTimeout(function() {
+      var fileid = $(".attachment_content").attr("data-element");
+      var textarea = CKEDITOR.instances['editor_1'].getData();
+      <?php
+      if(isset($_GET['message_id']))
+      {
+        $type = "1";
+      }
+      else{
+        $type = "0";
+      }
+      ?>
+      $.ajax({
+        url:"<?php echo URL::to('user/messageus_add_comment_to_attachment'); ?>",
+        type:"post",
+        data:{fileid:fileid,textarea:textarea,type:"<?php echo $type; ?>"},
+        success:function(result)
+        {
+          $("#attachment_content_div").hide();
+          if(textarea != "")
           {
-            window.location.replace("<?php echo URL::to('user/directmessaging?mail_saved=1'); ?>");
+            $(".attach_content_"+fileid).show();
           }
-        })
-      },1000);
-  }
-  if($(e.target).hasClass('send_message_now'))
-  {
-      $(".send_message_modal").modal("show");
-  }
-  if($(e.target).hasClass('send_message_button'))
-  {
-    var message_id = "<?php echo $_GET['message_id']; ?>";
-    var client_ids = "<?php echo $message_details->client_ids; ?>";
-    var from = $(".select_from").val();
-    var clientnames = $("#company_client").val();
+          else{
+            $(".attach_content_"+fileid).hide();
+          }
 
-    if(from == "")
+          $(".attach_content_"+fileid).attr("title",textarea);
+          $("body").removeClass("loading");
+        }
+      })
+    },2000);
+  }
+  if($(e.target).hasClass('send_message_page1'))
+  {
+    var subject = $(".message_subject").val();
+    var message_body = CKEDITOR.instances['editor_2'].getData();
+    message_body = message_body.trim();
+    <?php
+    if(isset($_GET['message_id']))
     {
-      alert("Please select the user from dropdown");
+      $message_id = $_GET['message_id'];
     }
     else{
-      var clients = client_ids.split(",");
-      var companynames = clientnames.split("||");
-
-      $("#refresh_first").html("1");
-      $("#refresh_last").html(clients.length);
-      $("#refresh_taskname").html(companynames[0]);
-
-      $("body").addClass("loading_refresh");
+      $message_id = '';
+    }
+    ?>
+    if(subject == "" && message_body == "")
+    {
+      $(".error_subject").html("Please enter the Message Subject");
+      $(".error_body").html("Please enter the Message Body");
+      return false;
+    }
+    else if(subject == "")
+    {
+      $(".error_subject").html("Please enter the Message Subject");
+      $(".error_body").html("");
+      return false;
+    }
+    else if(message_body == "")
+    {
+      $(".error_subject").html("");
+      $(".error_body").html("Please enter the Message Body");
+      return false;
+    }
+    else{
+      $("body").addClass("loading");
       setTimeout(function() {
-        
-        if(clients != "")
-        {
-          var firstclient = clients[0];
-          $.ajax({
-            url:"<?php echo URL::to('user/send_message_now'); ?>",
-            type:"post",
-            data:{message_id:message_id,from:from,client_id:firstclient},
-            success: function(result) {
-              clients.splice(0, 1);
-              companynames.splice(0, 1);
-              var otherclients = clients.join(',');
-              var othercompany = companynames.join('||');
-
-              if(otherclients == "")
-              {
-                $("body").removeClass("loading_refresh");
-                window.location.replace("<?php echo URL::to('user/directmessaging?mail_send=1'); ?>");
-              }
-              else{
-                sendotheremails(message_id,from,otherclients,othercompany);
-              }
-            }
-          });
-        }
+        $(".error_subject").html("");
+        $(".error_body").html("");
+        $.ajax({
+          url:"<?php echo URL::to('user/save_message_page_one'); ?>",
+          type:"post",
+          data:{subject:subject,message_body:message_body,message_id:"<?php echo $message_id; ?>"},
+          success:function(result)
+          {
+            window.location.replace("<?php echo URL::to('user/directmessaging_page_two?message_id='); ?>"+result);
+          }
+        })
       },1000);
     }
   }
@@ -527,7 +421,7 @@ $(window).click(function(e) {
       var fileid = $(e.target).attr("data-task");
       var filename = $(e.target).parents(".messageus_attachment").find(".messageus_attachment_a").html();
       $("#attachment_content_div").show();
-      $("#attachment_content_title").html(filename+" COMMENT:");
+      $("#attachment_content_title").html("<spam id='messageus_attachment_p'>"+filename+"</spam> COMMENT:");
       $(".attachment_content").attr("data-element",fileid);
 
       CKEDITOR.replace('editor_1',
@@ -558,7 +452,7 @@ $(window).click(function(e) {
       var fileid = $(e.target).attr("data-task");
       var filename = $(e.target).parents(".messageus_attachment").find(".messageus_attachment_a").html();
       $("#attachment_content_div").show();
-      $("#attachment_content_title").html(filename+" COMMENT:");
+      $("#attachment_content_title").html("<spam id='messageus_attachment_p'>"+filename+"</spam> COMMENT:");
       $(".attachment_content").attr("data-element",fileid);
 
       CKEDITOR.replace('editor_1',
@@ -639,6 +533,15 @@ function doneTyping(textarea) {
       success:function(result)
       {
 
+        if(textarea != "")
+          {
+            $(".attach_content_"+fileid).show();
+            $(".attach_content_"+fileid).attr("title",textarea);
+          }
+          else{
+            $(".attach_content_"+fileid).hide();
+            $(".attach_content_"+fileid).attr("title",textarea);
+          }
       }
     })
 }
@@ -667,11 +570,11 @@ Dropzone.options.imageUpload1 = {
             file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
             if(obj.id != 0)
             {
-              file.previewElement.innerHTML = "<div class='messageus_attachment' style='width:100%'><a href='<?php echo URL::to('/'); ?>/"+obj.attachment+"' class='messageus_attachment_a' download>"+obj.filename+"</a> <a href='javascript:' class='fa fa-trash remove_dropzone_attach' data-task='"+obj.file_id+"'></a> <a href='javascript:' class='fa fa-text-width notes_attachment' data-task='"+obj.file_id+"'></a></div>";
+              file.previewElement.innerHTML = "<div class='messageus_attachment' style='width:100%'><a href='<?php echo URL::to('/'); ?>/"+obj.attachment+"' class='messageus_attachment_a' download>"+obj.filename+"</a> <a href='javascript:' class='fa fa-trash remove_dropzone_attach' data-task='"+obj.file_id+"'></a> <a href='javascript:' class='fa fa-text-width notes_attachment' data-task='"+obj.file_id+"'></a><a href='javascript:' class='fa fa-ellipsis-h attach_content attach_content_"+obj.file_id+"' title='' style='display:none'></a></div>";
             }
             else{
               $("#attachments_text").show();
-              $("#add_attachments_div").append("<div class='messageus_attachment' style='width:100%'><a href='<?php echo URL::to('/'); ?>/"+obj.attachment+"' class='messageus_attachment_a' download>"+obj.filename+"</a> <a href='javascript:' class='fa fa-trash remove_dropzone_attach_add' data-task='"+obj.file_id+"'></a> <a href='javascript:' class='fa fa-text-width add_notes_attachment' data-task='"+obj.file_id+"'></a></div>");
+              $("#add_attachments_div").append("<div class='messageus_attachment' style='width:100%'><a href='<?php echo URL::to('/'); ?>/"+obj.attachment+"' class='messageus_attachment_a' download>"+obj.filename+"</a> <a href='javascript:' class='fa fa-trash remove_dropzone_attach_add' data-task='"+obj.file_id+"'></a> <a href='javascript:' class='fa fa-text-width add_notes_attachment' data-task='"+obj.file_id+"'></a><a href='javascript:' class='fa fa-ellipsis-h attach_content attach_content_"+obj.file_id+"' title='' style='display:none'></a></div>");
             }
         });
         this.on("complete", function (file) {
@@ -687,7 +590,7 @@ Dropzone.options.imageUpload1 = {
           var pcount = $(".messageus_attachment").length;
           if(pcount > 8)
           {
-            $(".view_attachments").show();
+            // $(".view_attachments").show();
 
             $("[data-toggle=popover]").popover({
                 html : true,
@@ -718,4 +621,6 @@ Dropzone.options.imageUpload1 = {
     },
 };
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
