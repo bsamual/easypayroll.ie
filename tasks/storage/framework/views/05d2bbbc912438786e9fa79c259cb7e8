@@ -105,14 +105,29 @@ a:hover{text-decoration: underline;}
                     else{
                       $style="color:#000";
                     }
+                    $balance_check = DB::table('opening_balance')->where('client_id',$client->client_id)->first();
+                    if(count($balance_check))
+                    {
+                      if($balance_check->opening_balance == 0)
+                      {
+                        $balance = '-';
+                      }
+                      else{
+                        $balance = $balance_check->opening_balance;
+                      }
+                    }
+                    else{
+                      $balance = '-';
+                    }
                     ?>
                     <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->id; ?>">
-                      <td><a href="<?php echo URL::to('user/client_opening_balance_manager'); ?>" style="<?php echo $style; ?>"><?php echo $i; ?></a></td>
-                      <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager'); ?>" style="<?php echo $style; ?>"><?php echo $client->client_id; ?></a></td>
-                      <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager'); ?>" style="<?php echo $style; ?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
-                      <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager'); ?>" style="<?php echo $style; ?>"><?php echo $client->firstname.' & '.$client->surname; ?></a></td>
+                      <td><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $i; ?></a></td>
+                      <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $client->client_id; ?></a></td>
+                      <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
+                      <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $client->firstname.' & '.$client->surname; ?></a></td>
                       
                       <td align="left" style="<?php echo $style; ?>">
+                        <?php echo $balance; ?>
                       </td>
                       <td align="left" style="<?php echo $style; ?>">
                         
@@ -150,10 +165,5 @@ $(function(){
     });
 });
 </script>
-
-
-
-
-
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

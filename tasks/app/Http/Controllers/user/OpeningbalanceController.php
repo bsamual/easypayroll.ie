@@ -65,7 +65,142 @@ class OpeningbalanceController extends Controller {
 	{
 		$client_id = Input::get('client_id');
 		$client = DB::table('cm_clients')->where('client_id',$client_id)->first();
-		return view('user/opening_balance/client_opening_balance_manager', array('title' => 'Client Opening Balance Manager', 'client_details' => $client,'client_id' => $client_id));
+		$check_client = DB::table('opening_balance')->where('client_id',$client_id)->first();
+		if(!count($check_client))
+		{
+			if($client->client_added != "")
+			{
+				$client_added_slash = explode('/',$client->client_added);
+				$client_added_minus = explode('-',$client->client_added);
+				if(count($client_added_slash) > 1)
+				{
+					$date_added = $client_added_slash[2].'-'.$client_added_slash[1].'-'.$client_added_slash[0];
+				}
+				elseif(count($client_added_minus) > 1)
+				{
+					$date_added = $client_added_minus[2].'-'.$client_added_minus[1].'-'.$client_added_minus[0];
+				}
+				else{
+					$date_added = date('Y-m-d', strtotime($client->updatetime));
+				}
+			}
+			else{
+				$date_added = date('Y-m-d', strtotime($client->updatetime));
+			}
+			$data['client_id'] = $client_id;
+			$data['opening_balance'] = 0;
+			$data['opening_date'] = $date_added;
+			DB::table('opening_balance')->insert($data);
+		}
+		
+		return view('user/opening_balance/client_opening_balance_manager', array('title' => 'Client Opening Balance Manager', 'client_details' => $client, 'client_id' => $client_id));
+	}
+	public function change_opening_balance()
+	{
+		$client_id = Input::get('client_id');
+		$balance = Input::get('balance');
+
+		$data['opening_balance'] = $balance;
+		$check_client = DB::table('opening_balance')->where('client_id',$client_id)->first();
+		if(count($check_client))
+		{
+			DB::table('opening_balance')->where('client_id',$client_id)->update($data);
+		}
+		else{
+			$data['client_id'] = $client_id;
+			DB::table('opening_balance')->insert($data);
+		}
+	}
+	public function change_opening_balance_date()
+	{
+		$client_id = Input::get('client_id');
+		$date = explode('-',Input::get('dateval'));
+		if($date[1] == "Jan") { $month = '01'; }
+		if($date[1] == "Feb") { $month = '02'; }
+		if($date[1] == "Mar") { $month = '03'; }
+		if($date[1] == "Apr") { $month = '04'; }
+		if($date[1] == "May") { $month = '05'; }
+		if($date[1] == "Jun") { $month = '06'; }
+		if($date[1] == "Jul") { $month = '07'; }
+		if($date[1] == "Aug") { $month = '08'; }
+		if($date[1] == "Sep") { $month = '09'; }
+		if($date[1] == "Oct") { $month = '10'; }
+		if($date[1] == "Nov") { $month = '11'; }
+		if($date[1] == "Dec") { $month = '12'; }
+
+		$data['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+		$check_client = DB::table('opening_balance')->where('client_id',$client_id)->first();
+		if(count($check_client))
+		{
+			DB::table('opening_balance')->where('client_id',$client_id)->update($data);
+		}
+		else{
+			$data['client_id'] = $client_id;
+			DB::table('opening_balance')->insert($data);
+		}
+	}
+	public function auto_allocate_opening_balance()
+	{
+		$client_id = Input::get('client_id');
+		$opening_balance = Input::get('opening_balance');
+		$balance = Input::get('opening_balance');
+		$dataval['balance_remaining'] = '';
+		DB::table('invoice_system')->where('client_id',$client_id)->update($dataval);
+
+		$get_invoices_update = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
+		if(count($get_invoices_update))
+		{
+			foreach($get_invoices_update as $invoice)
+			{
+				$gross = $invoice->gross;
+				if($opening_balance != 0)
+				{
+					if($gross > 0)
+					{
+						if($gross < $opening_balance)
+						{
+							$data['balance_remaining'] = $gross;
+							$opening_balance = $opening_balance - $gross;
+						}
+						else{
+							$data['balance_remaining'] = $opening_balance;
+							$opening_balance = $opening_balance - $opening_balance;
+						}
+						DB::table('invoice_system')->where('id',$invoice->id)->update($data);
+					}
+				}
+			}
+		}
+		$output = '';
+		$total_remaining = 0;
+          $get_invoices = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
+          if(count($get_invoices))
+          {
+            foreach($get_invoices as $invoice)
+            {
+              if($invoice->balance_remaining != "") { $balance_remaining = $invoice->balance_remaining; } else { $balance_remaining = '-'; }
+              $output.='<tr>
+                <td>'.$invoice->invoice_number.'</td>
+                <td>'.date("d-M-Y", strtotime($invoice->invoice_date)).'</td>
+                <td style="text-align: right">'.$invoice->gross.'</td>
+                <td style="text-align: right">'.$balance_remaining.'</td>
+              </tr>';
+              $total_remaining = $total_remaining + $balance_remaining;
+            }
+          }
+          else{
+            $output.='<tr><td colspan="4">No Invoice Found</td></tr>';
+          }
+          $unallocated = $balance - $total_remaining;
+          $output.='<tr>
+            <td colspan="3" style="font-weight:700">Total Balance Remaining</td>
+            <td style="background: #ddd;text-align: right">'.$total_remaining.'</td>
+          </tr>
+          <tr>
+            <td colspan="3" style="font-weight:700">Unallocated Balance</td>
+            <td style="background: #ddd;text-align: right">'.$unallocated.'</td>
+          </tr>';
+          echo $output;
 	}
 
 	public function update_aml_incomplete_status()

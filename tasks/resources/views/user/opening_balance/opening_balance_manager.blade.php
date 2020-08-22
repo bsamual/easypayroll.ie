@@ -106,6 +106,20 @@ a:hover{text-decoration: underline;}
                     else{
                       $style="color:#000";
                     }
+                    $balance_check = DB::table('opening_balance')->where('client_id',$client->client_id)->first();
+                    if(count($balance_check))
+                    {
+                      if($balance_check->opening_balance == 0)
+                      {
+                        $balance = '-';
+                      }
+                      else{
+                        $balance = $balance_check->opening_balance;
+                      }
+                    }
+                    else{
+                      $balance = '-';
+                    }
                     ?>
                     <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->id; ?>">
                       <td><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $i; ?></a></td>
@@ -114,6 +128,7 @@ a:hover{text-decoration: underline;}
                       <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $client->firstname.' & '.$client->surname; ?></a></td>
                       
                       <td align="left" style="<?php echo $style; ?>">
+                        <?php echo $balance; ?>
                       </td>
                       <td align="left" style="<?php echo $style; ?>">
                         
