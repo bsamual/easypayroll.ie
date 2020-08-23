@@ -1652,6 +1652,12 @@ Route::post('/user/update_pms_groups', 'user\MessageusController@update_pms_grou
 /*----Opening Balance System------*/
 Route::get('/user/opening_balance_manager', 'user\OpeningbalanceController@opening_balance_manager');
 Route::get('/user/client_opening_balance_manager', 'user\OpeningbalanceController@client_opening_balance_manager');
+Route::get('/user/import_opening_balance_manager', 'user\OpeningbalanceController@import_opening_balance_manager');
+Route::get('/user/lock_client_opening_balance', 'user\OpeningbalanceController@lock_client_opening_balance');
+
 Route::post('/user/change_opening_balance', 'user\OpeningbalanceController@change_opening_balance');
 Route::post('/user/change_opening_balance_date', 'user\OpeningbalanceController@change_opening_balance_date');
 Route::post('/user/auto_allocate_opening_balance', 'user\OpeningbalanceController@auto_allocate_opening_balance');
+Route::post('/user/import_opening_balance', 'user\OpeningbalanceController@import_opening_balance');
+Route::post('/user/import_opening_balance_to_clients', 'user\OpeningbalanceController@import_opening_balance_to_clients');
+

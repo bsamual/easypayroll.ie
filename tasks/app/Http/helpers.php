@@ -1,7 +1,15 @@
 <?php
 function number_format_invoice($value)
 {
-	$explode = explode(".",$value);
+	$expvalue = explode(".",$value);
+	if(count($expvalue) > 1)
+	{
+		$value = number_format($value,2,".","");
+		$explode = explode(".",$value);
+	}
+	else{
+		$explode = explode(".",$value);
+	}
 	if(count($explode) > 1)
 	{
 		$after_decimal = substr($explode[1], 0, 2);
@@ -22,11 +30,24 @@ function number_format_invoice($value)
 		$after_decimal = '00';
 	}
 	$first = add_commas((int)$explode[0]);
+	$check_minus = substr($explode[0],0,1);
+	if($check_minus == "-" && $first == "0")
+	{
+		$first = '-'.$first;
+	}
 	return $first.'.'.$after_decimal;
 }
 function number_format_invoice_without_decimal($value)
 {
-	$explode = explode(".",$value);
+	$expvalue = explode(".",$value);
+	if(count($expvalue) > 1)
+	{
+		$value = number_format($value,2,".","");
+		$explode = explode(".",$value);
+	}
+	else{
+		$explode = explode(".",$value);
+	}
 	if(count($explode) > 1)
 	{
 		$after_decimal = substr($explode[1], 0, 2);
@@ -47,6 +68,13 @@ function number_format_invoice_without_decimal($value)
 		$after_decimal = '';
 	}
 	$first = add_commas((int)$explode[0]);
+
+	$check_minus = substr($explode[0],0,1);
+	if($check_minus == "-" && $first == "0")
+	{
+		$first = '-'.$first;
+	}
+
 	if($after_decimal == "")
 	{
 		return $first.'.00';
@@ -61,7 +89,15 @@ function add_commas($number)
 }
 function number_format_invoice_without_comma($value)
 {
-	$explode = explode(".",$value);
+	$expvalue = explode(".",$value);
+	if(count($expvalue) > 1)
+	{
+		$value = number_format($value,2,".","");
+		$explode = explode(".",$value);
+	}
+	else{
+		$explode = explode(".",$value);
+	}
 	if(count($explode) > 1)
 	{
 		$after_decimal = substr($explode[1], 0, 2);
@@ -82,6 +118,11 @@ function number_format_invoice_without_comma($value)
 		$after_decimal = '00';
 	}
 	$first = (int)$explode[0];
+	$check_minus = substr($explode[0],0,1);
+	if($check_minus == "-" && $first == "0")
+	{
+		$first = '-'.$first;
+	}
 	return $first.'.'.$after_decimal;
 }
 ?>

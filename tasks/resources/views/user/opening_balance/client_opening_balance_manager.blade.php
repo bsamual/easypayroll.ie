@@ -160,7 +160,7 @@ a:hover{text-decoration: underline;}
           <h4 style="font-weight:700">Opening Balance:</h4>
         </div>
         <div class="col-md-7">
-          <input type="number" name="opening_balance" class="form-control opening_balance" value="<?php echo $balance; ?>">
+          <input type="number" name="opening_balance" class="form-control opening_balance" value="<?php echo number_format_invoice_without_comma($balance); ?>" pattern="[0-9]*" onkeypress="preventNonNumericalInput(event)">
         </div>
       </div>
       <div class="col-md-12">
@@ -201,15 +201,22 @@ a:hover{text-decoration: underline;}
           {
             foreach($get_invoices as $invoice)
             {
-              if($invoice->balance_remaining != "") { $balance_remaining = $invoice->balance_remaining; } else { $balance_remaining = '-'; }
+              if($invoice->balance_remaining != "") { $balance_remaining = number_format_invoice($invoice->balance_remaining); } else { $balance_remaining = '-'; }
               ?>
               <tr>
                 <td><?php echo $invoice->invoice_number; ?></td>
                 <td><?php echo date("d-M-Y", strtotime($invoice->invoice_date)); ?></td>
-                <td style="text-align: right"><?php echo $invoice->gross; ?></td>
+                <td style="text-align: right"><?php echo number_format_invoice($invoice->gross); ?></td>
                 <td style="text-align: right"><?php echo $balance_remaining; ?></td>
               </tr>
               <?php
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              
               $total_remaining = $total_remaining + $balance_remaining;
             }
           }
@@ -221,11 +228,11 @@ a:hover{text-decoration: underline;}
 
           <tr>
             <td colspan="3" style="font-weight:700">Total Balance Remaining</td>
-            <td style="background: #ddd;text-align: right"><?php echo $total_remaining; ?></td>
+            <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($total_remaining); ?></td>
           </tr>
           <tr>
             <td colspan="3" style="font-weight:700">Unallocated Balance</td>
-            <td style="background: #ddd;text-align: right"><?php echo $unallocated; ?></td>
+            <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($unallocated); ?></td>
           </tr>
         </tbody>
       </table>
@@ -240,6 +247,14 @@ a:hover{text-decoration: underline;}
   <input type="hidden" name="pagination" id="pagination" value="1">
 </div>
 <script type="text/javascript">
+function preventNonNumericalInput(e) {
+  e = e || window.event;
+  var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
+  var charStr = String.fromCharCode(charCode);
+
+  if (!charStr.match(/^[0-9-.]+$/))
+    e.preventDefault();
+}
 $(function(){
     $('#client_expand').DataTable({
         fixedHeader: {
@@ -301,14 +316,18 @@ $(".opening_balance_date").on("dp.hide", function (e) {
 $(window).click(function(e){
   if($(e.target).hasClass('auto_allocate'))
   {
-    $("body").addClass("loading");
     var opening_balance = $(".opening_balance").val();
     var opening_balance_date = $(".opening_balance_date").val();
-    if(opening_balance_date == "")
+    if(opening_balance == "0.00" || opening_balance == "0" || opening_balance == "" || opening_balance == "00.00" || opening_balance == " " || opening_balance == "0.0" || opening_balance == "00.0" || opening_balance == "00")
+    {
+      alert("Please Enter the Opening Balance and then click on to auto allocation button.");
+    }
+    else if(opening_balance_date == "")
     {
       alert("Please Enter the Opening Balance Date and then click on to auto allocation button.");
     }
     else{
+      $("body").addClass("loading");
       var client_id = "<?php echo $client_id; ?>";
       $.ajax({
         url:"<?php echo URL::to('user/auto_allocate_opening_balance'); ?>",

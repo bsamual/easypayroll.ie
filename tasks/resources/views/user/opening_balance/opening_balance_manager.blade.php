@@ -73,7 +73,10 @@ a:hover{text-decoration: underline;}
 
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-      <h4 style="padding: 0px;">Opeing Balance Manager</h4>
+      <h4 class="col-md-6"style="padding: 0px;">Opeing Balance Manager</h4>
+      <div class="col-md-6">
+        <a href="<?php echo URL::to('user/import_opening_balance_manager'); ?>" class="common_black_button" style="float:right">Import Opening Balance Manager</a>
+      </div>
       <div style="clear: both;">
         <?php
         if(Session::has('message')) { ?>
@@ -116,9 +119,18 @@ a:hover{text-decoration: underline;}
                       else{
                         $balance = $balance_check->opening_balance;
                       }
+
+                      if($balance_check->locked == 0)
+                      {
+                        $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="'.$style.'"></a>';
+                      }
+                      else{
+                        $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=0').'" class="fa fa-lock" style="'.$style.'"></a>';
+                      }
                     }
                     else{
                       $balance = '-';
+                      $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="'.$style.'"></a>';
                     }
                     ?>
                     <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->id; ?>">
@@ -131,7 +143,7 @@ a:hover{text-decoration: underline;}
                         <?php echo $balance; ?>
                       </td>
                       <td align="left" style="<?php echo $style; ?>">
-                        
+                        <?php echo $action; ?>
                       </td>
                     </tr>
                     <?php
