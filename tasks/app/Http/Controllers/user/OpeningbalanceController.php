@@ -88,7 +88,7 @@ class OpeningbalanceController extends Controller {
 				$date_added = date('Y-m-d', strtotime($client->updatetime));
 			}
 			$data['client_id'] = $client_id;
-			$data['opening_balance'] = 0;
+			$data['opening_balance'] = "";
 			$data['opening_date'] = $date_added;
 			DB::table('opening_balance')->insert($data);
 		}
@@ -97,6 +97,10 @@ class OpeningbalanceController extends Controller {
 	}
 	public function import_opening_balance_manager()
 	{
+		if(Session::has('databal'))
+		{
+			Session::forget('databal');
+		}
 		return view('user/opening_balance/import_opening_balance_manager', array('title' => 'Import Opening Balance Manager'));
 	}
 	public function change_opening_balance()
@@ -245,138 +249,192 @@ class OpeningbalanceController extends Controller {
 	}
 	public function import_opening_balance()
 	{
-		$filename = $_FILES['balance_file']['name'];
-		$tmp_name = $_FILES['balance_file']['tmp_name'];
-		$import_type = Input::get('import_balance');
+		$page = Input::get('page');
+		if($page == "1")
+		{
+			$filename = $_FILES['balance_file']['name'];
+			$tmp_name = $_FILES['balance_file']['tmp_name'];
+			$import_type = Input::get('import_balance');
+			$page = Input::get('page');
 
-		$upload_dir = 'uploads/opening_balance';
-		if(!is_dir($upload_dir))
-		{
-			mkdir($upload_dir);
+			$session_id = time();
+			$upload_dir = 'uploads/opening_balance';
+			if(!is_dir($upload_dir))
+			{
+				mkdir($upload_dir);
+			}
+			$upload_dir = $upload_dir.'/'.time();
+			if(!is_dir($upload_dir))
+			{
+				mkdir($upload_dir);
+			}
+			move_uploaded_file($tmp_name, $upload_dir.'/'.$filename);
+
+			$filepath = $upload_dir.'/'.$filename;
 		}
-		$upload_dir = $upload_dir.'/'.time();
-		if(!is_dir($upload_dir))
-		{
-			mkdir($upload_dir);
+		else{
+			$filepath = Input::get('filename');
+			$import_type = Input::get('import_type');
+			$page = Input::get('page');
+			$session_id = Input::get('session_id');
 		}
 
 		if($import_type == "1")
 		{
 			$output = '';
-			if(move_uploaded_file($tmp_name, $upload_dir.'/'.$filename)){
-				$filepath = $upload_dir.'/'.$filename;
-				$objPHPExcel = PHPExcel_IOFactory::load($filepath);
-				foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-					$worksheetTitle     = $worksheet->getTitle();
-					$highestRow         = $worksheet->getHighestRow(); // e.g. 10
-					$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
-					$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
-					$nrColumns = ord($highestColumn) - 64;
+			$objPHPExcel = PHPExcel_IOFactory::load($filepath);
+			foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+				$worksheetTitle     = $worksheet->getTitle();
+				$highestRow         = $worksheet->getHighestRow(); // e.g. 10
+				$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
+				$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+				$nrColumns = ord($highestColumn) - 64;
+				
+				$prevround = $page - 1;
+				$last_height = $prevround * 100;
+				$offsetcount = $last_height + 1;
+				$roundcount = $page * 100;
+				$nextpage = $page + 1;
+
+				if($highestRow > $roundcount)
+				{
+					$height = $roundcount;
+				}
+				else{
 					$height = $highestRow;
+					$nextpage  = 0;
+				}
+				if($offsetcount == 1)
+				{
+					$offsetcount = 2;
+				}
 
-					$client_label = $worksheet->getCellByColumnAndRow(0, 1); $client_label = trim($client_label->getValue());
-					$balance_label = $worksheet->getCellByColumnAndRow(1, 1); $balance_label = trim($balance_label->getValue());
+				$client_label = $worksheet->getCellByColumnAndRow(0, 1); $client_label = trim($client_label->getValue());
+				$balance_label = $worksheet->getCellByColumnAndRow(1, 1); $balance_label = trim($balance_label->getValue());
 
-					if($client_label != "Code" || $balance_label != "Balance")
-					{
-						echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $upload_dir.'/'.$filename, "output" => ""));
-						exit;
-					}
-					else{
-						for ($row = 2; $row <= $height; ++ $row) {
-							$client_id = $worksheet->getCellByColumnAndRow(0, $row); $client_id = trim($client_id->getValue());
-							$balance = $worksheet->getCellByColumnAndRow(1, $row); $balance = trim($balance->getValue());
+				if($client_label != "Code" || $balance_label != "Balance")
+				{
+					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type));
+					exit;
+				}
+				else{
+					for ($row = $offsetcount; $row <= $height; ++ $row) {
+						$client_id = $worksheet->getCellByColumnAndRow(0, $row); $client_id = trim($client_id->getValue());
+						$balance = $worksheet->getCellByColumnAndRow(1, $row); $balance = trim($balance->getValue());
 
-							$bal = str_replace(',',"",$balance);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$balance);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
 
-							if(is_numeric($bal) == 1) { $bal_status = '<td style="color:green">Pass</td>'; } else { $bal_status = '<td class="error_import" style="color:#f00">Value Fail</td>'; }
-							$check_client = DB::table('cm_clients')->where('client_id',$client_id)->first();
-							if(count($check_client)) { $client_status = '<td style="color:green">Pass</td>'; } else { $client_status = '<td class="error_import" style="color:#f00">ID Fail</td>'; }
+						if(is_numeric($bal) == 1) { $bal_status = '<td style="color:green">Pass</td>'; } else { $bal_status = '<td class="error_import" style="color:#f00">Value Fail</td>'; }
+						$check_client = DB::table('cm_clients')->where('client_id',$client_id)->first();
+						if(count($check_client)) { $client_status = '<td style="color:green">Pass</td>'; } else { $client_status = '<td class="error_import" style="color:#f00">ID Fail</td>'; }
 
-							$output.='<tr>
-							<td>'.$client_id.'</td>
-							<td>-</td>
-							<td>'.$balance.'</td>
-							'.$client_status.'
-							'.$bal_status.'
-							<td>N/A</td>
-							</tr>';
-						}
+						$importdata['session_id'] = $session_id;
+						$importdata['client_id'] = $client_id;
+						$importdata['balance'] = $bal;
+						$importdata['import_type'] = $import_type;
+
+						DB::table('opening_balance_import')->insert($importdata);
+
+						$output.='<tr>
+						<td>'.$client_id.'</td>
+						<td>-</td>
+						<td>'.$balance.'</td>
+						'.$client_status.'
+						'.$bal_status.'
+						<td>N/A</td>
+						</tr>';
 					}
 				}
-				echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $upload_dir.'/'.$filename, "output" => $output));
-				exit;
 			}
-			else{
-				echo json_encode(array("error" => "1", "message" => 'File is not activated properly please try again once', "upload_dir" => $upload_dir.'/'.$filename, "output" => ''));
-				exit;
-			}
+			echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $filepath, "output" => $output,'page' => $nextpage, 'session_id' => $session_id, 'import_type' =>$import_type));
+			exit;
+			
 		}
 		else
 		{
 			$output = '';
-			if(move_uploaded_file($tmp_name, $upload_dir.'/'.$filename)){
-				$filepath = $upload_dir.'/'.$filename;
-				$objPHPExcel = PHPExcel_IOFactory::load($filepath);
-				foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-					$worksheetTitle     = $worksheet->getTitle();
-					$highestRow         = $worksheet->getHighestRow(); // e.g. 10
-					$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
-					$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
-					$nrColumns = ord($highestColumn) - 64;
+			$objPHPExcel = PHPExcel_IOFactory::load($filepath);
+			foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+				$worksheetTitle     = $worksheet->getTitle();
+				$highestRow         = $worksheet->getHighestRow(); // e.g. 10
+				$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
+				$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+				$nrColumns = ord($highestColumn) - 64;
+				
+				$prevround = $page - 1;
+				$last_height = $prevround * 100;
+				$offsetcount = $last_height + 1;
+				$roundcount = $page * 100;
+				$nextpage = $page + 1;
+
+				if($highestRow > $roundcount)
+				{
+					$height = $roundcount;
+				}
+				else{
 					$height = $highestRow;
+					$nextpage  = 0;
+				}
+				if($offsetcount == 1)
+				{
+					$offsetcount = 2;
+				}
 
-					$inv_label = $worksheet->getCellByColumnAndRow(0, 1); $inv_label = trim($inv_label->getValue());
-					$gross_label = $worksheet->getCellByColumnAndRow(1, 1); $gross_label = trim($gross_label->getValue());
+				$inv_label = $worksheet->getCellByColumnAndRow(0, 1); $inv_label = trim($inv_label->getValue());
+				$gross_label = $worksheet->getCellByColumnAndRow(1, 1); $gross_label = trim($gross_label->getValue());
 
-					if($inv_label != "Inv No" || $gross_label != "Gross")
-					{
-						echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $upload_dir.'/'.$filename, "output" => ""));
-						exit;
-					}
-					else{
-						for ($row = 2; $row <= $height; ++ $row) {
-							$inv_no = $worksheet->getCellByColumnAndRow(0, $row); $inv_no = trim($inv_no->getValue());
-							$gross = $worksheet->getCellByColumnAndRow(1, $row); $gross = trim($gross->getValue());
+				if($inv_label != "Inv No" || $gross_label != "Gross")
+				{
+					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type));
+					exit;
+				}
+				else{
+					for ($row = $offsetcount; $row <= $height; ++ $row) {
+						$inv_no = $worksheet->getCellByColumnAndRow(0, $row); $inv_no = trim($inv_no->getValue());
+						$gross = $worksheet->getCellByColumnAndRow(1, $row); $gross = trim($gross->getValue());
 
-							$bal = str_replace(',',"",$gross);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$gross);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
+						$bal = str_replace(',',"",$bal);
 
-							if(is_numeric($bal) == 1) { $bal_status = '<td style="color:green">Pass</td>'; } else { $bal_status = '<td class="error_import" style="color:#f00">Inv Val Fail</td>'; }
-							$check_inv = DB::table('invoice_system')->where('invoice_number',$inv_no)->first();
-							if(count($check_inv)) { $inv_status = '<td style="color:green">Pass</td>'; $client_id = $check_inv->client_id; } else { $inv_status = '<td class="error_import" style="color:#f00">Inv No Fail</td>'; $client_id= ''; }
+						if(is_numeric($bal) == 1) { $bal_status = '<td style="color:green">Pass</td>'; } else { $bal_status = '<td class="error_import" style="color:#f00">Inv Val Fail</td>'; }
+						$check_inv = DB::table('invoice_system')->where('invoice_number',$inv_no)->first();
+						if(count($check_inv)) { $inv_status = '<td style="color:green">Pass</td>'; $client_id = $check_inv->client_id; } else { $inv_status = '<td class="error_import" style="color:#f00">Inv No Fail</td>'; $client_id= ''; }
 
-							$output.='<tr>
-							<td>'.$client_id.'</td>
-							<td>'.$inv_no.'</td>
-							<td>'.$gross.'</td>
-							<td>N/A</td>
-							'.$bal_status.'
-							'.$inv_status.'
-							</tr>';
-						}
+						$importdata['session_id'] = $session_id;
+						$importdata['client_id'] = $client_id;
+						$importdata['invoice_id'] = $inv_no;
+						$importdata['balance'] = $bal;
+						$importdata['import_type'] = $import_type;
+
+						DB::table('opening_balance_import')->insert($importdata);
+
+						$output.='<tr>
+						<td>'.$client_id.'</td>
+						<td>'.$inv_no.'</td>
+						<td>'.$gross.'</td>
+						<td>N/A</td>
+						'.$bal_status.'
+						'.$inv_status.'
+						</tr>';
 					}
 				}
-				echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $upload_dir.'/'.$filename, "output" => $output));
-				exit;
 			}
-			else{
-				echo json_encode(array("error" => "1", "message" => 'File is not activated properly please try again once', "upload_dir" => $upload_dir.'/'.$filename, "output" => ''));
+			echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $filepath, "output" => $output,'page' => $nextpage, 'session_id' => $session_id, 'import_type' =>$import_type));
 				exit;
-			}
+			
 		}
 	}
 	public function import_opening_balance_to_clients()
@@ -384,6 +442,7 @@ class OpeningbalanceController extends Controller {
 		$filepath = Input::get('filename');
 		$bal_date = Input::get('bal_date');
 		$import_type = Input::get('import_type');
+		$session_id = Input::get('session_id');
 
 		$date = explode('-',Input::get('bal_date'));
 		if($date[1] == "Jan") { $month = '01'; }
@@ -411,59 +470,20 @@ class OpeningbalanceController extends Controller {
 
 		if($import_type == "1")
 		{
-			$output = '';
-			$databal = array();
-			$objPHPExcel = PHPExcel_IOFactory::load($filepath);
-			foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-				$worksheetTitle     = $worksheet->getTitle();
-				$highestRow         = $worksheet->getHighestRow(); // e.g. 10
-				$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
-				$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
-				$nrColumns = ord($highestColumn) - 64;
-				$height = $highestRow;
-
-				
-				for ($row = 2; $row <= $height; ++ $row) {
-					$client_id = $worksheet->getCellByColumnAndRow(0, $row); $client_id = trim($client_id->getValue());
-					$balance = $worksheet->getCellByColumnAndRow(1, $row); $balance = trim($balance->getValue());
-
-					if(!in_array($client_id, $locked_clients))
-					{
-						$bal = str_replace(',',"",$balance);
-						$bal = str_replace(',',"",$bal);
-						$bal = str_replace(',',"",$bal);
-						$bal = str_replace(',',"",$bal);
-						$bal = str_replace(',',"",$bal);
-						$bal = str_replace(',',"",$bal);
-						$bal = str_replace(',',"",$bal);
-						$bal = str_replace(',',"",$bal);
-
-						$check_client = DB::table('cm_clients')->where('client_id',$client_id)->first();
-						if(count($check_client)) { 
-							if(is_numeric($bal) == 1) {
-								if(isset($databal[$client_id]))
-								{
-									$databal[$client_id] = number_format_invoice_without_comma($databal[$client_id] + $bal);
-								}
-								else{
-									$databal[$client_id] = number_format_invoice_without_comma($bal);
-								}
-							}
-						} 
-					}
-				}
-			}
-			if(count($databal))
+			$get_balances = DB::table('opening_balance_import')->whereNotIn('client_id',$locked_clients)->where('session_id',$session_id)->groupBy('client_id')->get();
+			if(count($get_balances))
 			{
-				foreach($databal as $key => $data)
+				foreach($get_balances as $balance)
 				{
-					$dataupdate['opening_balance'] = $data;
+					$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
+
+					$dataupdate['opening_balance'] = $get_client_balance;
 					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
-					$dataupdate['client_id'] = $key;
-					$check_client_bal = DB::table('opening_balance')->where('client_id',$key)->first();
+					$dataupdate['client_id'] = $balance->client_id;
+					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
 					if(count($check_client_bal))
 					{
-						DB::table('opening_balance')->where('client_id',$key)->update($dataupdate);
+						DB::table('opening_balance')->where('client_id',$balance->client_id)->update($dataupdate);
 					}
 					else{
 						DB::table('opening_balance')->insert($dataupdate);
@@ -473,70 +493,73 @@ class OpeningbalanceController extends Controller {
 		}
 		else
 		{
-			$output = '';
-			$databal = array();
-			$objPHPExcel = PHPExcel_IOFactory::load($filepath);
-			foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
-				$worksheetTitle     = $worksheet->getTitle();
-				$highestRow         = $worksheet->getHighestRow(); // e.g. 10
-				$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
-				$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
-				$nrColumns = ord($highestColumn) - 64;
-				$height = $highestRow;
+			$get_balances = DB::table('opening_balance_import')->whereNotIn('client_id',$locked_clients)->where('session_id',$session_id)->groupBy('client_id')->get();
+			if(count($get_balances))
+			{
+				foreach($get_balances as $balance)
+				{
+					$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
 
-				
-				for ($row = 2; $row <= $height; ++ $row) {
-					$inv_no = $worksheet->getCellByColumnAndRow(0, $row); $inv_no = trim($inv_no->getValue());
-					$gross = $worksheet->getCellByColumnAndRow(1, $row); $gross = trim($gross->getValue());
-					$check_inv = DB::table('invoice_system')->where('invoice_number',$inv_no)->first();
-					$client_id = $check_inv->client_id;
-					if($client_id != "")
+					$dataupdate['opening_balance'] = number_format_invoice_without_comma($get_client_balance);
+					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+					$dataupdate['client_id'] = $balance->client_id;
+					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
+					if(count($check_client_bal))
 					{
-						if(!in_array($client_id, $locked_clients))
+						DB::table('opening_balance')->where('client_id',$balance->client_id)->update($dataupdate);
+					}
+					else{
+						DB::table('opening_balance')->insert($dataupdate);
+					}
+					$client_id = $balance->client_id;
+					$opening_balance = $get_client_balance;
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+					$opening_balance = str_replace(",","",$opening_balance);
+
+					$dataval['balance_remaining'] = '';
+					DB::table('invoice_system')->where('client_id',$client_id)->update($dataval);
+
+					$get_invoices_update = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
+					if(count($get_invoices_update))
+					{
+						foreach($get_invoices_update as $invoice)
 						{
-							$bal = str_replace(',',"",$gross);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							$bal = str_replace(',',"",$bal);
-							
-							if(count($check_inv)) { 
-								$client_id = $check_inv->client_id; 
-								if(is_numeric($bal) == 1) {
-									if(isset($databal[$client_id]))
+							$gross = $invoice->gross;
+							if($opening_balance != 0)
+							{
+								if($gross > 0)
+								{
+									if($gross < $opening_balance)
 									{
-										$databal[$client_id] = number_format_invoice_without_comma($databal[$client_id] + $bal);
+										$data['balance_remaining'] = $gross;
+										$opening_balance = $opening_balance - $gross;
 									}
 									else{
-										$databal[$client_id] = number_format_invoice_without_comma($bal);
+										$data['balance_remaining'] = $opening_balance;
+										$opening_balance = $opening_balance - $opening_balance;
 									}
+									DB::table('invoice_system')->where('id',$invoice->id)->update($data);
 								}
 							}
 						}
 					}
 				}
-			}	
-			if(count($databal))
-			{
-				foreach($databal as $key => $data)
-				{
-					$dataupdate['opening_balance'] = $data;
-					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
-					$dataupdate['client_id'] = $key;
-					$check_client_bal = DB::table('opening_balance')->where('client_id',$key)->first();
-					if(count($check_client_bal))
-					{
-						DB::table('opening_balance')->where('client_id',$key)->update($dataupdate);
-					}
-					else{
-						DB::table('opening_balance')->insert($dataupdate);
-					}
-				}
-			}		
+			}
 		}
+
+		DB::table('opening_balance_import')->where('session_id',$session_id)->delete();
+	}
+	public function clear_import_opening_balance()
+	{
+		$session_id = Input::get('session_id');
+		DB::table('opening_balance_import')->where('session_id',$session_id)->delete();
 	}
 	public function lock_client_opening_balance()
 	{
@@ -567,7 +590,7 @@ class OpeningbalanceController extends Controller {
 				$date_added = date('Y-m-d', strtotime($client->updatetime));
 			}
 			$data['client_id'] = $client_id;
-			$data['opening_balance'] = 0;
+			$data['opening_balance'] = "";
 			$data['opening_date'] = $date_added;
 			$data['locked'] = $locked;
 

@@ -73,7 +73,7 @@ a:hover{text-decoration: underline;}
 
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-      <h4 class="col-md-6"style="padding: 0px;">Opeing Balance Manager</h4>
+      <h4 class="col-md-6" style="padding: 0px;font-weight:700;">Opening Balance Manager</h4>
       <div class="col-md-6">
         <a href="<?php echo URL::to('user/import_opening_balance_manager'); ?>" class="common_black_button" style="float:right">Import Opening Balance Manager</a>
       </div>
@@ -112,25 +112,33 @@ a:hover{text-decoration: underline;}
                     $balance_check = DB::table('opening_balance')->where('client_id',$client->client_id)->first();
                     if(count($balance_check))
                     {
-                      if($balance_check->opening_balance == 0)
+                      if($balance_check->opening_balance == "")
                       {
-                        $balance = '-';
+                        $balance = '<spam style="color:#000">-</spam>';
+                      }
+                      elseif($balance_check->opening_balance == 0)
+                      {
+                        $balance = '<spam style="color:#000">0.00</spam>';
+                      }
+                      elseif($balance_check->opening_balance < 0)
+                      {
+                        $balance = '<spam style="color:#f00">'.number_format_invoice($balance_check->opening_balance).'</spam>';
                       }
                       else{
-                        $balance = $balance_check->opening_balance;
+                        $balance = '<spam style="color:blue">'.number_format_invoice($balance_check->opening_balance).'</spam>';
                       }
 
                       if($balance_check->locked == 0)
                       {
-                        $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="'.$style.'"></a>';
+                        $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="color:green;font-size:18px !important"></a>';
                       }
                       else{
-                        $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=0').'" class="fa fa-lock" style="'.$style.'"></a>';
+                        $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=0').'" class="fa fa-lock" style="color:#f00;font-size:18px !important"></a>';
                       }
                     }
                     else{
-                      $balance = '-';
-                      $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="'.$style.'"></a>';
+                      $balance = '<spam style="color:#000">-</spam>';
+                      $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="color:green;font-size:18px !important"></a>';
                     }
                     ?>
                     <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->id; ?>">
@@ -139,7 +147,7 @@ a:hover{text-decoration: underline;}
                       <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
                       <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $client->firstname.' & '.$client->surname; ?></a></td>
                       
-                      <td align="left" style="<?php echo $style; ?>">
+                      <td align="left">
                         <?php echo $balance; ?>
                       </td>
                       <td align="left" style="<?php echo $style; ?>">

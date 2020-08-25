@@ -6579,10 +6579,12 @@ class TimejobController extends Controller {
 	public function search_staff_review()
 	{
 		$user = Input::get('user');
-		$from_date = strtotime(Input::get('from_date'));
-		$to_date = strtotime(Input::get('to_date'));
+		$from_date_search = strtotime(Input::get('from_date'));
+		$to_date_search = strtotime(Input::get('to_date'));
 
-		$get_tasks = DB::select('SELECT * from `task_job` WHERE user_id IN ('.$user.') AND UNIX_TIMESTAMP(`job_date`) >= "'.$from_date.'" AND UNIX_TIMESTAMP(`job_date`) <= "'.$to_date.'" GROUP BY `task_id`');
+		$get_tasks = DB::select('SELECT * from `task_job` WHERE user_id = "'.$user.'" AND UNIX_TIMESTAMP(`job_date`) >= "'.$from_date_search.'" AND UNIX_TIMESTAMP(`job_date`) <= "'.$to_date_search.'" GROUP BY `task_id`');
+
+
 		$output = '';
 		$outputval = '';
 		if(count($get_tasks))
@@ -6594,9 +6596,8 @@ class TimejobController extends Controller {
 			$minutes_sub_total = '';
 			foreach($get_tasks as $task)
 			{
-				$get_tasks_time_count = DB::select('SELECT * from `task_job` WHERE user_id IN ('.$user.') AND task_id = "'.$task->task_id.'" AND UNIX_TIMESTAMP(`job_date`) >= "'.$from_date.'" AND UNIX_TIMESTAMP(`job_date`) <= "'.$to_date.'"');
+				$get_tasks_time_count = DB::select('SELECT * from `task_job` WHERE user_id = "'.$user.'" AND task_id = "'.$task->task_id.'" AND UNIX_TIMESTAMP(`job_date`) >= "'.$from_date_search.'" AND UNIX_TIMESTAMP(`job_date`) <= "'.$to_date_search.'"');
 				$tot_mins = 0;
-				
 				
 				if(count($get_tasks_time_count)){
 					foreach($get_tasks_time_count as $count)
@@ -6608,14 +6609,6 @@ class TimejobController extends Controller {
 			            else{
 			              $client_name = 'N/A';
 			            }
-
-			            $client_details = DB::table('cm_clients')->where('client_id', $count->client_id)->first();
-		                if(count($client_details) != ''){
-		                  $client_name = $client_details->company.' ('.$count->client_id.')';
-		                }
-		                else{
-		                  $client_name = 'N/A';
-		                }
 
 		                $task_details = DB::table('time_task')->where('id', $count->task_id)->first();
 
@@ -6861,9 +6854,6 @@ class TimejobController extends Controller {
 				else{
 					$minute_total = $minute_total;
 				}
-
-
-
 			}
 			$output.='
 				<div class="col-md-2 table_padding"></div>

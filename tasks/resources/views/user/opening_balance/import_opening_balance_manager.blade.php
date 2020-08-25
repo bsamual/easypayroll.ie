@@ -85,7 +85,10 @@ a:hover{text-decoration: underline;}
 
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-      <h4 style="padding: 0px;font-weight:700;text-align: center">Opening Balance Manager - Import Balances</h4>
+      <h4 class="col-md-6" style="padding: 0px;font-weight:700;">Opening Balance Manager - Import Balances</h4>
+      <div class="col-md-6">
+        <a href="<?php echo URL::to('user/opening_balance_manager'); ?>" class="common_black_button" style="float:right">Back To Opening Balance Manager</a>
+      </div>
       <div style="clear: both;">
         <?php
         if(Session::has('message')) { ?>
@@ -164,6 +167,7 @@ a:hover{text-decoration: underline;}
   <input type="hidden" name="show_alert" id="show_alert" value="">
   <input type="hidden" name="pagination" id="pagination" value="1">
   <input type="hidden" name="hidden_filename" id="hidden_filename" value="">
+  <input type="hidden" name="hidden_session_id" id="hidden_session_id" value="">
 </div>
 <script type="text/javascript">
 
@@ -185,7 +189,41 @@ $(function(){
     });
 });
 
-
+function import_opening_balance_function(filename,import_type,page,session_id)
+{
+  $.ajax({
+    url:"<?php echo URL::to('user/import_opening_balance'); ?>",
+    type:"post",
+    dataType:"json",
+    data:{filename:filename,import_type:import_type,page:page,session_id:session_id},
+    success: function(result)
+    {
+      console.log(result['error']);
+      if(result['page'] > "0")
+      {
+        import_opening_balance_function(filename,import_type,result['page'],session_id);
+      }
+      else{
+        $(".opening_balance_date").val("");
+        if(result['error'] == "0")
+        {
+          $(".import_table").show();
+          $(".start_import").show();
+          $("#import_tbody_list").html(result['output']);
+          $("#hidden_filename").val(result['upload_dir']);
+          $("#hidden_session_id").val(result['session_id']);
+          $("body").removeClass("loading");
+        }
+        else{
+          $(".import_table").hide();
+          $(".start_import").hide();
+          $("body").removeClass("loading");
+          $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>"+result['message']+"</p>",width:"30%",fixed:true});
+        } 
+      }
+    }
+  });
+}
 $(window).click(function(e){
   if(e.target.id == "import_balance_1")
   {
@@ -213,21 +251,29 @@ $(window).click(function(e){
       setTimeout(function(){ 
           $('#import_balance_form').ajaxForm({
               dataType:"json",
+              data:{page:"1"},
               success:function(e){
-                $(".opening_balance_date").val("");
-                if(e['error'] == 0)
+                if(e['page'] > "0")
                 {
-                  $(".import_table").show();
-                  $(".start_import").show();
-                  $("#import_tbody_list").html(e['output']);
-                  $("#hidden_filename").val(e['upload_dir']);
-                  $("body").removeClass("loading");
+                  import_opening_balance_function(e['upload_dir'],e['import_type'],e['page'],e['session_id']);
                 }
                 else{
-                  $(".import_table").hide();
-                  $(".start_import").hide();
-                  $("body").removeClass("loading");
-                  $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>"+e['message']+"</p>",width:"30%",fixed:true});
+                  $(".opening_balance_date").val("");
+                  if(e['error'] == "0")
+                  {
+                    $(".import_table").show();
+                    $(".start_import").show();
+                    $("#import_tbody_list").html(e['output']);
+                    $("#hidden_filename").val(e['upload_dir']);
+                    $("#hidden_session_id").val(e['session_id']);
+                    $("body").removeClass("loading");
+                  }
+                  else{
+                    $(".import_table").hide();
+                    $(".start_import").hide();
+                    $("body").removeClass("loading");
+                    $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>"+e['message']+"</p>",width:"30%",fixed:true});
+                  } 
                 }
               }
           }).submit();
@@ -238,9 +284,18 @@ $(window).click(function(e){
   {
     var errors = $(".error_import").length;
     var bal_date = $(".opening_balance_date").val();
+    var session_id = $("#hidden_session_id").val();
     if(errors > 0)
     {
-      alert("Itseems some of the Data failed in the csv file you are trying to import. Please check the failed data then replace the csv file and start importing.");
+      $.ajax({
+        url:"<?php echo URL::to('user/clear_import_opening_balance'); ?>",
+        type:"post",
+        data:{session_id:session_id},
+        success: function(result)
+        {
+          alert("Itseems some of the Data failed in the csv file you are trying to import. Please check the failed data then replace the csv file and start importing.");
+        }
+      });
     }
     else if(bal_date == "")
     {
@@ -249,13 +304,23 @@ $(window).click(function(e){
     else{
       var import_type = $(".import_balance:checked").val();
       var filename = $("#hidden_filename").val();
+
       $.ajax({
         url:"<?php echo URL::to('user/import_opening_balance_to_clients'); ?>",
         type:"post",
-        data:{filename:filename,bal_date:bal_date,import_type:import_type},
+        data:{filename:filename,bal_date:bal_date,import_type:import_type,session_id:session_id},
         success: function(result)
         {
-          window.location.replace("<?php echo URL::to('user/opening_balance_manager?imported=1'); ?>");
+          $("#import_tbody_list").html("");
+          $("#hidden_filename").val("");
+          $("#hidden_session_id").val("");
+          $(".opening_balance_date").val("");
+          $(".balance_file").val("");
+
+          $(".import_table").hide();
+          $(".start_import").hide();
+          $("body").removeClass("loading");
+          $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>File Imported Successfully</p>",width:"30%",fixed:true});
         }
       });
     }

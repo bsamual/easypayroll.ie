@@ -1656,68 +1656,8 @@ class CmController extends Controller {
 	public function cm_client_invoice(){
 
 		$id = base64_decode(Input::get('id'));
-
 		$client_id = DB::table('cm_clients')->where('id',$id)->first();
-		$invoicelist = DB::table('invoice_system')->where('client_id', $client_id->client_id)->get();
 		$payrolllist = DB::table('payroll_tasks')->where('client_id', $client_id->client_id)->orderBy('update_time','DESC')->get();
-
-		$outputinvoice = '<table class="display nowrap fullviewtablelist" id="invoice_expand" width="100%">
-                <thead>
-                  <tr style="background: #fff;">
-                      <th style="text-align: left;">S.No</th>
-                      <th style="text-align: left;">Invoice #</th>
-                      <th style="text-align: left;">Date</th>
-                      <th style="text-align: right;">Net</th>
-                      <th style="text-align: right;">VAT</th>
-                      <th style="text-align: right;">Gross</th>                      
-                  </tr>
-                </thead>                            
-                <tbody>';
-		$i=1;
-
-		if(count($invoicelist)){ 
-			foreach($invoicelist as $invoice){ 
-				$client_details = DB::table('cm_clients')->where('client_id', $invoice->client_id)->first();
-				if($invoice->statement == "No"){
-					$textcolor="color:#f00";
-				}
-				else{
-					$textcolor="color:#00751a";
-				}
-
-				$outputinvoice.='
-					<tr>
-						<td>'.$i.' <input type="checkbox" name="invoice_check" class="invoice_check" data-element="'.$invoice->id.'" id="invoice_id_'.$invoice->id.'"> <label for="invoice_id_'.$invoice->id.'">&nbsp;</label></td>
-						<td align="left" style="'.$textcolor.'">'.$invoice->invoice_number.'</td>
-						<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
-						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
-						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
-						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>						
-					</tr>
-				';
-				$i++;
-			}					
-		}
-
-		if($i == 1)
-        {
-          $outputinvoice.='<tr>
-          	<td></td>
-          	<td></td>
-          	<td></td>
-          	<td align="right">Empty</td>
-          	<td></td>
-          	<td></td>
-          </tr>';
-        }
-
-        $outputinvoice.='                
-                </tbody>
-            </table>';
-		
-
-
-		
 		$result = DB::table('cm_clients')->where('id', $id)->first();
 		$output = '';
         $getfields = DB::table('cm_fields')->where('status',0)->get();
@@ -1916,8 +1856,71 @@ class CmController extends Controller {
 		$outputbank.='                
                 </tbody>
             </table>';
+	echo json_encode(array('clientid' => $result->client_id, 'client_added' => $result->client_added, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro, 'trade_status' => $result->trade_status, 'directory' => $result->directory,'employer_no' => $result->employer_no,'salutation' => $result->salutation,'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output, 'payrolloutput' => $output_payroll, 'timetaskoutput' => $outputtimetask, 'client_note' => $result->notes, 'outputbank' => $outputbank, 'bank_client_id' => $result->client_id));
 
-        $outputmessage='<table class="display nowrap fullviewtablelist"  id="message_expand">
+		
+	}
+	public function cm_load_all_client_invoice()
+	{
+		$id = base64_decode(Input::get('id'));
+		$client_id = DB::table('cm_clients')->where('id',$id)->first();
+		$invoicelist = DB::table('invoice_system')->where('client_id', $client_id->client_id)->get();
+		$outputinvoice = '<table class="display nowrap fullviewtablelist" id="invoice_expand" width="100%">
+                <thead>
+                  <tr style="background: #fff;">
+                      <th style="text-align: left;">S.No</th>
+                      <th style="text-align: left;">Invoice #</th>
+                      <th style="text-align: left;">Date</th>
+                      <th style="text-align: right;">Net</th>
+                      <th style="text-align: right;">VAT</th>
+                      <th style="text-align: right;">Gross</th>                      
+                  </tr>
+                </thead>                            
+                <tbody>';
+		$i=1;
+		if(count($invoicelist)){ 
+			foreach($invoicelist as $invoice){ 
+				$client_details = DB::table('cm_clients')->where('client_id', $invoice->client_id)->first();
+				if($invoice->statement == "No"){
+					$textcolor="color:#f00";
+				}
+				else{
+					$textcolor="color:#00751a";
+				}
+
+				$outputinvoice.='
+					<tr>
+						<td>'.$i.' <input type="checkbox" name="invoice_check" class="invoice_check" data-element="'.$invoice->id.'" id="invoice_id_'.$invoice->id.'"> <label for="invoice_id_'.$invoice->id.'">&nbsp;</label></td>
+						<td align="left" style="'.$textcolor.'">'.$invoice->invoice_number.'</td>
+						<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
+						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
+						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>						
+					</tr>
+				';
+				$i++;
+			}					
+		}
+
+		if($i == 1)
+        {
+          $outputinvoice.='<tr>
+          	<td></td>
+          	<td></td>
+          	<td></td>
+          	<td align="right">Empty</td>
+          	<td></td>
+          	<td></td>
+          </tr>';
+        }
+
+        $outputinvoice.='                
+                </tbody>
+            </table>';
+
+
+
+		$outputmessage='<table class="display nowrap fullviewtablelist"  id="message_expand">
             <thead>
               <th>#</th>
               <th>Subject</th>
@@ -1929,7 +1932,7 @@ class CmController extends Controller {
               <th>VIEW</th>
             </thead>
             <tbody>';
-        $messageus = DB::table('messageus')->where('status',1)->where('client_ids','LIKE','%'.$result->client_id.'%')->get();
+        $messageus = DB::table('messageus')->where('status',1)->where('client_ids','LIKE','%'.$client_id->client_id.'%')->get();
         if(count($messageus))
         {
         	$i = 1;
@@ -1988,14 +1991,9 @@ class CmController extends Controller {
         	</tr>';
         }
 
+        echo json_encode(array('invoiceoutput' => $outputinvoice, 'outputmessage' => $outputmessage));
 
-
-	echo json_encode(array('clientid' => $result->client_id, 'client_added' => $result->client_added, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro, 'trade_status' => $result->trade_status, 'directory' => $result->directory,'employer_no' => $result->employer_no,'salutation' => $result->salutation,'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output, 'invoiceoutput' => $outputinvoice, 'payrolloutput' => $output_payroll, 'timetaskoutput' => $outputtimetask, 'client_note' => $result->notes, 'outputbank' => $outputbank, 'bank_client_id' => $result->client_id,'outputmessage' => $outputmessage,));
-
-		
 	}
-
-
 	public function cm_client_payroll(){
 
 		$id = base64_decode(Input::get('id'));

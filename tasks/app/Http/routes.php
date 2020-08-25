@@ -1660,4 +1660,7 @@ Route::post('/user/change_opening_balance_date', 'user\OpeningbalanceController@
 Route::post('/user/auto_allocate_opening_balance', 'user\OpeningbalanceController@auto_allocate_opening_balance');
 Route::post('/user/import_opening_balance', 'user\OpeningbalanceController@import_opening_balance');
 Route::post('/user/import_opening_balance_to_clients', 'user\OpeningbalanceController@import_opening_balance_to_clients');
+Route::post('/user/clear_import_opening_balance', 'user\OpeningbalanceController@clear_import_opening_balance');
+
+Route::post('/user/cm_load_all_client_invoice', 'user\CmController@cm_load_all_client_invoice');
 
