@@ -877,17 +877,17 @@ if(!empty($_GET['import_type_existing']))
           <div class="modal-header" style="border-bottom: 0px;">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <ul class="nav nav-tabs" role="tablist">
-                  <li role="presentation" class="active"><a href="#edit_clients_tab" aria-controls="ediclient" role="tab" data-toggle="tab">Edit Client</a></li>
-                  <li role="presentation"><a href="#invoice_tab" aria-controls="invoicetab" role="tab" data-toggle="tab">Invoice</a></li>
-                  <li role="presentation"><a href="#timetask_tab" aria-controls="timetask" role="tab" data-toggle="tab">Time Task</a></li>
-                  <li role="presentation"><a href="#payroll_tab" aria-controls="payroll" role="tab" data-toggle="tab">Payroll Task</a></li>
-                  <li role="presentation"><a href="#notes_tab" aria-controls="notes" role="tab" data-toggle="tab">Notes</a></li>
-                  <li role="presentation"><a href="#bank_tab" aria-controls="bank" role="tab" data-toggle="tab">Bank</a></li>
-                  <li role="presentation"><a href="#message_tab" aria-controls="message" role="tab" data-toggle="tab">Messages Sent</a></li>
+                  <li role="presentation" class="cm_full_ul active"><a href="#edit_clients_tab" aria-controls="ediclient" role="tab" data-toggle="tab">Edit Client</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#invoice_tab"  aria-controls="invoicetab" role="tab" data-toggle="tab">Invoice</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#timetask_tab" aria-controls="timetask" role="tab" data-toggle="tab">Time Task</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#payroll_tab" aria-controls="payroll" role="tab" data-toggle="tab">Payroll Task</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#notes_tab" aria-controls="notes" role="tab" data-toggle="tab">Notes</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#bank_tab" aria-controls="bank" role="tab" data-toggle="tab">Bank</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#message_tab" aria-controls="message" role="tab" data-toggle="tab">Messages Sent</a></li>
             </ul>
           </div>
-          <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="edit_clients_tab">
+          <div class="tab-content ">
+            <div role="tabpanel" class="tab-pane cm_full_content active" id="edit_clients_tab">
               <form id="form-validation" action="<?php echo URL::to('user/update_cm_clients'); ?>" method="post" enctype="multipart/form-data" autocomplete="off">                 
                   <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd">
                   <table class="formtable" style="width:100%">
@@ -1079,9 +1079,10 @@ if(!empty($_GET['import_type_existing']))
               </form>
 
             </div>
-            <div role="tabpanel" class="tab-pane" id="invoice_tab">
+            <div role="tabpanel" class="tab-pane cm_full_content" id="invoice_tab">
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
-                <h4 style="margin-bottom: 15px;">List of Invoices sent to this client</h4>
+              	<a href="javascript:" class="load_all_cm_invoice common_black_button" style="float:left">Load Now</a>
+                <h4 class="load_more_cm_invoice" style="margin-bottom: 15px;">List of Invoices sent to this client</h4>
                 <div id="invoice_tbody" >
                   
                 </div>
@@ -1093,7 +1094,7 @@ if(!empty($_GET['import_type_existing']))
                   <input type="button" class="common_black_button" id="save_as_pdf_invoice" value="Save as PDF">
               </div>
             </div>
-            <div role="tabpanel" class="tab-pane" id="timetask_tab">
+            <div role="tabpanel" class="tab-pane cm_full_content" id="timetask_tab">
 
 
                 <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
@@ -1107,7 +1108,7 @@ if(!empty($_GET['import_type_existing']))
                   
               </div>
             </div>
-            <div role="tabpanel" class="tab-pane" id="payroll_tab">
+            <div role="tabpanel" class="tab-pane cm_full_content" id="payroll_tab">
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
                   <h4 style="margin-bottom: 15px;">List of Payroll tasks</h4>
                 <div id="payroll_tbody">
@@ -1115,15 +1116,15 @@ if(!empty($_GET['import_type_existing']))
                 </div>                                
               </div>
             </div>
-            <div role="tabpanel" class="tab-pane" id="notes_tab">
+            <div role="tabpanel" class="tab-pane cm_full_content" id="notes_tab">
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
                   <h4 style="margin-bottom: 15px;">Notes</h4>
                 <div class="modal-body">
-<style type="text/css">
-.select_button{margin-top: 15px;}
-.select_button ul li .input_select{background: #000; text-align: center; padding: 8px 12px; color: #fff; float: left; border:0px; font-size: 15px;}
-.select_button ul li .input_select:hover{background: #5f5f5f; text-decoration: none;}
-</style>
+              <style type="text/css">
+              .select_button{margin-top: 15px;}
+              .select_button ul li .input_select{background: #000; text-align: center; padding: 8px 12px; color: #fff; float: left; border:0px; font-size: 15px;}
+              .select_button ul li .input_select:hover{background: #5f5f5f; text-decoration: none;}
+              </style>
                   <form action="<?php echo URL::to('user/cm_note_update')?>" method="post">
 
                      <textarea name="notes" id="editor_2" class="notes_class">
@@ -1140,7 +1141,7 @@ if(!empty($_GET['import_type_existing']))
               </div>
             </div>
 
-            <div role="tabpanel" class="tab-pane" id="bank_tab">
+            <div role="tabpanel" class="tab-pane cm_full_content" id="bank_tab">
               <div class="modal-body">
                 <div id="bank_detail_body">
                   
@@ -1155,9 +1156,10 @@ if(!empty($_GET['import_type_existing']))
                 </div>
               </div>
             </div>
-            <div role="tabpanel" class="tab-pane" id="message_tab">
+            <div role="tabpanel" class="tab-pane cm_full_content" id="message_tab">
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
-                  <h4 style="margin-bottom: 15px;">Messages Sent</h4>
+              	  <a href="javascript:" class="load_all_cm_message common_black_button" style="float:left">Load Now</a>
+                  <h4 class="load_more_cm_message" style="margin-bottom: 15px;">Messages Sent</h4>
                 <div id="message_tbody">
                   
                 </div>                                
@@ -2476,13 +2478,30 @@ $(window).click(function(e) {
               success:function(result){
                  $(".invoice_model").modal("show");
                  $(".invoice_model").find(".editsp").show();
-                 $("#invoice_tbody").html(result['invoiceoutput']);
+
+                 $(".load_more_cm").hide();
+                 $(".cm_full_ul").removeClass("active");
+                 $(".cm_full_content").removeClass("active");
+
+                 $(".cm_full_ul:first").addClass("active");
+                 $(".cm_full_content:first").addClass("active");
+
+                 $(".load_all_cm_invoice").attr("data-element",editid);
+                 $(".load_all_cm_invoice").show();
+
+                 $(".load_all_cm_message").attr("data-element",editid);
+                 $(".load_all_cm_message").show();
+
+                 $(".load_more_cm_invoice").hide();
+                 $(".load_more_cm_message").hide();
+
+                 $("#invoice_tbody").html("");
+                 $("#message_tbody").html("");
+
                  $("#payroll_tbody").html(result['payrolloutput']);
                  $("#timetask_tbody").html(result['timetaskoutput']);
                  $("#bank_detail_body").html(result['outputbank']);
-                 $("#message_tbody").html(result['outputmessage']);
                  $(".bank_client_class").val(result['bank_client_id']);
-                 
                  $(".invoice_client_id").val(result['clientid']);
 
                  CKEDITOR.replace('editor_2',
@@ -2547,15 +2566,7 @@ $(window).click(function(e) {
                
            
                $("body").removeClass("loading");
-               $('#invoice_expand').DataTable({
-                    autoWidth: true,
-                    scrollX: false,
-                    fixedColumns: false,
-                    searching: false,
-                    paging: false,
-                    info: false,
-                    order: false
-                });
+               
 
                $('#timetask_expand').DataTable({
                     fixedHeader: {
@@ -2592,17 +2603,7 @@ $(window).click(function(e) {
                 paging: false,
                 info: false
             }); 
-            $('#message_expand').DataTable({
-                fixedHeader: {
-                  headerOffset: 75
-                },
-                autoWidth: true,
-                scrollX: false,
-                fixedColumns: false,
-                searching: false,
-                paging: false,
-                info: false
-            }); 
+             
 
 
 
@@ -2613,6 +2614,74 @@ $(window).click(function(e) {
     
   }
 
+  if($(e.target).hasClass('load_all_cm_invoice')) {
+    $("body").addClass("loading");
+    setTimeout(function(){ 
+        var editid = $(e.target).attr("data-element");
+          $(".copy_clients").attr("data-element", editid);
+          $(".print_clients").attr("data-element", editid);
+          $(".download_clients").attr("data-element", editid);
+          $.ajax({
+              url: "<?php echo URL::to('user/cm_load_all_client_invoice') ?>",
+              data:{id:editid},
+              dataType:"json",
+              type:"post",
+              success:function(result){
+                $(".load_more_cm_invoice").show();
+                $(".load_all_cm_invoice").hide();
+
+                $("#invoice_tbody").html(result['invoiceoutput']);
+           
+                $("body").removeClass("loading");
+                $('#invoice_expand').DataTable({
+                    autoWidth: true,
+                    scrollX: false,
+                    fixedColumns: false,
+                    searching: false,
+                    paging: false,
+                    info: false,
+                    order: false
+                });
+          }
+        });
+     }, 2000);
+    
+  }
+  if($(e.target).hasClass('load_all_cm_message')) {
+    $("body").addClass("loading");
+    setTimeout(function(){ 
+        var editid = $(e.target).attr("data-element");
+          $(".copy_clients").attr("data-element", editid);
+          $(".print_clients").attr("data-element", editid);
+          $(".download_clients").attr("data-element", editid);
+          $.ajax({
+              url: "<?php echo URL::to('user/cm_load_all_client_message') ?>",
+              data:{id:editid},
+              dataType:"json",
+              type:"post",
+              success:function(result){
+                $(".load_more_cm_message").show();
+                $(".load_all_cm_message").hide();
+
+                $("#message_tbody").html(result['outputmessage']);
+           
+                $("body").removeClass("loading");
+                $('#message_expand').DataTable({
+                    fixedHeader: {
+                      headerOffset: 75
+                    },
+                    autoWidth: true,
+                    scrollX: false,
+                    fixedColumns: false,
+                    searching: false,
+                    paging: false,
+                    info: false
+                });
+          }
+        });
+     }, 2000);
+    
+  }
 
   if($(e.target).hasClass('payroll_class')) {
     var clientid = $(e.target).attr("id");

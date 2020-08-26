@@ -80,10 +80,23 @@ a:hover{text-decoration: underline;}
       </div>
     </div>
 </div>
-
+<?php
+    $check_client = DB::table('opening_balance')->where('client_id',$client_id)->first();
+    $locked = $check_client->locked;
+    if($locked == 1)
+    {
+      $disabled = 'disabled';
+    }
+    else{
+      $disabled = '';
+    }
+?>
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-      <h4 style="padding: 0px;font-weight:700;text-align: center">Client Opening Balance Manager</h4>
+      <h4 class="col-md-6" style="padding: 0px;font-weight:700;">Client Opening Balance Manager</h4>
+      <div class="col-md-6">
+        <a href="<?php echo URL::to('user/opening_balance_manager'); ?>" class="common_black_button" style="float:right">Back To Opening Balance Manager</a>
+      </div>
       <div style="clear: both;">
         <?php
         if(Session::has('message')) { ?>
@@ -139,7 +152,14 @@ a:hover{text-decoration: underline;}
       $opening_balance = DB::table('opening_balance')->where('client_id',$client_id)->first();
       if(count($opening_balance))
       {
-        $balance = $opening_balance->opening_balance;
+        if($opening_balance->opening_balance == "")
+        {
+          $balance = "";
+        }
+        else{
+          $balance = number_format_invoice_without_comma($opening_balance->opening_balance);
+        }
+        
         if($opening_balance->opening_date == "0000-00-00")
         {
           $date = "";
@@ -147,10 +167,22 @@ a:hover{text-decoration: underline;}
         else{
           $date = date('d-M-Y', strtotime($opening_balance->opening_date));
         }
+        if($balance == "0" || $balance == "0.00" || $balance == "0.0" || $balance == "00.00" || $balance == "00.0" || $balance == "")
+        {
+          $color = 'color:#000';
+        }
+        elseif($balance > 0)
+        {
+          $color = 'color:blue';
+        }
+        else{
+          $color = 'color:#f00';
+        }
       }
       else{
         $balance = "";
         $date = "";
+        $color = 'color:#000';
       }
 
       ?>
@@ -159,7 +191,7 @@ a:hover{text-decoration: underline;}
           <h4 style="font-weight:700">Opening Balance:</h4>
         </div>
         <div class="col-md-7">
-          <input type="number" name="opening_balance" class="form-control opening_balance" value="<?php echo $balance; ?>">
+          <input type="number" name="opening_balance" class="form-control opening_balance" style="<?php echo $color; ?>" value="<?php echo $balance; ?>" pattern="[0-9]*" onkeypress="preventNonNumericalInput(event)" <?php echo $disabled; ?>>
         </div>
       </div>
       <div class="col-md-12">
@@ -175,7 +207,7 @@ a:hover{text-decoration: underline;}
           <h4 style="font-weight:700">Opening Balance Date:</h4>
         </div>
         <div class="col-md-7">
-          <input type="text" name="opening_balance_date" class="form-control opening_balance_date" value="<?php echo $date; ?>">
+          <input type="text" name="opening_balance_date" class="form-control opening_balance_date" value="<?php echo $date; ?>" <?php echo $disabled; ?>>
         </div>
       </div>
     </div>
@@ -200,15 +232,22 @@ a:hover{text-decoration: underline;}
           {
             foreach($get_invoices as $invoice)
             {
-              if($invoice->balance_remaining != "") { $balance_remaining = $invoice->balance_remaining; } else { $balance_remaining = '-'; }
+              if($invoice->balance_remaining != "") { $balance_remaining = number_format_invoice($invoice->balance_remaining); } else { $balance_remaining = '-'; }
               ?>
               <tr>
                 <td><?php echo $invoice->invoice_number; ?></td>
                 <td><?php echo date("d-M-Y", strtotime($invoice->invoice_date)); ?></td>
-                <td style="text-align: right"><?php echo $invoice->gross; ?></td>
+                <td style="text-align: right"><?php echo number_format_invoice($invoice->gross); ?></td>
                 <td style="text-align: right"><?php echo $balance_remaining; ?></td>
               </tr>
               <?php
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              $balance_remaining = str_replace(",","",$balance_remaining);
+              
               $total_remaining = $total_remaining + $balance_remaining;
             }
           }
@@ -220,16 +259,26 @@ a:hover{text-decoration: underline;}
 
           <tr>
             <td colspan="3" style="font-weight:700">Total Balance Remaining</td>
-            <td style="background: #ddd;text-align: right"><?php echo $total_remaining; ?></td>
+            <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($total_remaining); ?></td>
           </tr>
           <tr>
             <td colspan="3" style="font-weight:700">Unallocated Balance</td>
-            <td style="background: #ddd;text-align: right"><?php echo $unallocated; ?></td>
+            <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($unallocated); ?></td>
           </tr>
         </tbody>
       </table>
-      <input type="button" class="common_black_button auto_allocate" id="auto_allocate" value="Auto Allocate" style="width:100%">
-      <input type="button" class="common_black_button lock_opening" id="lock_opening" value="Lock Opening Balance" style="width:40%; margin-top:20px">
+      <input type="button" class="common_black_button auto_allocate" id="auto_allocate" value="Auto Allocate" style="width:100%" <?php echo $disabled; ?>>
+      <?php
+        if($check_client->locked == 0)
+        {
+          echo '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$check_client->client_id.'&locked=1').'" class="common_black_button" style="width:40%; margin-top:20px;float:left;clear:both">Lock Opening Balance</a>
+            <i class="fa fa-unlock" style="font-size: 35px;margin-left: 20px;color: green;margin-top: 20px;"></i>';
+        }
+        else{
+          echo '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$check_client->client_id.'&locked=0').'" class="common_black_button" style="width:40%; margin-top:20px;float:left;clear:both">Unlock Opening Balance</a> 
+            <i class="fa fa-lock" style="font-size: 35px;margin-left: 20px;color: #f00;margin-top: 20px;"></i>';
+        }
+      ?>
     </div>
     <div class="col-md-1">&nbsp;</div>
   </div>
@@ -239,6 +288,14 @@ a:hover{text-decoration: underline;}
   <input type="hidden" name="pagination" id="pagination" value="1">
 </div>
 <script type="text/javascript">
+function preventNonNumericalInput(e) {
+  e = e || window.event;
+  var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
+  var charStr = String.fromCharCode(charCode);
+
+  if (!charStr.match(/^[0-9-.]+$/))
+    e.preventDefault();
+}
 $(function(){
     $('#client_expand').DataTable({
         fixedHeader: {
@@ -280,7 +337,17 @@ function doneTyping_balance (input) {
         type:"post",
         data:{client_id:"<?php echo $client_id; ?>",balance:input},
         success: function(result) {
-
+            if(input == "0" || input == "0.00" || input == "00.00" || input == "")
+            {
+              $(".opening_balance").css("color","#000");
+            }
+            else if(input > 0)
+            {
+              $(".opening_balance").css("color","blue");
+            }
+            else{
+              $(".opening_balance").css("color","#f00");
+            }
         }
       });
 }
@@ -300,14 +367,18 @@ $(".opening_balance_date").on("dp.hide", function (e) {
 $(window).click(function(e){
   if($(e.target).hasClass('auto_allocate'))
   {
-    $("body").addClass("loading");
     var opening_balance = $(".opening_balance").val();
     var opening_balance_date = $(".opening_balance_date").val();
-    if(opening_balance_date == "")
+    if(opening_balance == "0.00" || opening_balance == "0" || opening_balance == "" || opening_balance == "00.00" || opening_balance == " " || opening_balance == "0.0" || opening_balance == "00.0" || opening_balance == "00")
+    {
+      alert("Please Enter the Opening Balance and then click on to auto allocation button.");
+    }
+    else if(opening_balance_date == "")
     {
       alert("Please Enter the Opening Balance Date and then click on to auto allocation button.");
     }
     else{
+      $("body").addClass("loading");
       var client_id = "<?php echo $client_id; ?>";
       $.ajax({
         url:"<?php echo URL::to('user/auto_allocate_opening_balance'); ?>",

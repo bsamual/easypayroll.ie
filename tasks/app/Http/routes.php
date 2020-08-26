@@ -1663,4 +1663,5 @@ Route::post('/user/import_opening_balance_to_clients', 'user\OpeningbalanceContr
 Route::post('/user/clear_import_opening_balance', 'user\OpeningbalanceController@clear_import_opening_balance');
 
 Route::post('/user/cm_load_all_client_invoice', 'user\CmController@cm_load_all_client_invoice');
+Route::post('/user/cm_load_all_client_message', 'user\CmController@cm_load_all_client_message');
 

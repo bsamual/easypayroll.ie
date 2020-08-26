@@ -879,13 +879,12 @@ if(!empty($_GET['import_type_existing']))
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <ul class="nav nav-tabs" role="tablist">
                   <li role="presentation" class="cm_full_ul active"><a href="#edit_clients_tab" aria-controls="ediclient" role="tab" data-toggle="tab">Edit Client</a></li>
-                  <li role="presentation" class="cm_full_ul load_more_cm"><a href="#invoice_tab"  aria-controls="invoicetab" role="tab" data-toggle="tab">Invoice</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#invoice_tab"  aria-controls="invoicetab" role="tab" data-toggle="tab">Invoice</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#timetask_tab" aria-controls="timetask" role="tab" data-toggle="tab">Time Task</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#payroll_tab" aria-controls="payroll" role="tab" data-toggle="tab">Payroll Task</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#notes_tab" aria-controls="notes" role="tab" data-toggle="tab">Notes</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#bank_tab" aria-controls="bank" role="tab" data-toggle="tab">Bank</a></li>
-                  <li role="presentation" class="cm_full_ul load_more_cm"><a href="#message_tab" aria-controls="message" role="tab" data-toggle="tab">Messages Sent</a></li>
-                  <li role="presentation" class="cm_full_ul" style="float:right"><a href="javascript:" class="load_all_cm common_black_button">Load Now</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#message_tab" aria-controls="message" role="tab" data-toggle="tab">Messages Sent</a></li>
             </ul>
           </div>
           <div class="tab-content ">
@@ -1083,7 +1082,8 @@ if(!empty($_GET['import_type_existing']))
             </div>
             <div role="tabpanel" class="tab-pane cm_full_content" id="invoice_tab">
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
-                <h4 style="margin-bottom: 15px;">List of Invoices sent to this client</h4>
+              	<a href="javascript:" class="load_all_cm_invoice common_black_button" style="float:left">Load Now</a>
+                <h4 class="load_more_cm_invoice" style="margin-bottom: 15px;">List of Invoices sent to this client</h4>
                 <div id="invoice_tbody" >
                   
                 </div>
@@ -1159,7 +1159,8 @@ if(!empty($_GET['import_type_existing']))
             </div>
             <div role="tabpanel" class="tab-pane cm_full_content" id="message_tab">
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
-                  <h4 style="margin-bottom: 15px;">Messages Sent</h4>
+              	  <a href="javascript:" class="load_all_cm_message common_black_button" style="float:left">Load Now</a>
+                  <h4 class="load_more_cm_message" style="margin-bottom: 15px;">Messages Sent</h4>
                 <div id="message_tbody">
                   
                 </div>                                
@@ -2486,8 +2487,17 @@ $(window).click(function(e) {
                  $(".cm_full_ul:first").addClass("active");
                  $(".cm_full_content:first").addClass("active");
 
-                 $(".load_all_cm").attr("data-element",editid);
-                 $(".load_all_cm").parents("li").show();
+                 $(".load_all_cm_invoice").attr("data-element",editid);
+                 $(".load_all_cm_invoice").show();
+
+                 $(".load_all_cm_message").attr("data-element",editid);
+                 $(".load_all_cm_message").show();
+
+                 $(".load_more_cm_invoice").hide();
+                 $(".load_more_cm_message").hide();
+
+                 $("#invoice_tbody").html("");
+                 $("#message_tbody").html("");
 
                  $("#payroll_tbody").html(result['payrolloutput']);
                  $("#timetask_tbody").html(result['timetaskoutput']);
@@ -2605,7 +2615,7 @@ $(window).click(function(e) {
     
   }
 
-  if($(e.target).hasClass('load_all_cm')) {
+  if($(e.target).hasClass('load_all_cm_invoice')) {
     $("body").addClass("loading");
     setTimeout(function(){ 
         var editid = $(e.target).attr("data-element");
@@ -2618,11 +2628,10 @@ $(window).click(function(e) {
               dataType:"json",
               type:"post",
               success:function(result){
-                $(".load_more_cm").show();
-                $(".load_all_cm").parents("li").hide();
+                $(".load_more_cm_invoice").show();
+                $(".load_all_cm_invoice").hide();
 
                 $("#invoice_tbody").html(result['invoiceoutput']);
-                $("#message_tbody").html(result['outputmessage']);
            
                 $("body").removeClass("loading");
                 $('#invoice_expand').DataTable({
@@ -2634,6 +2643,30 @@ $(window).click(function(e) {
                     info: false,
                     order: false
                 });
+          }
+        });
+     }, 2000);
+    
+  }
+  if($(e.target).hasClass('load_all_cm_message')) {
+    $("body").addClass("loading");
+    setTimeout(function(){ 
+        var editid = $(e.target).attr("data-element");
+          $(".copy_clients").attr("data-element", editid);
+          $(".print_clients").attr("data-element", editid);
+          $(".download_clients").attr("data-element", editid);
+          $.ajax({
+              url: "<?php echo URL::to('user/cm_load_all_client_message') ?>",
+              data:{id:editid},
+              dataType:"json",
+              type:"post",
+              success:function(result){
+                $(".load_more_cm_message").show();
+                $(".load_all_cm_message").hide();
+
+                $("#message_tbody").html(result['outputmessage']);
+           
+                $("body").removeClass("loading");
                 $('#message_expand').DataTable({
                     fixedHeader: {
                       headerOffset: 75

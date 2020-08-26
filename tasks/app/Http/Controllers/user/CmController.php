@@ -1918,7 +1918,13 @@ class CmController extends Controller {
                 </tbody>
             </table>';
 
+        echo json_encode(array('invoiceoutput' => $outputinvoice));
 
+	}
+	public function cm_load_all_client_message()
+	{
+		$id = base64_decode(Input::get('id'));
+		$client_id = DB::table('cm_clients')->where('id',$id)->first();
 
 		$outputmessage='<table class="display nowrap fullviewtablelist"  id="message_expand">
             <thead>
@@ -1991,7 +1997,7 @@ class CmController extends Controller {
         	</tr>';
         }
 
-        echo json_encode(array('invoiceoutput' => $outputinvoice, 'outputmessage' => $outputmessage));
+        echo json_encode(array('outputmessage' => $outputmessage));
 
 	}
 	public function cm_client_payroll(){
