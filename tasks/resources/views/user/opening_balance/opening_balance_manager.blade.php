@@ -76,6 +76,7 @@ a:hover{text-decoration: underline;}
       <h4 class="col-md-6" style="padding: 0px;font-weight:700;">Opening Balance Manager</h4>
       <div class="col-md-6">
         <a href="<?php echo URL::to('user/import_opening_balance_manager'); ?>" class="common_black_button" style="float:right">Import Opening Balance Manager</a>
+        <input type="checkbox" name="hide_active_clients" class="hide_active_clients" id="hide_active_clients" value="1"><label for="hide_active_clients" style="float:right;margin-right: 25px;margin-top: 10px;">Hide Inactive Clients</label>
       </div>
       <div style="clear: both;">
         <?php
@@ -105,9 +106,11 @@ a:hover{text-decoration: underline;}
                     {
                       $check_color = DB::table('cm_class')->where('id',$client->active)->first();
                       $style="color:#f00";
+                      $active_cli = 'inactive_clients';
                     }
                     else{
                       $style="color:#000";
+                      $active_cli = 'active_clients';
                     }
                     $balance_check = DB::table('opening_balance')->where('client_id',$client->client_id)->first();
                     if(count($balance_check))
@@ -141,7 +144,7 @@ a:hover{text-decoration: underline;}
                       $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="color:green;font-size:18px !important"></a>';
                     }
                     ?>
-                    <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->id; ?>">
+                    <tr class="edit_task <?php echo $active_cli; ?> <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->id; ?>">
                       <td><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $i; ?></a></td>
                       <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $client->client_id; ?></a></td>
                       <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
@@ -184,6 +187,18 @@ $(function(){
         paging: false,
         info: false
     });
+});
+$(window).click(function(e) {
+	if($(e.target).hasClass('hide_active_clients'))
+	{
+		if($(e.target).is(":checked"))
+		{
+			$(".inactive_clients").hide();
+		}
+		else{
+			$(".inactive_clients").show();
+		}
+	}
 });
 </script>
 @stop

@@ -128,6 +128,8 @@ class OpeningbalanceController extends Controller {
 			$data['client_id'] = $client_id;
 			DB::table('opening_balance')->insert($data);
 		}
+
+		echo number_format_invoice($balance);
 	}
 	public function change_opening_balance_date()
 	{
@@ -185,7 +187,8 @@ class OpeningbalanceController extends Controller {
 		$dataval['balance_remaining'] = '';
 		DB::table('invoice_system')->where('client_id',$client_id)->update($dataval);
 
-		$get_invoices_update = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
+		$check_client = DB::table('opening_balance')->where('client_id',$client_id)->first();
+        $get_invoices_update = DB::select('SELECT * from `invoice_system` WHERE `client_id` = "'.$client_id.'" AND `invoice_date` <= "'.$check_client->opening_date.'" ORDER BY `invoice_date` DESC');
 		if(count($get_invoices_update))
 		{
 			foreach($get_invoices_update as $invoice)
@@ -198,11 +201,11 @@ class OpeningbalanceController extends Controller {
 						if($gross < $opening_balance)
 						{
 							$data['balance_remaining'] = $gross;
-							$opening_balance = $opening_balance - $gross;
+							$opening_balance = number_format_invoice_without_comma(number_format_invoice_without_comma($opening_balance) - number_format_invoice_without_comma($gross));
 						}
 						else{
 							$data['balance_remaining'] = $opening_balance;
-							$opening_balance = $opening_balance - $opening_balance;
+							$opening_balance = number_format_invoice_without_comma(number_format_invoice_without_comma($opening_balance) - number_format_invoice_without_comma($opening_balance));
 						}
 						DB::table('invoice_system')->where('id',$invoice->id)->update($data);
 					}
@@ -211,7 +214,7 @@ class OpeningbalanceController extends Controller {
 		}
 		$output = '';
 		$total_remaining = 0;
-          $get_invoices = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
+          $get_invoices = DB::select('SELECT * from `invoice_system` WHERE `client_id` = "'.$client_id.'" AND `invoice_date` <= "'.$check_client->opening_date.'" ORDER BY `invoice_date` DESC');
           if(count($get_invoices))
           {
             foreach($get_invoices as $invoice)
@@ -234,7 +237,7 @@ class OpeningbalanceController extends Controller {
             }
           }
           else{
-            $output.='<tr><td colspan="4">No Invoice Found</td></tr>';
+            $output.='<tr><td colspan="4">No Invoice are available on or before the given opening balance date</td></tr>';
           }
           $unallocated = $balance - $total_remaining;
           $output.='<tr>

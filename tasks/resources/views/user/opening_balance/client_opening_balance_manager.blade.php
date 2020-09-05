@@ -192,7 +192,7 @@ a:hover{text-decoration: underline;}
           <h4 style="font-weight:700">Opening Balance:</h4>
         </div>
         <div class="col-md-7">
-          <input type="number" name="opening_balance" class="form-control opening_balance" style="<?php echo $color; ?>" value="<?php echo $balance; ?>" pattern="[0-9]*" onkeypress="preventNonNumericalInput(event)" <?php echo $disabled; ?>>
+          <input type="text" name="opening_balance" class="form-control opening_balance" style="<?php echo $color; ?>" value="<?php echo number_format_invoice($balance); ?>" pattern="[0-9]*" onkeypress="preventNonNumericalInput(event)" <?php echo $disabled; ?>>
         </div>
       </div>
       <div class="col-md-12">
@@ -227,7 +227,7 @@ a:hover{text-decoration: underline;}
         </thead>
         <tbody id="invoice_tbody_list">
           <?php
-          $get_invoices = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
+          $get_invoices = DB::select('SELECT * from `invoice_system` WHERE `client_id` = "'.$client_id.'" AND `invoice_date` <= "'.$opening_balance->opening_date.'" ORDER BY `invoice_date` DESC');
           $total_remaining = 0;
           if(count($get_invoices))
           {
@@ -253,7 +253,7 @@ a:hover{text-decoration: underline;}
             }
           }
           else{
-            echo '<tr><td colspan="4">No Invoice Found</td></tr>';
+            echo '<tr><td colspan="4">No Invoice are available on or before the given opening balance date</td></tr>';
           }
           $unallocated = $balance - $total_remaining;
           ?>
@@ -294,7 +294,7 @@ function preventNonNumericalInput(e) {
   var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
   var charStr = String.fromCharCode(charCode);
 
-  if (!charStr.match(/^[0-9-.]+$/))
+  if (!charStr.match(/^[0-9-.,]+$/))
     e.preventDefault();
 }
 $(function(){
@@ -333,6 +333,16 @@ $input.on('keydown', function () {
 });
 //user is "finished typing," do something
 function doneTyping_balance (input) {
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+  input = input.replace(",", "");
+
   $.ajax({
         url:"<?php echo URL::to('user/change_opening_balance'); ?>",
         type:"post",
@@ -349,6 +359,7 @@ function doneTyping_balance (input) {
             else{
               $(".opening_balance").css("color","#f00");
             }
+            // $(".opening_balance").val(result);
         }
       });
 }
@@ -360,7 +371,7 @@ $(".opening_balance_date").on("dp.hide", function (e) {
         type:"post",
         data:{client_id:"<?php echo $client_id; ?>",dateval:input},
         success: function(result) {
-
+          window.location.reload();
         }
       });
 });
@@ -369,6 +380,18 @@ $(window).click(function(e){
   if($(e.target).hasClass('auto_allocate'))
   {
     var opening_balance = $(".opening_balance").val();
+
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+    opening_balance = opening_balance.replace(",", "");
+
+
     var opening_balance_date = $(".opening_balance_date").val();
     if(opening_balance == "0.00" || opening_balance == "0" || opening_balance == "" || opening_balance == "00.00" || opening_balance == " " || opening_balance == "0.0" || opening_balance == "00.0" || opening_balance == "00")
     {

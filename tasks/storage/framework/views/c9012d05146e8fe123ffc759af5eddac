@@ -162,6 +162,46 @@ body.loading_content {
 body.loading_content .modal_load_content {
     display: block;
 }
+
+.modal_load_refresh {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_refresh {
+    overflow: hidden;   
+}
+body.loading_refresh .modal_load_refresh {
+    display: block;
+}
+
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
 .left_menu{background: #ff0; left: 0px; position: fixed;}
 .left_menu li{clear: both; width: 100%;}
 .left_menu li a{padding: 10px 15px;}
@@ -713,6 +753,15 @@ body.loading_content .modal_load_content {
   <p style="font-size:18px;font-weight: 600;">This may take upto <span id="estimated_time"></span> Minutes</p>
 </div>
 
+<div class="modal_load_refresh" style="text-align: center;">
+  <p style="font-size:25px;font-weight: 600;margin-top: 28%;">Refreshing Table - <span id="refresh_first"></span> of <span id="refresh_last"></span> - <span id="refresh_taskname"></span></p>
+</div>
+
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the tables are loaded.</p>
+  <p style="font-size:18px;font-weight: 600;">Loading: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
+
 <script type="text/javascript">
 <?php if(!empty($_GET['div_id']))
 { $divid = $_GET['div_id']; ?>
@@ -879,8 +928,17 @@ $("document").ready(function() {
 });
 function ajaxRequest (urls) {
     if (urls.length > 0) {
+        var first = $("#refresh_first").html();
+        var countfirst = parseInt(first) + 1;
+        $("#refresh_first").html(countfirst);
+        var urlval = urls.pop();
+        var name = 'taskname';
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(urlval);
+        var taskname = results[1] || 0;
+        $("#refresh_taskname").html(taskname);
+
         $.ajax({
-          url: urls.pop(),
+          url: urlval,
           method:"get",
           dataType:"json",
           success: function(result){
@@ -916,7 +974,7 @@ function ajaxRequest (urls) {
         });
     }
     else{
-      $("body").removeClass("loading");
+      $("body").removeClass("loading_refresh");
       $("#hidden_loading_status").val("");
       $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>Refresh made Successfully for all the clients.</p>", fixed:true});
     }
@@ -1218,36 +1276,44 @@ if($(e.target).hasClass('show_all_tables'))
 if($(e.target).hasClass('refresh_all_clients'))
 {
   $("#hidden_loading_status").val("1");
-  $("body").addClass("loading");
+  $("body").addClass("loading_refresh");
   var year_id = $(".year_id").val();
   $.ajax({
     url:"<?php echo URL::to('user/get_employee_numbers'); ?>",
     type:"get",
+    dataType:"json",
     data:{year_id:year_id},
     success: function(result)
     {
-      if(result == "")
+      if(result['task_id'] == "")
       {
         setTimeout(function() {
-          $("body").removeClass("loading");
+          $("body").removeClass("loading_refresh");
           $("#hidden_loading_status").val("");
           $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>Refresh made Successfully for all the clients.</p>", fixed:true});
         },5000);
       }
       else{
         var urls= '';
-        var ids = result.split(",");
+        var idsval = result['task_id'];
+        var namesval = result['task_name'];
+
+        var ids = idsval.toString().split(",");
+        var names = namesval.toString().split("||");
+
         $.each( ids, function( key, value ) {
           var task_id = value;
           if(urls == "")
           {
-            urls = "<?php echo URL::to('user/refresh_paye_p30_liability'); ?>?task_id="+task_id+"&year_id="+year_id;
+            urls = "<?php echo URL::to('user/refresh_paye_p30_liability'); ?>?task_id="+task_id+"&year_id="+year_id+"&taskname="+names[key];
           }
           else{
-            urls = urls+",<?php echo URL::to('user/refresh_paye_p30_liability'); ?>?task_id="+task_id+"&year_id="+year_id;
+            urls = urls+",<?php echo URL::to('user/refresh_paye_p30_liability'); ?>?task_id="+task_id+"&year_id="+year_id+"&taskname="+names[key];
           }
         });
         var url = urls.split(",");
+        $("#refresh_first").html("0");
+        $("#refresh_last").html(url.length);
         ajaxRequest(url);
       }
     }

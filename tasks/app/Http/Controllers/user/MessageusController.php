@@ -706,7 +706,6 @@ class MessageusController extends Controller {
 				}
 			}
 		}
-
 		$data['client_ids'] = $client_ids;
 		$data['last_week'] = $current_week->week_id;
 		$data['last_month'] = $current_month->month_id;
