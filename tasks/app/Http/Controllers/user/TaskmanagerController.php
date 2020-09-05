@@ -1021,26 +1021,26 @@ class TaskmanagerController extends Controller {
 			$dataemail['subject'] = $subject_cls;
 
 			$subject_email = 'Task Manager: New Task has been created: '.$subject_cls;
-			$contentmessage = view('emails/task_manager/create_new_task_email_author', $dataemail)->render();
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = view('emails/task_manager/create_new_task_email_author', $dataemail)->render();
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
 			
-			$email = new PHPMailer();
-			$email->SetFrom('info@gbsco.ie');
-			$email->Subject   = $subject_email;
-			$email->Body      = $contentmessage;
-			$email->AddCC('tasks@gbsco.ie');
-			$email->IsHTML(true);
-			$email->AddAddress( $author_email );
-			$email->AddAttachment( $uploads , 'task_specifics.txt' );
-			$email->Send();		
+			// $email = new PHPMailer();
+			// $email->SetFrom('info@gbsco.ie');
+			// $email->Subject   = $subject_email;
+			// $email->Body      = $contentmessage;
+			// $email->AddCC('tasks@gbsco.ie');
+			// $email->IsHTML(true);
+			// $email->AddAddress( $author_email );
+			// $email->AddAttachment( $uploads , 'task_specifics.txt' );
+			// $email->Send();		
 
 			if($allocate_user != "")
 			{
@@ -1354,27 +1354,27 @@ class TaskmanagerController extends Controller {
 			$dataemail['subject'] = $subject_cls;
 
 			$subject_email = 'Task Manager: New Task has been created: '.$subject_cls;
-			$contentmessage = view('emails/task_manager/create_new_task_email_author', $dataemail)->render();
+			// $contentmessage = view('emails/task_manager/create_new_task_email_author', $dataemail)->render();
 
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
-			$contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
+			// $contentmessage = str_replace("â€“", "-", $contentmessage);
 
-			$email = new PHPMailer();
-			$email->SetFrom('info@gbsco.ie');
-			$email->Subject   = $subject_email;
-			$email->Body      = $contentmessage;
-			$email->AddCC('tasks@gbsco.ie');
-			$email->IsHTML(true);
-			$email->AddAddress( $author_email );
-			$email->AddAttachment( $uploads , 'task_specifics.txt' );
-			$email->Send();		
+			// $email = new PHPMailer();
+			// $email->SetFrom('info@gbsco.ie');
+			// $email->Subject   = $subject_email;
+			// $email->Body      = $contentmessage;
+			// $email->AddCC('tasks@gbsco.ie');
+			// $email->IsHTML(true);
+			// $email->AddAddress( $author_email );
+			// $email->AddAttachment( $uploads , 'task_specifics.txt' );
+			// $email->Send();		
 
 			if($allocate_user != "")
 			{

@@ -1410,10 +1410,10 @@ elseif(Session::has('countupdated'))
 
               if(isset($_GET['client_id']))
               {
-                $url_upload = URL::to('user/infile_search?client_id=').$_GET['client_id'];
+                $url_upload = URL::to('user/infile_search?client_id='.$_GET['client_id'].'&infile_item='.$file->id);
               }
               else{
-                $url_upload = URL::to('user/in_file');
+                $url_upload = URL::to('user/in_file?infile_item='.$file->id);
               }
 
           $output.='
@@ -1689,6 +1689,17 @@ elseif(Session::has('countupdated'))
 
 
 <script>
+<?php
+if(!empty($_GET['infile_item']))
+{
+  $divid = $_GET['infile_item'];
+  ?>
+  $(function() {
+    $(document).scrollTop( $("#infile_<?php echo $divid; ?>").offset().top);  
+  });
+  <?php
+}
+?>
 // Basic example
 $(document).ready(function () {
   $('#dtBasicExample').DataTable({

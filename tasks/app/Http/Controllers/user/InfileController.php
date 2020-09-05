@@ -436,7 +436,17 @@ class InfileController extends Controller {
 		}
 		$dataval['task_notify'] = 1;
 		DB::table('in_file')->where('id',$id)->update($dataval);
-		return redirect::back();
+
+		$item = DB::table('in_file')->where('id',$id)->first();
+		if(count($item))
+		{
+			$client_id = $item->client_id;
+		}
+		else{
+			$client_id = '';
+		}
+
+		return redirect('user/infile_search?client_id='.$client_id.'&infile_item='.$id);
 	}
 
 	public function infile_upload_images()
