@@ -314,8 +314,25 @@ class OpeningbalanceController extends Controller {
 
 				$client_label = $worksheet->getCellByColumnAndRow(0, 1); $client_label = trim($client_label->getValue());
 				$balance_label = $worksheet->getCellByColumnAndRow(1, 1); $balance_label = trim($balance_label->getValue());
+				$date_label = $worksheet->getCellByColumnAndRow(2, 1); $date_label = trim($date_label->getValue());
 
-				if($client_label != "Code" || $balance_label != "Balance")
+				$client_label = strtolower($client_label);
+				$balance_label = strtolower($balance_label);
+				$date_label = strtolower($date_label);
+
+				$client_label = str_replace(" ", "", $client_label);
+				$client_label = str_replace(" ", "", $client_label);
+				$client_label = str_replace(" ", "", $client_label);
+
+				$balance_label = str_replace(" ", "", $balance_label);
+				$balance_label = str_replace(" ", "", $balance_label);
+				$balance_label = str_replace(" ", "", $balance_label);
+
+				$date_label = str_replace(" ", "", $date_label);
+				$date_label = str_replace(" ", "", $date_label);
+				$date_label = str_replace(" ", "", $date_label);
+
+				if($client_label != "code" || $balance_label != "balance" || $date_label != "date")
 				{
 					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type));
 					exit;
@@ -324,6 +341,34 @@ class OpeningbalanceController extends Controller {
 					for ($row = $offsetcount; $row <= $height; ++ $row) {
 						$client_id = $worksheet->getCellByColumnAndRow(0, $row); $client_id = trim($client_id->getValue());
 						$balance = $worksheet->getCellByColumnAndRow(1, $row); $balance = trim($balance->getValue());
+						$import_date = $worksheet->getCellByColumnAndRow(2, $row); $import_date = trim($import_date->getValue());
+						$import_date = trim($import_date);
+
+						if($import_date == "")
+						{
+							$imp_date = '';
+						}
+						else{
+							$explode_import_date = explode("/",$import_date);
+							$explode_hyphen_import_date = explode("-",$import_date);
+
+							if(count($explode_import_date) == 3)
+							{
+								$inc_date = $explode_import_date[2].'-'.$explode_import_date[1].'-'.$explode_import_date[0];
+								$imp_date = date('Y-m-d',strtotime($inc_date));
+							}
+							elseif(count($explode_hyphen_import_date) == 3){
+								$inc_date = $explode_hyphen_import_date[2].'-'.$explode_hyphen_import_date[1].'-'.$explode_hyphen_import_date[0];
+								$imp_date = date('Y-m-d',strtotime($inc_date));
+							}
+							else{
+								$unix_date = ($import_date - 25569) * 86400;
+								$excel_date = 25569 + ($unix_date / 86400);
+								$unix_date = ($excel_date - 25569) * 86400;
+								$imp_date = gmdate("Y-m-d", $unix_date);
+							}
+						}
+						
 
 						$bal = str_replace(',',"",$balance);
 						$bal = str_replace(',',"",$bal);
@@ -341,6 +386,7 @@ class OpeningbalanceController extends Controller {
 						$importdata['session_id'] = $session_id;
 						$importdata['client_id'] = $client_id;
 						$importdata['balance'] = $bal;
+						$importdata['import_date'] = $imp_date;
 						$importdata['import_type'] = $import_type;
 
 						DB::table('opening_balance_import')->insert($importdata);
@@ -392,8 +438,25 @@ class OpeningbalanceController extends Controller {
 
 				$inv_label = $worksheet->getCellByColumnAndRow(0, 1); $inv_label = trim($inv_label->getValue());
 				$gross_label = $worksheet->getCellByColumnAndRow(1, 1); $gross_label = trim($gross_label->getValue());
+				$date_label = $worksheet->getCellByColumnAndRow(2, 1); $date_label = trim($date_label->getValue());
 
-				if($inv_label != "Inv No" || $gross_label != "Gross")
+				$inv_label = strtolower($inv_label);
+				$gross_label = strtolower($gross_label);
+				$date_label = strtolower($date_label);
+
+				$inv_label = str_replace(" ", "", $inv_label);
+				$inv_label = str_replace(" ", "", $inv_label);
+				$inv_label = str_replace(" ", "", $inv_label);
+
+				$gross_label = str_replace(" ", "", $gross_label);
+				$gross_label = str_replace(" ", "", $gross_label);
+				$gross_label = str_replace(" ", "", $gross_label);
+
+				$date_label = str_replace(" ", "", $date_label);
+				$date_label = str_replace(" ", "", $date_label);
+				$date_label = str_replace(" ", "", $date_label);
+
+				if($inv_label != "invno" || $gross_label != "gross" || $date_label != "date")
 				{
 					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type));
 					exit;
@@ -402,6 +465,33 @@ class OpeningbalanceController extends Controller {
 					for ($row = $offsetcount; $row <= $height; ++ $row) {
 						$inv_no = $worksheet->getCellByColumnAndRow(0, $row); $inv_no = trim($inv_no->getValue());
 						$gross = $worksheet->getCellByColumnAndRow(1, $row); $gross = trim($gross->getValue());
+						$import_date = $worksheet->getCellByColumnAndRow(2, $row); $import_date = trim($import_date->getValue());
+						$import_date = trim($import_date);
+						
+						if($import_date == "")
+						{
+							$imp_date = '';
+						}
+						else{
+							$explode_import_date = explode("/",$import_date);
+							$explode_hyphen_import_date = explode("-",$import_date);
+
+							if(count($explode_import_date) == 3)
+							{
+								$inc_date = $explode_import_date[2].'-'.$explode_import_date[1].'-'.$explode_import_date[0];
+								$imp_date = date('Y-m-d',strtotime($inc_date));
+							}
+							elseif(count($explode_hyphen_import_date) == 3){
+								$inc_date = $explode_hyphen_import_date[2].'-'.$explode_hyphen_import_date[1].'-'.$explode_hyphen_import_date[0];
+								$imp_date = date('Y-m-d',strtotime($inc_date));
+							}
+							else{
+								$unix_date = ($import_date - 25569) * 86400;
+								$excel_date = 25569 + ($unix_date / 86400);
+								$unix_date = ($excel_date - 25569) * 86400;
+								$imp_date = gmdate("Y-m-d", $unix_date);
+							}
+						}
 
 						$bal = str_replace(',',"",$gross);
 						$bal = str_replace(',',"",$bal);
@@ -420,6 +510,7 @@ class OpeningbalanceController extends Controller {
 						$importdata['client_id'] = $client_id;
 						$importdata['invoice_id'] = $inv_no;
 						$importdata['balance'] = $bal;
+						$importdata['import_date'] = $imp_date;
 						$importdata['import_type'] = $import_type;
 
 						DB::table('opening_balance_import')->insert($importdata);
@@ -481,8 +572,16 @@ class OpeningbalanceController extends Controller {
 					$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
 
 					$dataupdate['opening_balance'] = $get_client_balance;
-					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
 					$dataupdate['client_id'] = $balance->client_id;
+
+					if($balance->import_date == "")
+					{
+						$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+					}
+					else{
+						$dataupdate['opening_date'] = $balance->import_date;
+					}
+
 					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
 					if(count($check_client_bal))
 					{
@@ -504,8 +603,16 @@ class OpeningbalanceController extends Controller {
 					$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
 
 					$dataupdate['opening_balance'] = number_format_invoice_without_comma($get_client_balance);
-					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
 					$dataupdate['client_id'] = $balance->client_id;
+
+					if($balance->import_date == "")
+					{
+						$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+					}
+					else{
+						$dataupdate['opening_date'] = $balance->import_date;
+					}
+
 					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
 					if(count($check_client_bal))
 					{
