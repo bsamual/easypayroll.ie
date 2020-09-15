@@ -2796,7 +2796,7 @@ class TaskmanagerController extends Controller {
 			$authored_task_count = 0;
 		}
 
-		echo json_encode(array("open_tasks" => $open_tasks,"layout" => $outputlayout,"open_task_count" => count($open_task_count),"authored_task_count" => count($authored_task_count)));
+		echo json_encode(array("open_tasks" => mb_convert_encoding($open_tasks,'UTF-8','UTF-8'),"layout" => mb_convert_encoding($outputlayout,'UTF-8','UTF-8'),"open_task_count" => count($open_task_count),"authored_task_count" => count($authored_task_count)));
 	}
 	public function refresh_parktask()
 	{
