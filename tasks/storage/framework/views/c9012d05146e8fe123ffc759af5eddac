@@ -122,7 +122,7 @@
 .table_bg thead tr th{
   padding:8px;
 }
-.button_top_right ul li a{padding: 5px 10px; font-size: 16px; font-weight: 600; margin-bottom: 0px;}
+.button_top_right ul li a{padding: 5px 10px; font-size: 12px; font-weight: 600; margin-bottom: 0px;min-height: 33px}
 .form-control[readonly]{background-color: #e6e6e6 !important}
 .modal_load {
     display:    none;
@@ -230,6 +230,18 @@ body.loading_apply .modal_load_apply {
 .error_message_xls{
   padding: 10px;
     background: #dfdfdf;
+}
+.fa-question{
+  color: #f00 !important;
+  font-size: 20px !important;
+  margin-left: 5px;
+  font-weight: 500 !important;
+  margin-top: 5px;
+  cursor:pointer;
+
+  background: #fff !important;
+  float: none !important;
+  padding: 0px 0px !important;
 }
 </style>
 
@@ -372,7 +384,7 @@ body.loading_apply .modal_load_apply {
     </div>
     <div class="col-lg-5 padding_00 button_top_right" style="float:left;">
           <ul style="float:none">
-            <li class="" style="margin-left: 28px;"><a class="close_create_new_year" href="javascript:" data-element="<?php echo URL::to('user/paye_p30_create_new_year'); ?>" style="float:right">Close and Create New Year</a></li>
+            
           </ul>
     </div>
     <div class="col-lg-12 padding_00">
@@ -428,10 +440,11 @@ body.loading_apply .modal_load_apply {
                       
                   </div>
                   <div class="col-lg-4 button_top_right" style="float: left;">
-                    <ul style="float: left; margin-bottom: 5px;">
-                        <li><a href="javascript:" class="apply_class">Apply</a></li>                      
-                        <li><a href="javascript:" class="show_all_periods">Show all Periods</a></li>
-                        
+                    <ul style="float: left; margin-bottom: 5px;width:100%">
+                        <li style="width:100%">
+                            <a href="javascript:" class="apply_class" style="width:90%">Apply Unallocaed PREM Charges to Selected Periods</a>
+                            <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Apply Unallocaed PREM Charges to Selected Periods" data-placement="left"></a>
+                        </li>
                       </ul>
                 </div>
               </div>
@@ -450,12 +463,15 @@ body.loading_apply .modal_load_apply {
                       </select>
                   </div>
                   <div class="col-lg-4 button_top_right" style="float: left;">
-                    <ul style="float: left; margin-bottom: 5px;">                      
-                        <li><a href="javascript:" class="show_active_periods">Show Active Periods Only</a></li>
+                    <ul style="float: left; margin-bottom: 5px;width:100%">                      
+                        <li style="width:100%">
+                          <a href="javascript:" class="show_all_periods" style="width:90%">Show all Periods</a>
+                          <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Show all Periods" data-placement="left"></a>
+                        </li>
                       </ul>
                 </div>
               </div>
-              <div class="col-lg-12 padding_00" >
+              <div class="col-lg-12 padding_00" style="margin-top: 10px;">
                 <div class="col-lg-2">Active Month:</div>
                 <div class="col-lg-3">
                   <select class="form-control active_month">
@@ -463,21 +479,59 @@ body.loading_apply .modal_load_apply {
                       <?php echo $selected_active_month; ?>
                   </select>
                 </div>
+                <div class="col-lg-3 ">                
+                    &nbsp;
+                </div>
+                <div class="col-lg-4 button_top_right" style="float: left;">
+                  <ul style="float: left; margin-bottom: 5px;width:100%">
+                      <li style="width:100%">
+                          <a href="javascript:" class="show_active_periods" style="width:90%">Show Active Periods Only</a>
+                          <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Show Active Periods Only" data-placement="left"></a>
+                      </li>
+                    </ul>
+                </div>
               </div>
           </div>
           <div class="col-lg-3" style="margin-top:-32px">
             <style type="text/css">
-              .one_by_one ul li{margin-bottom: 5px;}
+              .one_by_one ul li{margin-bottom: 0px;}
             </style>
-            <div class="col-lg-9 button_top_right one_by_one" style="float: left;">
+            <div class="col-lg-12 button_top_right one_by_one" style="float: left;">
                 <ul style="float: left; margin-bottom: 5px;">
-                  <li class=""><a href="<?php echo URL::to('user/paye_p30_review_year/'.$year->year_id); ?>">Review Year</a></li>
-                  <li><a href="javascript:" class="show_hide_disable" data-element="<?php if($year->disable_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>"><?php if($year->disable_clients == 1) { echo 'Show Disabled Clients'; } else { echo 'Hide Disabled Clients'; } ?></a></li>
-                    <li><a href="javascript:" class="show_hide_clients" data-element="<?php if($year->email_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" title="This will hide/show clients having Email sent on the current active month"><?php if($year->email_clients == 1) { echo 'Show Clients'; } else { echo 'Hide Clients'; } ?></a></li>                      
+                  <li class="" style="width:100%">
+                    <a class="close_create_new_year" href="javascript:" data-element="<?php echo URL::to('user/paye_p30_create_new_year'); ?>" style="width:90%;">Close and Create New Year</a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Close and Create New Year" data-placement="left"></a>
+                  </li>
+                  <li class="" style="width:100%">
+                    <a href="<?php echo URL::to('user/paye_p30_review_year/'.$year->year_id); ?>" style="width:90%;">Review & Add New PMS tasks to PAYEMRS</a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="When you click on this button the system looks at the current week and month to see if there are any new Payroll Tasks and if there are adds them to the PAYE MRS System" data-placement="left"></a>
+                  </li>
+                  <li style="width:100%">
+                    <a href="javascript:" class="show_hide_clients" data-element="<?php if($year->email_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" title="This will hide/show clients having Email sent on the current active month" style="width:90%;"><?php if($year->email_clients == 1) { echo 'Show Clients to be Contacted'; } else { echo 'Hide Clients to be Contacted'; } ?></a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="This option Shows/Hides clients that have yet to be emailed the PREM Liability for the current active month" data-placement="left"></a>
+                  </li>                      
                     <!-- <li><a href="javascript:" class="show_all_tables">Show All Tables</a></li> -->
-                    <li><a href="javascript:" class="refresh_all_clients">Refresh All Tables</a></li>
-                    <li><a href="javascript:" class="update_all_tasks">Update All Tasks</a></li>
-                  </ul>
+                  <li style="width:100%">
+                    <a href="javascript:" class="update_all_tasks" style="width:90%;">Set Default Weekly/Monthly Client Specifics</a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Show a comparison of Weekly / Monthly, Email, Pay instruction and so on for Payroll tasks with more than one entry" data-placement="left"></a>
+                  </li>
+                  <li style="width:45%">
+                    <a href="javascript:" class="refresh_all_clients" style="width:90%;">Refresh All Tables</a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Pull the current PREM Charges from the PMS System and allocate them to the correct period on the PAYE MRS system" data-placement="left"></a>
+                  </li>
+                  <li style="width:47%">
+                    <a href="javascript:" class="show_hide_disable" data-element="<?php if($year->disable_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" style="width:90%;"><?php if($year->disable_clients == 1) { echo 'Show Disabled Clients'; } else { echo 'Hide Disabled Clients'; } ?></a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="This option Shows/Hides the disabled clients" data-placement="left"></a>
+                  </li>
+                  <li style="width:100%">
+                    <a href="javascript:" class="quick_access_ros" style="width:90%;">Quick Access ROS Liabilities</a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Access a quick system that shows all clients ROS and PAYE Task Liabilities allowing for an uncultters view of the prem system." data-placement="left"></a>
+                  </li>
+                  <li style="width:100%">
+                    <a href="javascript:" class="quick_access_email" style="width:90%;">Quick Access Email Distribution</a>
+                    <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Quickly Send emails to all reconciled PAYE Cleints" data-placement="left"></a>
+                  </li>
+                </ul>
             </div>
           </div>
         </div>
@@ -507,7 +561,7 @@ body.loading_apply .modal_load_apply {
         ?>
         </div>
   <?php
-  $output='<div class="paye_mars_ul">
+  $output='<div class="paye_mars_ul" style="margin-top:30px">
         <ul id="task_paye_ul">
         <li>
             <div class="sno" style="background:#000;color:#fff">S.No</div>
@@ -771,6 +825,9 @@ body.loading_apply .modal_load_apply {
     },3000);
   });
 <?php } ?>
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover();   
+});
 $(window).scroll(function(){
     if($(this).scrollTop()){
       // $(".navbar").fadeOut(1000);
