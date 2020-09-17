@@ -1211,7 +1211,7 @@ class InfileController extends Controller {
 		if(Session::has('file_attach_add'))
 		{
 			$countupdated = Db::table('in_file_attachment')->where('file_id',$file_id)->where('notes_type',0)->count();
-			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Successfully and saved the Selection.')->with('countupdated', $countupdated)->with('total_count', $total_count)->with('client_session_id', $clientid);
+			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Successfully and saved the Selection.')->with('countupdated', $countupdated)->with('total_count', $total_count)->with('client_session_id', $clientid)->with('file_id', $file_id);
 		}
 		else{
 			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Successfully and saved the Selection.')->with('client_session_id', $clientid);

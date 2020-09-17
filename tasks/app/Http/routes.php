@@ -1199,7 +1199,9 @@ Route::post('/user/yearend_individual_attachment', 'user\YearendController@yeare
 Route::post('/user/yearend_attachment_individual', 'user\YearendController@yearend_attachment_individual');
 Route::post('/user/yearend_delete_image', 'user\YearendController@yearend_delete_image');
 Route::post('/user/yearend_delete_all_image', 'user\YearendController@yearend_delete_all_image');
+Route::post('/user/yearend_delete_all_image_aml', 'user\YearendController@yearend_delete_all_image_aml');
 Route::post('/user/remove_yearend_dropzone_attachment', 'user\YearendController@remove_yearend_dropzone_attachment');
+Route::post('/user/remove_yearend_dropzone_attachment_aml', 'user\YearendController@remove_yearend_dropzone_attachment_aml');
 
 Route::post('/user/distribution_future', 'user\YearendController@distribution_future');
 Route::post('/user/distribution1_future', 'user\YearendController@distribution1_future');

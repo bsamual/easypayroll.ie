@@ -949,16 +949,122 @@ class YearendController extends Controller {
       }
       public function yearend_individual_attachment()
       {
-            $total = count($_FILES['image_file']['name']);
-            $clientid = Input::get('hidden_client_id');
-            $settingid = Input::get('hidden_setting_id');
-
             $distribution_type = Input::get('distribution_type');
-            $attach_type = Input::get('attach_type');
+            if($distribution_type == "4")
+            {
+                  $total = count($_FILES['image_file']['name']);
+                  $clientid = Input::get('hidden_client_id');
 
-            for($i=0; $i<$total; $i++) {
-                  $filename = $_FILES['image_file']['name'][$i];
-                  $tmp_name = $_FILES['image_file']['tmp_name'][$i];
+                  for($i=0; $i<$total; $i++) {
+                        $filename = $_FILES['image_file']['name'][$i];
+                        $tmp_name = $_FILES['image_file']['tmp_name'][$i];
+                        $upload_dir = 'uploads/yearend_image';
+                        if (!file_exists($upload_dir)) {
+                              mkdir($upload_dir);
+                        }
+                        $upload_dir = $upload_dir.'/clientid_'.$clientid;
+                        if (!file_exists($upload_dir)) {
+                              mkdir($upload_dir);
+                        }
+                        $upload_dir = $upload_dir.'/aml';
+                        if (!file_exists($upload_dir)) {
+                              mkdir($upload_dir);
+                        }
+                        move_uploaded_file($tmp_name, $upload_dir.'/'.$filename);   
+
+                        $data['client_id'] = $clientid;
+                        $data['attachments'] = $filename;
+                        $data['url'] = $upload_dir;
+
+                        
+                        DB::table('yearend_aml_attachments')->insert($data);
+                  }       
+                  return redirect('user/yearend_individualclient/'.base64_encode($clientid))->with('message', 'Attachments Added successfully');
+            }
+            else{
+                  $total = count($_FILES['image_file']['name']);
+                  $clientid = Input::get('hidden_client_id');
+                  $settingid = Input::get('hidden_setting_id');
+                  $attach_type = Input::get('attach_type');
+
+                  for($i=0; $i<$total; $i++) {
+                        $filename = $_FILES['image_file']['name'][$i];
+                        $tmp_name = $_FILES['image_file']['tmp_name'][$i];
+                        $upload_dir = 'uploads/yearend_image';
+                        if (!file_exists($upload_dir)) {
+                              mkdir($upload_dir);
+                        }
+                        $upload_dir = $upload_dir.'/clientid_'.$clientid;
+                        if (!file_exists($upload_dir)) {
+                              mkdir($upload_dir);
+                        }
+                        $upload_dir = $upload_dir.'/distribution_'.$distribution_type;
+                        if (!file_exists($upload_dir)) {
+                              mkdir($upload_dir);
+                        }
+                        move_uploaded_file($tmp_name, $upload_dir.'/'.$filename);   
+
+                        $data['client_id'] = $clientid;
+                        if($settingid == "")
+                        {
+                              $data['setting_id'] = 0;
+                        }
+                        else{
+                              $data['setting_id'] = $settingid;
+                        }
+                        $data['attachments'] = $filename;
+                        $data['url'] = $upload_dir;
+                        $data['distribution_type'] = $distribution_type;
+                        $data['attach_type'] = $attach_type;
+
+                        
+                        DB::table('yearend_distribution_attachments')->insert($data);
+                  }    
+                  DB::table('year_client')->where('id',$clientid)->update(['status' => 1]);        
+                  return redirect('user/yearend_individualclient/'.base64_encode($clientid))->with('message', 'Attachments Added successfully');
+            }
+      }
+      public function yearend_attachment_individual()
+      {
+            $distribution_type = Input::get('distribution_type');
+            if($distribution_type == "4")
+            {
+                  $clientid = Input::get('hidden_client_id');
+
+                  $upload_dir = 'uploads/yearend_image';
+                  if (!file_exists($upload_dir)) {
+                        mkdir($upload_dir);
+                  }
+                  $upload_dir = $upload_dir.'/clientid_'.$clientid;
+                  if (!file_exists($upload_dir)) {
+                        mkdir($upload_dir);
+                  }
+                  $upload_dir = $upload_dir.'/aml';
+                  if (!file_exists($upload_dir)) {
+                        mkdir($upload_dir);
+                  }
+
+                  if (!empty($_FILES)) {
+                         $tmpFile = $_FILES['file']['tmp_name'];
+                         $filename = $upload_dir.'/'.$_FILES['file']['name'];
+                         $fname = $_FILES['file']['name'];
+
+                        move_uploaded_file($tmpFile,$filename);
+
+                        $data['client_id'] = $clientid;
+                       
+                        $data['attachments'] = $fname;
+                        $data['url'] = $upload_dir;
+
+                        $id = DB::table('yearend_aml_attachments')->insertGetId($data);
+                  }
+                  echo json_encode(array('id' => $id,'filename' => $fname,'type' => 'aml'));
+            }
+            else{
+                  $clientid = Input::get('hidden_client_id');
+                  $settingid = Input::get('hidden_setting_id');
+                  $attach_type = Input::get('attach_type');
+
                   $upload_dir = 'uploads/yearend_image';
                   if (!file_exists($upload_dir)) {
                         mkdir($upload_dir);
@@ -971,77 +1077,44 @@ class YearendController extends Controller {
                   if (!file_exists($upload_dir)) {
                         mkdir($upload_dir);
                   }
-                  move_uploaded_file($tmp_name, $upload_dir.'/'.$filename);   
 
-                  $data['client_id'] = $clientid;
-                  if($settingid == "")
-                  {
-                        $data['setting_id'] = 0;
+                  if (!empty($_FILES)) {
+                         $tmpFile = $_FILES['file']['tmp_name'];
+                         $filename = $upload_dir.'/'.$_FILES['file']['name'];
+                         $fname = $_FILES['file']['name'];
+
+                        move_uploaded_file($tmpFile,$filename);
+
+                        $data['client_id'] = $clientid;
+                        if($settingid == "")
+                        {
+                              $data['setting_id'] = 0;
+                        }
+                        else{
+                              $data['setting_id'] = $settingid;
+                        }
+                        $data['attachments'] = $fname;
+                        $data['url'] = $upload_dir;
+                        $data['distribution_type'] = $distribution_type;
+                        $data['attach_type'] = $attach_type;
+
+                        $id = DB::table('yearend_distribution_attachments')->insertGetId($data);
+                        DB::table('year_client')->where('id',$clientid)->update(['status' => 1]);
                   }
-                  else{
-                        $data['setting_id'] = $settingid;
-                  }
-                  $data['attachments'] = $filename;
-                  $data['url'] = $upload_dir;
-                  $data['distribution_type'] = $distribution_type;
-                  $data['attach_type'] = $attach_type;
-
-                  
-                  DB::table('yearend_distribution_attachments')->insert($data);
-            }    
-            DB::table('year_client')->where('id',$clientid)->update(['status' => 1]);        
-            return redirect('user/yearend_individualclient/'.base64_encode($clientid))->with('message', 'Attachments Added successfully');
-      }
-      public function yearend_attachment_individual()
-      {
-            $clientid = Input::get('hidden_client_id');
-            $settingid = Input::get('hidden_setting_id');
-
-            $distribution_type = Input::get('distribution_type');
-            $attach_type = Input::get('attach_type');
-
-            $upload_dir = 'uploads/yearend_image';
-            if (!file_exists($upload_dir)) {
-                  mkdir($upload_dir);
+                  echo json_encode(array('id' => $id,'filename' => $fname,'type' => 'yearend'));
             }
-            $upload_dir = $upload_dir.'/clientid_'.$clientid;
-            if (!file_exists($upload_dir)) {
-                  mkdir($upload_dir);
-            }
-            $upload_dir = $upload_dir.'/distribution_'.$distribution_type;
-            if (!file_exists($upload_dir)) {
-                  mkdir($upload_dir);
-            }
-
-            if (!empty($_FILES)) {
-                   $tmpFile = $_FILES['file']['tmp_name'];
-                   $filename = $upload_dir.'/'.$_FILES['file']['name'];
-                   $fname = $_FILES['file']['name'];
-
-                  move_uploaded_file($tmpFile,$filename);
-
-                  $data['client_id'] = $clientid;
-                  if($settingid == "")
-                  {
-                        $data['setting_id'] = 0;
-                  }
-                  else{
-                        $data['setting_id'] = $settingid;
-                  }
-                  $data['attachments'] = $fname;
-                  $data['url'] = $upload_dir;
-                  $data['distribution_type'] = $distribution_type;
-                  $data['attach_type'] = $attach_type;
-
-                  $id = DB::table('yearend_distribution_attachments')->insertGetId($data);
-                  DB::table('year_client')->where('id',$clientid)->update(['status' => 1]);
-            }
-            echo json_encode(array('id' => $id,'filename' => $fname));
       }
       public function yearend_delete_image()
       {
             $imgid = Input::get('imgid');
-            DB::table('yearend_distribution_attachments')->where('id',$imgid)->delete();
+            $type = Input::get('type');
+            if($type == "2")
+            {
+                  DB::table('yearend_aml_attachments')->where('id',$imgid)->delete();
+            }
+            else{
+                  DB::table('yearend_distribution_attachments')->where('id',$imgid)->delete();
+            }            
       }
       public function yearend_delete_all_image()
       {
@@ -1051,6 +1124,11 @@ class YearendController extends Controller {
             $type = Input::get('type');
 
             DB::table('yearend_distribution_attachments')->where('client_id',$clientid)->where('setting_id',$settingid)->where('distribution_type',$distribution)->where('attach_type',$type)->delete();
+      }
+      public function yearend_delete_all_image_aml()
+      {
+            $clientid = Input::get('clientid');
+            DB::table('yearend_aml_attachments')->where('client_id',$clientid)->delete();
       }
       public function yearend_delete_note()
       {
@@ -1070,6 +1148,11 @@ class YearendController extends Controller {
       {
             $attachment_id = $_POST['attachment_id'];
             DB::table('yearend_distribution_attachments')->where('id',$attachment_id)->delete();
+      }
+      public function remove_yearend_dropzone_attachment_aml()
+      {
+            $attachment_id = $_POST['attachment_id'];
+            DB::table('yearend_aml_attachments')->where('id',$attachment_id)->delete();
       }
       public function distribution_future()
       {
