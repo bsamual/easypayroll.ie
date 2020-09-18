@@ -1284,6 +1284,7 @@ Route::post('/user/gbs_paye_p30_email_unsent_files', 'user\Gbspayep30Controller@
 /*----------------------GBS Paye M.R.S P30 02-03-2019 Start----------------------*/
 
 Route::get('/user/paye_p30_manage/{id?}', 'user\Payep30Controller@paye_p30_manage');
+Route::get('/user/paye_p30_ros_liabilities/{id?}', 'user\Payep30Controller@paye_p30_ros_liabilities');
 Route::get('/user/paye_p30_review_year/{id?}', 'user\Payep30Controller@paye_p30_review_year');
 Route::post('/user/paye_p30_periods_update/', 'user\Payep30Controller@paye_p30_periods_update');
 Route::get('/user/refresh_paye_p30_liability', 'user\Payep30Controller@refresh_paye_p30_liability');
@@ -1666,4 +1667,7 @@ Route::post('/user/clear_import_opening_balance', 'user\OpeningbalanceController
 
 Route::post('/user/cm_load_all_client_invoice', 'user\CmController@cm_load_all_client_invoice');
 Route::post('/user/cm_load_all_client_message', 'user\CmController@cm_load_all_client_message');
+
+Route::post('/user/apply_task_to_ros', 'user\Payep30Controller@apply_task_to_ros');
+Route::post('/user/report_active_month_csv', 'user\Payep30Controller@report_active_month_csv');
 

@@ -83,6 +83,16 @@ class Payep30Controller extends Controller {
 		// }
 		return view('user/paye_p30/paye_p30_manage', array('year' => $year, 'payelist' => $pay3_task,'paye_count' => $paye_count));
 	}
+	public function paye_p30_ros_liabilities($id)
+	{
+
+		$id = base64_decode($id);
+		$year = DB::table('paye_p30_year')->where('year_id',$id)->first();		
+
+		$pay3_task = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->get();
+		$paye_count = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->count();
+		return view('user/paye_p30/paye_p30_ros_liabilities', array('year' => $year, 'payelist' => $pay3_task,'paye_count' => $paye_count));
+	}
 	public function paye_p30_review_year($id="")
 	{
 		$paye_year = DB::table('paye_p30_year')->where('year_id', $id)->first();
@@ -3323,5 +3333,74 @@ class Payep30Controller extends Controller {
 			}
 		}
 		echo json_encode(array("task_id" => $task_id, "task_name" => $task_name));
+	}
+	public function apply_task_to_ros()
+	{
+		$active = Input::get('active');
+		$year = Input::get('year');
+
+		$tasks = DB::table('paye_p30_task')->where('paye_year',$year)->get();
+		if(count($tasks))
+		{
+			foreach($tasks as $task)
+			{
+				$data = array();
+				$liability = 'month_liabilities_'.$active;
+				$get_month = unserialize($task->$liability);
+
+				$ros_liability = $get_month['ros_liability'];
+				$task_liability = $get_month['task_liability'];
+
+				if($ros_liability == "" || $ros_liability == "0.00" || $ros_liability == "0" || $ros_liability == "00.00" || $ros_liability == "0.0" || $ros_liability == "00.0")
+				{
+					$get_month['ros_liability'] = $task_liability;
+					$get_month['liability_diff'] = '0';
+
+					$serialize = serialize($get_month);
+					$data[$liability] = $serialize;
+					DB::table('paye_p30_task')->where('id',$task->id)->update($data);
+				}
+			}
+		}
+	}
+	public function report_active_month_csv()
+	{
+		$active = Input::get('active');
+		$year = Input::get('year');
+
+		if($active == "1"){ $month_name = 'January'; }
+		elseif($active == "2"){ $month_name = 'February'; }
+		elseif($active == "3"){ $month_name = 'March'; }
+		elseif($active == "4"){ $month_name = 'April'; }
+		elseif($active == "5"){ $month_name = 'May'; }
+		elseif($active == "6"){ $month_name = 'June'; }
+		elseif($active == "7"){ $month_name = 'July'; }
+		elseif($active == "8"){ $month_name = 'August'; }
+		elseif($active == "9"){ $month_name = 'September'; }
+		elseif($active == "10"){ $month_name = 'October'; }
+		elseif($active == "11"){ $month_name = 'November'; }
+		else{ $month_name = 'December'; }
+
+		$columns = array('Client Name','ROS Liability','Task Liability');
+		$file = fopen('papers/Paye P30 '.$month_name.' Month Report.csv', 'w');
+		fputcsv($file, $columns);
+
+		$tasks = DB::table('paye_p30_task')->where('paye_year',$year)->get();
+		if(count($tasks))
+		{
+			foreach($tasks as $task)
+			{
+				$data = array();
+				$liability = 'month_liabilities_'.$active;
+				$get_month = unserialize($task->$liability);
+
+				$ros_liability = $get_month['ros_liability'];
+				$task_liability = $get_month['task_liability'];
+
+				$columns1 = array($task->task_name,number_format_invoice($ros_liability),number_format_invoice($task_liability));
+				fputcsv($file, $columns1);
+			}
+		}
+		echo 'Paye P30 '.$month_name.' Month Report.csv';
 	}
 }

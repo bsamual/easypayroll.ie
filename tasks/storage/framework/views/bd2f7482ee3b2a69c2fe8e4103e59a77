@@ -791,8 +791,8 @@ a:hover{text-decoration: underline;}
 			    <div class="col-lg-3">Email:</div>
 			    <div class="col-lg-9"><?php echo $client_details->email?></div>
             </td>
-            <td colspan="3" rowspan="2" style="border-top: 0px solid;vertical-align: bottom;">
-            	<h4 style="font-weight:700"><?php echo $year_details->year; ?> AML Review Document</h4>
+            <td colspan="3" rowspan="2" style="border-top: 0px solid;">
+            	<h4 style="font-weight:700;margin-top:0px;margin-bottom:4px"><?php echo $year_details->year; ?> AML Review Document</h4>
             	<?php
             		$aml_attachments = DB::table('yearend_aml_attachments')->where('client_id',$year_details->id)->get();
                 	if(count($aml_attachments))
