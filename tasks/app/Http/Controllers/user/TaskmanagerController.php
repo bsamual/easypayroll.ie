@@ -811,6 +811,7 @@ class TaskmanagerController extends Controller {
 			$due_date = Input::get('due_date');
 			$recurring = Input::get('recurring_checkbox');
 			$accept_recurring = Input::get('accept_recurring');
+			
 
 			$task_specifics_val = strip_tags($task_specifics);
 			if($subject_class == "")
@@ -841,6 +842,15 @@ class TaskmanagerController extends Controller {
 			$data['subject'] = $subject_class;
 			$data['task_specifics'] = $task_specifics;
 			$data['due_date'] = $due_date_change;
+			$auto_close = Input::get('auto_close_task');
+			if($auto_close == "1")
+			{
+				$data['auto_close'] = 1;
+			}
+			else{
+				$data['auto_close'] = 0;
+			}
+			
 			if($accept_recurring == "1")
 			{
 				$data['recurring_task'] = $recurring;
@@ -1124,6 +1134,14 @@ class TaskmanagerController extends Controller {
 			$data['due_date'] = $due_date_change;
 			$data['recurring_task'] = $recurring;
 			$data['recurring_days'] = $days;
+			$auto_close = Input::get('auto_close_task');
+			if($auto_close == "1")
+			{
+				$data['auto_close'] = 1;
+			}
+			else{
+				$data['auto_close'] = 0;
+			}
 
 			$task_id = DB::table('taskmanager')->insertGetid($data);
 
@@ -1408,6 +1426,43 @@ class TaskmanagerController extends Controller {
 		$sessn=array('taskmanager_user' => $user);
 		Session::put($sessn);
 	}
+	public function change_auto_close_status()
+	{
+		$taskid = Input::get('task_id');
+		$data['auto_close'] = Input::get('status');
+		DB::table('taskmanager')->where('id',$taskid)->update($data);
+
+		$allocations = DB::table('taskmanager_specifics')->where('task_id',$taskid)->where('to_user','!=','')->where('status','<',3)->limit(1)->orderBy('id','desc')->first();
+		if(count($allocations))
+		{
+			$new_allocation = $allocations->from_user;
+		}
+		else{
+			$new_allocation = '0';
+		}
+
+		$task_details = DB::table('taskmanager')->where('id',$taskid)->first();
+		if($task_details->auto_close == 1)
+		{
+			if((Session::get('taskmanager_user')) != $task_details->author)
+			{
+				if($task_details->author == $new_allocation)
+				{
+					$show_auto_close_msg = 1;
+				}
+				else{
+					$show_auto_close_msg = 0;
+				}
+			}
+			else{
+				$show_auto_close_msg = 0;
+			}
+		}
+		else{
+			$show_auto_close_msg = 0;
+		}
+		echo $show_auto_close_msg;
+	}
 	public function delete_taskmanager_files()
 	{
 		$file_id = Input::get('file_id');
@@ -1567,6 +1622,7 @@ class TaskmanagerController extends Controller {
 	public function taskmanager_change_allocations()
 	{
 		$task_id = Input::get('task_id');
+		$type = Input::get('type');
 		$task_details = DB::table('taskmanager')->where('id',$task_id)->first();
 
 		if($task_details->allocated_to == "" || $task_details->allocated_to == "0")
@@ -1585,6 +1641,11 @@ class TaskmanagerController extends Controller {
 
 		$new_allocation = Input::get('new_allocation');
 		$data['allocated_to'] = $new_allocation;
+		if($type == "1")
+		{
+			$data['status'] = 1;
+			$data['progress'] = "100";
+		}
 		DB::table('taskmanager')->where('id',$task_id)->update($data);
 
 		$to_details = DB::table('user')->where('user_id',$new_allocation)->first();
@@ -1592,20 +1653,23 @@ class TaskmanagerController extends Controller {
 
 		$message = '<spam style="color:#006bc7">++++<strong>'.$from.'</strong> has allocated this task to <strong>'.$to.'</strong> on <strong>'.date('d-M-Y').'</strong>++++</spam>';
 
-		if(Session::has('taskmanager_user'))
-	    {
-	    	$sess_user = Session::get('taskmanager_user');
-	    	if($sess_user == $task_details->author)
-	    	{
-	    		$dataupdate_spec_status['author_spec_status'] = 0;
-				$dataupdate_spec_status['allocated_spec_status'] = 1;
-	    	}
-	    	else{
-	    		$dataupdate_spec_status['author_spec_status'] = 1;
-				$dataupdate_spec_status['allocated_spec_status'] = 0;
-	    	}
-	    	DB::table('taskmanager')->where('id',$task_id)->update($dataupdate_spec_status);
-	    }
+		if($type == "0")
+		{
+			if(Session::has('taskmanager_user'))
+		    {
+		    	$sess_user = Session::get('taskmanager_user');
+		    	if($sess_user == $task_details->author)
+		    	{
+		    		$dataupdate_spec_status['author_spec_status'] = 0;
+					$dataupdate_spec_status['allocated_spec_status'] = 1;
+		    	}
+		    	else{
+		    		$dataupdate_spec_status['author_spec_status'] = 1;
+					$dataupdate_spec_status['allocated_spec_status'] = 0;
+		    	}
+		    	DB::table('taskmanager')->where('id',$task_id)->update($dataupdate_spec_status);
+		    }
+		}
 
 		$data_specifics['task_id'] = $task_id;
 		$data_specifics['message'] = $message;
@@ -1692,7 +1756,14 @@ class TaskmanagerController extends Controller {
         if($task_details->subject == "") { $subject = substr($task_specifics_val,0,30); }
         else{ $subject = $task_details->subject; }
 
-		$pval = '<p data-element="'.$task_details->id.'" data-subject="'.$subject.'" data-author="'.$task_details->author.'" data-allocated="'.$task_details->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task_details->id.'" title="Allocate User">'.$from.'->'.$to.'('.date('d-M-Y H:i').')</p>';
+        if($task_details->auto_close == 1)
+        {
+        	$close_task = 'auto_close_task_complete';
+        }
+        else{
+        	$close_task = '';
+        }
+		$pval = '<p data-element="'.$task_details->id.'" data-subject="'.$subject.'" data-author="'.$task_details->author.'" data-allocated="'.$task_details->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task_details->id.' '.$close_task.'" title="Allocate User">'.$from.'->'.$to.'('.date('d-M-Y H:i').')</p>';
 		$trval = '<tr><td colspan="2">'.$from.'->'.$to.'('.date('d-M-Y H:i').')</td></tr>';
 		echo json_encode(array("pval" => $pval, 'trval' => $trval,'to' => $to));
 	}
@@ -1784,7 +1855,37 @@ class TaskmanagerController extends Controller {
 			}
 			DB::table('taskmanager')->where('id',$task_id)->update($dataupdate_spec_status);
 		}
-		echo $output;
+
+
+		$allocations = DB::table('taskmanager_specifics')->where('task_id',$task_id)->where('to_user','!=','')->where('status','<',3)->limit(1)->orderBy('id','desc')->first();
+		if(count($allocations))
+		{
+			$new_allocation = $allocations->from_user;
+		}
+		else{
+			$new_allocation = '0';
+		}
+		if($task_details->auto_close == 1)
+		{
+			if((Session::get('taskmanager_user')) != $task_details->author)
+			{
+				if($task_details->author == $new_allocation)
+				{
+					$show_auto_close_msg = 1;
+				}
+				else{
+					$show_auto_close_msg = 0;
+				}
+			}
+			else{
+				$show_auto_close_msg = 0;
+			}
+		}
+		else{
+			$show_auto_close_msg = 0;
+		}
+
+		echo json_encode(array("output" => $output, "auto_close" => $task_details->auto_close, "show_auto_close_msg" => $show_auto_close_msg));
 	}
 	public function add_comment_specifics()
 	{
@@ -2294,6 +2395,13 @@ class TaskmanagerController extends Controller {
                 $author_cls = '';
                 $hidden_author_cls = '';
               }
+              if($task->auto_close == 1)
+	            {
+	              $close_task = 'auto_close_task_complete';
+	            }
+	            else{
+	              $close_task = '';
+	            }
 	          $open_tasks.='<tr class="tasks_tr '.$author_cls.'" id="task_tr_'.$task->id.'">
 	            <td style="vertical-align: baseline;background: #2fd9ff;width:35%;padding:0px">';
                   $statusi = 0;
@@ -2428,7 +2536,7 @@ class TaskmanagerController extends Controller {
 	                <tr>
 	                  <td colspan="2" class="'.$disabled_icon.'">
 	                    <spam style="font-weight:700;text-decoration: underline;">Allocations:</spam>&nbsp;
-	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.'" title="Allocate User" style="font-weight:800"></a>
+	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_'.$task->id.' '.$close_task.' '.$disabled.'" title="Allocate User" style="font-weight:800"></a>
 	                    &nbsp;
 	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-history show_task_allocation_history show_task_allocation_history_'.$task->id.'" title="Allocation history" style="font-weight:800"></a>
 	                    &nbsp;
@@ -2445,7 +2553,7 @@ class TaskmanagerController extends Controller {
 	                    {
 	                      foreach($allocations as $allocate)
 	                      {
-	                        $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.'" title="Allocate User">';
+	                        $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$close_task.' '.$disabled.'" title="Allocate User">';
 	                          $fromuser = DB::table('user')->where('user_id',$allocate->from_user)->first();
 	                          $touser = DB::table('user')->where('user_id',$allocate->to_user)->first();
 	                          $output.=$fromuser->lastname.' '.$fromuser->firstname.' -> '.$touser->lastname.' '.$touser->firstname.' ('.date('d-M-Y H:i', strtotime($allocate->allocated_date)).')';
@@ -2594,7 +2702,8 @@ class TaskmanagerController extends Controller {
                             else{
                                 $complete_button = 'mark_as_complete';
                             }
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.'" data-element="'.$task->id.'">Mark Complete</a>
+                            
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
 	                      <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'">Activate</a>';
 	                    }
 	                    else{
@@ -2612,7 +2721,8 @@ class TaskmanagerController extends Controller {
                             else{
                                 $complete_button = 'mark_as_complete';
                             }
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.'" data-element="'.$task->id.'">Mark Complete</a>
+                            
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
 	                      <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'">Park Task</a>';
 	                    }
 	                  $open_tasks.='</td>
@@ -2853,6 +2963,13 @@ class TaskmanagerController extends Controller {
                 $author_cls = '';
                 $hidden_author_cls = '';
               }
+              if($task->auto_close == 1)
+	            {
+	              $close_task = 'auto_close_task_complete';
+	            }
+	            else{
+	              $close_task = '';
+	            }
 	          $open_tasks.='<tr class="tasks_tr '.$author_cls.'" id="task_tr_'.$task->id.'">
 	            <td style="vertical-align: baseline;background: #2fd9ff;width:35%;padding:0px">';
                   $statusi = 0;
@@ -2987,7 +3104,7 @@ class TaskmanagerController extends Controller {
 	                <tr>
 	                  <td colspan="2" class="'.$disabled_icon.'">
 	                    <spam style="font-weight:700;text-decoration: underline;">Allocations:</spam>&nbsp;
-	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.'" title="Allocate User" style="font-weight:800"></a>
+	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_'.$task->id.' '.$close_task.' '.$disabled.'" title="Allocate User" style="font-weight:800"></a>
 	                    &nbsp;
 	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-history show_task_allocation_history show_task_allocation_history_'.$task->id.'" title="Allocation history" style="font-weight:800"></a>
 	                    &nbsp;
@@ -3004,7 +3121,7 @@ class TaskmanagerController extends Controller {
 	                    {
 	                      foreach($allocations as $allocate)
 	                      {
-	                        $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.'" title="Allocate User">';
+	                        $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$close_task.' '.$disabled.'" title="Allocate User">';
 	                          $fromuser = DB::table('user')->where('user_id',$allocate->from_user)->first();
 	                          $touser = DB::table('user')->where('user_id',$allocate->to_user)->first();
 	                          $output.=$fromuser->lastname.' '.$fromuser->firstname.' -> '.$touser->lastname.' '.$touser->firstname.' ('.date('d-M-Y H:i', strtotime($allocate->allocated_date)).')';
@@ -3153,7 +3270,8 @@ class TaskmanagerController extends Controller {
                             else{
                                 $complete_button = 'mark_as_complete';
                             }
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.'" data-element="'.$task->id.'">Mark Complete</a>
+                            
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
 	                      <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'">Activate</a>';
 	                    }
 	                    else{
@@ -3171,7 +3289,8 @@ class TaskmanagerController extends Controller {
                             else{
                                 $complete_button = 'mark_as_complete';
                             }
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.'" data-element="'.$task->id.'">Mark Complete</a>
+                            
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
 	                      <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'">Park Task</a>';
 	                    }
 	                  $open_tasks.='</td>
@@ -3360,6 +3479,7 @@ class TaskmanagerController extends Controller {
 	public function taskmanager_mark_complete()
 	{
 		$taskidval = Input::get('task_id');
+		$type = Input::get('type');
 		$task_details = DB::table('taskmanager')->where('id',$taskidval)->first();
 		if(count($task_details))
 		{
@@ -3508,6 +3628,11 @@ class TaskmanagerController extends Controller {
 				}
 			}
 			else{
+				if($type == "1")
+				{
+					$data['status'] = 1;
+					$data['progress'] = "100";
+				}
 				$data['allocated_to'] = $author;
 				DB::table('taskmanager')->where('id',$taskidval)->update($data);
 				
@@ -3633,11 +3758,15 @@ class TaskmanagerController extends Controller {
 		$query = '';
 		if($author != ""){ $query.= "`author` = '".$author."'";  }
 
-		if($open_task != "0"){ 
+		if($open_task == "0"){ 
+			if($query == "") { $query.= "(`status` = '1' OR `status` = '2')"; } else { $query.= " AND (`status` = '1' OR `status` = '2')"; }
+		}
+		elseif($open_task == "1")
+		{
 			if($query == "") { $query.= "(`status` = '0' OR `status` = '2')"; } else { $query.= " AND (`status` = '0' OR `status` = '2')"; }
 		}
 		else{
-			if($query == "") { $query.= "(`status` = '1' OR `status` = '2')"; } else { $query.= " AND (`status` = '1' OR `status` = '2')"; }
+			
 		}
 
 		if($client_id != ""){ if($query == "") { $query.= "`client_id` = '".$client_id."'"; } else { $query.= " AND `client_id` = '".$client_id."'"; } }
@@ -3703,6 +3832,14 @@ class TaskmanagerController extends Controller {
                   $title = '';
                 }
 	          }
+
+	          if($task->auto_close == 1)
+            {
+              $close_task = 'auto_close_task_complete';
+            }
+            else{
+              $close_task = '';
+            }
 	          $author = DB::table('user')->where('user_id',$task->author)->first();
 	          $task_specifics_val = strip_tags($task->task_specifics);
 	          if($task->subject == "") { $subject = substr($task_specifics_val,0,30); }
@@ -3835,7 +3972,7 @@ class TaskmanagerController extends Controller {
 	                <tr>
 	                  <td colspan="2">
 	                    <spam style="font-weight:700;text-decoration: underline;">Allocations:</spam>&nbsp;
-	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.'" title="Allocate User" style="font-weight:800"></a>
+	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_'.$task->id.' '.$close_task.' '.$disabled.'" title="Allocate User" style="font-weight:800"></a>
 	                    &nbsp;
 	                    <a href="javascript:" data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="fa fa-history show_task_allocation_history show_task_allocation_history_'.$task->id.'" title="Allocation history" style="font-weight:800"></a>
 	                    &nbsp;
@@ -3852,7 +3989,7 @@ class TaskmanagerController extends Controller {
 	                    {
 	                      foreach($allocations as $allocate)
 	                      {
-	                        $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.'" title="Allocate User">';
+	                        $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$close_task.' '.$disabled.'" title="Allocate User">';
 	                          $fromuser = DB::table('user')->where('user_id',$allocate->from_user)->first();
 	                          $touser = DB::table('user')->where('user_id',$allocate->to_user)->first();
 	                          $output.=$fromuser->lastname.' '.$fromuser->firstname.' -> '.$touser->lastname.' '.$touser->firstname.' ('.date('d-M-Y H:i', strtotime($allocate->allocated_date)).')';
@@ -4002,7 +4139,9 @@ class TaskmanagerController extends Controller {
                             else{
                                 $complete_button = 'mark_as_complete';
                             }
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.'" data-element="'.$task->id.'">Mark Complete</a>';
+
+                            
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>';
 	                    }
 	                  $open_tasks.='</td>
 	                </tr>

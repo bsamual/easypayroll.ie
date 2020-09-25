@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 <script src="<?php echo URL::to('assets/js/jquery.dataTables.min.js'); ?>"></script>
@@ -231,7 +230,7 @@ body #coupon {
 
 }
 
-@media print {
+@media  print {
 
  body * {
 
@@ -3532,7 +3531,7 @@ $(window).click(function(e) {
 
         $('.stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
 
-        $(".stop_time1").val("");
+        $(".stop_time1").val(result['stop_time']);
 
         if(result['alert'] == 1)
         {
@@ -3608,7 +3607,7 @@ $(window).click(function(e) {
 
         $('.stop_time2').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
 
-        $(".stop_time2").val("");
+        $(".stop_time2").val(result['stop_time']);
 
         $("#calculate_job_time_quick").val(result['jobtime']);
 
@@ -4959,4 +4958,5 @@ $(".currentdate").val(currentDate);*/
 
 
 
-@stop
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

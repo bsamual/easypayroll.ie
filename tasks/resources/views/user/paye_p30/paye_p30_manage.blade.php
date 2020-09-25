@@ -123,7 +123,7 @@
 .table_bg thead tr th{
   padding:8px;
 }
-.button_top_right ul li a{padding: 5px 10px; font-size: 12px; font-weight: 600; margin-bottom: 0px;min-height: 33px}
+.button_top_right ul li a{padding: 5px 5px; font-size: 11px; font-weight: 500; margin-bottom: 0px;min-height: 33px}
 .form-control[readonly]{background-color: #e6e6e6 !important}
 .modal_load {
     display:    none;
@@ -234,8 +234,8 @@ body.loading_apply .modal_load_apply {
 }
 .fa-question{
   color: #f00 !important;
-  font-size: 20px !important;
-  margin-left: 5px;
+  font-size: 16px !important;
+  margin-left: 3px;
   font-weight: 500 !important;
   margin-top: 5px;
   cursor:pointer;
@@ -517,7 +517,7 @@ body.loading_apply .modal_load_apply {
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Show a comparison of Weekly / Monthly, Email, Pay instruction and so on for Payroll tasks with more than one entry" data-placement="left"></a>
                   </li>
                   <li style="width:45%">
-                    <a href="javascript:" class="refresh_all_clients" style="width:90%;">Refresh All Tables</a>
+                    <a href="javascript:" class="refresh_all_clients" style="width:85%;">Refresh All Tables</a>
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Pull the current PREM Charges from the PMS System and allocate them to the correct period on the PAYE MRS system" data-placement="left"></a>
                   </li>
                   <li style="width:47%">

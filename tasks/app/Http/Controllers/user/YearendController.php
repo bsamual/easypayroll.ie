@@ -2042,14 +2042,15 @@ class YearendController extends Controller {
             $output_result='<table class="display nowrap fullviewtablelist" id="liability_expand" width="100%" style="max-width: 100%;">
                 <thead>
                   <tr class="background_bg">        
-                    <th width="150px" style="text-align:left"><i class="fa fa-sort sort_clientid"></i>Client Id</th>
+                    <th width="80px" style="text-align:left"><i class="fa fa-sort sort_clientid"></i>Client Id</th>
                     <th style="text-align:left">First Name</th>
                     <th style="text-align:left">Last Name</th>
                     <th style="text-align:left">Company</th>
                     <th style="text-align:left">Balance</th>
                     <th style="text-align:left">Liability</th>
-                    <th style="text-align:left">Payments</th>
-                    <th style="text-align:left">'.$prelim_year.' Prelim</th>
+                    <th style="text-align:left;width:70px">Payments</th>
+                    <th style="text-align:left;width:70px">'.$prelim_year.' Prelim</th>
+                    <th style="text-align:left;width:200px">Date Filled</th>
                     <th style="text-align:left">File Uploaded</th>
                   </tr>   
                 </thead>
@@ -2117,16 +2118,28 @@ class YearendController extends Controller {
                               elseif($balance == 0){
                                     $balance = '0.00';
                               }
-                              
+                              if($liability_details->date_filled == 1)
+                              {
+                                    $yearend_date = $liability_details->yearend_date;
+                                    $date_checked = 'checked';
+                                    $date_disabled = '';
+                              }
+                              else{
+                                    $yearend_date = $liability_details->yearend_date;
+                                    $date_checked = '';
+                                    $date_disabled = 'disabled';
+                              }
                         }
                         else{
                               $liability ='0.00';
                               $payments = '';
                               $balance = '0.00';
                               $prelim = '';
-                        }
 
-                       
+                              $yearend_date = '';
+                              $date_checked = '';
+                              $date_disabled = 'disabled';
+                        }
 
                         $setting_client = $single_client->setting_id;
                         $setting_checkbox = $single_client->setting_active;
@@ -2183,6 +2196,10 @@ class YearendController extends Controller {
                               <td style="'.$color_liability.'">'.number_format_invoice_without_decimal($liability).'</td>
                               <td><input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.number_format_invoice_without_decimal($payments).'" /></td>
                               <td><input type="text" class="form-control prelim_class" data-element="'.$client_details->client_id.'"  placeholder="Prelim" value="'.number_format_invoice_without_decimal($prelim).'" /></td>
+                              <td>
+                                    <input type="checkbox" class="date_selection" data-element="'.$client_details->client_id.'" style="float: left;" value="1" '.$date_checked.'><label style="float:left;margin-top:5px">&nbsp;</label>
+                                    <input type="text" class="form-control date_class" data-element="'.$client_details->client_id.'"  placeholder="Date" style="width:70%" value="'.$yearend_date.'" '.$date_disabled.'/>
+                              </td>
                               <td>'.$output_attachement.'</td>
                               </tr>';
                         }
@@ -2517,5 +2534,59 @@ class YearendController extends Controller {
             }
             fclose($file);
             echo 'yearend_clients.csv';
+      }
+      public function save_yearend_date_status()
+      {
+            $status = Input::get('status');
+            $client_id = Input::get('client_id');
+            $setting_id = Input::get('setting_id');
+            $year_id = Input::get('year_id');
+
+            $yearend_client = DB::table('year_client')->where('year', $year_id)->where('client_id', $client_id)->first();
+            $row_id = $yearend_client->id;
+            
+            $liability_details = DB::table('year_client_liability')->where('year_id', $year_id)->where('client_id', $client_id)->where('row_id', $row_id)->where('setting_id', $setting_id)->first();
+
+            
+            $data['date_filled'] = $status;
+            if(count($liability_details))
+            {
+                  if($liability_details->yearend_date == "")
+                  {
+                        $date_filled = date('d-M-Y');
+                        $data['yearend_date'] = $date_filled;
+                  }
+                  else{
+                        $date_filled = $liability_details->yearend_date;
+                  }
+
+                  DB::table('year_client_liability')->where('year_id',$year_id)->where('client_id',$client_id)->where('row_id', $row_id)->where('setting_id',$setting_id)->update($data);
+            }
+            else{
+                  $date_filled = date('d-M-Y');
+                  $data['yearend_date'] = $date_filled;
+                  $data['payments'] = '';
+                  $data['year_id'] = $year_id;
+                  $data['client_id'] = $client_id;
+                  $data['row_id'] = $row_id;
+                  $data['setting_id'] = $setting_id;
+                  $data['balance'] = '';
+
+                  DB::table('year_client_liability')->insert($data);
+            }
+            echo $date_filled;
+      }
+      public function save_yearend_liability_date()
+      {
+            $dateval = Input::get('dateval');
+            $client_id = Input::get('client_id');
+            $setting_id = Input::get('setting_id');
+            $year_id = Input::get('year_id');
+
+            $yearend_client = DB::table('year_client')->where('year', $year_id)->where('client_id', $client_id)->first();
+            $row_id = $yearend_client->id;
+
+            $data['yearend_date'] = $dateval;
+            DB::table('year_client_liability')->where('year_id',$year_id)->where('client_id',$client_id)->where('row_id', $row_id)->where('setting_id',$setting_id)->update($data);
       }
 }

@@ -316,6 +316,7 @@ input:checked + .slider:before {
 .hidden_tasks_tr>td{
 	cursor:pointer;
 }
+#colorbox, #cboxWrapper { z-index:99999999999; }
 </style>
 <script src="<?php echo URL::to('ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('ckeditor/samples/js/sample.js'); ?>"></script>
@@ -527,6 +528,8 @@ input:checked + .slider:before {
           </div>
           <div class="modal-footer allocation_body">  
             <input type="hidden" name="hidden_task_id_allocation" id="hidden_task_id_allocation" value="">
+            <input type="hidden" name="hidden_task_id_auto_close" id="hidden_task_id_auto_close" value="">
+            <input type="hidden" name="hidden_task_id_author" id="hidden_task_id_author" value="">
             <input type="button" class="common_black_button" id="allocate_now" value="Allocate Now">
           </div>
           <div class="modal-header history_body">
@@ -567,6 +570,8 @@ input:checked + .slider:before {
           </div>
           <div class="modal-footer" style="padding: 18px 5px;">  
             <input type="hidden" name="hidden_task_id_task_specifics" id="hidden_task_id_task_specifics" value="">
+            <input type="hidden" name="show_auto_close_msg" id="show_auto_close_msg" value="">
+            <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
             <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="margin-top: 10px;">
             <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="margin-top: 10px;">
             
@@ -796,6 +801,9 @@ input:checked + .slider:before {
             </div>
             <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
             <div id="add_infiles_attachments_div">
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
             </div>
             <div class="form-group date_group">
                 <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
@@ -1049,6 +1057,14 @@ input:checked + .slider:before {
 	                    $author_cls = '';
 	                    $hidden_author_cls = '';
 	                  }
+
+                    if($task->auto_close == 1)
+                    {
+                      $close_task = 'auto_close_task_complete';
+                    }
+                    else{
+                      $close_task = '';
+                    }
 	                  ?>
 	                  <tr class="tasks_tr <?php echo $author_cls; ?>" id="task_tr_<?php echo $task->id; ?>">
 	                    <td style="vertical-align: baseline;background: #2fd9ff;width:35%;padding:0px">
@@ -1201,7 +1217,7 @@ input:checked + .slider:before {
 	                        <tr>
 	                          <td colspan="2">
 	                            <spam style="font-weight:700;text-decoration: underline;">Allocations: </spam> &nbsp;
-	                            <a href="javascript:" data-element="<?php echo $task->id?>" data-subject="<?php echo $subject; ?>" data-author="<?php echo $task->author; ?>" data-allocated="<?php echo $task->allocated_to; ?>"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_<?php echo $task->id; ?> <?php echo $disabled; ?>" title="Allocate User" style="font-weight:800"></a>
+	                            <a href="javascript:" data-element="<?php echo $task->id?>" data-subject="<?php echo $subject; ?>" data-author="<?php echo $task->author; ?>" data-allocated="<?php echo $task->allocated_to; ?>"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_<?php echo $task->id; ?> <?php echo $disabled; ?> <?php echo $close_task; ?>" title="Allocate User" style="font-weight:800"></a>
 	                            &nbsp;
 	                            <a href="javascript:" data-element="<?php echo $task->id?>" data-subject="<?php echo $subject; ?>" data-author="<?php echo $task->author; ?>" data-allocated="<?php echo $task->allocated_to; ?>"  class="fa fa-history show_task_allocation_history show_task_allocation_history_<?php echo $task->id; ?>" title="Allocation History" style="font-weight:800"></a>
 	                            &nbsp;
@@ -1219,7 +1235,7 @@ input:checked + .slider:before {
 	                            {
 	                              foreach($allocations as $allocate)
 	                              {
-	                                $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.'" title="Allocate User">';
+	                                $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.' '.$close_task.'" title="Allocate User">';
 	                                  $fromuser = DB::table('user')->where('user_id',$allocate->from_user)->first();
 	                                  $touser = DB::table('user')->where('user_id',$allocate->to_user)->first();
 	                                  $output.=$fromuser->lastname.' '.$fromuser->firstname.' -> '.$touser->lastname.' '.$touser->firstname.' ('.date('d-M-Y H:i', strtotime($allocate->allocated_date)).')';
@@ -1380,7 +1396,7 @@ input:checked + .slider:before {
                                   $complete_button = 'mark_as_complete';
                                 }
                                 ?>
-                                <a href="javascript:" class="common_black_button <?php echo $complete_button; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
+                                <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
                                 <a href="javascript:" class="common_black_button activate_task_button" data-element="<?php echo $task->id; ?>">Activate</a>
                                 <?php
                               }
@@ -1399,8 +1415,9 @@ input:checked + .slider:before {
 	                              else{
 	                                $complete_button = 'mark_as_complete';
 	                              }
+                                
 	                              ?>
-	                              <a href="javascript:" class="common_black_button <?php echo $complete_button; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
+	                              <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
                                 <a href="javascript:" class="common_black_button park_task_button" data-element="<?php echo $task->id; ?>">Park Task</a>
 	                              <?php
 	                            }
@@ -2415,14 +2432,15 @@ $(window).click(function(e) {
   }
   if($(e.target).hasClass('mark_as_complete'))
   {
-  	var r = confirm("You are about to mark this task as Complete. Please Note that this task will be allocated back to the author. Are you sure you want to continue?");
-  	if(r)
-  	{
-  		$("body").addClass("loading");
-	    var task_id = $(e.target).attr("data-element");
-
-      var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
-      var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
+    var task_id = $(e.target).attr("data-element");
+    var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
+    var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
+    if($(e.target).hasClass('auto_close_task_complete'))
+    {
+      $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" data-next="'+nexttask_id+'" data-prev="'+prevtask_id+'" class="common_black_button yes_mark_complete">Yes</a><a href="javascript:" class="common_black_button no_mark_complete" data-task="'+task_id+'" data-next="'+nexttask_id+'" data-prev="'+prevtask_id+'">No</a></p>',fixed:true,width:"800px"});
+    }
+    else{
+      $("body").addClass("loading");
       if (typeof nexttask_id !== "undefined") {
         var taskidval = nexttask_id;
       }
@@ -2432,12 +2450,12 @@ $(window).click(function(e) {
       else{
         var taskidval = '';
       }
-	    $.ajax({
-	      url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
-	      type:"post",
-	      data:{task_id:task_id},
-	      success:function(resultval)
-	      {
+      $.ajax({
+        url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
+        type:"post",
+        data:{task_id:task_id,type:"0"},
+        success:function(resultval)
+        {
           var layout = $("#hidden_compressed_layout").val();
           var view = $(".select_view").val();
           if(layout == "1")
@@ -2634,9 +2652,453 @@ $(window).click(function(e) {
               })
             },2000);
           }
-	      }
-	    })
-  	}
+        }
+      });
+    }
+  }
+  if($(e.target).hasClass('yes_mark_complete'))
+  {
+    var task_id = $(e.target).attr("data-task");
+    var nexttask_id = $(e.target).attr("data-next");
+    var prevtask_id = $(e.target).attr("data-prev");
+
+		$("body").addClass("loading");
+    if (typeof nexttask_id !== "undefined") {
+      var taskidval = nexttask_id;
+    }
+    else if (typeof prevtask_id !== "undefined") {
+      var taskidval = prevtask_id;
+    }
+    else{
+      var taskidval = '';
+    }
+    $.ajax({
+      url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
+      type:"post",
+      data:{task_id:task_id,type:"1"},
+      success:function(resultval)
+      {
+        var layout = $("#hidden_compressed_layout").val();
+        var view = $(".select_view").val();
+        if(layout == "1")
+        {
+          var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+          var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+          if (typeof nexttask_id !== "undefined") {
+            var taskidval = nexttask_id;
+          }
+          else if (typeof prevtask_id !== "undefined") {
+            var taskidval = prevtask_id;
+          }
+          else{
+            var taskidval = '';
+          }
+
+          $("#task_tr_"+task_id).next().detach();
+          $("#task_tr_"+task_id).detach();
+          $("#hidden_tasks_tr_"+task_id).detach();
+
+          $("#task_tr_"+taskidval).show();
+          $("#task_tr_"+taskidval).next().show();
+          $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+          var opentask = $("#open_task_count_val").html();
+          var countopen = parseInt(opentask) - 1;
+          $("#open_task_count_val").html(countopen);
+          $("body").removeClass("loading");
+        }
+        else{
+          setTimeout(function() {
+            var user_id = $(".select_user_home").val();
+            $.ajax({
+              url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+              type:"post",
+              data:{user_id:user_id},
+              dataType:"json",
+              success: function(result)
+              {
+                $("#task_body_open").html(result['open_tasks']);
+                $("#task_body_layout").html(result['layout']);
+                
+                var layout = $("#hidden_compressed_layout").val();
+                $(".tasks_tr").hide();
+                $(".tasks_tr").next().hide();
+                $(".hidden_tasks_tr").hide();
+                var view = $(".select_view").val();
+                if(view == "3")
+                {
+                  if(layout == "1")
+                  {
+                    $(".author_tr:first").show();
+                    $(".author_tr:first").next().show();
+                    $(".table_layout").show();
+                    $(".table_layout").find(".hidden_author_tr").show();
+                    $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                  }
+                  else{
+                    $(".author_tr").show();
+                    $(".author_tr").next().show();
+                    $(".table_layout").hide();
+                    $(".table_layout").find(".hidden_author_tr").hide();
+                  }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
+                }
+                else if(view == "2"){
+                  $("#open_task_count").hide();
+                  $("#redline_task_count").show();
+                  $("#authored_task_count").hide();
+                  if(layout == "1")
+                  {
+                    var i = 1;
+                    $(".redline_indication").each(function() {
+                      if(i == 1)
+                      {
+                        if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                        {
+                          $(this).parents(".allocated_tr").show();
+                          $(this).parents(".allocated_tr").next().show();
+                          i++;
+                        }
+                      }
+                    });
+                    $(".table_layout").show();
+                    $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                    
+                    var j = 1;
+                    $(".redline_indication_layout").each(function() {
+                      if(j == 1)
+                      {
+                        if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                        {
+                          $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                          j++;
+                        }
+                      }
+                    });
+                  }
+                  else{
+                    $(".redline_indication").parents(".allocated_tr").show();
+                    $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                    $(".table_layout").hide();
+                    $(".table_layout").find(".hidden_allocated_tr").hide();
+                  }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
+                }
+                else if(view == "1"){
+                  if(layout == "1")
+                  {
+                    $(".allocated_tr:first").show();
+                    $(".allocated_tr:first").next().show();
+                    $(".table_layout").show();
+                    $(".table_layout").find(".hidden_allocated_tr").show();
+                    $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                  }
+                  else{
+                    $(".allocated_tr").show();
+                    $(".allocated_tr").next().show();
+                    $(".table_layout").hide();
+                    $(".table_layout").find(".hidden_allocated_tr").hide();
+                  }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
+                }
+                $("[data-toggle=popover]").popover({
+                    html : true,
+                    content: function() {
+                      var content = $(this).attr("data-popover-content");
+                      return $(content).children(".popover-body").html();
+                    },
+                    title: function() {
+                      var title = $(this).attr("data-popover-content");
+                      return $(title).children(".popover-heading").html();
+                    }
+                });
+                if(layout == "0")
+                {
+                  if(taskidval != "")
+                  {
+                    // $(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                  }
+                }
+                else{
+                  $("#"+taskidval).show();
+                  $("#"+taskidval).next().show();
+                  var hidden_tr = taskidval.substr(8);
+                  $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                }
+                if(layout == "1")
+                {
+                  $(".open_layout_div").addClass("open_layout_div_change");
+                  var open_tasks_height = $(".open_layout_div").height();
+                  var margintop = parseInt(open_tasks_height);
+                  $(".open_layout_div").css("position","fixed");
+                  $(".open_layout_div").css("height","312px");
+                  if(open_tasks_height > 312)
+                  {
+                    $(".open_layout_div").css("overflow-y","scroll");
+                  }
+                  if(open_tasks_height < 50)
+                  {
+                    $(".table_layout").css("margin-top","20px");
+                  }
+                    else{
+                      $(".table_layout").css("margin-top","335px");
+                    }
+                }
+                else{
+                  $(".open_layout_div").removeClass("open_layout_div_change");
+                  $(".open_layout_div").css("position","unset");
+                  $(".open_layout_div").css("height","auto");
+                  $(".open_layout_div").css("overflow-y","unset");
+                    $(".table_layout").css("margin-top","0px");
+                }
+                $("body").removeClass("loading");
+              }
+            })
+          },2000);
+        }
+        $.colorbox.close();
+      }
+    });
+  }
+  if($(e.target).hasClass('no_mark_complete'))
+  {
+    var task_id = $(e.target).attr("data-task");
+    var nexttask_id = $(e.target).attr("data-next");
+    var prevtask_id = $(e.target).attr("data-prev");
+    
+    $("body").addClass("loading");
+    if (typeof nexttask_id !== "undefined") {
+      var taskidval = nexttask_id;
+    }
+    else if (typeof prevtask_id !== "undefined") {
+      var taskidval = prevtask_id;
+    }
+    else{
+      var taskidval = '';
+    }
+    $.ajax({
+      url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
+      type:"post",
+      data:{task_id:task_id,type:"0"},
+      success:function(resultval)
+      {
+        var layout = $("#hidden_compressed_layout").val();
+        var view = $(".select_view").val();
+        if(layout == "1")
+        {
+          var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+          var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+          if (typeof nexttask_id !== "undefined") {
+            var taskidval = nexttask_id;
+          }
+          else if (typeof prevtask_id !== "undefined") {
+            var taskidval = prevtask_id;
+          }
+          else{
+            var taskidval = '';
+          }
+
+          $("#task_tr_"+task_id).next().detach();
+          $("#task_tr_"+task_id).detach();
+          $("#hidden_tasks_tr_"+task_id).detach();
+
+          $("#task_tr_"+taskidval).show();
+          $("#task_tr_"+taskidval).next().show();
+          $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+          var opentask = $("#open_task_count_val").html();
+          var countopen = parseInt(opentask) - 1;
+          $("#open_task_count_val").html(countopen);
+          $("body").removeClass("loading");
+        }
+        else{
+          setTimeout(function() {
+            var user_id = $(".select_user_home").val();
+            $.ajax({
+              url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+              type:"post",
+              data:{user_id:user_id},
+              dataType:"json",
+              success: function(result)
+              {
+                $("#task_body_open").html(result['open_tasks']);
+                $("#task_body_layout").html(result['layout']);
+                
+                var layout = $("#hidden_compressed_layout").val();
+                $(".tasks_tr").hide();
+                $(".tasks_tr").next().hide();
+                $(".hidden_tasks_tr").hide();
+                var view = $(".select_view").val();
+                if(view == "3")
+                {
+                  if(layout == "1")
+                  {
+                    $(".author_tr:first").show();
+                    $(".author_tr:first").next().show();
+                    $(".table_layout").show();
+                    $(".table_layout").find(".hidden_author_tr").show();
+                    $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                  }
+                  else{
+                    $(".author_tr").show();
+                    $(".author_tr").next().show();
+                    $(".table_layout").hide();
+                    $(".table_layout").find(".hidden_author_tr").hide();
+                  }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
+                }
+                else if(view == "2"){
+                  $("#open_task_count").hide();
+                  $("#redline_task_count").show();
+                  $("#authored_task_count").hide();
+                  if(layout == "1")
+                  {
+                    var i = 1;
+                    $(".redline_indication").each(function() {
+                      if(i == 1)
+                      {
+                        if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                        {
+                          $(this).parents(".allocated_tr").show();
+                          $(this).parents(".allocated_tr").next().show();
+                          i++;
+                        }
+                      }
+                    });
+                    $(".table_layout").show();
+                    $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                    
+                    var j = 1;
+                    $(".redline_indication_layout").each(function() {
+                      if(j == 1)
+                      {
+                        if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                        {
+                          $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                          j++;
+                        }
+                      }
+                    });
+                  }
+                  else{
+                    $(".redline_indication").parents(".allocated_tr").show();
+                    $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                    $(".table_layout").hide();
+                    $(".table_layout").find(".hidden_allocated_tr").hide();
+                  }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
+                }
+                else if(view == "1"){
+                  if(layout == "1")
+                  {
+                    $(".allocated_tr:first").show();
+                    $(".allocated_tr:first").next().show();
+                    $(".table_layout").show();
+                    $(".table_layout").find(".hidden_allocated_tr").show();
+                    $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                  }
+                  else{
+                    $(".allocated_tr").show();
+                    $(".allocated_tr").next().show();
+                    $(".table_layout").hide();
+                    $(".table_layout").find(".hidden_allocated_tr").hide();
+                  }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
+                }
+                $("[data-toggle=popover]").popover({
+                    html : true,
+                    content: function() {
+                      var content = $(this).attr("data-popover-content");
+                      return $(content).children(".popover-body").html();
+                    },
+                    title: function() {
+                      var title = $(this).attr("data-popover-content");
+                      return $(title).children(".popover-heading").html();
+                    }
+                });
+                if(layout == "0")
+                {
+                  if(taskidval != "")
+                  {
+                    // $(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                  }
+                }
+                else{
+                  $("#"+taskidval).show();
+                  $("#"+taskidval).next().show();
+                  var hidden_tr = taskidval.substr(8);
+                  $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                }
+                if(layout == "1")
+                {
+                  $(".open_layout_div").addClass("open_layout_div_change");
+                  var open_tasks_height = $(".open_layout_div").height();
+                  var margintop = parseInt(open_tasks_height);
+                  $(".open_layout_div").css("position","fixed");
+                  $(".open_layout_div").css("height","312px");
+                  if(open_tasks_height > 312)
+                  {
+                    $(".open_layout_div").css("overflow-y","scroll");
+                  }
+                  if(open_tasks_height < 50)
+                  {
+                    $(".table_layout").css("margin-top","20px");
+                  }
+                    else{
+                      $(".table_layout").css("margin-top","335px");
+                    }
+                }
+                else{
+                  $(".open_layout_div").removeClass("open_layout_div_change");
+                  $(".open_layout_div").css("position","unset");
+                  $(".open_layout_div").css("height","auto");
+                  $(".open_layout_div").css("overflow-y","unset");
+                    $(".table_layout").css("margin-top","0px");
+                }
+                $("body").removeClass("loading");
+              }
+            })
+          },2000);
+        }
+        $.colorbox.close();
+      }
+    });
   }
   if(e.target.id == "park_submit")
   {
@@ -2905,7 +3367,7 @@ $(window).click(function(e) {
       $.ajax({
         url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
         type:"post",
-        data:{task_id:task_id},
+        data:{task_id:task_id,type:"0"},
         success:function(resultval)
         {
           var layout = $("#hidden_compressed_layout").val();
@@ -3427,6 +3889,7 @@ $(window).click(function(e) {
         $("#add_infiles_attachments_div").html("");
         $("#attachments_infiles").hide();
 
+        $(".auto_close_task").prop("checked",false);
         $(".accept_recurring").prop("checked",true);
         $(".accept_recurring_div").show();
         $("#recurring_checkbox1").prop("checked",true);
@@ -3516,17 +3979,311 @@ $(window).click(function(e) {
       })
     }
   }
+  if($(e.target).hasClass('auto_close_task_comment'))
+  {
+    var task_id = $("#hidden_task_id_task_specifics").val();
+    if($(e.target).is(":checked"))
+    {
+      var status = 1;
+    }
+    else{
+      var status = 0;
+    }
+    $.ajax({
+        url:"<?php echo URL::to('user/change_auto_close_status'); ?>",
+        type:"post",
+        data:{task_id:task_id,status:status},
+        success:function(result)
+        {
+          $("#show_auto_close_msg").val(result);
+          if($(e.target).is(":checked"))
+          {
+            $("#task_tr_"+task_id).find(".mark_as_complete").addClass("auto_close_task_complete");
+            $("#task_tr_"+task_id).find(".edit_allocate_user").addClass("auto_close_task_complete");
+          }
+          else{
+            $("#task_tr_"+task_id).find(".mark_as_complete").removeClass("auto_close_task_complete");
+            $("#task_tr_"+task_id).find(".edit_allocate_user").removeClass("auto_close_task_complete");
+          }
+        }
+    });
+  }
   if($(e.target).hasClass('add_comment_and_allocate'))
   {
-    setTimeout(function() {
       var comments = CKEDITOR.instances['editor_1'].getData();
       var task_id = $("#hidden_task_id_task_specifics").val();
+      var show_auto_close = $("#show_auto_close_msg").val();
       if(comments == "")
       {
         alert("Please enter new comments and then click on the Add New Comment Button");
       }
       else{
-        $("body").addClass("loading");
+        if(show_auto_close == "1")
+        {
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" class="common_black_button yes_allocate_back">Yes</a><a href="javascript:" data-task="'+task_id+'" class="common_black_button no_allocate_back">No</a></p>',fixed:true,width:"800px"});
+            $("body").removeClass("loading");
+            return false;
+        }
+        else{
+          $("body").addClass("loading");
+          setTimeout(function() {
+            $.ajax({
+              url:"<?php echo URL::to('user/add_comment_and_allocate'); ?>",
+              type:"post",
+              data:{task_id:task_id,comments:comments},
+              success:function(result)
+              {
+                var new_allocation = result;
+                if(new_allocation == "0")
+                {
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  $("body").removeClass("loading");
+                }
+                else{
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  $(".task_specifics_modal").modal("hide");
+                  $.ajax({
+                    url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                    type:"post",
+                    data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+                    dataType:"json",
+                    success:function(result)
+                    {
+                      var htmlval = $("#allocation_history_div_"+task_id).html();
+                      $("#allocation_history_div_"+task_id).html(result['pval']+htmlval);
+                      var htmlval2 = $("#history_body").find("tbody").html();
+                      $("#history_body").find("tbody").html(result['trval']+htmlval2);
+                      $(".edit_allocate_user_"+task_id).attr("data-allocated",new_allocation);
+                      $("#allocated_to_name_"+task_id).html(result['to']);
+                      $("#hidden_tasks_tr_"+task_id).find(".allocated_sort_val").html(result['to']);
+                      var count = 1;
+                      $("#allocation_history_div_"+task_id).find("p").each(function() {
+                        if(count > 5)
+                        {
+                          $(this).detach();
+                        }
+                        count++;
+                      })
+                      $(".allocation_modal").modal("hide");
+                      var layout = $("#hidden_compressed_layout").val();
+                      if(layout == "1")
+                      {
+                        if($("#task_tr_"+task_id).hasClass('author_tr'))
+                        {
+                        }
+                        else{
+                          var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+                          var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+                          if (typeof nexttask_id !== "undefined") {
+                            var taskidval = nexttask_id;
+                          }
+                          else if (typeof prevtask_id !== "undefined") {
+                            var taskidval = prevtask_id;
+                          }
+                          else{
+                            var taskidval = '';
+                          }
+
+                          $("#task_tr_"+task_id).next().detach();
+                          $("#task_tr_"+task_id).detach();
+                          $("#hidden_tasks_tr_"+task_id).detach();
+
+                          $("#task_tr_"+taskidval).show();
+                          $("#task_tr_"+taskidval).next().show();
+                          $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+                          var opentask = $("#open_task_count_val").html();
+                          var countopen = parseInt(opentask) - 1;
+                          $("#open_task_count_val").html(countopen);
+                        }
+                        $("body").removeClass("loading");
+                      }
+                      else{
+                        var user_id = $(".select_user_home").val();
+                        $.ajax({
+                          url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                          type:"post",
+                          data:{user_id:user_id},
+                              dataType:"json",
+                          success: function(result)
+                          {
+                            $("#task_body_open").html(result['open_tasks']);
+                            $("#task_body_layout").html(result['layout']);
+
+                            var layout = $("#hidden_compressed_layout").val();
+                            var view = $(".select_view").val();
+                            $(".tasks_tr").hide();
+                            $(".tasks_tr").next().hide();
+                            $(".hidden_tasks_tr").hide();
+                            if(view == "3")
+                            {
+                              if(layout == "1")
+                              {
+                                $(".author_tr:first").show();
+                                $(".author_tr:first").next().show();
+                                $(".table_layout").show();
+                                $(".table_layout").find(".hidden_author_tr").show();
+                                $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                              }
+                              else{
+                                $(".author_tr").show();
+                                $(".author_tr").next().show();
+                                $(".table_layout").hide();
+                                $(".table_layout").find(".hidden_author_tr").hide();
+                              }
+                              var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                              var opentask = $(".hidden_allocated_tr").length;
+                              var authored = $(".hidden_author_tr").length;
+                              $("#redline_task_count_val").html(redline);
+                              $("#open_task_count_val").html(opentask);
+                              $("#authored_task_count_val").html(authored);
+                            }
+                            else if(view == "2"){
+                              $("#open_task_count").hide();
+                              $("#redline_task_count").show();
+                              $("#authored_task_count").hide();
+                              if(layout == "1")
+                              {
+                                var i = 1;
+                                $(".redline_indication").each(function() {
+                                  if(i == 1)
+                                  {
+                                    if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                                    {
+                                      $(this).parents(".allocated_tr").show();
+                                      $(this).parents(".allocated_tr").next().show();
+                                      i++;
+                                    }
+                                  }
+                                });
+                                $(".table_layout").show();
+                                $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                                
+                                var j = 1;
+                                $(".redline_indication_layout").each(function() {
+                                  if(j == 1)
+                                  {
+                                    if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                                    {
+                                      $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                                      j++;
+                                    }
+                                  }
+                                });
+                              }
+                              else{
+                                $(".redline_indication").parents(".allocated_tr").show();
+                                $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                                $(".table_layout").hide();
+                                $(".table_layout").find(".hidden_allocated_tr").hide();
+                              }
+
+                              var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                              var opentask = $(".hidden_allocated_tr").length;
+                              var authored = $(".hidden_author_tr").length;
+                              $("#redline_task_count_val").html(redline);
+                              $("#open_task_count_val").html(opentask);
+                              $("#authored_task_count_val").html(authored);
+                            }
+                            else if(view == "1"){
+                              if(layout == "1")
+                              {
+                                $(".allocated_tr:first").show();
+                                $(".allocated_tr:first").next().show();
+                                $(".table_layout").show();
+                                $(".table_layout").find(".hidden_allocated_tr").show();
+                                $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                              }
+                              else{
+                                $(".allocated_tr").show();
+                                $(".allocated_tr").next().show();
+                                $(".table_layout").hide();
+                                $(".table_layout").find(".hidden_allocated_tr").hide();
+                              }
+                              var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                              var opentask = $(".hidden_allocated_tr").length;
+                              var authored = $(".hidden_author_tr").length;
+                              $("#redline_task_count_val").html(redline);
+                              $("#open_task_count_val").html(opentask);
+                              $("#authored_task_count_val").html(authored);
+                            }
+                            $("[data-toggle=popover]").popover({
+                                html : true,
+                                content: function() {
+                                  var content = $(this).attr("data-popover-content");
+                                  return $(content).children(".popover-body").html();
+                                },
+                                title: function() {
+                                  var title = $(this).attr("data-popover-content");
+                                  return $(title).children(".popover-heading").html();
+                                }
+                            });
+
+                            if(layout == "0")
+                            {
+                                if(taskidval != "")
+                                {
+                                  //$(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                                }
+                            }
+                            else{
+                              $("#"+taskidval).show();
+                              $("#"+taskidval).next().show();
+                            
+                              var hidden_tr = taskidval.substr(8);
+                              $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                            }
+
+                            if(layout == "1")
+                            {
+                              $(".open_layout_div").addClass("open_layout_div_change");
+                              var open_tasks_height = $(".open_layout_div").height();
+                              var margintop = parseInt(open_tasks_height);
+                              $(".open_layout_div").css("position","fixed");
+                              $(".open_layout_div").css("height","312px");
+                              if(open_tasks_height > 312)
+                              {
+                                $(".open_layout_div").css("overflow-y","scroll");
+                              }
+                              if(open_tasks_height < 50)
+                              {
+                                $(".table_layout").css("margin-top","20px");
+                              }
+                                else{
+                                  $(".table_layout").css("margin-top","335px");
+                                }
+                            }
+                            else{
+                              $(".open_layout_div").removeClass("open_layout_div_change");
+                              $(".open_layout_div").css("position","unset");
+                              $(".open_layout_div").css("height","auto");
+                              $(".open_layout_div").css("overflow-y","unset");
+                                $(".table_layout").css("margin-top","0px");
+                            }
+                            $("body").removeClass("loading");
+                          }
+                        })
+                      }
+                    }
+                  })
+                }
+              }
+            })
+          },1000);
+        }
+      }
+  }
+  if($(e.target).hasClass('yes_allocate_back'))
+  {
+      var comments = CKEDITOR.instances['editor_1'].getData();
+      var task_id = $(e.target).attr("data-task");
+
+      $("body").addClass("loading");
+      setTimeout(function() {
         $.ajax({
           url:"<?php echo URL::to('user/add_comment_and_allocate'); ?>",
           type:"post",
@@ -3549,7 +4306,7 @@ $(window).click(function(e) {
               $.ajax({
                 url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
                 type:"post",
-                data:{task_id:task_id,new_allocation:new_allocation},
+                data:{task_id:task_id,new_allocation:new_allocation,type:"1"},
                 dataType:"json",
                 success:function(result)
                 {
@@ -3768,13 +4525,270 @@ $(window).click(function(e) {
                       }
                     })
                   }
+
+                  $.colorbox.close();
                 }
               })
             }
           }
         })
-      }
-    },1000);
+      },1000);
+  }
+  if($(e.target).hasClass('no_allocate_back'))
+  {
+      var comments = CKEDITOR.instances['editor_1'].getData();
+      var task_id = $(e.target).attr("data-task");
+      
+      $("body").addClass("loading");
+      setTimeout(function() {
+        $.ajax({
+          url:"<?php echo URL::to('user/add_comment_and_allocate'); ?>",
+          type:"post",
+          data:{task_id:task_id,comments:comments},
+          success:function(result)
+          {
+            var new_allocation = result;
+            if(new_allocation == "0")
+            {
+              $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+              $("#editor_1").val("");
+              CKEDITOR.instances['editor_1'].setData("");
+              $("body").removeClass("loading");
+            }
+            else{
+              $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+              $("#editor_1").val("");
+              CKEDITOR.instances['editor_1'].setData("");
+              $(".task_specifics_modal").modal("hide");
+              $.ajax({
+                url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                type:"post",
+                data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+                dataType:"json",
+                success:function(result)
+                {
+                  var htmlval = $("#allocation_history_div_"+task_id).html();
+                  $("#allocation_history_div_"+task_id).html(result['pval']+htmlval);
+                  var htmlval2 = $("#history_body").find("tbody").html();
+                  $("#history_body").find("tbody").html(result['trval']+htmlval2);
+                  $(".edit_allocate_user_"+task_id).attr("data-allocated",new_allocation);
+                  $("#allocated_to_name_"+task_id).html(result['to']);
+                  $("#hidden_tasks_tr_"+task_id).find(".allocated_sort_val").html(result['to']);
+                  var count = 1;
+                  $("#allocation_history_div_"+task_id).find("p").each(function() {
+                    if(count > 5)
+                    {
+                      $(this).detach();
+                    }
+                    count++;
+                  })
+                  $(".allocation_modal").modal("hide");
+                  var layout = $("#hidden_compressed_layout").val();
+                  if(layout == "1")
+                  {
+                    if($("#task_tr_"+task_id).hasClass('author_tr'))
+                    {
+                    }
+                    else{
+                      var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+                      var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+                      if (typeof nexttask_id !== "undefined") {
+                        var taskidval = nexttask_id;
+                      }
+                      else if (typeof prevtask_id !== "undefined") {
+                        var taskidval = prevtask_id;
+                      }
+                      else{
+                        var taskidval = '';
+                      }
+
+                      $("#task_tr_"+task_id).next().detach();
+                      $("#task_tr_"+task_id).detach();
+                      $("#hidden_tasks_tr_"+task_id).detach();
+
+                      $("#task_tr_"+taskidval).show();
+                      $("#task_tr_"+taskidval).next().show();
+                      $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+                      var opentask = $("#open_task_count_val").html();
+                      var countopen = parseInt(opentask) - 1;
+                      $("#open_task_count_val").html(countopen);
+                    }
+                    $("body").removeClass("loading");
+                  }
+                  else{
+                    var user_id = $(".select_user_home").val();
+                    $.ajax({
+                      url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                      type:"post",
+                      data:{user_id:user_id},
+                          dataType:"json",
+                      success: function(result)
+                      {
+                        $("#task_body_open").html(result['open_tasks']);
+                        $("#task_body_layout").html(result['layout']);
+
+                        var layout = $("#hidden_compressed_layout").val();
+                        var view = $(".select_view").val();
+                        $(".tasks_tr").hide();
+                        $(".tasks_tr").next().hide();
+                        $(".hidden_tasks_tr").hide();
+                        if(view == "3")
+                        {
+                          if(layout == "1")
+                          {
+                            $(".author_tr:first").show();
+                            $(".author_tr:first").next().show();
+                            $(".table_layout").show();
+                            $(".table_layout").find(".hidden_author_tr").show();
+                            $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                          }
+                          else{
+                            $(".author_tr").show();
+                            $(".author_tr").next().show();
+                            $(".table_layout").hide();
+                            $(".table_layout").find(".hidden_author_tr").hide();
+                          }
+                          var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                          var opentask = $(".hidden_allocated_tr").length;
+                          var authored = $(".hidden_author_tr").length;
+                          $("#redline_task_count_val").html(redline);
+                          $("#open_task_count_val").html(opentask);
+                          $("#authored_task_count_val").html(authored);
+                        }
+                        else if(view == "2"){
+                          $("#open_task_count").hide();
+                          $("#redline_task_count").show();
+                          $("#authored_task_count").hide();
+                          if(layout == "1")
+                          {
+                            var i = 1;
+                            $(".redline_indication").each(function() {
+                              if(i == 1)
+                              {
+                                if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                                {
+                                  $(this).parents(".allocated_tr").show();
+                                  $(this).parents(".allocated_tr").next().show();
+                                  i++;
+                                }
+                              }
+                            });
+                            $(".table_layout").show();
+                            $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                            
+                            var j = 1;
+                            $(".redline_indication_layout").each(function() {
+                              if(j == 1)
+                              {
+                                if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                                {
+                                  $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                                  j++;
+                                }
+                              }
+                            });
+                          }
+                          else{
+                            $(".redline_indication").parents(".allocated_tr").show();
+                            $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                            $(".table_layout").hide();
+                            $(".table_layout").find(".hidden_allocated_tr").hide();
+                          }
+
+                          var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                          var opentask = $(".hidden_allocated_tr").length;
+                          var authored = $(".hidden_author_tr").length;
+                          $("#redline_task_count_val").html(redline);
+                          $("#open_task_count_val").html(opentask);
+                          $("#authored_task_count_val").html(authored);
+                        }
+                        else if(view == "1"){
+                          if(layout == "1")
+                          {
+                            $(".allocated_tr:first").show();
+                            $(".allocated_tr:first").next().show();
+                            $(".table_layout").show();
+                            $(".table_layout").find(".hidden_allocated_tr").show();
+                            $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                          }
+                          else{
+                            $(".allocated_tr").show();
+                            $(".allocated_tr").next().show();
+                            $(".table_layout").hide();
+                            $(".table_layout").find(".hidden_allocated_tr").hide();
+                          }
+                          var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                          var opentask = $(".hidden_allocated_tr").length;
+                          var authored = $(".hidden_author_tr").length;
+                          $("#redline_task_count_val").html(redline);
+                          $("#open_task_count_val").html(opentask);
+                          $("#authored_task_count_val").html(authored);
+                        }
+                        $("[data-toggle=popover]").popover({
+                            html : true,
+                            content: function() {
+                              var content = $(this).attr("data-popover-content");
+                              return $(content).children(".popover-body").html();
+                            },
+                            title: function() {
+                              var title = $(this).attr("data-popover-content");
+                              return $(title).children(".popover-heading").html();
+                            }
+                        });
+
+                        if(layout == "0")
+                        {
+                            if(taskidval != "")
+                            {
+                              //$(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                            }
+                        }
+                        else{
+                          $("#"+taskidval).show();
+                          $("#"+taskidval).next().show();
+                        
+                          var hidden_tr = taskidval.substr(8);
+                          $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                        }
+
+                        if(layout == "1")
+                        {
+                          $(".open_layout_div").addClass("open_layout_div_change");
+                          var open_tasks_height = $(".open_layout_div").height();
+                          var margintop = parseInt(open_tasks_height);
+                          $(".open_layout_div").css("position","fixed");
+                          $(".open_layout_div").css("height","312px");
+                          if(open_tasks_height > 312)
+                          {
+                            $(".open_layout_div").css("overflow-y","scroll");
+                          }
+                          if(open_tasks_height < 50)
+                          {
+                            $(".table_layout").css("margin-top","20px");
+                          }
+                            else{
+                              $(".table_layout").css("margin-top","335px");
+                            }
+                        }
+                        else{
+                          $(".open_layout_div").removeClass("open_layout_div_change");
+                          $(".open_layout_div").css("position","unset");
+                          $(".open_layout_div").css("height","auto");
+                          $(".open_layout_div").css("overflow-y","unset");
+                            $(".table_layout").css("margin-top","0px");
+                        }
+                        $("body").removeClass("loading");
+                      }
+                    })
+                  }
+                  $.colorbox.close();
+                }
+              })
+            }
+          }
+        })
+      },1000);
   }
   if($(e.target).hasClass('link_to_task_specifics'))
   {
@@ -3786,10 +4800,11 @@ $(window).click(function(e) {
       $.ajax({
         url:"<?php echo URL::to('user/show_existing_comments'); ?>",
         type:"post",
+        dataType:"json",
         data:{task_id:task_id},
         success:function(result)
         {
-	    	CKEDITOR.replace('editor_1',
+	    	    CKEDITOR.replace('editor_1',
              {
               height: '150px',
               enterMode: CKEDITOR.ENTER_BR,
@@ -3799,13 +4814,21 @@ $(window).click(function(e) {
             contentsCss: "body {font-size: 16px;font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif}",
              });
           $("#hidden_task_id_task_specifics").val(task_id);
-          $("#existing_comments").html(result);
+          $("#existing_comments").html(result['output']);
           $(".task_specifics_modal").modal("show");
           $(".redlight_indication_"+task_id).hide();
           $(".redlight_indication_layout_"+task_id).hide();
           $(".redlight_indication_layout_"+task_id).removeClass('redline_indication_layout');
           $(".redlight_indication_"+task_id).removeClass('redline_indication');
-
+          if(result['auto_close'] == "1")
+          {
+            $(".auto_close_task_comment").prop("checked",true);
+          }
+          else{
+            $(".auto_close_task_comment").prop("checked",false);
+          }
+          $("#show_auto_close_msg").val(result['show_auto_close_msg']);
+          
           $("body").removeClass("loading");
         }
       })
@@ -3832,6 +4855,14 @@ $(window).click(function(e) {
     $(".subject_allocation").html(subject);
 
     $("#hidden_task_id_allocation").val(task_id);
+    $("#hidden_task_id_author").val(author);
+    if($(e.target).hasClass('auto_close_task_complete'))
+    {
+      $("#hidden_task_id_auto_close").val("1");
+    }
+    else{
+      $("#hidden_task_id_auto_close").val("0");
+    }
     $(".history_body").hide();
     $(".allocation_body").show();
     
@@ -3871,6 +4902,7 @@ $(window).click(function(e) {
     $(".subject_allocation").html(subject);
 
     $("#hidden_task_id_allocation").val(task_id);
+    $("#hidden_task_id_author").val(author);
     $(".history_body").show();
     $(".allocation_body").hide();
 
@@ -3889,9 +4921,26 @@ $(window).click(function(e) {
   }
   if(e.target.id == "allocate_now")
   {
-  	$("body").addClass("loading");
+  	//$("body").addClass("loading");
+
     var task_id = $("#hidden_task_id_allocation").val();
+    var auto_close = $("#hidden_task_id_auto_close").val();
     var new_allocation = $(".new_allocation").val();
+    var author = $("#hidden_task_id_author").val();
+    var selected_user = $(".select_user_home").val();
+
+    if(auto_close == "1")
+    {
+      if(selected_user != author)
+      {
+        if(author == new_allocation)
+        {
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'" class="common_black_button yes_allocate_now">Yes</a><a href="javascript:" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'" class="common_black_button no_allocate_now">No</a></p>',fixed:true,width:"800px"});
+            $("body").removeClass("loading");
+            return false;
+        }
+      }
+    }
 
     var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
   	var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
@@ -3913,7 +4962,7 @@ $(window).click(function(e) {
       $.ajax({
         url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
         type:"post",
-        data:{task_id:task_id,new_allocation:new_allocation},
+        data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
         dataType:"json",
         success:function(result)
         {
@@ -4136,6 +5185,516 @@ $(window).click(function(e) {
                 })
              },2000);
           }
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('yes_allocate_now'))
+  {
+    $("body").addClass("loading");
+    var task_id = $(e.target).attr("data-task");
+    var new_allocation = $(e.target).attr("data-new");
+    var author = $(e.target).attr("data-author");
+
+    var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
+    var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
+    if (typeof nexttask_id !== "undefined") {
+      var taskidval = nexttask_id;
+    }
+    else if (typeof prevtask_id !== "undefined") {
+      var taskidval = prevtask_id;
+    }
+    else{
+      var taskidval = '';
+    }
+
+    if(new_allocation == "")
+    {
+      alert("Please choose the user to allocate the task.");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+        type:"post",
+        data:{task_id:task_id,new_allocation:new_allocation,type:"1"},
+        dataType:"json",
+        success:function(result)
+        {
+          var htmlval = $("#allocation_history_div_"+task_id).html();
+          $("#allocation_history_div_"+task_id).html(result['pval']+htmlval);
+          var htmlval2 = $("#history_body").find("tbody").html();
+          $("#history_body").find("tbody").html(result['trval']+htmlval2);
+          $(".edit_allocate_user_"+task_id).attr("data-allocated",new_allocation);
+          $("#allocated_to_name_"+task_id).html(result['to']);
+          $("#hidden_tasks_tr_"+task_id).find(".allocated_sort_val").html(result['to']);
+          var count = 1;
+          $("#allocation_history_div_"+task_id).find("p").each(function() {
+            if(count > 5)
+            {
+              $(this).detach();
+            }
+            count++;
+          })
+          $(".allocation_modal").modal("hide");
+          var layout = $("#hidden_compressed_layout").val();
+          if(layout == "1")
+          {
+            if($("#task_tr_"+task_id).hasClass('author_tr'))
+            {
+
+            }
+            else{
+              var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+              var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+              if (typeof nexttask_id !== "undefined") {
+                var taskidval = nexttask_id;
+              }
+              else if (typeof prevtask_id !== "undefined") {
+                var taskidval = prevtask_id;
+              }
+              else{
+                var taskidval = '';
+              }
+
+              $("#task_tr_"+task_id).next().detach();
+              $("#task_tr_"+task_id).detach();
+              $("#hidden_tasks_tr_"+task_id).detach();
+
+              $("#task_tr_"+taskidval).show();
+              $("#task_tr_"+taskidval).next().show();
+              $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+              var opentask = $("#open_task_count_val").html();
+              var countopen = parseInt(opentask) - 1;
+              $("#open_task_count_val").html(countopen);
+            }
+            $("body").removeClass("loading");
+          }
+          else{
+             setTimeout(function() {
+                var user_id = $(".select_user_home").val();
+                $.ajax({
+                  url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                  type:"post",
+                  data:{user_id:user_id},
+                      dataType:"json",
+                  success: function(result)
+                  {
+                    $("#task_body_open").html(result['open_tasks']);
+                    $("#task_body_layout").html(result['layout']);
+
+                      var layout = $("#hidden_compressed_layout").val();
+                      var view = $(".select_view").val();
+                  $(".tasks_tr").hide();
+                $(".tasks_tr").next().hide();
+                $(".hidden_tasks_tr").hide();
+                  if(view == "3")
+                  {
+                    if(layout == "1")
+                    {
+                      $(".author_tr:first").show();
+                      $(".author_tr:first").next().show();
+                      $(".table_layout").show();
+                      $(".table_layout").find(".hidden_author_tr").show();
+                      $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                    }
+                    else{
+                      $(".author_tr").show();
+                      $(".author_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_author_tr").hide();
+                    }
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+                  else if(view == "2"){
+                    $("#open_task_count").hide();
+                    $("#redline_task_count").show();
+                    $("#authored_task_count").hide();
+                    if(layout == "1")
+                    {
+                      var i = 1;
+                      $(".redline_indication").each(function() {
+                        if(i == 1)
+                        {
+                          if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                          {
+                            $(this).parents(".allocated_tr").show();
+                            $(this).parents(".allocated_tr").next().show();
+                            i++;
+                          }
+                        }
+                      });
+                      $(".table_layout").show();
+                      $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                      
+                      var j = 1;
+                      $(".redline_indication_layout").each(function() {
+                        if(j == 1)
+                        {
+                          if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                          {
+                            $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                            j++;
+                          }
+                        }
+                      });
+                    }
+                    else{
+                      $(".redline_indication").parents(".allocated_tr").show();
+                      $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_allocated_tr").hide();
+                    }
+
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+                  else if(view == "1"){
+                    if(layout == "1")
+                    {
+                      $(".allocated_tr:first").show();
+                      $(".allocated_tr:first").next().show();
+                      $(".table_layout").show();
+                      $(".table_layout").find(".hidden_allocated_tr").show();
+                      $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                    }
+                    else{
+                      $(".allocated_tr").show();
+                      $(".allocated_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_allocated_tr").hide();
+                    }
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+
+                      $("[data-toggle=popover]").popover({
+                          html : true,
+                          content: function() {
+                            var content = $(this).attr("data-popover-content");
+                            return $(content).children(".popover-body").html();
+                          },
+                          title: function() {
+                            var title = $(this).attr("data-popover-content");
+                            return $(title).children(".popover-heading").html();
+                          }
+                      });
+
+                      if(layout == "0")
+                     {
+                          if(taskidval != "")
+                          {
+                            // $(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                          }
+                      }
+                      else{
+                        $("#"+taskidval).show();
+                        $("#"+taskidval).next().show();
+                      
+                        var hidden_tr = taskidval.substr(8);
+                        $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                      }
+
+                      if(layout == "1")
+                      {
+                        $(".open_layout_div").addClass("open_layout_div_change");
+                        var open_tasks_height = $(".open_layout_div").height();
+                        var margintop = parseInt(open_tasks_height);
+                        $(".open_layout_div").css("position","fixed");
+                        $(".open_layout_div").css("height","312px");
+                        if(open_tasks_height > 312)
+                        {
+                          $(".open_layout_div").css("overflow-y","scroll");
+                        }
+                        if(open_tasks_height < 50)
+                        {
+                          $(".table_layout").css("margin-top","20px");
+                        }
+                          else{
+                            $(".table_layout").css("margin-top","335px");
+                          }
+                      }
+                      else{
+                        $(".open_layout_div").removeClass("open_layout_div_change");
+                        $(".open_layout_div").css("position","unset");
+                        $(".open_layout_div").css("height","auto");
+                        $(".open_layout_div").css("overflow-y","unset");
+                          $(".table_layout").css("margin-top","0px");
+                      }
+                    $("body").removeClass("loading");
+                  }
+                })
+             },2000);
+          }
+          $.colorbox.close();
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('no_allocate_now'))
+  {
+    $("body").addClass("loading");
+    var task_id = $(e.target).attr("data-task");
+    var new_allocation = $(e.target).attr("data-new");
+    var author = $(e.target).attr("data-author");
+
+    var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
+    var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
+    if (typeof nexttask_id !== "undefined") {
+      var taskidval = nexttask_id;
+    }
+    else if (typeof prevtask_id !== "undefined") {
+      var taskidval = prevtask_id;
+    }
+    else{
+      var taskidval = '';
+    }
+
+    if(new_allocation == "")
+    {
+      alert("Please choose the user to allocate the task.");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+        type:"post",
+        data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+        dataType:"json",
+        success:function(result)
+        {
+          var htmlval = $("#allocation_history_div_"+task_id).html();
+          $("#allocation_history_div_"+task_id).html(result['pval']+htmlval);
+          var htmlval2 = $("#history_body").find("tbody").html();
+          $("#history_body").find("tbody").html(result['trval']+htmlval2);
+          $(".edit_allocate_user_"+task_id).attr("data-allocated",new_allocation);
+          $("#allocated_to_name_"+task_id).html(result['to']);
+          $("#hidden_tasks_tr_"+task_id).find(".allocated_sort_val").html(result['to']);
+          var count = 1;
+          $("#allocation_history_div_"+task_id).find("p").each(function() {
+            if(count > 5)
+            {
+              $(this).detach();
+            }
+            count++;
+          })
+          $(".allocation_modal").modal("hide");
+          var layout = $("#hidden_compressed_layout").val();
+          if(layout == "1")
+          {
+            if($("#task_tr_"+task_id).hasClass('author_tr'))
+            {
+
+            }
+            else{
+              var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+              var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+              if (typeof nexttask_id !== "undefined") {
+                var taskidval = nexttask_id;
+              }
+              else if (typeof prevtask_id !== "undefined") {
+                var taskidval = prevtask_id;
+              }
+              else{
+                var taskidval = '';
+              }
+
+              $("#task_tr_"+task_id).next().detach();
+              $("#task_tr_"+task_id).detach();
+              $("#hidden_tasks_tr_"+task_id).detach();
+
+              $("#task_tr_"+taskidval).show();
+              $("#task_tr_"+taskidval).next().show();
+              $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+              var opentask = $("#open_task_count_val").html();
+              var countopen = parseInt(opentask) - 1;
+              $("#open_task_count_val").html(countopen);
+            }
+            $("body").removeClass("loading");
+          }
+          else{
+             setTimeout(function() {
+                var user_id = $(".select_user_home").val();
+                $.ajax({
+                  url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                  type:"post",
+                  data:{user_id:user_id},
+                      dataType:"json",
+                  success: function(result)
+                  {
+                    $("#task_body_open").html(result['open_tasks']);
+                    $("#task_body_layout").html(result['layout']);
+
+                      var layout = $("#hidden_compressed_layout").val();
+                      var view = $(".select_view").val();
+                  $(".tasks_tr").hide();
+                $(".tasks_tr").next().hide();
+                $(".hidden_tasks_tr").hide();
+                  if(view == "3")
+                  {
+                    if(layout == "1")
+                    {
+                      $(".author_tr:first").show();
+                      $(".author_tr:first").next().show();
+                      $(".table_layout").show();
+                      $(".table_layout").find(".hidden_author_tr").show();
+                      $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                    }
+                    else{
+                      $(".author_tr").show();
+                      $(".author_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_author_tr").hide();
+                    }
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+                  else if(view == "2"){
+                    $("#open_task_count").hide();
+                    $("#redline_task_count").show();
+                    $("#authored_task_count").hide();
+                    if(layout == "1")
+                    {
+                      var i = 1;
+                      $(".redline_indication").each(function() {
+                        if(i == 1)
+                        {
+                          if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                          {
+                            $(this).parents(".allocated_tr").show();
+                            $(this).parents(".allocated_tr").next().show();
+                            i++;
+                          }
+                        }
+                      });
+                      $(".table_layout").show();
+                      $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                      
+                      var j = 1;
+                      $(".redline_indication_layout").each(function() {
+                        if(j == 1)
+                        {
+                          if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                          {
+                            $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                            j++;
+                          }
+                        }
+                      });
+                    }
+                    else{
+                      $(".redline_indication").parents(".allocated_tr").show();
+                      $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_allocated_tr").hide();
+                    }
+
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+                  else if(view == "1"){
+                    if(layout == "1")
+                    {
+                      $(".allocated_tr:first").show();
+                      $(".allocated_tr:first").next().show();
+                      $(".table_layout").show();
+                      $(".table_layout").find(".hidden_allocated_tr").show();
+                      $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                    }
+                    else{
+                      $(".allocated_tr").show();
+                      $(".allocated_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_allocated_tr").hide();
+                    }
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+
+                      $("[data-toggle=popover]").popover({
+                          html : true,
+                          content: function() {
+                            var content = $(this).attr("data-popover-content");
+                            return $(content).children(".popover-body").html();
+                          },
+                          title: function() {
+                            var title = $(this).attr("data-popover-content");
+                            return $(title).children(".popover-heading").html();
+                          }
+                      });
+
+                      if(layout == "0")
+                     {
+                          if(taskidval != "")
+                          {
+                            // $(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                          }
+                      }
+                      else{
+                        $("#"+taskidval).show();
+                        $("#"+taskidval).next().show();
+                      
+                        var hidden_tr = taskidval.substr(8);
+                        $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                      }
+
+                      if(layout == "1")
+                      {
+                        $(".open_layout_div").addClass("open_layout_div_change");
+                        var open_tasks_height = $(".open_layout_div").height();
+                        var margintop = parseInt(open_tasks_height);
+                        $(".open_layout_div").css("position","fixed");
+                        $(".open_layout_div").css("height","312px");
+                        if(open_tasks_height > 312)
+                        {
+                          $(".open_layout_div").css("overflow-y","scroll");
+                        }
+                        if(open_tasks_height < 50)
+                        {
+                          $(".table_layout").css("margin-top","20px");
+                        }
+                          else{
+                            $(".table_layout").css("margin-top","335px");
+                          }
+                      }
+                      else{
+                        $(".open_layout_div").removeClass("open_layout_div_change");
+                        $(".open_layout_div").css("position","unset");
+                        $(".open_layout_div").css("height","auto");
+                        $(".open_layout_div").css("overflow-y","unset");
+                          $(".table_layout").css("margin-top","0px");
+                      }
+                    $("body").removeClass("loading");
+                  }
+                })
+             },2000);
+          }
+          $.colorbox.close();
         }
       })
     }
@@ -4492,6 +6051,7 @@ $(window).click(function(e) {
     $("#hidden_copied_notes").val("");
     $("#hidden_copied_infiles").val("");
 
+    $(".auto_close_task").prop("checked",false);
     $(".accept_recurring").prop("checked",false);
     $(".accept_recurring_div").hide();
     $("#recurring_checkbox1").prop("checked",false);

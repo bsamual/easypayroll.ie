@@ -1,57 +1,5 @@
-@extends('userheader')
-@section('content')
-<?php
-$date = date("Y-m-d");
-$reactivate = 0;
-if(Session::has('taskmanager_user'))
-{
-  $userid = Session::get('taskmanager_user');
-  $check_db = DB::table('user')->where('user_id',$userid)->first();
+<?php $__env->startSection('content'); ?>
 
-  if(count($check_db))
-  {
-    if($check_db->park_date == $date)
-    {
-      if($check_db->park_status == 1)
-      {
-        $reactivate = 0;
-      }
-      else{
-        $reactivate = 1;
-      }
-    }
-    else{
-      $dataval['park_date'] = $date;
-      $dataval['park_status'] = 0;
-
-      DB::table('user')->where('user_id',$userid)->update($dataval);
-      $reactivate = 1;
-    }
-  }
-
-  if($reactivate == 1)
-  {
-    ?>
-    <script>
-        var r = confirm("Do you want to review parked tasks now?");
-        if(r)
-        {
-          $("body").addClass("loading");
-          $.ajax({
-            url:"<?php echo URL::to("user/reactivate_park_task"); ?>",
-            type:"post",
-            data:{userid:"<?php echo $userid; ?>",date:"<?php echo $date; ?>"},
-            success:function(result)
-            {
-              window.location.reload();
-            }
-          })
-        }
-    </script>
-    <?php
-  }
-}
-?>
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
@@ -377,29 +325,6 @@ input:checked + .slider:before {
         </div>
   </div>
 </div> 
-<div class="modal fade park_task_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
-  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Choose Park Date</h4>
-          </div>
-          <div class="modal-body" style="min-height: 100px;">  
-            <div class="col-md-12">
-              <label>Until What Date Do you want to Park this task? </label>
-            </div>
-            <div class="col-md-12">
-              <input type="text" name="park_task_date" class="form-control park_task_date" id="park_task_date" value="" placeholder="Choose Date to Park">
-            </div>
-          </div>
-          <div class="modal-footer">  
-            <input type="hidden" class="hidden_task_id_park_task" name="hidden_task_id_park_task" value="">
-            <input type="button" class="common_black_button" data-dismiss="modal" aria-label="Close" value="Cancel">
-            <input type="button" class="common_black_button" id="park_submit" value="Submit">
-          </div>
-        </div>
-  </div>
-</div>
 <div class="modal fade question_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:30%;">
         <div class="modal-content">
@@ -530,7 +455,6 @@ input:checked + .slider:before {
           <div class="modal-footer allocation_body">  
             <input type="hidden" name="hidden_task_id_allocation" id="hidden_task_id_allocation" value="">
             <input type="hidden" name="hidden_task_id_auto_close" id="hidden_task_id_auto_close" value="">
-            <input type="hidden" name="hidden_task_id_author" id="hidden_task_id_author" value="">
             <input type="button" class="common_black_button" id="allocate_now" value="Allocate Now">
           </div>
           <div class="modal-header history_body">
@@ -929,7 +853,7 @@ input:checked + .slider:before {
           		</div>
 		    </div>
 		</div>
-		<div class="row">
+		<div class="row" style="display:none">
 		    <div class="col-md-5 padding_00">
 		      <label class="col-md-1" style="text-align: right">View:</label>
           <div class="col-md-5">
@@ -953,16 +877,16 @@ input:checked + .slider:before {
 		</div>
 	  </div>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item waves-effect waves-light active" style="width:20%;text-align: center">
-          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">
-            <spam id="open_task_count">Your Open Tasks (<spam id="open_task_count_val"><?php if($open_task_count == 0) { echo 0; } else { echo count($open_task_count); } ?></spam>)</spam>
-            <spam id="redline_task_count" style="display:none">Redline Tasks (<spam id="redline_task_count_val">0</spam>)</spam>
-            <spam id="authored_task_count" style="display:none">Your Authored Tasks (<spam id="authored_task_count_val"><?php if($authored_task_count == 0) { echo 0; } else { echo count($authored_task_count); } ?></spam>)</spam>
+        <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
+          <a href="<?php echo URL::to('user/task_manager'); ?>" class="nav-link" id="home-tab">
+            <spam id="park_task_count">Your Open Tasks (<spam id="park_task_count_val"><?php echo count($open_task_count); ?></spam>)</spam>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
-          <a href="<?php echo URL::to('user/park_task'); ?>" class="nav-link" id="home-tab">
-            <spam id="park_task_count">Park Tasks (<spam id="park_task_count_val"><?php echo count($park_task_count); ?></spam>)</spam>
+        <li class="nav-item waves-effect waves-light active" style="width:20%;text-align: center">
+          <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">
+            <spam id="open_task_count">Park Tasks (<spam id="open_task_count_val"><?php if($park_task_count == 0) { echo 0; } else { echo count($park_task_count); } ?></spam>)</spam>
+            <spam id="redline_task_count" style="display:none">Redline Tasks (<spam id="redline_task_count_val">0</spam>)</spam>
+            <spam id="authored_task_count" style="display:none">Your Authored Tasks (<spam id="authored_task_count_val"><?php if($authored_task_count == 0) { echo 0; } else { echo count($authored_task_count); } ?></spam>)</spam>
           </a>
         </li>
         <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
@@ -973,7 +897,7 @@ input:checked + .slider:before {
         </li>
       </ul>
     </div>
-      <div class="table-responsive" style="width: 100%; float: left;margin-top:150px;">
+      <div class="table-responsive" style="width: 100%; float: left;margin-top:120px;">
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
           <div style="width:100%;float:left; margin-top: 20px;">
@@ -1041,18 +965,7 @@ input:checked + .slider:before {
 
 	                  if(Session::has('taskmanager_user'))
 	                  {
-	                    if(Session::get('taskmanager_user') == $task->author) {
-                        if(Session::get('taskmanager_user') == $task->allocated_to)
-                        {
-                          $author_cls = 'author_tr allocated_tr'; $hidden_author_cls = 'hidden_author_tr hidden_allocated_tr'; 
-                        }
-                        else{
-                          $author_cls = 'author_tr'; $hidden_author_cls = 'hidden_author_tr'; 
-                        }
-                      }
-	                    else{ 
-                        $author_cls = 'allocated_tr'; $hidden_author_cls = 'hidden_allocated_tr'; 
-                      }
+	                    $author_cls = 'allocated_tr'; $hidden_author_cls = 'hidden_allocated_tr'; 
 	                  }
 	                  else{
 	                    $author_cls = '';
@@ -1218,7 +1131,7 @@ input:checked + .slider:before {
 	                        <tr>
 	                          <td colspan="2">
 	                            <spam style="font-weight:700;text-decoration: underline;">Allocations: </spam> &nbsp;
-	                            <a href="javascript:" data-element="<?php echo $task->id?>" data-subject="<?php echo $subject; ?>" data-author="<?php echo $task->author; ?>" data-allocated="<?php echo $task->allocated_to; ?>"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_<?php echo $task->id; ?> <?php echo $disabled; ?> <?php echo $close_task; ?>" title="Allocate User" style="font-weight:800"></a>
+	                            <a href="javascript:" data-element="<?php echo $task->id?>" data-subject="<?php echo $subject; ?>" data-author="<?php echo $task->author; ?>" data-allocated="<?php echo $task->allocated_to; ?>"  class="fa fa-sitemap edit_allocate_user edit_allocate_user_<?php echo $task->id; ?> <?php echo $close_task; ?> <?php echo $disabled; ?>" title="Allocate User" style="font-weight:800"></a>
 	                            &nbsp;
 	                            <a href="javascript:" data-element="<?php echo $task->id?>" data-subject="<?php echo $subject; ?>" data-author="<?php echo $task->author; ?>" data-allocated="<?php echo $task->allocated_to; ?>"  class="fa fa-history show_task_allocation_history show_task_allocation_history_<?php echo $task->id; ?>" title="Allocation History" style="font-weight:800"></a>
 	                            &nbsp;
@@ -1236,7 +1149,7 @@ input:checked + .slider:before {
 	                            {
 	                              foreach($allocations as $allocate)
 	                              {
-	                                $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.' '.$close_task.'" title="Allocate User">';
+	                                $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$close_task.' '.$disabled.'" title="Allocate User">';
 	                                  $fromuser = DB::table('user')->where('user_id',$allocate->from_user)->first();
 	                                  $touser = DB::table('user')->where('user_id',$allocate->to_user)->first();
 	                                  $output.=$fromuser->lastname.' '.$fromuser->firstname.' -> '.$touser->lastname.' '.$touser->firstname.' ('.date('d-M-Y H:i', strtotime($allocate->allocated_date)).')';
@@ -1374,12 +1287,12 @@ input:checked + .slider:before {
 	                        <tr>
 	                          <td style="background:#2fd9ff">
 	                            <?php
-	                            if($task->status == 1)
-	                            {
-	                              ?>
-	                              <a href="javascript:" class="common_black_button mark_as_incomplete" data-element="<?php echo $task->id; ?>">Completed</a>
-	                              <?php
-	                            }
+                              if($task->status == 1)
+                              {
+                                ?>
+                                <a href="javascript:" class="common_black_button mark_as_incomplete" data-element="<?php echo $task->id; ?>">Completed</a>
+                                <?php
+                              }
                               elseif($task->status == 2)
                               {
                                 if(Session::has('taskmanager_user'))
@@ -1401,28 +1314,28 @@ input:checked + .slider:before {
                                 <a href="javascript:" class="common_black_button activate_task_button" data-element="<?php echo $task->id; ?>">Activate</a>
                                 <?php
                               }
-	                            else{
-	                              if(Session::has('taskmanager_user'))
-	                              {
-	                                $allocated_person = Session::get('taskmanager_user');
-	                                if($task->author == $allocated_person)
-	                                {
-	                                  $complete_button = 'mark_as_complete_author';
-	                                }
-	                                else{
-	                                  $complete_button = 'mark_as_complete';
-	                                }
-	                              }
-	                              else{
-	                                $complete_button = 'mark_as_complete';
-	                              }
-                                
-	                              ?>
-	                              <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
+                              else{
+                                if(Session::has('taskmanager_user'))
+                                {
+                                  $allocated_person = Session::get('taskmanager_user');
+                                  if($task->author == $allocated_person)
+                                  {
+                                    $complete_button = 'mark_as_complete_author';
+                                  }
+                                  else{
+                                    $complete_button = 'mark_as_complete';
+                                  }
+                                }
+                                else{
+                                  $complete_button = 'mark_as_complete';
+                                }
+                                ?>
+                                <a href="javascript:" class="common_black_button <?php echo $complete_button; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
                                 <a href="javascript:" class="common_black_button park_task_button" data-element="<?php echo $task->id; ?>">Park Task</a>
-	                              <?php
-	                            }
-	                            ?>
+                                <?php
+                              }
+                              ?>
+	                            
 	                          </td>
 	                        </tr>
 	                        <tr>
@@ -2090,6 +2003,245 @@ $(window).click(function(e) {
 		ascending = ascending ? false : true;
 		$('#task_body_layout').html(sorted);
 	}
+  if($(e.target).hasClass('activate_task_button'))
+  {
+    var r = confirm("Do you want to make this task live now?");
+    if(r)
+    {
+      $("body").addClass("loading");
+      var task_id = $(e.target).attr("data-element");
+      var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
+      var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
+      if (typeof nexttask_id !== "undefined") {
+        var taskidval = nexttask_id;
+      }
+      else if (typeof prevtask_id !== "undefined") {
+        var taskidval = prevtask_id;
+      }
+      else{
+        var taskidval = '';
+      }
+      $.ajax({
+        url:"<?php echo URL::to('user/park_task_incomplete'); ?>",
+        type:"post",
+        data:{task_id:task_id},
+        success:function(resultval)
+        {
+          var layout = $("#hidden_compressed_layout").val();
+          var view = $(".select_view").val();
+          if(layout == "1")
+          {
+            var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+            var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+            if (typeof nexttask_id !== "undefined") {
+              var taskidval = nexttask_id;
+            }
+            else if (typeof prevtask_id !== "undefined") {
+              var taskidval = prevtask_id;
+            }
+            else{
+              var taskidval = '';
+            }
+
+            $("#task_tr_"+task_id).next().detach();
+            $("#task_tr_"+task_id).detach();
+            $("#hidden_tasks_tr_"+task_id).detach();
+
+            $("#task_tr_"+taskidval).show();
+            $("#task_tr_"+taskidval).next().show();
+            $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+            var opentask = $("#open_task_count_val").html();
+            var parktask = $("#park_task_count_val").html();
+            var countopen = parseInt(opentask) - 1;
+            var countpark = parseInt(parktask) + 1;
+            $("#open_task_count_val").html(countopen);
+            $("#park_task_count_val").html(countpark);
+            $("body").removeClass("loading");
+          }
+          else{
+            setTimeout(function() {
+              var user_id = $(".select_user_home").val();
+              $.ajax({
+                url:"<?php echo URL::to('user/refresh_parktask'); ?>",
+                type:"post",
+                data:{user_id:user_id},
+                dataType:"json",
+                success: function(result)
+                {
+                  $("#task_body_open").html(result['open_tasks']);
+                  $("#task_body_layout").html(result['layout']);
+                  
+                  var layout = $("#hidden_compressed_layout").val();
+                  $(".tasks_tr").hide();
+                  $(".tasks_tr").next().hide();
+                  $(".hidden_tasks_tr").hide();
+                  var view = $(".select_view").val();
+                  if(view == "3")
+                  {
+                    if(layout == "1")
+                    {
+                      $(".author_tr:first").show();
+                      $(".author_tr:first").next().show();
+                      $(".table_layout").show();
+                      $(".table_layout").find(".hidden_author_tr").show();
+                      $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                    }
+                    else{
+                      $(".author_tr").show();
+                      $(".author_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_author_tr").hide();
+                    }
+
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+
+                    var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+                  else if(view == "2"){
+                    $("#open_task_count").hide();
+                    $("#redline_task_count").show();
+                    $("#authored_task_count").hide();
+                    if(layout == "1")
+                    {
+                      var i = 1;
+                      $(".redline_indication").each(function() {
+                        if(i == 1)
+                        {
+                          if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                          {
+                            $(this).parents(".allocated_tr").show();
+                            $(this).parents(".allocated_tr").next().show();
+                            i++;
+                          }
+                        }
+                      });
+                      $(".table_layout").show();
+                      $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                      
+                      var j = 1;
+                      $(".redline_indication_layout").each(function() {
+                        if(j == 1)
+                        {
+                          if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                          {
+                            $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                            j++;
+                          }
+                        }
+                      });
+                    }
+                    else{
+                      $(".redline_indication").parents(".allocated_tr").show();
+                      $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_allocated_tr").hide();
+                    }
+
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+
+                    var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+                  else if(view == "1"){
+                    if(layout == "1")
+                    {
+                      $(".allocated_tr:first").show();
+                      $(".allocated_tr:first").next().show();
+                      $(".table_layout").show();
+                      $(".table_layout").find(".hidden_allocated_tr").show();
+                      $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                    }
+                    else{
+                      $(".allocated_tr").show();
+                      $(".allocated_tr").next().show();
+                      $(".table_layout").hide();
+                      $(".table_layout").find(".hidden_allocated_tr").hide();
+                    }
+
+                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                    var opentask = $(".hidden_allocated_tr").length;
+                    var authored = $(".hidden_author_tr").length;
+
+                    var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+                    $("#redline_task_count_val").html(redline);
+                    $("#open_task_count_val").html(opentask);
+                    $("#authored_task_count_val").html(authored);
+                  }
+                  $("[data-toggle=popover]").popover({
+                      html : true,
+                      content: function() {
+                        var content = $(this).attr("data-popover-content");
+                        return $(content).children(".popover-body").html();
+                      },
+                      title: function() {
+                        var title = $(this).attr("data-popover-content");
+                        return $(title).children(".popover-heading").html();
+                      }
+                  });
+                  if(layout == "0")
+                  {
+                    if(taskidval != "")
+                    {
+                      // $(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                    }
+                  }
+                  else{
+                    $("#"+taskidval).show();
+                    $("#"+taskidval).next().show();
+                    var hidden_tr = taskidval.substr(8);
+                    $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                  }
+                  if(layout == "1")
+                  {
+                    $(".open_layout_div").addClass("open_layout_div_change");
+                    var open_tasks_height = $(".open_layout_div").height();
+                    var margintop = parseInt(open_tasks_height);
+                    $(".open_layout_div").css("position","fixed");
+                    $(".open_layout_div").css("height","312px");
+                    if(open_tasks_height > 312)
+                    {
+                      $(".open_layout_div").css("overflow-y","scroll");
+                    }
+                    if(open_tasks_height < 50)
+                    {
+                      $(".table_layout").css("margin-top","20px");
+                    }
+                      else{
+                        $(".table_layout").css("margin-top","335px");
+                      }
+                  }
+                  else{
+                    $(".open_layout_div").removeClass("open_layout_div_change");
+                    $(".open_layout_div").css("position","unset");
+                    $(".open_layout_div").css("height","auto");
+                    $(".open_layout_div").css("overflow-y","unset");
+                      $(".table_layout").css("margin-top","0px");
+                  }
+                  $("body").removeClass("loading");
+                }
+              })
+            },2000);
+          }
+        }
+      })
+    }
+  }
   if($(e.target).hasClass('edit_task_name'))
   {
     var taskid = $(e.target).attr("data-element");
@@ -2163,6 +2315,11 @@ $(window).click(function(e) {
         var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
         var opentask = $(".hidden_allocated_tr").length;
         var authored = $(".hidden_author_tr").length;
+
+        var parktask = $("#park_task_count_val").html();
+        var countpark = parseInt(parktask) + 1;
+        $("#park_task_count_val").html(countpark);
+
         $("#redline_task_count_val").html(redline);
         $("#open_task_count_val").html(opentask);
         $("#authored_task_count_val").html(authored);
@@ -2210,6 +2367,11 @@ $(window).click(function(e) {
         var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
         var opentask = $(".hidden_allocated_tr").length;
         var authored = $(".hidden_author_tr").length;
+
+        var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
         $("#redline_task_count_val").html(redline);
         $("#open_task_count_val").html(opentask);
         $("#authored_task_count_val").html(authored);
@@ -2233,6 +2395,10 @@ $(window).click(function(e) {
         var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
         var opentask = $(".hidden_allocated_tr").length;
         var authored = $(".hidden_author_tr").length;
+
+        var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
         $("#redline_task_count_val").html(redline);
         $("#open_task_count_val").html(opentask);
         $("#authored_task_count_val").html(authored);
@@ -2490,7 +2656,7 @@ $(window).click(function(e) {
             setTimeout(function() {
               var user_id = $(".select_user_home").val();
               $.ajax({
-                url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                 type:"post",
                 data:{user_id:user_id},
                 dataType:"json",
@@ -2663,7 +2829,7 @@ $(window).click(function(e) {
     var nexttask_id = $(e.target).attr("data-next");
     var prevtask_id = $(e.target).attr("data-prev");
 
-		$("body").addClass("loading");
+    $("body").addClass("loading");
     if (typeof nexttask_id !== "undefined") {
       var taskidval = nexttask_id;
     }
@@ -2712,7 +2878,7 @@ $(window).click(function(e) {
           setTimeout(function() {
             var user_id = $(".select_user_home").val();
             $.ajax({
-              url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+              url:"<?php echo URL::to('user/refresh_parktask'); ?>",
               type:"post",
               data:{user_id:user_id},
               dataType:"json",
@@ -2934,7 +3100,7 @@ $(window).click(function(e) {
           setTimeout(function() {
             var user_id = $(".select_user_home").val();
             $.ajax({
-              url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+              url:"<?php echo URL::to('user/refresh_parktask'); ?>",
               type:"post",
               data:{user_id:user_id},
               dataType:"json",
@@ -3101,250 +3267,6 @@ $(window).click(function(e) {
       }
     });
   }
-  if(e.target.id == "park_submit")
-  {
-      var park_date = $("#park_task_date").val();
-      if(park_date == "")
-      {
-        alert("Please choose the Date to Park the Task.");
-      }
-      else{
-        $("body").addClass("loading");
-        var task_id = $(".hidden_task_id_park_task").val();
-        
-        var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
-        var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
-        if (typeof nexttask_id !== "undefined") {
-          var taskidval = nexttask_id;
-        }
-        else if (typeof prevtask_id !== "undefined") {
-          var taskidval = prevtask_id;
-        }
-        else{
-          var taskidval = '';
-        }
-        $.ajax({
-          url:"<?php echo URL::to('user/park_task_complete'); ?>",
-          type:"post",
-          data:{task_id:task_id,park_date:park_date},
-          success:function(resultval)
-          {
-            $(".park_task_modal").modal("hide");
-            var layout = $("#hidden_compressed_layout").val();
-            var view = $(".select_view").val();
-            if(layout == "1")
-            {
-              var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
-              var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
-              if (typeof nexttask_id !== "undefined") {
-                var taskidval = nexttask_id;
-              }
-              else if (typeof prevtask_id !== "undefined") {
-                var taskidval = prevtask_id;
-              }
-              else{
-                var taskidval = '';
-              }
-
-              $("#task_tr_"+task_id).next().detach();
-              $("#task_tr_"+task_id).detach();
-              $("#hidden_tasks_tr_"+task_id).detach();
-
-              $("#task_tr_"+taskidval).show();
-              $("#task_tr_"+taskidval).next().show();
-              $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
-
-              var opentask = $("#open_task_count_val").html();
-              var parktask = $("#park_task_count_val").html();
-              var countopen = parseInt(opentask) - 1;
-              var countpark = parseInt(parktask) + 1;
-              $("#open_task_count_val").html(countopen);
-              $("#park_task_count_val").html(countpark);
-              $("body").removeClass("loading");
-            }
-            else{
-              setTimeout(function() {
-                var user_id = $(".select_user_home").val();
-                $.ajax({
-                  url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
-                  type:"post",
-                  data:{user_id:user_id},
-                  dataType:"json",
-                  success: function(result)
-                  {
-                    $("#task_body_open").html(result['open_tasks']);
-                    $("#task_body_layout").html(result['layout']);
-                    
-                    var layout = $("#hidden_compressed_layout").val();
-                    $(".tasks_tr").hide();
-                    $(".tasks_tr").next().hide();
-                    $(".hidden_tasks_tr").hide();
-                    var view = $(".select_view").val();
-                    if(view == "3")
-                    {
-                      if(layout == "1")
-                      {
-                        $(".author_tr:first").show();
-                        $(".author_tr:first").next().show();
-                        $(".table_layout").show();
-                        $(".table_layout").find(".hidden_author_tr").show();
-                        $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
-                      }
-                      else{
-                        $(".author_tr").show();
-                        $(".author_tr").next().show();
-                        $(".table_layout").hide();
-                        $(".table_layout").find(".hidden_author_tr").hide();
-                      }
-
-                      var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                      var opentask = $(".hidden_allocated_tr").length;
-                      var authored = $(".hidden_author_tr").length;
-
-                      var parktask = $("#park_task_count_val").html();
-                      var countpark = parseInt(parktask) + 1;
-                      $("#park_task_count_val").html(countpark);
-                      $("#redline_task_count_val").html(redline);
-                      $("#open_task_count_val").html(opentask);
-                      $("#authored_task_count_val").html(authored);
-                    }
-                    else if(view == "2"){
-                      $("#open_task_count").hide();
-                      $("#redline_task_count").show();
-                      $("#authored_task_count").hide();
-                      if(layout == "1")
-                      {
-                        var i = 1;
-                        $(".redline_indication").each(function() {
-                          if(i == 1)
-                          {
-                            if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
-                            {
-                              $(this).parents(".allocated_tr").show();
-                              $(this).parents(".allocated_tr").next().show();
-                              i++;
-                            }
-                          }
-                        });
-                        $(".table_layout").show();
-                        $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
-                        
-                        var j = 1;
-                        $(".redline_indication_layout").each(function() {
-                          if(j == 1)
-                          {
-                            if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
-                            {
-                              $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
-                              j++;
-                            }
-                          }
-                        });
-                      }
-                      else{
-                        $(".redline_indication").parents(".allocated_tr").show();
-                        $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
-                        $(".table_layout").hide();
-                        $(".table_layout").find(".hidden_allocated_tr").hide();
-                      }
-
-                      var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                      var opentask = $(".hidden_allocated_tr").length;
-                      var authored = $(".hidden_author_tr").length;
-
-                      var parktask = $("#park_task_count_val").html();
-                      var countpark = parseInt(parktask) + 1;
-                      $("#park_task_count_val").html(countpark);
-                      $("#redline_task_count_val").html(redline);
-                      $("#open_task_count_val").html(opentask);
-                      $("#authored_task_count_val").html(authored);
-                    }
-                    else if(view == "1"){
-                      if(layout == "1")
-                      {
-                        $(".allocated_tr:first").show();
-                        $(".allocated_tr:first").next().show();
-                        $(".table_layout").show();
-                        $(".table_layout").find(".hidden_allocated_tr").show();
-                        $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
-                      }
-                      else{
-                        $(".allocated_tr").show();
-                        $(".allocated_tr").next().show();
-                        $(".table_layout").hide();
-                        $(".table_layout").find(".hidden_allocated_tr").hide();
-                      }
-
-                      var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                      var opentask = $(".hidden_allocated_tr").length;
-                      var authored = $(".hidden_author_tr").length;
-
-                      var parktask = $("#park_task_count_val").html();
-                      var countpark = parseInt(parktask) + 1;
-                      $("#park_task_count_val").html(countpark);
-                      $("#redline_task_count_val").html(redline);
-                      $("#open_task_count_val").html(opentask);
-                      $("#authored_task_count_val").html(authored);
-                    }
-                    $("[data-toggle=popover]").popover({
-                        html : true,
-                        content: function() {
-                          var content = $(this).attr("data-popover-content");
-                          return $(content).children(".popover-body").html();
-                        },
-                        title: function() {
-                          var title = $(this).attr("data-popover-content");
-                          return $(title).children(".popover-heading").html();
-                        }
-                    });
-                    if(layout == "0")
-                    {
-                      if(taskidval != "")
-                      {
-                        // $(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
-                      }
-                    }
-                    else{
-                      $("#"+taskidval).show();
-                      $("#"+taskidval).next().show();
-                      var hidden_tr = taskidval.substr(8);
-                      $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
-                    }
-                    if(layout == "1")
-                    {
-                      $(".open_layout_div").addClass("open_layout_div_change");
-                      var open_tasks_height = $(".open_layout_div").height();
-                      var margintop = parseInt(open_tasks_height);
-                      $(".open_layout_div").css("position","fixed");
-                      $(".open_layout_div").css("height","312px");
-                      if(open_tasks_height > 312)
-                      {
-                        $(".open_layout_div").css("overflow-y","scroll");
-                      }
-                      if(open_tasks_height < 50)
-                      {
-                        $(".table_layout").css("margin-top","20px");
-                      }
-                        else{
-                          $(".table_layout").css("margin-top","335px");
-                        }
-                    }
-                    else{
-                      $(".open_layout_div").removeClass("open_layout_div_change");
-                      $(".open_layout_div").css("position","unset");
-                      $(".open_layout_div").css("height","auto");
-                      $(".open_layout_div").css("overflow-y","unset");
-                        $(".table_layout").css("margin-top","0px");
-                    }
-                    $("body").removeClass("loading");
-                  }
-                })
-              },2000);
-            }
-          }
-        })
-      }
-  }
   if($(e.target).hasClass('mark_as_complete_author'))
   {
     var r = confirm("You are about to mark this task as Complete are you sure you want to continue?");
@@ -3368,7 +3290,7 @@ $(window).click(function(e) {
       $.ajax({
         url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
         type:"post",
-        data:{task_id:task_id,type:"0"},
+        data:{task_id:task_id},
         success:function(resultval)
         {
           var layout = $("#hidden_compressed_layout").val();
@@ -3403,7 +3325,7 @@ $(window).click(function(e) {
             setTimeout(function() {
               var user_id = $(".select_user_home").val();
               $.ajax({
-                url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                 type:"post",
                 data:{user_id:user_id},
                 dataType:"json",
@@ -3437,6 +3359,11 @@ $(window).click(function(e) {
                     var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
                     var opentask = $(".hidden_allocated_tr").length;
                     var authored = $(".hidden_author_tr").length;
+
+                    var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
                     $("#redline_task_count_val").html(redline);
                     $("#open_task_count_val").html(opentask);
                     $("#authored_task_count_val").html(authored);
@@ -3484,6 +3411,11 @@ $(window).click(function(e) {
                     var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
                     var opentask = $(".hidden_allocated_tr").length;
                     var authored = $(".hidden_author_tr").length;
+
+                    var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
                     $("#redline_task_count_val").html(redline);
                     $("#open_task_count_val").html(opentask);
                     $("#authored_task_count_val").html(authored);
@@ -3506,6 +3438,11 @@ $(window).click(function(e) {
                     var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
                     var opentask = $(".hidden_allocated_tr").length;
                     var authored = $(".hidden_author_tr").length;
+
+                    var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
                     $("#redline_task_count_val").html(redline);
                     $("#open_task_count_val").html(opentask);
                     $("#authored_task_count_val").html(authored);
@@ -3608,7 +3545,7 @@ $(window).click(function(e) {
       }
       else{
         $.ajax({
-          url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+          url:"<?php echo URL::to('user/refresh_parktask'); ?>",
           type:"post",
           data:{user_id:user_id},
           dataType:"json",
@@ -3641,6 +3578,11 @@ $(window).click(function(e) {
             var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
             var opentask = $(".hidden_allocated_tr").length;
             var authored = $(".hidden_author_tr").length;
+
+            var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
             $("#redline_task_count_val").html(redline);
             $("#open_task_count_val").html(opentask);
             $("#authored_task_count_val").html(authored);
@@ -3688,6 +3630,11 @@ $(window).click(function(e) {
             var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
             var opentask = $(".hidden_allocated_tr").length;
             var authored = $(".hidden_author_tr").length;
+
+            var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
             $("#redline_task_count_val").html(redline);
             $("#open_task_count_val").html(opentask);
             $("#authored_task_count_val").html(authored);
@@ -3710,6 +3657,10 @@ $(window).click(function(e) {
             var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
             var opentask = $(".hidden_allocated_tr").length;
             var authored = $(".hidden_author_tr").length;
+
+            var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
             $("#redline_task_count_val").html(redline);
             $("#open_task_count_val").html(opentask);
             $("#authored_task_count_val").html(authored);
@@ -3758,18 +3709,6 @@ $(window).click(function(e) {
         })
       }
     },2000);
-  }
-  if($(e.target).hasClass('park_task_button'))
-  {
-    var taskid = $(e.target).attr("data-element");
-    $(".hidden_task_id_park_task").val(taskid);
-    $(".park_task_modal").modal("show");
-    $("#park_task_date").val("");
-    $("#park_task_date").datetimepicker({
-           defaultDate: fullDate,       
-           format: 'L',
-           format: 'DD-MMM-YYYY',
-        });
   }
   if($(e.target).hasClass('copy_task'))
   {
@@ -4021,7 +3960,7 @@ $(window).click(function(e) {
       else{
         if(show_auto_close == "1")
         {
-          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" class="common_black_button yes_allocate_back">Yes</a><a href="javascript:" data-task="'+task_id+'" class="common_black_button no_allocate_back">No</a></p>',fixed:true,width:"800px"});
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" class="common_black_button yes_allocate_back">Yes</a><a href="javascript:" class="common_black_button no_allocate_back" data-task="'+task_id+'">No</a></p>',fixed:true,width:"800px"});
             $("body").removeClass("loading");
             return false;
         }
@@ -4106,7 +4045,7 @@ $(window).click(function(e) {
                       else{
                         var user_id = $(".select_user_home").val();
                         $.ajax({
-                          url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                          url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                           type:"post",
                           data:{user_id:user_id},
                               dataType:"json",
@@ -4363,7 +4302,7 @@ $(window).click(function(e) {
                   else{
                     var user_id = $(".select_user_home").val();
                     $.ajax({
-                      url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                      url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                       type:"post",
                       data:{user_id:user_id},
                           dataType:"json",
@@ -4526,7 +4465,6 @@ $(window).click(function(e) {
                       }
                     })
                   }
-
                   $.colorbox.close();
                 }
               })
@@ -4620,7 +4558,7 @@ $(window).click(function(e) {
                   else{
                     var user_id = $(".select_user_home").val();
                     $.ajax({
-                      url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                      url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                       type:"post",
                       data:{user_id:user_id},
                           dataType:"json",
@@ -4805,7 +4743,7 @@ $(window).click(function(e) {
         data:{task_id:task_id},
         success:function(result)
         {
-	    	    CKEDITOR.replace('editor_1',
+	    	CKEDITOR.replace('editor_1',
              {
               height: '150px',
               enterMode: CKEDITOR.ENTER_BR,
@@ -4829,7 +4767,6 @@ $(window).click(function(e) {
             $(".auto_close_task_comment").prop("checked",false);
           }
           $("#show_auto_close_msg").val(result['show_auto_close_msg']);
-          
           $("body").removeClass("loading");
         }
       })
@@ -4856,14 +4793,6 @@ $(window).click(function(e) {
     $(".subject_allocation").html(subject);
 
     $("#hidden_task_id_allocation").val(task_id);
-    $("#hidden_task_id_author").val(author);
-    if($(e.target).hasClass('auto_close_task_complete'))
-    {
-      $("#hidden_task_id_auto_close").val("1");
-    }
-    else{
-      $("#hidden_task_id_auto_close").val("0");
-    }
     $(".history_body").hide();
     $(".allocation_body").show();
     
@@ -4903,7 +4832,6 @@ $(window).click(function(e) {
     $(".subject_allocation").html(subject);
 
     $("#hidden_task_id_allocation").val(task_id);
-    $("#hidden_task_id_author").val(author);
     $(".history_body").show();
     $(".allocation_body").hide();
 
@@ -4922,12 +4850,11 @@ $(window).click(function(e) {
   }
   if(e.target.id == "allocate_now")
   {
-  	//$("body").addClass("loading");
-
+    $("body").addClass("loading");
     var task_id = $("#hidden_task_id_allocation").val();
     var auto_close = $("#hidden_task_id_auto_close").val();
     var new_allocation = $(".new_allocation").val();
-    var author = $("#hidden_task_id_author").val();
+    var author = $("#hidden_task_id_author");
     var selected_user = $(".select_user_home").val();
 
     if(auto_close == "1")
@@ -4936,7 +4863,7 @@ $(window).click(function(e) {
       {
         if(author == new_allocation)
         {
-          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'" class="common_black_button yes_allocate_now">Yes</a><a href="javascript:" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'" class="common_black_button no_allocate_now">No</a></p>',fixed:true,width:"800px"});
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'" class="common_black_button yes_allocate_now">Yes</a><a href="javascript:" class="common_black_button no_allocate_now" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'">No</a></p>',fixed:true,width:"800px"});
             $("body").removeClass("loading");
             return false;
         }
@@ -4944,16 +4871,16 @@ $(window).click(function(e) {
     }
 
     var nexttask_id = $(e.target).parents(".tasks_tr").nextAll('.tasks_tr:visible').first().attr("id");
-  	var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
-  	if (typeof nexttask_id !== "undefined") {
-  		var taskidval = nexttask_id;
-  	}
-  	else if (typeof prevtask_id !== "undefined") {
-  		var taskidval = prevtask_id;
-  	}
-  	else{
-  		var taskidval = '';
-  	}
+    var prevtask_id = $(e.target).parents(".tasks_tr").prevAll('.tasks_tr:visible').first().attr("id");
+    if (typeof nexttask_id !== "undefined") {
+      var taskidval = nexttask_id;
+    }
+    else if (typeof prevtask_id !== "undefined") {
+      var taskidval = prevtask_id;
+    }
+    else{
+      var taskidval = '';
+    }
 
     if(new_allocation == "")
     {
@@ -5021,7 +4948,7 @@ $(window).click(function(e) {
              setTimeout(function() {
                 var user_id = $(".select_user_home").val();
                 $.ajax({
-                  url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                  url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                   type:"post",
                   data:{user_id:user_id},
                       dataType:"json",
@@ -5275,7 +5202,7 @@ $(window).click(function(e) {
              setTimeout(function() {
                 var user_id = $(".select_user_home").val();
                 $.ajax({
-                  url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                  url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                   type:"post",
                   data:{user_id:user_id},
                       dataType:"json",
@@ -5530,7 +5457,7 @@ $(window).click(function(e) {
              setTimeout(function() {
                 var user_id = $(".select_user_home").val();
                 $.ajax({
-                  url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                  url:"<?php echo URL::to('user/refresh_parktask'); ?>",
                   type:"post",
                   data:{user_id:user_id},
                       dataType:"json",
@@ -7472,6 +7399,11 @@ $(window).change(function(e) {
       var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
       var opentask = $(".hidden_allocated_tr").length;
       var authored = $(".hidden_author_tr").length;
+
+      var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
       $("#redline_task_count_val").html(redline);
       $("#open_task_count_val").html(opentask);
       $("#authored_task_count_val").html(authored);
@@ -7520,6 +7452,11 @@ $(window).change(function(e) {
       var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
       var opentask = $(".hidden_allocated_tr").length;
       var authored = $(".hidden_author_tr").length;
+
+      var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+
       $("#redline_task_count_val").html(redline);
       $("#open_task_count_val").html(opentask);
       $("#authored_task_count_val").html(authored);
@@ -7547,6 +7484,11 @@ $(window).change(function(e) {
       var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
       var opentask = $(".hidden_allocated_tr").length;
       var authored = $(".hidden_author_tr").length;
+
+      var parktask = $("#park_task_count_val").html();
+                    var countpark = parseInt(parktask) + 1;
+                    $("#park_task_count_val").html(countpark);
+                    
       $("#redline_task_count_val").html(redline);
       $("#open_task_count_val").html(opentask);
       $("#authored_task_count_val").html(authored);
@@ -7846,4 +7788,6 @@ $( "#create_job_form" ).validate({
     },
 });
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

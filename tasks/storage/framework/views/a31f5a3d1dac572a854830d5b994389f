@@ -23,6 +23,7 @@
  elseif($page_segment == "p30month_manage") { $title = 'P30 System'; }
  elseif($page_segment == "p30_select_month") { $title = 'P30 System'; }
  elseif($page_segment == "paye_p30_manage") { $title = 'PAYE M.R.S'; }
+ elseif($page_segment == "paye_p30_ros_liabilities") { $title = 'PAYE M.R.S'; }
  elseif($page_segment == "vat_clients") { $title = 'VAT Management System'; }
  elseif($page_segment == "vat_notifications") { $title = 'VAT Management System'; }
 
@@ -323,11 +324,11 @@
                     </li>
                 </ul>
             </li>
-            <li class="dropdown <?php if($segment1 == "manage_week" || $segment1 == "week_manage" || $segment1 == "select_week" || $segment1 == "manage_month" || $segment1 == "month_manage" || $segment1 == "select_month" || $segment1 == "p30" || $segment1 == "p30month_manage" || $segment1 == "p30_select_month" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payroll Functions</a>
+            <li class="dropdown <?php if($segment1 == "manage_week" || $segment1 == "week_manage" || $segment1 == "select_week" || $segment1 == "manage_month" || $segment1 == "month_manage" || $segment1 == "select_month" || $segment1 == "p30" || $segment1 == "p30month_manage" || $segment1 == "p30_select_month" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage" || $segment1 == "paye_p30_ros_liabilities") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payroll Functions</a>
                 <ul class="dropdown-menu">
                     <li class="<?php if(($segment1 == "manage_week") || ($segment1 == "week_manage") || ($segment1 == "select_week")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/manage_week')?>">Weekly Payroll</a></li>
                     <li class="<?php if(($segment1 == "manage_month") || ($segment1 == "month_manage") || ($segment1 == "select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/manage_month')?>">Monthly Payroll</a></li>
-                    <li class="<?php if(($segment1 == "p30") || ($segment1 == "p30month_manage" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage") || ($segment1 == "p30_select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/p30'); ?>">P30 System</a></li>
+                    <li class="<?php if(($segment1 == "p30") || ($segment1 == "p30month_manage" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage" || $segment1 == "paye_p30_ros_liabilities") || ($segment1 == "p30_select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/p30'); ?>">P30 System</a></li>
                 </ul>
             </li>
 

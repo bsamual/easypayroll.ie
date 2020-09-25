@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
@@ -3852,4 +3851,6 @@ $( "#create_job_form" ).validate({
     },
 });
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

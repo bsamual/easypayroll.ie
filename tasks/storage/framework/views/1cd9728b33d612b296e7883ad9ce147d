@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 <script src="<?php echo URL::to('assets/js/jquery.dataTables.min.js'); ?>"></script>
@@ -377,7 +376,7 @@ body.loading .modal_load {
 
     }
 
-    @media print {
+    @media  print {
 
       body * {
 
@@ -654,9 +653,6 @@ elseif(Session::has('countupdated'))
             </div>
             <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
             <div id="add_infiles_attachments_div">
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
             </div>
             <div class="form-group date_group">
                 <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
@@ -1479,12 +1475,12 @@ elseif(Session::has('countupdated'))
                   {
                     $task_name = DB::table('taskmanager')->where('id',$taskval->task_id)->first();
                     $ii = 1;
-                    $output.='<p><a href="javascript:" class="download_pdf_task" data-element="'.$taskval->task_id.'" title="Download PDF" style="color:#f00">'.$ii.'. '.$task_name->taskid.' - '.$task_name->subject.'</a></p>';
+                    $output.='<p><a href="javascript:" class="download_pdf_task" data-element="'.$taskval->task_id.'" title="Download PDF">'.$ii.'. '.$task_name->subject.'</a></p>';
                     $ii++;
                   }
                 }
                 else{
-                  $output.='<p style="color:#f00">No Task Linked to this Infile Item.</p>';
+                  $output.='<p>No Task Linked to this Infile Item.</p>';
                 }
               $output.='</div>';
 
@@ -2330,7 +2326,6 @@ $(window).click(function(e) {
     $("#hidden_copied_notes").val("");
     $("#hidden_copied_infiles").val("");
 
-    $(".auto_close_task").prop("checked",false);
     $(".accept_recurring").prop("checked",false);
     $(".accept_recurring_div").hide();
     $("#recurring_checkbox1").prop("checked",false);
@@ -4986,4 +4981,5 @@ $( "#create_task_form" ).validate({
 
 
 
-@stop
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

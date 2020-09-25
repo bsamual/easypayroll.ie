@@ -1,10 +1,2 @@
----TASK CREATED - 11-Sep-2020 BY Bob Samual AND ALLOCATED TO User Sample DUE BY 11-Sep-2020---
-Developer Test for allocate bug
-####User Sample has added the following comment to this Task on 11 Sep 2020#### Sample Test
-++++User Sample has allocated this task to Bob Samual on 11-Sep-2020++++
-####Bob Samual has added the following comment to this Task on 11 Sep 2020#### Sample Test 2
-++++Bob Samual has allocated this task to User Sample on 11-Sep-2020++++
-####User Sample has added the following comment to this Task on 11 Sep 2020#### Sample Test 3
-++++User Sample has allocated this task to Bob Samual on 11-Sep-2020++++
-####Bob Samual has added the following comment to this Task on 11 Sep 2020#### Sample Test 4
-++++Bob Samual has allocated this task to User Sample on 11-Sep-2020++++
+Developer Test TaskDeveloper Test TaskDeveloper Test Task
+---TASK CREATED - 25-Sep-2020 BY Bob Samual AND ALLOCATED TO User Sample DUE BY 25-Sep-2020---

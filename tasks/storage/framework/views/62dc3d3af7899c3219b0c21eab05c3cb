@@ -1,5 +1,4 @@
-@extends('userheader')
-@section('content')
+<?php $__env->startSection('content'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 
@@ -121,7 +120,7 @@ body.loading .modal_load {
     body #coupon {
       display: none;
     }
-    @media print {
+    @media  print {
       body * {
         display: none;
       }
@@ -146,7 +145,7 @@ a:hover{text-decoration: underline;}
 .blinking{
     animation:blinkingText 0.8s infinite;
 }
-@keyframes blinkingText{
+@keyframes  blinkingText{
     0%{     background: #f00;    }
     49%{    background: #000; }
     50%{    background: #f00; }
@@ -453,4 +452,5 @@ function doneTyping_prelim (prelim_value, client_id, year_id, setting_id, that) 
 
 </script>
 
-@stop
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

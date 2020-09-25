@@ -1671,3 +1671,7 @@ Route::post('/user/cm_load_all_client_message', 'user\CmController@cm_load_all_c
 Route::post('/user/apply_task_to_ros', 'user\Payep30Controller@apply_task_to_ros');
 Route::post('/user/report_active_month_csv', 'user\Payep30Controller@report_active_month_csv');
 
+Route::post('/user/save_yearend_date_status', 'user\YearendController@save_yearend_date_status');
+Route::post('/user/save_yearend_liability_date', 'user\YearendController@save_yearend_liability_date');
+
+Route::post('/user/change_auto_close_status', 'user\TaskmanagerController@change_auto_close_status');
