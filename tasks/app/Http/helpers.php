@@ -33,7 +33,13 @@ function number_format_invoice($value)
 	$check_minus = substr($explode[0],0,1);
 	if($check_minus == "-" && $first == "0")
 	{
-		$first = '-'.$first;
+		if($after_decimal == '00')
+		{
+			$first = $first;
+		}
+		else{
+			$first = '-'.$first;
+		}
 	}
 	return $first.'.'.$after_decimal;
 }
@@ -68,11 +74,16 @@ function number_format_invoice_without_decimal($value)
 		$after_decimal = '';
 	}
 	$first = add_commas((int)$explode[0]);
-
 	$check_minus = substr($explode[0],0,1);
 	if($check_minus == "-" && $first == "0")
 	{
-		$first = '-'.$first;
+		if($after_decimal == '')
+		{
+			$first = $first;
+		}
+		else{
+			$first = '-'.$first;
+		}
 	}
 
 	if($after_decimal == "")
@@ -121,7 +132,13 @@ function number_format_invoice_without_comma($value)
 	$check_minus = substr($explode[0],0,1);
 	if($check_minus == "-" && $first == "0")
 	{
-		$first = '-'.$first;
+		if($after_decimal == '00')
+		{
+			$first = $first;
+		}
+		else{
+			$first = '-'.$first;
+		}
 	}
 	return $first.'.'.$after_decimal;
 }

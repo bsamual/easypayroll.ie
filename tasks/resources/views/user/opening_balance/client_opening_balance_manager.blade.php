@@ -216,12 +216,13 @@ a:hover{text-decoration: underline;}
       <table class="table" style="border:2px solid #ddd">
         <thead>
           <tr>
-            <th colspan="4">Balance Break Down</th>
+            <th colspan="5">Balance Break Down</th>
           </tr>
           <tr>
             <th style="text-align: left">Invoice No</th>
             <th style="text-align: left">Invoice Date</th>
             <th style="text-align: right">Invoice Gross</th>
+            <th style="text-align: right">Opening Balance Breakdown</th>
             <th style="text-align: right">Balance Remaining</th>
           </tr>
         </thead>
@@ -229,17 +230,29 @@ a:hover{text-decoration: underline;}
           <?php
           $get_invoices = DB::select('SELECT * from `invoice_system` WHERE `client_id` = "'.$client_id.'" AND `invoice_date` <= "'.$opening_balance->opening_date.'" ORDER BY `invoice_date` DESC');
           $total_remaining = 0;
+          $total_breakdown = 0;
           if(count($get_invoices))
           {
             foreach($get_invoices as $invoice)
             {
-              if($invoice->balance_remaining != "") { $balance_remaining = number_format_invoice($invoice->balance_remaining); } else { $balance_remaining = '-'; }
+              if (strpos($invoice->gross, '-') !== false) { $breakdown = '-'; $balance_remaining = '-'; }
+              else{
+                if($invoice->balance_remaining != "") { 
+                  $balance_remaining = number_format_invoice($invoice->balance_remaining); 
+                  $breakdown = number_format_invoice(number_format_invoice_without_comma($invoice->gross) - number_format_invoice_without_comma($invoice->balance_remaining));
+                } 
+                else { 
+                  $balance_remaining = '0.00'; 
+                  $breakdown = number_format_invoice(number_format_invoice_without_comma($invoice->gross) - number_format_invoice_without_comma($invoice->balance_remaining));
+                }
+              }
               ?>
               <tr>
                 <td><?php echo $invoice->invoice_number; ?></td>
                 <td><?php echo date("d-M-Y", strtotime($invoice->invoice_date)); ?></td>
                 <td style="text-align: right"><?php echo number_format_invoice($invoice->gross); ?></td>
                 <td style="text-align: right"><?php echo $balance_remaining; ?></td>
+                <td style="text-align: right"><?php echo $breakdown; ?></td>
               </tr>
               <?php
               $balance_remaining = str_replace(",","",$balance_remaining);
@@ -248,8 +261,16 @@ a:hover{text-decoration: underline;}
               $balance_remaining = str_replace(",","",$balance_remaining);
               $balance_remaining = str_replace(",","",$balance_remaining);
               $balance_remaining = str_replace(",","",$balance_remaining);
+
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
               
               $total_remaining = $total_remaining + $balance_remaining;
+              $total_breakdown = $total_breakdown + $breakdown;
             }
           }
           else{
@@ -259,12 +280,14 @@ a:hover{text-decoration: underline;}
           ?>
 
           <tr>
-            <td colspan="3" style="font-weight:700">Total Balance Remaining</td>
+            <td colspan="3" style="font-weight:700">Total</td>
             <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($total_remaining); ?></td>
+            <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($total_breakdown); ?></td>
           </tr>
           <tr>
             <td colspan="3" style="font-weight:700">Unallocated Balance</td>
             <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($unallocated); ?></td>
+            <td style="background: #ddd;text-align: right"></td>
           </tr>
         </tbody>
       </table>

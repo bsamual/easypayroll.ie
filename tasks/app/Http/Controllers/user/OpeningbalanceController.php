@@ -219,12 +219,23 @@ class OpeningbalanceController extends Controller {
           {
             foreach($get_invoices as $invoice)
             {
-              if($invoice->balance_remaining != "") { $balance_remaining = number_format_invoice($invoice->balance_remaining); } else { $balance_remaining = '-'; }
+              if (strpos($invoice->gross, '-') !== false) { $breakdown = '-'; $balance_remaining = '-'; }
+              else{
+                if($invoice->balance_remaining != "") { 
+                  $balance_remaining = number_format_invoice($invoice->balance_remaining); 
+                  $breakdown = number_format_invoice(number_format_invoice_without_comma($invoice->gross) - number_format_invoice_without_comma($invoice->balance_remaining));
+                } 
+                else { 
+                  $balance_remaining = '0.00'; 
+                  $breakdown = number_format_invoice(number_format_invoice_without_comma($invoice->gross) - number_format_invoice_without_comma($invoice->balance_remaining));
+                }
+              }
               $output.='<tr>
                 <td>'.$invoice->invoice_number.'</td>
                 <td>'.date("d-M-Y", strtotime($invoice->invoice_date)).'</td>
                 <td style="text-align: right">'.number_format_invoice($invoice->gross).'</td>
                 <td style="text-align: right">'.$balance_remaining.'</td>
+                <td style="text-align: right">'.$breakdown.'</td>
               </tr>';
               $balance_remaining = str_replace(",","",$balance_remaining);
               $balance_remaining = str_replace(",","",$balance_remaining);
@@ -233,20 +244,30 @@ class OpeningbalanceController extends Controller {
               $balance_remaining = str_replace(",","",$balance_remaining);
               $balance_remaining = str_replace(",","",$balance_remaining);
 
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              $breakdown = str_replace(",","",$breakdown);
+              
               $total_remaining = $total_remaining + $balance_remaining;
+              $total_breakdown = $total_breakdown + $breakdown;
             }
           }
           else{
-            $output.='<tr><td colspan="4">No Invoice are available on or before the given opening balance date</td></tr>';
+            $output.='<tr><td colspan="5">No Invoice are available on or before the given opening balance date</td></tr>';
           }
           $unallocated = $balance - $total_remaining;
           $output.='<tr>
             <td colspan="3" style="font-weight:700">Total Balance Remaining</td>
             <td style="background: #ddd;text-align: right">'.number_format_invoice($total_remaining).'</td>
+            <td style="background: #ddd;text-align: right">'.number_format_invoice($total_breakdown).'</td>
           </tr>
           <tr>
             <td colspan="3" style="font-weight:700">Unallocated Balance</td>
             <td style="background: #ddd;text-align: right">'.number_format_invoice($unallocated).'</td>
+            <td style="background: #ddd;text-align: right"></td>
           </tr>';
           echo $output;
 	}
