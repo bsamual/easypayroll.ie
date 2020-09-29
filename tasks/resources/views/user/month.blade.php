@@ -13,6 +13,10 @@ body{background:url('<?php echo URL::to('assets/images/monthly_bg.jpg')?>') no-r
 <div class="content_section">
   <div class="page_title">
     SELECT YEAR
+    <?php
+    $current_month = DB::table('month')->orderBy('month_id','desc')->first();
+    ?>
+    <a href="<?php echo URL::to('user/select_month/'.base64_encode($current_month->month_id)); ?>" class="common_black_button" style="float:right">Open Current Month</a>
   </div>
     <div class="select_button">
         <ul>

@@ -60,6 +60,44 @@ body.loading {
 body.loading .modal_load {
     display: block;
 }
+.modal_load_content {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_content {
+    overflow: hidden;   
+}
+body.loading_content .modal_load_content {
+    display: block;
+}
+.modal_load_import {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_import {
+    overflow: hidden;   
+}
+body.loading_import .modal_load_import {
+    display: block;
+}
 .table thead th:focus{background: #ddd !important;}
 .form-control{border-radius: 0px;}
 .error{color: #f00; font-size: 12px;}
@@ -127,6 +165,20 @@ a:hover{text-decoration: underline;}
             <input type="button" class="common_black_button activate_file" id="activate_file" value="Activate File" style="width:100%">
           </div>
         </div>
+        <div class="col-md-12">
+          <div class="col-md-12">
+            <h4 style="line-height: 27px;" id="import_note_1">
+              <p>The file must be in CSV format.<br/>
+              The date must be in the format dd-mm-yyyy (for Ex: 07-09-2020)<br/>
+              The titles must be<br/>
+              1. Code<br/>
+              2. Balance<br/>
+              3. Date<br/>
+              In that order<br/>
+              No blank line after the Title Line</p>
+            </h4>
+          </div>
+        </div>
       </form>
     </div>
     <div class="col-md-5">
@@ -163,6 +215,13 @@ a:hover{text-decoration: underline;}
     <div class="col-md-1">&nbsp;</div>
   </div>
   <div class="modal_load"></div>
+  <div class="modal_load_content" style="text-align: center;">
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait untill all the datas from CSV file will be verified.</p>
+    <p style="font-size:18px;font-weight: 600;">Loading: <span id="count_first"></span> of <span id="count_last"></span></p>
+  </div>
+  <div class="modal_load_import" style="text-align: center;">
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait untill all the verified result will be imported.</p>
+  </div>
   <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
   <input type="hidden" name="show_alert" id="show_alert" value="">
   <input type="hidden" name="pagination" id="pagination" value="1">
@@ -189,8 +248,9 @@ $(function(){
     });
 });
 
-function import_opening_balance_function(filename,import_type,page,session_id)
+function import_opening_balance_function(filename,import_type,page,session_id,count,totalcount)
 {
+  var countval = parseInt(count) + 100;
   $.ajax({
     url:"<?php echo URL::to('user/import_opening_balance'); ?>",
     type:"post",
@@ -198,10 +258,12 @@ function import_opening_balance_function(filename,import_type,page,session_id)
     data:{filename:filename,import_type:import_type,page:page,session_id:session_id},
     success: function(result)
     {
-      console.log(result['error']);
+      $("#count_first").html(countval);
+      $("#count_last").html(totalcount);
+
       if(result['page'] > "0")
       {
-        import_opening_balance_function(filename,import_type,result['page'],session_id);
+        import_opening_balance_function(filename,import_type,result['page'],session_id,countval,totalcount);
       }
       else{
         $(".opening_balance_date").val("");
@@ -212,12 +274,16 @@ function import_opening_balance_function(filename,import_type,page,session_id)
           $("#import_tbody_list").html(result['output']);
           $("#hidden_filename").val(result['upload_dir']);
           $("#hidden_session_id").val(result['session_id']);
-          $("body").removeClass("loading");
+          $("#count_first").html("");
+          $("#count_last").html("");
+          $("body").removeClass("loading_content");
         }
         else{
           $(".import_table").hide();
           $(".start_import").hide();
-          $("body").removeClass("loading");
+          $("#count_first").html("");
+          $("#count_last").html("");
+          $("body").removeClass("loading_content");
           $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>"+result['message']+"</p>",width:"30%",fixed:true});
         } 
       }
@@ -228,10 +294,12 @@ $(window).click(function(e){
   if(e.target.id == "import_balance_1")
   {
     $("#import_note").html("Import Balances Only – Select a CSV file that has Client ID and Balance.  Balances will be imported for each client and will not be locked on import");
+    $("#import_note_1").html("<p>The file must be in CSV format.<br/>The date must be in the format dd-mm-yyyy (for Ex: 07-09-2020)<br/>The titles must be<br/>1. Code<br/>2. Balance<br/>3. Date<br/>In that order<br/>No blank line after the Title Line</p>");
   }
   if(e.target.id == "import_balance_2")
   {
     $("#import_note").html("Import Balances From Outstanding Invoices – Select a CSV file that has an invoice number and an unpaid value for that invoice");
+    $("#import_note_1").html("<p>The file must be in CSV format.<br/>The date must be in the format dd-mm-yyyy (for Ex: 07-09-2020)<br/>The titles must be<br/>1. Inv No<br/>2. Gross<br/>3. Date<br/>In that order<br/>No blank line after the Title Line</p>");
   }
   if($(e.target).hasClass('activate_file'))
   {
@@ -253,9 +321,13 @@ $(window).click(function(e){
               dataType:"json",
               data:{page:"1"},
               success:function(e){
+                $("#count_first").html("100");
+                $("#count_last").html(e['highestRow']);
                 if(e['page'] > "0")
                 {
-                  import_opening_balance_function(e['upload_dir'],e['import_type'],e['page'],e['session_id']);
+                  $("body").removeClass("loading");
+                  $("body").addClass("loading_content");
+                  import_opening_balance_function(e['upload_dir'],e['import_type'],e['page'],e['session_id'],"100",e['highestRow']);
                 }
                 else{
                   $(".opening_balance_date").val("");
@@ -266,11 +338,15 @@ $(window).click(function(e){
                     $("#import_tbody_list").html(e['output']);
                     $("#hidden_filename").val(e['upload_dir']);
                     $("#hidden_session_id").val(e['session_id']);
+                    $("#count_first").html("");
+                    $("#count_last").html("");
                     $("body").removeClass("loading");
                   }
                   else{
                     $(".import_table").hide();
                     $(".start_import").hide();
+                    $("#count_first").html("");
+                    $("#count_last").html("");
                     $("body").removeClass("loading");
                     $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>"+e['message']+"</p>",width:"30%",fixed:true});
                   } 
@@ -302,27 +378,30 @@ $(window).click(function(e){
       alert("Please Enter the Opening Balance Date and then click on to Start Import button.")
     }
     else{
-      var import_type = $(".import_balance:checked").val();
-      var filename = $("#hidden_filename").val();
+      $("body").addClass("loading_import");
+      setTimeout(function(){
+        var import_type = $(".import_balance:checked").val();
+        var filename = $("#hidden_filename").val();
 
-      $.ajax({
-        url:"<?php echo URL::to('user/import_opening_balance_to_clients'); ?>",
-        type:"post",
-        data:{filename:filename,bal_date:bal_date,import_type:import_type,session_id:session_id},
-        success: function(result)
-        {
-          $("#import_tbody_list").html("");
-          $("#hidden_filename").val("");
-          $("#hidden_session_id").val("");
-          $(".opening_balance_date").val("");
-          $(".balance_file").val("");
+        $.ajax({
+          url:"<?php echo URL::to('user/import_opening_balance_to_clients'); ?>",
+          type:"post",
+          data:{filename:filename,bal_date:bal_date,import_type:import_type,session_id:session_id},
+          success: function(result)
+          {
+            $("#import_tbody_list").html("");
+            $("#hidden_filename").val("");
+            $("#hidden_session_id").val("");
+            $(".opening_balance_date").val("");
+            $(".balance_file").val("");
 
-          $(".import_table").hide();
-          $(".start_import").hide();
-          $("body").removeClass("loading");
-          $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>File Imported Successfully</p>",width:"30%",fixed:true});
-        }
-      });
+            $(".import_table").hide();
+            $(".start_import").hide();
+            $("body").removeClass("loading_import");
+            $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>File Imported Successfully</p>",width:"30%",fixed:true});
+          }
+        });
+      },5000);
     }
   }
 });

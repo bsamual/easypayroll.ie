@@ -66,8 +66,8 @@ class Payep30Controller extends Controller {
 		$id = base64_decode($id);
 		$year = DB::table('paye_p30_year')->where('year_id',$id)->first();		
 
-		$pay3_task = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->get();
-		$paye_count = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->count();
+		$pay3_task = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->limit(5)->get();
+		$paye_count = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->limit(5)->count();
 		// $payee_task = DB::table('paye_p30_task')->get();
 		// if(count($payee_task))
 		// {

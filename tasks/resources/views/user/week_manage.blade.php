@@ -41,6 +41,10 @@ body{background:url('<?php echo URL::to('assets/images/bg_weekly.jpg')?>') no-re
 <div class="content_section">
   <div class="page_title">
     SELECT WEEK
+    <?php
+    $current_week = DB::table('week')->orderBy('week_id','desc')->first();
+    ?>
+    <a href="<?php echo URL::to('user/select_week/'.base64_encode($current_week->week_id)); ?>" class="common_black_button" style="float:right">Open Current Week</a>
   </div>
     <div class="select_button">
         <table class="table table_bg table_style">

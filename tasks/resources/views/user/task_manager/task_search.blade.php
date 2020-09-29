@@ -514,9 +514,10 @@ input:checked + .slider:before {
           <div class="modal-footer" style="padding: 18px 5px;">  
             <input type="hidden" name="hidden_task_id_task_specifics" id="hidden_task_id_task_specifics" value="">
             <input type="hidden" name="show_auto_close_msg" id="show_auto_close_msg" value="">
-            <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
+            
             <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="margin-top: 10px;">
             <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="margin-top: 10px;">
+            <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
           </div>
         </div>
   </div>

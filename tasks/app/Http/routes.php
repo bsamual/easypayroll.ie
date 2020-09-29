@@ -1675,3 +1675,4 @@ Route::post('/user/save_yearend_date_status', 'user\YearendController@save_yeare
 Route::post('/user/save_yearend_liability_date', 'user\YearendController@save_yearend_liability_date');
 
 Route::post('/user/change_auto_close_status', 'user\TaskmanagerController@change_auto_close_status');
+Route::post('/user/get_clientname_from_pms', 'user\UserController@get_clientname_from_pms');

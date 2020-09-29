@@ -6,11 +6,15 @@
 
 
 
-<script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
+<script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 
 
 
 <style>
+  .disable_user{
+  pointer-events: none;
+  background: #c7c7c7;
+}
 .img_div{ z-index:9999; }
 #task_body_std>tr>td,#task_body_cmp>tr>td,#task_body_enh>tr>td
 {
@@ -935,7 +939,247 @@ body.loading .modal_load {
 
 
 ?> 
+<!--*************************************************************************-->
+<div class="modal fade infiles_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999 !important">
+  <div class="modal-dialog modal-sm" role="document" style="width:45%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">Link Infiles</h4>
+          </div>
+          <div class="modal-body" id="infiles_body">  
 
+          </div>
+          <div class="modal-footer">  
+            <input type="button" class="common_black_button" id="link_infile_button" value="Submit">
+          </div>
+        </div>
+  </div>
+</div>
+<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
+  <div class="modal-dialog modal-sm" role="document" style="width:45%">
+    <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_task_form">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">New Task Creator</h4>
+          </div>
+          <div class="modal-body">            
+            <div class="row"> 
+                <div class="col-md-3">
+                  <label style="margin-top:5px">Author:</label>
+                </div>
+                <div class="col-md-9">
+                  <select name="select_user" class="form-control select_user_author" required>
+                    <option value="">Select User</option>        
+                      <?php
+                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                      ?>
+                        <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <div class="col-md-3">
+                  <label style="margin-top:5px">Creation Date:</label>
+                </div>
+                <div class="col-md-9">
+                  <label class="input-group datepicker-only-init_date_received">
+                      <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                      <span class="input-group-addon">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                      </span>
+                  </label>
+                </div>
+            </div>
+            <div class="row" style="margin-top:7px">
+              <div class="col-md-3">
+                  <label style="margin-top:5px">Allocate To:</label>
+                </div>
+                <div class="col-md-7">
+                  <select name="allocate_user" class="form-control allocate_user_add">
+                    <option value="">Select User</option>        
+                      <?php
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                      ?>
+                        <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <div style="margin-top:5px">
+                    <input type='checkbox' name="open_task" id="open_task" value="1"/>
+                    <label for="open_task">OpenTask</label>
+                  </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:14px">
+              <div class="col-md-3 client_group">
+                  <label style="margin-top:5px">Client:</label>
+                </div>
+                <?php
+                if(isset($_GET['client_id']))
+                {
+                  $client_id = $_GET['client_id'];
+                  $client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+                  $company = $client_details->company.'-'.$client_id;
+                }
+                else{
+                  $client_id = '';
+                  $company = '';
+                }
+                ?>
+                <div class="col-md-7 client_group">
+                  <input  type="text" class="form-control client_search_class_task" name="client_name" placeholder="Enter Client Name / Client ID" value="" required>
+                  <input type="hidden" id="client_search_task" name="clientid" value=""/>
+                </div>
+
+                <div class="col-md-3 internal_tasks_group" style="display: none;">
+                  <label style="margin-top:5px">Select Task:</label>
+                </div>
+                <div class="col-md-7 internal_tasks_group" style="display: none;">
+                  <div class="dropdown" style="width: 100%">
+                    <a class="btn btn-default dropdown-toggle tasks_drop" data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                      <span class="task-choose_internal">Select Task</span>  <span class="caret"></span>                          
+                    </a>
+                    <ul class="dropdown-menu internal_task_details" role="menu"  aria-labelledby="dropdownMenu" style="width: 100%">
+                      <li><a tabindex="-1" href="javascript:" class="tasks_li_internal">Select Task</a></li>
+                        <?php
+                        $taskslist = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
+                        if(count($taskslist)){
+                          foreach ($taskslist as $single_task) {
+                            if($single_task->task_type == 0){
+                              $icon = '<i class="fa fa-desktop" style="margin-right:10px;"></i>';
+                            }
+                            else if($single_task->task_type == 1){
+                              $icon = '<i class="fa fa-users" style="margin-right:10px;"></i>';
+                            }
+                            else{
+                              $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
+                            }
+                        ?>
+                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>"><?php echo $icon.$single_task->task_name?></a></li>
+                        <?php
+                          }
+                        }
+                        ?>
+                    </ul>
+                    <input type="hidden" name="idtask" id="idtask" value="">
+                  </div>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <div style="margin-top:5px">
+                    <!-- <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1" disabled />
+                    <label for="internal_checkbox">Internal</label> -->
+                  </div>
+                </div>
+            </div>
+            <div class="form-group start_group" style="margin-top:10px">
+                <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+            </div>
+            <div class="form-group start_group task_specifics_add">
+                <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
+                <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+            </div>
+            <div class="form-group date_group">
+                <div class="col-md-2" style="padding:0px">
+                  <label style="margin-top:5px">DueDate:</label>
+                </div>
+                <div class="col-md-10">
+                  <label class="input-group datepicker-only-init_date_received">
+                      <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
+                      <span class="input-group-addon">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                      </span>
+                  </label>
+                </div>
+            </div>
+            <div class="form-group start_group retreived_files_div">
+
+            </div>
+            <div class="form-group start_group">
+              <label>Task Files: </label>
+              <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+              <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+              <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+              <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+              <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
+                <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                </form>
+                <div class="image_div_attachments">
+                  <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                  <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                      <input name="_token" type="hidden" value="">
+                  </form>              
+                </div>
+               </div>
+               <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
+                  <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
+                  <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                  <spam class="error_files_notepad_add"></spam>
+              </div>
+            </div>
+            
+            <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
+            <div id="add_attachments_div_task">
+            </div>
+            <div id="add_notepad_attachments_div_task">
+            </div>
+            <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+            <div id="add_infiles_attachments_div">
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                <div class="accept_recurring_div">
+                  <p>This Task is repeated:</p>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                    <label for="recurring_checkbox1">Monthly</label>
+                  </div>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                    <label for="recurring_checkbox2">Weekly</label>
+                  </div>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                    <label for="recurring_checkbox3">Daily</label>
+                  </div>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                    <label for="recurring_checkbox4">Specific Number of Days</label>
+                    <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">     
+            <input type="hidden" name="action_type" id="action_type" value="">
+            <input type="hidden" name="hidden_specific_type" id="hidden_specific_type" value="">
+            <input type="hidden" name="hidden_attachment_type" id="hidden_attachment_type" value="">
+            <input type="hidden" name="hidden_task_id_copy_task" class="hidden_task_id_copy_task" value="">
+            <input type="hidden" name="total_count_files" id="total_count_files" value="">
+            <input type="submit" class="common_black_button make_task_live" value="Make Task Live" style="width: 100%;">
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
 <div class="modal fade" id="show_email_sent_popup" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog" role="document" style="z-index: 999999">
     <div class="modal-content">
@@ -4052,7 +4296,42 @@ body.loading .modal_load {
 
 
          <br/> <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked; ?>><label for="show_incomplete">Show Incomplete Only</label> 
+         <p style="margin-top:10px;float:right;clear:both">
+          <?php
+          $this_week = $weekid->week_id;
+          $prev_week = DB::table('week')->where('week_id','<',$this_week)->where('year',$weekid->year)->orderBy('week_id','desc')->first();
+          $next_week = DB::table('week')->where('week_id','>',$this_week)->where('year',$weekid->year)->orderBy('week_id','asc')->first();
+          $current_week = DB::table('week')->orderBy('week_id','desc')->first();
+          
+          if(count($prev_week))
+          {
+            $prev = '<a href="'.URL::to('user/select_week/'.base64_encode($prev_week->week_id).'').'" class="common_black_button">Previous</a>';
+          }
+          else{
+            $prev = '';
+          }
 
+          if(count($current_week))
+          {
+            $curr = '<a href="'.URL::to('user/select_week/'.base64_encode($current_week->week_id).'').'" class="common_black_button">Current</a>';
+          }
+          else{
+            $curr = '';
+          }
+
+          if(count($next_week))
+          {
+            $next = '<a href="'.URL::to('user/select_week/'.base64_encode($next_week->week_id).'').'" class="common_black_button">Next</a>';
+          }
+          else{
+            $next = '';
+          }
+          ?>
+         <?php echo $prev; ?>
+         <?php echo $curr; ?>
+         <?php echo $next; ?>
+         </p>
+         
 
 
       </ul>
@@ -4123,7 +4402,7 @@ if(Session::has('error')) { ?>
 
 
 
-    <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
+    <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:70px">
 
 
 
@@ -4449,7 +4728,7 @@ if(Session::has('error')) { ?>
 
                       </style>
 
-
+                      <a href="javascript:"  class="create_task_manager" style="font-weight: bold;" data-element="<?php echo $result->task_id; ?>" <?php echo $disabled; ?>>Create Task</a>&nbsp; &nbsp;
 
                       <?php 
 
@@ -5601,7 +5880,7 @@ if(Session::has('error')) { ?>
 
                       </style>
 
-
+                      <a href="javascript:"  class="create_task_manager" style="font-weight: bold;" data-element="<?php echo $result->task_id; ?>" <?php echo $disabled; ?>>Create Task</a>&nbsp; &nbsp;
 
                       <?php 
 
@@ -6791,7 +7070,7 @@ if(Session::has('error')) { ?>
                       </style>
 
 
-
+                      <a href="javascript:"  class="create_task_manager" style="font-weight: bold;" data-element="<?php echo $result->task_id; ?>" <?php echo $disabled; ?>>Create Task</a>&nbsp; &nbsp;
                       <?php 
 
                       if($result->task_notify == 1){
@@ -8155,7 +8434,353 @@ function copyToClipboard(element) {
 
 
 }
+$(".client_search_class_task").autocomplete({
+      source: function(request, response) {
+          $.ajax({
+              url:"<?php echo URL::to('user/task_client_search'); ?>",
+              dataType: "json",
+              data: {
+                  term : request.term
+              },
+              success: function(data) {
+                  response(data);
+              }
+          });
+      },
+      minLength: 1,
+      select: function( event, ui ) {
+        $("#client_search_task").val(ui.item.id);
+        $.ajax({
+          dataType: "json",
+          url:"<?php echo URL::to('user/task_client_search_select'); ?>",
+          data:{value:ui.item.id},
+          success: function(result){         
+            $("#client_search_task").val(ui.item.id);
+          }
+        })
+      }
+  });
 $(window).click(function(e) {
+  if(e.target.id == "open_task")
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".allocate_user_add").val("");
+      $(".allocate_user_add").addClass("disable_user");
+    }
+    else{
+      $(".allocate_user_add").val("");
+      $(".allocate_user_add").removeClass("disable_user");
+    }
+  }
+  if($(e.target).hasClass('notepad_contents_task'))
+  {
+    $(e.target).parents('.modal-body').find('.notepad_div_notes_task').show();
+  }
+  if($(e.target).hasClass('download_pdf_task'))
+  {
+    $("body").addClass("loading");
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/download_taskmanager_task_pdf'); ?>",
+      type:"post",
+      data:{task_id:task_id},
+      success:function(result)
+      {
+        SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    })
+  }
+  if($(e.target).hasClass('make_task_live'))
+  {
+    e.preventDefault();
+    if($("#internal_checkbox").is(":checked"))
+    {
+        var taskvalue = $("#idtask").val();
+        if(taskvalue == "")
+        {
+          alert("Please select the Task Name and then make the task as live");
+          return false;
+        }
+    }
+    else{
+      var clientid = $("#client_search_task").val();
+      if(clientid == "")
+      {
+        alert("Please select the Client and then make the task as live");
+        return false;
+      }
+    }
+    if (CKEDITOR.instances.editor_2)
+    {
+      var comments = CKEDITOR.instances['editor_2'].getData();
+      if(comments == "")
+      {
+        alert("Please Enter Task Specifics and then make the task as Live.");
+        return false;
+      }
+      else{
+        $( "#create_task_form" ).valid();
+        $("#create_task_form").submit();
+      }
+    }
+    else{
+      $("#create_task_form").valid();
+      $("#create_task_form").submit();
+    }
+  }
+  if($(e.target).hasClass('accept_recurring'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".accept_recurring_div").show();
+      $("#recurring_checkbox1").prop("checked",true);
+    }
+    else{
+      $(".accept_recurring_div").hide();
+      $(".recurring_checkbox").prop("checked",false);
+    }
+  }
+  if($(e.target).hasClass('remove_infile_link_add'))
+  {
+    var file_id = $(e.target).attr("data-element");
+    var ids = $("#hidden_infiles_id").val();
+    var idval = ids.split(",");
+    var nextids = '';
+    $.each(idval, function( index, value ) {
+      if(value != file_id)
+      {
+        if(nextids == "")
+        {
+          nextids = value;
+        }
+        else{
+          nextids = nextids+','+value;
+        }
+      }
+    });
+    $("#hidden_infiles_id").val(nextids);
+    $(e.target).parents("tr").detach();
+  }
+  if(e.target.id == "link_infile_button")
+  {
+    var checkcount = $(".infile_check:checked").length;
+    if(checkcount > 0)
+    {
+      var ids = '';
+      $(".infile_check:checked").each(function() {
+        if(ids == "")
+        {
+          ids = $(this).val();
+        }
+        else{
+          ids = ids+','+$(this).val();
+        }
+      });
+
+      $("#hidden_infiles_id").val(ids);
+      $(".infiles_modal").modal("hide");
+      $.ajax({
+        url:"<?php echo URL::to('user/show_linked_infiles'); ?>",
+        type:"post",
+        data:{ids:ids},
+        success:function(result)
+        {
+          $("#attachments_infiles").show();
+          $("#add_infiles_attachments_div").show();
+          $("#add_infiles_attachments_div").html(result);
+        }
+      })
+    }
+  }
+
+  if($(e.target).hasClass('infiles_link'))
+  {
+    var client_id = $("#client_search_task").val();
+    var ids = $("#hidden_infiles_id").val();
+
+    if(client_id == "")
+    {
+      alert("Please select the client and then choose infiles");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/show_infiles'); ?>",
+        type:"post",
+        data:{client_id:client_id,ids:ids},
+        success: function(result)
+        {
+          $(".infiles_modal").modal("show");
+          $("#infiles_body").html(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('notepad_submit_task'))
+  { 
+    var contents = $(e.target).parent().find('.notepad_contents_task').val();
+    if(contents == '' || typeof contents === 'undefined')
+    {
+      $(e.target).parent().find(".error_files_notepad_add").text("Please Enter the contents for the notepad to save.");
+      return false;
+    }
+    else{
+      $(e.target).parents('td').find('.notepad_div_notes_task').toggle();
+    }
+  }
+  else{
+    $(".notepad_div_notes_task").each(function() {
+      $(this).hide();
+    });
+  }
+  if($(e.target).hasClass('notepad_contents_task'))
+  {
+    $(e.target).parents('.modal-body').find('.notepad_div_notes_task').show();
+  }
+  if($(e.target).hasClass('notepad_submit_task'))
+  {
+    var contents = $(".notepad_contents_task").val();
+    $.ajax({
+      url:"<?php echo URL::to('user/add_taskmanager_notepad_contents'); ?>",
+      type:"post",
+      data:{contents:contents},
+      dataType:"json",
+      success: function(result)
+      {
+        $("#attachments_text").show();
+        $("#add_notepad_attachments_div_task").append("<p>"+result['filename']+" <a href='javascript:' class='remove_notepad_attach_task' data-task='"+result['file_id']+"'>Remove</a></p>");
+        $(".notepad_div_notes_task").hide();
+      }
+    });
+  }
+  if($(e.target).hasClass("create_task_manager"))
+  {
+    var taskid = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_clientname_from_pms'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{taskid:taskid},
+      success: function(result)
+      {
+        $(".client_search_class_task").val(result['company']);
+        $("#client_search_task").val(result['client_id']);
+        $(".create_new_task_model").find(".job_title").html("New Task Creator");
+        var fullDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Dublin"});
+        var user_id = $(".select_user_home").val();
+        $(".select_user_author").val(user_id);
+        $(".create_new_task_model").modal("show");
+        if (CKEDITOR.instances.editor_2) CKEDITOR.instances.editor_2.destroy();
+        $(".created_date").datetimepicker({
+           defaultDate: fullDate,       
+           format: 'L',
+           format: 'DD-MMM-YYYY',
+           maxDate: fullDate,
+        });
+        $(".due_date").datetimepicker({
+           defaultDate: fullDate,
+           format: 'L',
+           format: 'DD-MMM-YYYY',
+           minDate: fullDate,
+        });
+        CKEDITOR.replace('editor_2',
+        {
+          height: '150px',
+          enterMode: CKEDITOR.ENTER_BR,
+            shiftEnterMode: CKEDITOR.ENTER_P,
+            autoParagraph: false,
+            entities: false,
+       });
+
+        $("#action_type").val("1");
+        $(".allocate_user_add").val(result['staff']);
+        $(".task-choose_internal").html("Select Task");
+        $(".subject_class").val("Current Period (Weekly) Payroll to Be Created");
+        $(".task_specifics_add").show();
+        CKEDITOR.instances['editor_2'].setData("Do Payroll");
+        
+        $(".retreived_files_div").hide();
+        $(".retreived_files_div").html("");
+        $(".recurring_checkbox").prop("checked", false);
+        $(".specific_recurring").val("");
+        $(".task_specifics_copy_val").html("");
+        $("#hidden_task_specifics").val("");
+
+        $("#hidden_specific_type").val("");
+        $("#hidden_attachment_type").val("");
+
+        $(".created_date").prop("readonly", true);
+        $(".client_group").show();
+        $(".client_search_class").prop("required",true);
+        $(".internal_tasks_group").hide();
+        $("#internal_checkbox").prop("checked",false);
+        $(".infiles_link").show();
+        $("#attachments_text").hide();
+        
+        $("#attachments_infiles").hide();
+        $("#idtask").val("");
+
+        $("#hidden_copied_files").val("");
+        $("#hidden_copied_notes").val("");
+        $("#hidden_copied_infiles").val("");
+
+        $(".auto_close_task").prop("checked",false);
+        $(".accept_recurring").prop("checked",false);
+        $(".accept_recurring_div").hide();
+        $("#recurring_checkbox1").prop("checked",false);
+
+        $("#open_task").prop("checked",false);
+        $(".allocate_user_add").removeClass("disable_user");
+        $.ajax({
+          url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
+          type:"post",
+          data:{fileid:fileid},
+          success: function(result)
+          {
+            $("#add_notepad_attachments_div").html('');
+            $("#add_attachments_div").html('');
+            $("body").removeClass("loading");
+            $("#attachments_infiles").show();
+            $("#add_infiles_attachments_div").html(result);
+          }
+        });
+      }
+    });
+  }
+  
+  if($(e.target).hasClass('fanotepadtask')){
+    var clientid = $("#client_search_task").val();
+    var pos = $(e.target).position();
+    var leftposi = parseInt(pos.left) - 20;
+    $(e.target).parent().find('.notepad_div_notes_task').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
+  }
+  if($(e.target).hasClass('remove_dropzone_attach_task'))
+  {
+    var file_id = $(e.target).attr("data-task");
+    $.ajax({
+      url:"<?php echo URL::to('user/tasks_remove_dropzone_attachment'); ?>",
+      type:"post",
+      data:{file_id:file_id},
+      success: function(result)
+      {
+        $(e.target).parents("p").detach();
+      }
+    })
+  }
+  if($(e.target).hasClass('remove_notepad_attach_task'))
+  {
+    var file_id = $(e.target).attr("data-task");
+    $.ajax({
+      url:"<?php echo URL::to('user/tasks_remove_notepad_attachment'); ?>",
+      type:"post",
+      data:{file_id:file_id},
+      success: function(result)
+      {
+        $(e.target).parents("p").detach();
+      }
+    })
+  }
   if($(e.target).hasClass('disclose_liability'))
   {
     if($(e.target).is(":checked"))
@@ -13184,25 +13809,18 @@ $(window).click(function(e) {
 
 
   if($(e.target).hasClass('fa-plus'))
-
-
-
   {
-
-
-
     var pos = $(e.target).position();
-
-
-
     var leftposi = parseInt(pos.left) - 200;
-
-
-
     $(e.target).parent().find('.img_div').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
-
-
-
+  }
+  else if($(e.target).hasClass('fa-plus-task'))
+  {
+    var pos = $(e.target).position();
+    var leftposi = parseInt(pos.left);
+    $(e.target).parent().find('.img_div_task').toggle();
+    Dropzone.forElement("#imageUpload5").removeAllFiles(true);
+    $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");    
   }
 
 
@@ -15352,7 +15970,60 @@ $(document).ready(function() {
 
 
 });
-
+Dropzone.options.imageUpload5 = {
+    maxFiles: 2000,
+    acceptedFiles: null,
+    maxFilesize:500000,
+    timeout: 10000000,
+    dataType: "HTML",
+    parallelUploads: 1,
+    maxfilesexceeded: function(file) {
+        this.removeAllFiles();
+        this.addFile(file);
+    },
+    init: function() {
+        this.on('sending', function(file) {
+            $("body").addClass("loading");
+        });
+        this.on("drop", function(event) {
+            $("body").addClass("loading");        
+        });
+        this.on("success", function(file, response) {
+            var obj = jQuery.parseJSON(response);
+            file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
+            if(obj.id != 0)
+            {
+              file.previewElement.innerHTML = "<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach_task' data-task='"+obj.task_id+"'>Remove</a></p>";
+            }
+            else{
+              $("#attachments_text").show();
+              $("#add_attachments_div_task").append("<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach_task' data-task='"+obj.file_id+"'>Remove</a></p>");
+              $(".img_div").each(function() {
+                $(this).hide();
+              });
+            }
+        });
+        this.on("complete", function (file) {
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+            var acceptedcount= this.getAcceptedFiles().length;
+            var rejectedcount= this.getRejectedFiles().length;
+            var totalcount = acceptedcount + rejectedcount;
+            $("#total_count_files").val(totalcount);
+            $("body").removeClass("loading");
+          }
+        });
+        this.on("error", function (file) {
+            $("body").removeClass("loading");
+        });
+        this.on("canceled", function (file) {
+            $("body").removeClass("loading");
+        });
+        this.on("removedfile", function(file) {
+            if (!file.serverId) { return; }
+            $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+        });
+    },
+};
 
 
 </script>

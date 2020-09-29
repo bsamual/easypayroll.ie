@@ -355,7 +355,7 @@ class OpeningbalanceController extends Controller {
 
 				if($client_label != "code" || $balance_label != "balance" || $date_label != "date")
 				{
-					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type));
+					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type,'highestRow' => $highestRow));
 					exit;
 				}
 				else{
@@ -423,7 +423,7 @@ class OpeningbalanceController extends Controller {
 					}
 				}
 			}
-			echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $filepath, "output" => $output,'page' => $nextpage, 'session_id' => $session_id, 'import_type' =>$import_type));
+			echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $filepath, "output" => $output,'page' => $nextpage, 'session_id' => $session_id, 'import_type' =>$import_type,'highestRow' => $highestRow));
 			exit;
 			
 		}
@@ -479,7 +479,7 @@ class OpeningbalanceController extends Controller {
 
 				if($inv_label != "invno" || $gross_label != "gross" || $date_label != "date")
 				{
-					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type));
+					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type,'highestRow' => $highestRow));
 					exit;
 				}
 				else{
@@ -547,7 +547,7 @@ class OpeningbalanceController extends Controller {
 					}
 				}
 			}
-			echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $filepath, "output" => $output,'page' => $nextpage, 'session_id' => $session_id, 'import_type' =>$import_type));
+			echo json_encode(array("error" => "0", "message" => '', "upload_dir" => $filepath, "output" => $output,'page' => $nextpage, 'session_id' => $session_id, 'import_type' =>$import_type,'highestRow' => $highestRow));
 				exit;
 			
 		}
@@ -594,14 +594,7 @@ class OpeningbalanceController extends Controller {
 
 					$dataupdate['opening_balance'] = $get_client_balance;
 					$dataupdate['client_id'] = $balance->client_id;
-
-					if($balance->import_date == "")
-					{
-						$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
-					}
-					else{
-						$dataupdate['opening_date'] = $balance->import_date;
-					}
+					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
 
 					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
 					if(count($check_client_bal))
@@ -625,14 +618,7 @@ class OpeningbalanceController extends Controller {
 
 					$dataupdate['opening_balance'] = number_format_invoice_without_comma($get_client_balance);
 					$dataupdate['client_id'] = $balance->client_id;
-
-					if($balance->import_date == "")
-					{
-						$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
-					}
-					else{
-						$dataupdate['opening_date'] = $balance->import_date;
-					}
+					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
 
 					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
 					if(count($check_client_bal))

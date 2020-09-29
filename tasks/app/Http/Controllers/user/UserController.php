@@ -23849,6 +23849,43 @@ class UserController extends Controller {
 		$data['disclose_liability'] = $status;
 		DB::table('task')->where('task_id',$task_id)->update($data);
 	}
+	public function get_clientname_from_pms()
+	{
+		$taskid = Input::get('taskid');
+		$get_task = DB::table('task')->where('task_id',$taskid)->first();
+		if(count($get_task))
+		{
+			if($get_task->client_id == "")
+			{
+				$clientname = '';
+				$client_id = '';
+			}
+			else{
+				$clientdetails = DB::table('cm_clients')->where('client_id',$get_task->client_id)->first();
+				if(count($clientdetails))
+				{
+					if($clientdetails->company != "")
+					{
+						$company = $clientdetails->company;
+					}
+					else{
+						$company = $clientdetails->firstname.' '.$clientdetails->surname;
+					}
+					$clientname = $company.'-'.$clientdetails->client_id;
+					$client_id = $get_task->client_id;
+				}
+				else{
+					$clientname = '';
+					$client_id = '';
+				}
+			}
+		}
+		else{
+			$clientname = '';
+			$client_id = '';
+		}
+		echo json_encode(array("company" => $clientname,"client_id" => $client_id,"staff" => $get_task->default_staff));
+	}
 
 }
 

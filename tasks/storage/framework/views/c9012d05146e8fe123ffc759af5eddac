@@ -122,7 +122,7 @@
 .table_bg thead tr th{
   padding:8px;
 }
-.button_top_right ul li a{padding: 5px 10px; font-size: 12px; font-weight: 600; margin-bottom: 0px;min-height: 33px}
+.button_top_right ul li a{padding: 5px 5px; font-size: 13px; font-weight: 500; margin-bottom: 0px;min-height: 30px}
 .form-control[readonly]{background-color: #e6e6e6 !important}
 .modal_load {
     display:    none;
@@ -233,8 +233,8 @@ body.loading_apply .modal_load_apply {
 }
 .fa-question{
   color: #f00 !important;
-  font-size: 20px !important;
-  margin-left: 5px;
+  font-size: 16px !important;
+  margin-left: 3px;
   font-weight: 500 !important;
   margin-top: 5px;
   cursor:pointer;
@@ -389,7 +389,7 @@ body.loading_apply .modal_load_apply {
     </div>
     <div class="col-lg-12 padding_00">
         <div class="row">
-          <div class="col-lg-9" style="padding: 10px; border:5px solid #000">
+          <div class="col-lg-9" style="padding: 10px; border:5px solid #000;margin-top: 15px;">
             <div class="col-lg-12" style="line-height: 30px;">Active Week Periods for all:</div>
               <div class="col-lg-12 padding_00" style="margin-bottom: 0px;">
                   <div class="col-lg-2"></div>
@@ -515,11 +515,11 @@ body.loading_apply .modal_load_apply {
                     <a href="javascript:" class="update_all_tasks" style="width:90%;">Set Default Weekly/Monthly Client Specifics</a>
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Show a comparison of Weekly / Monthly, Email, Pay instruction and so on for Payroll tasks with more than one entry" data-placement="left"></a>
                   </li>
-                  <li style="width:45%">
+                  <li style="width:100%">
                     <a href="javascript:" class="refresh_all_clients" style="width:90%;">Refresh All Tables</a>
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Pull the current PREM Charges from the PMS System and allocate them to the correct period on the PAYE MRS system" data-placement="left"></a>
                   </li>
-                  <li style="width:47%">
+                  <li style="width:100%">
                     <a href="javascript:" class="show_hide_disable" data-element="<?php if($year->disable_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" style="width:90%;"><?php if($year->disable_clients == 1) { echo 'Show Disabled Clients'; } else { echo 'Hide Disabled Clients'; } ?></a>
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="This option Shows/Hides the disabled clients" data-placement="left"></a>
                   </li>
@@ -561,7 +561,7 @@ body.loading_apply .modal_load_apply {
         ?>
         </div>
   <?php
-  $output='<div class="paye_mars_ul" style="margin-top:30px">
+  $output='<div class="paye_mars_ul" style="margin-top:47px">
         <ul id="task_paye_ul">
         <li>
             <div class="sno" style="background:#000;color:#fff">S.No</div>
