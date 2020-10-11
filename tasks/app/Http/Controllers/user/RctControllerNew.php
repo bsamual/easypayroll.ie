@@ -477,8 +477,15 @@ class RctControllerNew extends Controller {
           }
 
           $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-          $explode_tax_name = explode(',', $tax_details->tax_name);
-          $explode_tax_number = explode(',', $tax_details->tax_number);
+          if(count($tax_details))
+          {
+            $explode_tax_name = explode(',', $tax_details->tax_name);
+            $explode_tax_number = explode(',', $tax_details->tax_number);
+          }
+          else{
+            $explode_tax_name = array();
+            $explode_tax_number = array();
+          }
 
           $principal_key = $principal_name[$key];
 
@@ -526,13 +533,14 @@ class RctControllerNew extends Controller {
             $deduction_view = '';
           }
 
-
+          if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
+          if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
 
           $outputsubmission.='
           <tr>
             <td>'.$type_text.'</td>
             <td>'.$rct_id[$key].'<br/></td>
-            <td>'.$explode_tax_name[$principal_key].' - '.$explode_tax_number[$principal_key].'</td>
+            <td>'.$exp_tax_name.' - '.$exp_tax_number.'</td>
             <td>'.$sub_cont_name.'</td>
             <td>'.$sub_cont_id.'</td>
             <td>'.$site_view.'</td>
@@ -712,9 +720,18 @@ class RctControllerNew extends Controller {
     $tax_key = $unserialize_principal[$key];
 
     $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-    $explode_tax_name = explode(',', $tax_details->tax_name);
-    $explode_tax_number = explode(',', $tax_details->tax_number);
+    if(count($tax_details))
+    {
+      $explode_tax_name = explode(',', $tax_details->tax_name);
+      $explode_tax_number = explode(',', $tax_details->tax_number);
+    }
+    else{
+      $explode_tax_name = array();
+      $explode_tax_number = array();
+    }
 
+    if(isset($explode_tax_name[$tax_key])) { $exp_tax_name = $explode_tax_name[$tax_key]; } else { $exp_tax_name = ''; }
+    if(isset($explode_tax_number[$tax_key])) { $exp_tax_number = $explode_tax_number[$tax_key]; } else { $exp_tax_number = ''; }
 
     if($type == 1){
       $unserialize_finish = unserialize($submission_count->finish_date);
@@ -741,11 +758,11 @@ class RctControllerNew extends Controller {
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Principal Contractor:</td>
-          <td style="text-align:right">'.$explode_tax_name[$tax_key].'</td>
+          <td style="text-align:right">'.$exp_tax_name.'</td>
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
-          <td style="text-align:right">'.$explode_tax_number[$tax_key].'</td>
+          <td style="text-align:right">'.$exp_tax_number.'</td>
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Start Date:</td>
@@ -788,11 +805,11 @@ class RctControllerNew extends Controller {
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Principal Contractor:</td>
-          <td style="text-align:right">'.$explode_tax_name[$tax_key].'</td>
+          <td style="text-align:right">'.$exp_tax_name.'</td>
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
-          <td style="text-align:right">'.$explode_tax_number[$tax_key].'</td>
+          <td style="text-align:right">'.$exp_tax_number.'</td>
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Sub Contractor:</td>
@@ -871,8 +888,18 @@ class RctControllerNew extends Controller {
         $tax_key = $unserialize_principal[$key];
 
         $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-        $explode_tax_name = explode(',', $tax_details->tax_name);
-        $explode_tax_number = explode(',', $tax_details->tax_number);
+        if(count($tax_details))
+        {
+          $explode_tax_name = explode(',', $tax_details->tax_name);
+          $explode_tax_number = explode(',', $tax_details->tax_number);
+        }
+        else{
+          $explode_tax_name = array();
+          $explode_tax_number = array();
+        }
+
+        if(isset($explode_tax_name[$tax_key])) { $exp_tax_name = $explode_tax_name[$tax_key]; } else { $exp_tax_name = ''; }
+        if(isset($explode_tax_number[$tax_key])) { $exp_tax_number = $explode_tax_number[$tax_key]; } else { $exp_tax_number = ''; }
 
 
         if($unserialize_type[$key] == "1"){
@@ -901,11 +928,11 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor:</td>
-              <td style="text-align:right">'.$explode_tax_name[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_name.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
-              <td style="text-align:right">'.$explode_tax_number[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_number.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Start Date:</td>
@@ -959,11 +986,11 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor:</td>
-              <td style="text-align:right">'.$explode_tax_name[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_name.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
-              <td style="text-align:right">'.$explode_tax_number[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_number.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Sub Contractor:</td>
@@ -1028,8 +1055,15 @@ class RctControllerNew extends Controller {
     $unserialize_type = unserialize($submission_count->type);
 
     $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-    $explode_tax_name = explode(',', $tax_details->tax_name);
-    $explode_tax_number = explode(',', $tax_details->tax_number);
+    if(count($tax_details))
+    {
+      $explode_tax_name = explode(',', $tax_details->tax_name);
+      $explode_tax_number = explode(',', $tax_details->tax_number);
+    }
+    else{
+      $explode_tax_name = array();
+      $explode_tax_number = array();
+    }
 
     $outputprint = '';
     if(count($keys))
@@ -1037,6 +1071,9 @@ class RctControllerNew extends Controller {
       foreach($keys as $key)
       {
         $tax_key = $unserialize_principal[$key];
+
+        if(isset($explode_tax_name[$tax_key])) { $exp_tax_name = $explode_tax_name[$tax_key]; } else { $exp_tax_name = ''; }
+        if(isset($explode_tax_number[$tax_key])) { $exp_tax_number = $explode_tax_number[$tax_key]; } else { $exp_tax_number = ''; }
 
         if($unserialize_type[$key] == "1"){
           $unserialize_finish = unserialize($submission_count->finish_date);
@@ -1064,11 +1101,11 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor:</td>
-              <td style="text-align:right">'.$explode_tax_name[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_name.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
-              <td style="text-align:right">'.$explode_tax_number[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_number.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Start Date:</td>
@@ -1122,11 +1159,11 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor:</td>
-              <td style="text-align:right">'.$explode_tax_name[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_name.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
-              <td style="text-align:right">'.$explode_tax_number[$tax_key].'</td>
+              <td style="text-align:right">'.$exp_tax_number.'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Sub Contractor:</td>
@@ -1391,8 +1428,15 @@ class RctControllerNew extends Controller {
       foreach ($unserializedate as $key => $start_date) {
         
         $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-        $explode_tax_name = explode(',', $tax_details->tax_name);
-        $explode_tax_number = explode(',', $tax_details->tax_number);
+        if(count($tax_details))
+        {
+          $explode_tax_name = explode(',', $tax_details->tax_name);
+          $explode_tax_number = explode(',', $tax_details->tax_number);
+        }
+        else{
+          $explode_tax_name = array();
+          $explode_tax_number = array();
+        }
 
         $principal_key = $principal_name[$key];        
 
@@ -1442,11 +1486,14 @@ class RctControllerNew extends Controller {
             }
           }          
 
+          if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
+          if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
+
           $result_view_submission.='
           <tr>
             <td>'.$type_view.'</td>
             <td>'.$rct_id[$key].'</td>
-            <td>'.$explode_tax_name[$principal_key].' - '.$explode_tax_number[$principal_key].'</td>
+            <td>'.$exp_tax_name.' - '.$exp_tax_number.'</td>
             <td>'.$sub_cont_name.'</td>
             <td>'.$sub_cont_id.'</td>
             <td>'.$site_view.'</td>
@@ -1529,8 +1576,15 @@ class RctControllerNew extends Controller {
             }
 
             $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-            $explode_tax_name = explode(',', $tax_details->tax_name);
-            $explode_tax_number = explode(',', $tax_details->tax_number);
+            if(count($tax_details))
+            {
+              $explode_tax_name = explode(',', $tax_details->tax_name);
+              $explode_tax_number = explode(',', $tax_details->tax_number);
+            }
+            else{
+              $explode_tax_name = array();
+              $explode_tax_number = array();
+            }
             $principal_key = $principal_name[$key];
 
             if(isset($sub_contractor[$key])){
@@ -1585,12 +1639,15 @@ class RctControllerNew extends Controller {
             $total_net = $total_net+$value_net_total;
             $total_deduction = $total_deduction+$value_deduction_total;
 
+            if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
+            if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
+
             $outputsubmission.='
             <tr>
               <td style="text-align:left"><input type="checkbox" class="select_class select_class_'.$type.'" value="'.$key.'"  /><label>&nbsp;</label></td>
               <td style="text-align:left">'.$type_text.'</td>
               <td style="text-align:left">'.$rct_id[$key].'<br/></td>
-              <td style="text-align:left">'.$explode_tax_name[$principal_key].' - '.$explode_tax_number[$principal_key].'</td>
+              <td style="text-align:left">'.$exp_tax_name.' - '.$exp_tax_number.'</td>
               <td style="text-align:left">'.$sub_cont_name.'</td>
               <td style="text-align:left">'.$sub_cont_id.'</td>
               <td style="text-align:left">'.$site_view.'</td>

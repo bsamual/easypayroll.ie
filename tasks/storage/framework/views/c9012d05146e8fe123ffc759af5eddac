@@ -507,7 +507,7 @@ body.loading_apply .modal_load_apply {
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="When you click on this button the system looks at the current week and month to see if there are any new Payroll Tasks and if there are adds them to the PAYE MRS System" data-placement="left"></a>
                   </li>
                   <li style="width:100%">
-                    <a href="javascript:" class="show_hide_clients" data-element="<?php if($year->email_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" title="This will hide/show clients having Email sent on the current active month" style="width:90%;"><?php if($year->email_clients == 1) { echo 'Show Clients to be Contacted'; } else { echo 'Hide Clients to be Contacted'; } ?></a>
+                    <a href="javascript:" class="show_hide_clients" data-element="<?php if($year->email_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" title="This will hide/show clients having Email sent on the current active month" style="width:90%;<?php if($year->email_clients == 1) { echo 'background: #127703'; } else { echo 'background: #000'; } ?>"><?php if($year->email_clients == 1) { echo 'Showing ONLY clients to be contacted'; } else { echo 'Show Clients to be Contacted'; } ?></a>
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="This option Shows/Hides clients that have yet to be emailed the PREM Liability for the current active month" data-placement="left"></a>
                   </li>                      
                     <!-- <li><a href="javascript:" class="show_all_tables">Show All Tables</a></li> -->
@@ -520,7 +520,7 @@ body.loading_apply .modal_load_apply {
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Pull the current PREM Charges from the PMS System and allocate them to the correct period on the PAYE MRS system" data-placement="left"></a>
                   </li>
                   <li style="width:100%">
-                    <a href="javascript:" class="show_hide_disable" data-element="<?php if($year->disable_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" style="width:90%;"><?php if($year->disable_clients == 1) { echo 'Show Disabled Clients'; } else { echo 'Hide Disabled Clients'; } ?></a>
+                    <a href="javascript:" class="show_hide_disable" data-element="<?php if($year->disable_clients == 1) { echo 'show'; } else { echo 'hide'; } ?>" style="width:90%;<?php if($year->disable_clients == 1) { echo 'background: #127703'; } else { echo 'background: #000'; } ?>"><?php if($year->disable_clients == 1) { echo 'Hidden ALL Disabled clients'; } else { echo 'Hide Disabled Clients'; } ?></a>
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="This option Shows/Hides the disabled clients" data-placement="left"></a>
                   </li>
                   <li style="width:100%">
@@ -923,6 +923,7 @@ $("document").ready(function() {
     $.ajax({
       url:"<?php echo URL::to('user/update_paye_p30_year_disabled_status'); ?>",
       type:"post",
+      dataType:"json",
       data:{year:"<?php echo $year->year_id; ?>",status:disablestatus},
       success: function(result)
       {
@@ -932,7 +933,7 @@ $("document").ready(function() {
           var disable_status = $(".show_hide_clients").attr("data-element");
           if(disable_status == "show")
           {
-            var explode = result.split(",");
+            var explode = result['task_array'].split(",");
             $.each(explode, function(index,value) {
               $("#disable_"+value).parents(".main_li").hide();
             });
@@ -944,12 +945,13 @@ $("document").ready(function() {
     $.ajax({
         url:"<?php echo URL::to('user/update_paye_p30_year_email_clients_status'); ?>",
         type:"post",
+        dataType:"json",
         data:{year:"<?php echo $year->year_id; ?>",status:emailstatus},
         success: function(result)
         {
           if(emailstatus == "hide")
           {
-            var explode = result.split(",");
+            var explode = result['task_array'].split(",");
             $.each(explode, function(index,value) {
               $("#disable_"+value).parents(".main_li").hide();
             });
@@ -993,6 +995,7 @@ function ajaxRequest (urls) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(urlval);
         var taskname = results[1] || 0;
         $("#refresh_taskname").html(taskname);
+        
 
         $.ajax({
           url: urlval,
@@ -1445,31 +1448,102 @@ if($(e.target).hasClass("disable_clients"))
 }
 if($(e.target).hasClass('show_hide_disable'))
 {
+  $("body").addClass("loading");
   var status = $(e.target).attr("data-element");
   $.ajax({
     url:"<?php echo URL::to('user/update_paye_p30_year_disabled_status'); ?>",
     type:"post",
+    dataType:"json",
     data:{year:"<?php echo $year->year_id; ?>",status:status},
     success: function(result)
     {
       if(status == "hide")
       {
         $(e.target).attr("data-element","show");
-        $(e.target).html("Show Disabled Clients");
+        $(e.target).html("Hidden ALL Disabled clients");
+        $(e.target).css("background","#127703");
+
         $(".disable_clients:checked").parents(".main_li").hide();
+        $("body").removeClass("loading");
       }
       else{
         $(e.target).attr("data-element","hide");
         $(e.target).html("Hide Disabled Clients");
+        $(e.target).css("background","#000");
         $(".disable_clients").parents(".main_li").show();
 
         var disable_status = $(".show_hide_clients").attr("data-element");
         if(disable_status == "show")
         {
-          var explode = result.split(",");
+          var explode = result['task_array'].split(",");
           $.each(explode, function(index,value) {
             $("#disable_"+value).parents(".main_li").hide();
           });
+        }
+
+        if(result['show_active'] == "1")
+        {
+          setTimeout(function() {
+            var week_from = $(".week_from").val(); 
+            var week_to = $(".week_to").val();
+            var month_from = $(".month_from").val();
+            var month_to = $(".month_to").val();
+            var year_id = $(".year_id").val();
+            if(week_from == "1") { week_from = 1; }
+            else if(week_from == "") { week_from = 0; }
+            else{ week_from = parseInt(week_from) - 1; }
+            if(week_to == "53") { week_to = 53; }
+            else if(week_to == "") { week_to = 0; }
+            else{ week_to = parseInt(week_to) + 1; }
+            if(month_from == "1") { month_from = 1; }
+            else if(month_from == "") { month_from = 0; }
+            else{ month_from = parseInt(month_from) - 1; }
+            if(month_to == "12") { month_to = 12; }
+            else if(month_to == "") { month_to = 0; }
+            else{ month_to = parseInt(month_to) + 1; }
+            var weekcount = parseInt(week_to) - parseInt(week_from);
+            var monthcount = parseInt(month_to) - parseInt(month_from);
+            var weekcountval = parseInt(weekcount) + 1;
+            var monthcountval = parseInt(monthcount) + 1;
+            var totalval = weekcountval + monthcountval;
+            var pixelval = parseInt(totalval) * 90;
+            var totalpixel = 850 + parseInt(pixelval);
+            
+            $.ajax({
+                url:"<?php echo URL::to('user/paye_p30_active_periods'); ?>",
+                type:"post",
+                dataType:"json",
+                data:{week_from:week_from, week_to:week_to, month_from:month_from, month_to:month_to, year_id:year_id  },
+                success: function(result){
+                    $("body").addClass("loading");
+                    $(".payp30_week_bg").hide();
+                    $(".payp30_month_bg").hide();
+                    for(var i=week_from; i<=week_to; i++)
+                    {
+                      $(".refresh_liability:visible").parents(".table_paye_p30").css("width",totalpixel+"px");
+                        $(".week_td_"+i).show();
+                        $(".week"+i).show();
+                        $(".week"+i+"_class").parents("td").show();
+                    }
+                    for(var i=month_from; i<=month_to; i++)
+                    {
+                        $(".month_td_"+i).show();
+                        $(".month"+i).show();
+                        $(".month"+i+"_class").parents("td").show();
+                    }
+                    $("body").removeClass("loading");
+                    $(".upload_img").hide();
+                }
+            })
+          },1000);
+        }
+        else{
+            $(".hide_column").show();
+            $(".hide_column_inner").parents("td").show();
+            $(".show_column").show();
+            $(".show_column_inner").parents("td").show();
+            $(".upload_img").hide();
+            $("body").removeClass("loading");
         }
       }
     }
@@ -1482,22 +1556,25 @@ if($(e.target).hasClass('show_hide_clients'))
   $.ajax({
     url:"<?php echo URL::to('user/update_paye_p30_year_email_clients_status'); ?>",
     type:"post",
+    dataType:"json",
     data:{year:"<?php echo $year->year_id; ?>",status:status},
     success: function(result)
     {
       if(status == "hide")
       {
         $(e.target).attr("data-element","show");
-        $(e.target).html("Show Clients");
-
-        var explode = result.split(",");
+        $(e.target).html("Showing ONLY clients to be contacted");
+        $(e.target).css("background","#127703");
+        var explode = result['task_array'].split(",");
         $.each(explode, function(index,value) {
           $("#disable_"+value).parents(".main_li").hide();
         });
+        $("body").removeClass("loading");
       }
       else{
         $(e.target).attr("data-element","hide");
-        $(e.target).html("Hide Clients");
+        $(e.target).html("Show Clients to be Contacted");
+        $(e.target).css("background","#000");
         $(".disable_clients").parents(".main_li").show();
 
         var disable_status = $(".show_hide_disable").attr("data-element");
@@ -1505,8 +1582,72 @@ if($(e.target).hasClass('show_hide_clients'))
         {
           $(".disable_clients:checked").parents(".main_li").hide();
         }
+
+        if(result['show_active'] == "1")
+        {
+          setTimeout(function() {
+            var week_from = $(".week_from").val(); 
+            var week_to = $(".week_to").val();
+            var month_from = $(".month_from").val();
+            var month_to = $(".month_to").val();
+            var year_id = $(".year_id").val();
+            if(week_from == "1") { week_from = 1; }
+            else if(week_from == "") { week_from = 0; }
+            else{ week_from = parseInt(week_from) - 1; }
+            if(week_to == "53") { week_to = 53; }
+            else if(week_to == "") { week_to = 0; }
+            else{ week_to = parseInt(week_to) + 1; }
+            if(month_from == "1") { month_from = 1; }
+            else if(month_from == "") { month_from = 0; }
+            else{ month_from = parseInt(month_from) - 1; }
+            if(month_to == "12") { month_to = 12; }
+            else if(month_to == "") { month_to = 0; }
+            else{ month_to = parseInt(month_to) + 1; }
+            var weekcount = parseInt(week_to) - parseInt(week_from);
+            var monthcount = parseInt(month_to) - parseInt(month_from);
+            var weekcountval = parseInt(weekcount) + 1;
+            var monthcountval = parseInt(monthcount) + 1;
+            var totalval = weekcountval + monthcountval;
+            var pixelval = parseInt(totalval) * 90;
+            var totalpixel = 850 + parseInt(pixelval);
+            
+            $.ajax({
+                url:"<?php echo URL::to('user/paye_p30_active_periods'); ?>",
+                type:"post",
+                dataType:"json",
+                data:{week_from:week_from, week_to:week_to, month_from:month_from, month_to:month_to, year_id:year_id  },
+                success: function(result){
+                    $("body").addClass("loading");
+                    $(".payp30_week_bg").hide();
+                    $(".payp30_month_bg").hide();
+                    for(var i=week_from; i<=week_to; i++)
+                    {
+                      $(".refresh_liability:visible").parents(".table_paye_p30").css("width",totalpixel+"px");
+                        $(".week_td_"+i).show();
+                        $(".week"+i).show();
+                        $(".week"+i+"_class").parents("td").show();
+                    }
+                    for(var i=month_from; i<=month_to; i++)
+                    {
+                        $(".month_td_"+i).show();
+                        $(".month"+i).show();
+                        $(".month"+i+"_class").parents("td").show();
+                    }
+                    $("body").removeClass("loading");
+                    $(".upload_img").hide();
+                }
+            })
+          },1000);
+        }
+        else{
+            $(".hide_column").show();
+            $(".hide_column_inner").parents("td").show();
+            $(".show_column").show();
+            $(".show_column_inner").parents("td").show();
+            $(".upload_img").hide();
+            $("body").removeClass("loading");
+        }
       }
-      $("body").removeClass("loading");
     }
   })
 }

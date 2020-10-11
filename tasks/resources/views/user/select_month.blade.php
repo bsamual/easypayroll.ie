@@ -2694,9 +2694,40 @@ body.loading .modal_load {
     <div class="col-lg-7 padding_00 button_top_right">
 
       <ul style="margin-right: 13%;">
-
+        <?php
+        $this_month = $monthid->month_id;
+        $prev_month = DB::table('month')->where('month_id','<',$this_month)->where('year',$monthid->year)->orderBy('month_id','desc')->first();
+        $next_month = DB::table('month')->where('month_id','>',$this_month)->where('year',$monthid->year)->orderBy('month_id','asc')->first();
+        $current_month = DB::table('month')->orderBy('month_id','desc')->first();
         
+        if(count($prev_month))
+        {
+          $prev = '<li><a href="'.URL::to('user/select_month/'.base64_encode($prev_month->month_id).'').'">Previous</a></li>';
+        }
+        else{
+          $prev = '';
+        }
 
+        if(count($current_month))
+        {
+          $curr = '<li><a href="'.URL::to('user/select_month/'.base64_encode($current_month->month_id).'').'">Current</a></li>';
+        }
+        else{
+          $curr = '';
+        }
+
+        if(count($next_month))
+        {
+          $next = '<li><a href="'.URL::to('user/select_month/'.base64_encode($next_month->month_id).'').'">Next</a></li>';
+        }
+        else{
+          $next = '';
+        }
+        ?>
+        
+         <?php echo $prev; ?>
+         <?php echo $curr; ?>
+         <?php echo $next; ?>
         <li><a href="<?php echo URL::to('user/close_create_new_month/'.$monthid->month_id); ?>" id="close_create_new_month">Close and Create New Month</a></li>
 
         <li><a href="javascript:" id="email_report_button">Email Task Report</a></li>
@@ -2743,39 +2774,8 @@ body.loading .modal_load {
 
         <br/> <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked; ?>><label for="show_incomplete">Show Incomplete Only</label> 
         <p style="margin-top:10px;float:right;clear:both">
-          <?php
-          $this_month = $monthid->month_id;
-          $prev_month = DB::table('month')->where('month_id','<',$this_month)->where('year',$monthid->year)->orderBy('month_id','desc')->first();
-          $next_month = DB::table('month')->where('month_id','>',$this_month)->where('year',$monthid->year)->orderBy('month_id','asc')->first();
-          $current_month = DB::table('month')->orderBy('month_id','desc')->first();
           
-          if(count($prev_month))
-          {
-            $prev = '<a href="'.URL::to('user/select_month/'.base64_encode($prev_month->month_id).'').'" class="common_black_button">Previous</a>';
-          }
-          else{
-            $prev = '';
-          }
-
-          if(count($current_month))
-          {
-            $curr = '<a href="'.URL::to('user/select_month/'.base64_encode($current_month->month_id).'').'" class="common_black_button">Current</a>';
-          }
-          else{
-            $curr = '';
-          }
-
-          if(count($next_month))
-          {
-            $next = '<a href="'.URL::to('user/select_month/'.base64_encode($next_month->month_id).'').'" class="common_black_button">Next</a>';
-          }
-          else{
-            $next = '';
-          }
-          ?>
-         <?php echo $prev; ?>
-         <?php echo $curr; ?>
-         <?php echo $next; ?>
+         
          </p>
       </ul>
 

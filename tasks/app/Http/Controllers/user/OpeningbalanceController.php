@@ -558,6 +558,8 @@ class OpeningbalanceController extends Controller {
 		$bal_date = Input::get('bal_date');
 		$import_type = Input::get('import_type');
 		$session_id = Input::get('session_id');
+		$page = Input::get('page');
+		$nextpage = $page + 1;
 
 		$date = explode('-',Input::get('bal_date'));
 		if($date[1] == "Jan") { $month = '01'; }
@@ -585,93 +587,103 @@ class OpeningbalanceController extends Controller {
 
 		if($import_type == "1")
 		{
-			$get_balances = DB::table('opening_balance_import')->whereNotIn('client_id',$locked_clients)->where('session_id',$session_id)->groupBy('client_id')->get();
-			if(count($get_balances))
+			$balance = DB::table('opening_balance_import')->whereNotIn('client_id',$locked_clients)->where('session_id',$session_id)->where('status',0)->first();
+			if(count($balance))
 			{
-				foreach($get_balances as $balance)
+				$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
+
+				$dataupdate['opening_balance'] = $get_client_balance;
+				$dataupdate['client_id'] = $balance->client_id;
+				$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+
+				$databal['status'] = 1;
+				DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->update($databal);
+
+				$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
+				if(count($check_client_bal))
 				{
-					$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
-
-					$dataupdate['opening_balance'] = $get_client_balance;
-					$dataupdate['client_id'] = $balance->client_id;
-					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
-
-					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
-					if(count($check_client_bal))
-					{
-						DB::table('opening_balance')->where('client_id',$balance->client_id)->update($dataupdate);
-					}
-					else{
-						DB::table('opening_balance')->insert($dataupdate);
-					}
+					DB::table('opening_balance')->where('client_id',$balance->client_id)->update($dataupdate);
 				}
+				else{
+					DB::table('opening_balance')->insert($dataupdate);
+				}
+			}
+			else{
+				DB::table('opening_balance_import')->where('session_id',$session_id)->delete();
+				echo json_encode(array("filename" => $filepath,"bal_date" => $bal_date, "import_type" => $import_type, "session_id" => $session_id, "page" => $nextpage, "status" => 'finish'));
+				exit;
 			}
 		}
 		else
 		{
-			$get_balances = DB::table('opening_balance_import')->whereNotIn('client_id',$locked_clients)->where('session_id',$session_id)->groupBy('client_id')->get();
-			if(count($get_balances))
+			$balance = DB::table('opening_balance_import')->whereNotIn('client_id',$locked_clients)->where('session_id',$session_id)->where('status',0)->first();
+			if(count($balance))
 			{
-				foreach($get_balances as $balance)
+				$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
+
+				$dataupdate['opening_balance'] = number_format_invoice_without_comma($get_client_balance);
+				$dataupdate['client_id'] = $balance->client_id;
+				$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+
+				$databal['status'] = 1;
+				DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->update($databal);
+
+				$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
+				if(count($check_client_bal))
 				{
-					$get_client_balance = DB::table('opening_balance_import')->where('client_id',$balance->client_id)->where('session_id',$session_id)->sum('balance');
+					DB::table('opening_balance')->where('client_id',$balance->client_id)->update($dataupdate);
+				}
+				else{
+					DB::table('opening_balance')->insert($dataupdate);
+				}
+				$client_id = $balance->client_id;
+				$opening_balance = $get_client_balance;
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
+				$opening_balance = str_replace(",","",$opening_balance);
 
-					$dataupdate['opening_balance'] = number_format_invoice_without_comma($get_client_balance);
-					$dataupdate['client_id'] = $balance->client_id;
-					$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+				$dataval['balance_remaining'] = '';
+				DB::table('invoice_system')->where('client_id',$client_id)->update($dataval);
 
-					$check_client_bal = DB::table('opening_balance')->where('client_id',$balance->client_id)->first();
-					if(count($check_client_bal))
+				$get_invoices_update = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
+				if(count($get_invoices_update))
+				{
+					foreach($get_invoices_update as $invoice)
 					{
-						DB::table('opening_balance')->where('client_id',$balance->client_id)->update($dataupdate);
-					}
-					else{
-						DB::table('opening_balance')->insert($dataupdate);
-					}
-					$client_id = $balance->client_id;
-					$opening_balance = $get_client_balance;
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-					$opening_balance = str_replace(",","",$opening_balance);
-
-					$dataval['balance_remaining'] = '';
-					DB::table('invoice_system')->where('client_id',$client_id)->update($dataval);
-
-					$get_invoices_update = DB::table('invoice_system')->where('client_id',$client_id)->orderBy('invoice_date','desc')->get();
-					if(count($get_invoices_update))
-					{
-						foreach($get_invoices_update as $invoice)
+						$gross = $invoice->gross;
+						if($opening_balance != 0)
 						{
-							$gross = $invoice->gross;
-							if($opening_balance != 0)
+							if($gross > 0)
 							{
-								if($gross > 0)
+								if($gross < $opening_balance)
 								{
-									if($gross < $opening_balance)
-									{
-										$data['balance_remaining'] = $gross;
-										$opening_balance = $opening_balance - $gross;
-									}
-									else{
-										$data['balance_remaining'] = $opening_balance;
-										$opening_balance = $opening_balance - $opening_balance;
-									}
-									DB::table('invoice_system')->where('id',$invoice->id)->update($data);
+									$data['balance_remaining'] = $gross;
+									$opening_balance = $opening_balance - $gross;
 								}
+								else{
+									$data['balance_remaining'] = $opening_balance;
+									$opening_balance = $opening_balance - $opening_balance;
+								}
+								DB::table('invoice_system')->where('id',$invoice->id)->update($data);
 							}
 						}
 					}
 				}
 			}
+			else{
+				DB::table('opening_balance_import')->where('session_id',$session_id)->delete();
+				echo json_encode(array("filename" => $filepath,"bal_date" => $bal_date, "import_type" => $import_type, "session_id" => $session_id, "page" => $nextpage, "status" => 'finish'));
+				exit;
+			}
 		}
-
-		DB::table('opening_balance_import')->where('session_id',$session_id)->delete();
+		echo json_encode(array("filename" => $filepath,"bal_date" => $bal_date, "import_type" => $import_type, "session_id" => $session_id, "page" => $nextpage, "status" => 'start'));
+		
 	}
 	public function clear_import_opening_balance()
 	{
@@ -718,5 +730,42 @@ class OpeningbalanceController extends Controller {
 			DB::table('opening_balance')->where('client_id',$client_id)->update($data);
 		}
 		return Redirect::back();
+	}
+	public function get_client_counts_opening_balance()
+	{
+		$session_id = Input::get('session_id');
+
+		$get_locked_client_ids = DB::table('opening_balance')->select('client_id')->where('locked',1)->get();
+		$locked_clients = array();
+		if(count($get_locked_client_ids))
+		{
+			foreach($get_locked_client_ids as $clientid)
+			{
+				array_push($locked_clients,$clientid->client_id);
+			}
+		}
+
+		$balance = DB::table('opening_balance_import')->whereNotIn('client_id',$locked_clients)->where('session_id',$session_id)->groupBy('client_id')->get();
+		echo count($balance);
+	}
+	public function set_global_opening_bal_date()
+	{
+		$date = explode('-',Input::get('global_date'));
+		if($date[1] == "Jan") { $month = '01'; }
+		if($date[1] == "Feb") { $month = '02'; }
+		if($date[1] == "Mar") { $month = '03'; }
+		if($date[1] == "Apr") { $month = '04'; }
+		if($date[1] == "May") { $month = '05'; }
+		if($date[1] == "Jun") { $month = '06'; }
+		if($date[1] == "Jul") { $month = '07'; }
+		if($date[1] == "Aug") { $month = '08'; }
+		if($date[1] == "Sep") { $month = '09'; }
+		if($date[1] == "Oct") { $month = '10'; }
+		if($date[1] == "Nov") { $month = '11'; }
+		if($date[1] == "Dec") { $month = '12'; }
+
+		$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
+
+		DB::table('opening_balance')->where('locked',0)->update($dataupdate);
 	}
 }

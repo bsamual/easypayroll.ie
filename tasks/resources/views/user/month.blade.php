@@ -16,7 +16,7 @@ body{background:url('<?php echo URL::to('assets/images/monthly_bg.jpg')?>') no-r
     <?php
     $current_month = DB::table('month')->orderBy('month_id','desc')->first();
     ?>
-    <a href="<?php echo URL::to('user/select_month/'.base64_encode($current_month->month_id)); ?>" class="common_black_button" style="float:right">Open Current Month</a>
+    
   </div>
     <div class="select_button">
         <ul>
@@ -32,6 +32,7 @@ body{background:url('<?php echo URL::to('assets/images/monthly_bg.jpg')?>') no-r
             }
             ?>            
         </ul>
+        <p style="float:left;clear: both;margin-top:15px"><a href="<?php echo URL::to('user/select_month/'.base64_encode($current_month->month_id)); ?>" class="common_black_button">Open Current Month</a></p>
         <p style="clear: both;font-size: 18px;font-weight: 800;color: #fff; text-shadow: 0px 1px 2px #000; position: absolute;bottom:8%;text-align: center;
     width: 98%;">You are in Monthly Payroll Task Management</p>
     </div>

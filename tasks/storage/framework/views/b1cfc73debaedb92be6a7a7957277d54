@@ -231,9 +231,11 @@ a:hover{text-decoration: underline;}
 <script>
 
 $(document).ready(function() {
-
-  $('.table-fixed-header').fixedHeader();  
-
+  $('.table-fixed-header').fixedHeader();
+  $(".date_class").datetimepicker({     
+     format: 'L',
+     format: 'DD-MMM-YYYY',
+  });  
 });
 
 </script>
@@ -241,6 +243,36 @@ $(document).ready(function() {
 
 <script>
 $(window).click(function(e) {
+  if($(e.target).hasClass('date_selection'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(e.target).parents("td").find(".date_class").prop("disabled",false);
+      var status = "1";
+    }
+    else{
+      $(e.target).parents("td").find(".date_class").prop("disabled",true);
+      var status = "0";
+    }
+    var setting_id = $(".setting_class").val();        
+    var client_id  = $(e.target).attr("data-element");
+    var year_id  = $("#year_id").val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/save_yearend_date_status'); ?>",
+      type:"post",
+      data:{status:status,client_id:client_id,setting_id:setting_id,year_id:year_id},
+      success:function(result)
+      {
+        var datecls_val = $(e.target).parents("td").find(".date_class").val();
+        if(datecls_val == "" && $(e.target).is(":checked"))
+        {
+          $(e.target).parents("td").find(".date_class").val(result)
+        }
+        ajaxdatecomplete();
+      }
+    });    
+  }
   if($(e.target).hasClass('fileattachment'))
   {
       e.preventDefault();
@@ -280,7 +312,7 @@ if($(e.target).hasClass('export_button'))
           success:function(result){
 
              SaveToDisk("<?php echo URL::to('papers'); ?>/Export_Liability.csv",'Export_Liability.csv');
-            
+            ajaxdatecomplete();
         }
       })
     }
@@ -290,6 +322,30 @@ if($(e.target).hasClass('export_button'))
 
 
 })
+function ajaxdatecomplete()
+{
+  $(".date_class").datetimepicker({     
+     format: 'L',
+     format: 'DD-MMM-YYYY',
+  });
+
+  $(".date_class").on("dp.hide", function (e) {
+    var setting_id = $(".setting_class").val();        
+    var client_id  = $(this).attr("data-element");
+    var year_id  = $("#year_id").val();
+    var dateval = $(this).val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/save_yearend_liability_date'); ?>",
+      type:"post",
+      data:{dateval:dateval,client_id:client_id,setting_id:setting_id,year_id:year_id},
+      success:function(result)
+      {
+        
+      }
+    })
+  });
+}
 </script>
 <script>
 $(function(){
@@ -333,6 +389,8 @@ $(".setting_class").change(function(){
               info: false
           });
 
+          ajaxdatecomplete();
+
           $("body").removeClass("loading");
         } 
   });
@@ -374,7 +432,7 @@ function doneTyping_payment (payment_value, client_id, year_id, setting_id, that
         data:{setting_id:setting_id, value:payment_value, year_id:year_id, client_id:client_id},
         success: function(result) { 
           $("#client_"+result['client_id']).find(".balance_class").html(result['balance']);
-          
+          ajaxdatecomplete();
         } 
   });            
 }
@@ -386,7 +444,7 @@ function doneTyping_prelim (prelim_value, client_id, year_id, setting_id, that) 
         dataType:"json",
         data:{setting_id:setting_id, value:prelim_value, year_id:year_id, client_id:client_id},
         success: function(result) { 
-          
+          ajaxdatecomplete();
           
         } 
   });            

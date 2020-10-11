@@ -372,9 +372,7 @@
 </div>
 @yield('content')
 <script>
-$(document).ready(function() {
-  $("body").removeClass("loading");
-})
+
 function detectPopupBlocker() {
   var myTest = window.open("about:blank","","directories=no,height=100,width=100,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no");
   if (!myTest) {
@@ -418,7 +416,77 @@ function SaveToDisk(fileURL, fileName) {
 	$("body").removeClass("loading");
 }
 </script>
-<div class="footer_row">© Copyright <?php echo date('Y'); ?> All Rights Reserved EasyPayroll</div>
+<?php 
+if(($segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager"))
+{
+	?>
+	<div class="footer_row">
+		<div class="col-md-4">
+			<spam style="float: left;margin-left: 45px;font-size: 17px;font-weight: 700;margin-top:3px">Global Opening Balanace Date: </spam>
+			<input type="text" name="global_opening_date" class="input global_opening_date" value="" placeholder="DD-MMM-YYYY" style="float: left;margin-left: 20px;height: 31px;outline: none;">
+			<input type="button" class="common_black_button set_global_opening_bal_date_now" name="set_global_opening_bal_date_now" value="Set Now">
+		</div>
+		<div class="col-md-4">
+			© Copyright <?php echo date('Y'); ?> All Rights Reserved EasyPayroll
+		</div>
+		<div class="col-md-4">
+			&nbsp;
+		</div>
+	</div>
+	<?php
+}
+else{
+	?>
+	<div class="footer_row">
+		© Copyright <?php echo date('Y'); ?> All Rights Reserved EasyPayroll
+	</div>
+	<?php
+}
+?>
+<script>
+$(document).ready(function() {
+    $("body").removeClass("loading");
+    $(".global_opening_date").datetimepicker({     
+       format: 'L',
+       format: 'DD-MMM-YYYY',
+       widgetPositioning: { horizontal: 'left', vertical: 'top'}
+    });
+})
+$(window).click(function(e) {
+	if($(e.target).hasClass('set_global_opening_bal_date_now'))
+	{
+		var global_date = $(".global_opening_date").val();
+		if(global_date == "")
+		{
+			alert("Please enter the Global Opening Date");
+		}
+		else{
+			$.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">You are about to set the Global Opening Balance Date to '+global_date+'. Are you sure you want to continue?</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-element="'+global_date+'" class="common_black_button yes_set_global_date">Yes</a><a href="javascript:" class="common_black_button no_set_global_date">No</a></p>',fixed:true,width:"800px"});
+		}
+	}
+	if($(e.target).hasClass('yes_set_global_date'))
+	{
+		var global_date = $(".global_opening_date").val();
+		$.ajax({
+			url:"<?php echo URL::to('user/set_global_opening_bal_date'); ?>",
+			type:"post",
+			data:{global_date:global_date},
+			success: function(result)
+			{
+        $(".global_opening_date").val("");
+        $(".opening_balance_date").val(global_date);
+				$.colorbox.close();
+        window.location.reload();
+			}
+		})
+	}
+  if($(e.target).hasClass('no_set_global_date'))
+  {
+    $(".global_opening_date").val("");
+    $.colorbox.close();
+  }
+});
+</script>
 
 </body>
 </html>

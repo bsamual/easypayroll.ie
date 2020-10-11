@@ -166,6 +166,7 @@ a:hover{text-decoration: underline;}
         </div>
         <div class="col-md-12">
           <div class="col-md-12">
+          	<h4 style="font-weight:700">File Information:</h4>
             <h4 style="line-height: 27px;" id="import_note_1">
               <p>The file must be in CSV format.<br/>
               The date must be in the format dd-mm-yyyy (for Ex: 07-09-2020)<br/>
@@ -215,11 +216,12 @@ a:hover{text-decoration: underline;}
   </div>
   <div class="modal_load"></div>
   <div class="modal_load_content" style="text-align: center;">
-    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait untill all the datas from CSV file will be verified.</p>
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the data's from the CSV file is verified.</p>
     <p style="font-size:18px;font-weight: 600;">Loading: <span id="count_first"></span> of <span id="count_last"></span></p>
   </div>
   <div class="modal_load_import" style="text-align: center;">
-    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait untill all the verified result will be imported.</p>
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the verified data's are imported.</p>
+    <p style="font-size:18px;font-weight: 600;">Importing: <span id="import_first">0</span> of <span id="import_last"></span></p>
   </div>
   <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
   <input type="hidden" name="show_alert" id="show_alert" value="">
@@ -257,27 +259,36 @@ function import_opening_balance_function(filename,import_type,page,session_id,co
     data:{filename:filename,import_type:import_type,page:page,session_id:session_id},
     success: function(result)
     {
-      $("#count_first").html(countval);
-      $("#count_last").html(totalcount);
-
       if(result['page'] > "0")
       {
+      	$("#count_first").html(countval);
+        $("#count_last").html(totalcount);
         import_opening_balance_function(filename,import_type,result['page'],session_id,countval,totalcount);
       }
       else{
         $(".opening_balance_date").val("");
         if(result['error'] == "0")
         {
-          $(".import_table").show();
-          $(".start_import").show();
-          $("#import_tbody_list").html(result['output']);
-          $("#hidden_filename").val(result['upload_dir']);
-          $("#hidden_session_id").val(result['session_id']);
-          $("#count_first").html("");
-          $("#count_last").html("");
-          $("body").removeClass("loading_content");
+        	$.ajax({
+          		url:"<?php echo URL::to('user/get_client_counts_opening_balance'); ?>",
+          		type:"post",
+          		data:{session_id:session_id},
+          		success: function(eresult)
+          		{
+          			$("#import_last").html(eresult);
+          			$(".import_table").show();
+			        $(".start_import").show();
+			        $("#import_tbody_list").html(result['output']);
+			        $("#hidden_filename").val(result['upload_dir']);
+			        $("#hidden_session_id").val(result['session_id']);
+			        $("#count_first").html("");
+			        $("#count_last").html("");
+			        $("body").removeClass("loading_content");
+          		}
+          	});
         }
         else{
+          $("#import_last").html("");
           $(".import_table").hide();
           $(".start_import").hide();
           $("#count_first").html("");
@@ -288,6 +299,35 @@ function import_opening_balance_function(filename,import_type,page,session_id,co
       }
     }
   });
+}
+function import_opening_balance_to_clients(filename,bal_date,import_type,session_id,page)
+{
+	$.ajax({
+      url:"<?php echo URL::to('user/import_opening_balance_to_clients'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{filename:filename,bal_date:bal_date,import_type:import_type,session_id:session_id,page:page},
+      success: function(result)
+      {
+      	if(result['status'] == "start")
+      	{
+      		$("#import_first").html(result['page']);
+      		import_opening_balance_to_clients(filename,bal_date,import_type,session_id,result['page']);
+      	}
+      	else{
+      		$("#import_tbody_list").html("");
+	        $("#hidden_filename").val("");
+	        $("#hidden_session_id").val("");
+	        $(".opening_balance_date").val("");
+	        $(".balance_file").val("");
+
+	        $(".import_table").hide();
+	        $(".start_import").hide();
+	        $("body").removeClass("loading_import");
+	        $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>File Imported Successfully</p>",width:"30%",fixed:true});
+      	}
+      }
+    });
 }
 $(window).click(function(e){
   if(e.target.id == "import_balance_1")
@@ -320,10 +360,10 @@ $(window).click(function(e){
               dataType:"json",
               data:{page:"1"},
               success:function(e){
-                $("#count_first").html("100");
-                $("#count_last").html(e['highestRow']);
                 if(e['page'] > "0")
                 {
+                	$("#count_first").html("100");
+                	$("#count_last").html(e['highestRow']);
                   $("body").removeClass("loading");
                   $("body").addClass("loading_content");
                   import_opening_balance_function(e['upload_dir'],e['import_type'],e['page'],e['session_id'],"100",e['highestRow']);
@@ -332,16 +372,26 @@ $(window).click(function(e){
                   $(".opening_balance_date").val("");
                   if(e['error'] == "0")
                   {
-                    $(".import_table").show();
-                    $(".start_import").show();
-                    $("#import_tbody_list").html(e['output']);
-                    $("#hidden_filename").val(e['upload_dir']);
-                    $("#hidden_session_id").val(e['session_id']);
-                    $("#count_first").html("");
-                    $("#count_last").html("");
-                    $("body").removeClass("loading");
+                  	$.ajax({
+                  		url:"<?php echo URL::to('user/get_client_counts_opening_balance'); ?>",
+                  		type:"post",
+                  		data:{session_id:e['session_id']},
+                  		success: function(result)
+                  		{
+                  			$("#import_last").html(result);
+                  			$(".import_table").show();
+		                    $(".start_import").show();
+		                    $("#import_tbody_list").html(e['output']);
+		                    $("#hidden_filename").val(e['upload_dir']);
+		                    $("#hidden_session_id").val(e['session_id']);
+		                    $("#count_first").html("");
+		                    $("#count_last").html("");
+		                    $("body").removeClass("loading");
+                  		}
+                  	});
                   }
                   else{
+                  	$("#import_last").html("");
                     $(".import_table").hide();
                     $(".start_import").hide();
                     $("#count_first").html("");
@@ -378,29 +428,35 @@ $(window).click(function(e){
     }
     else{
       $("body").addClass("loading_import");
-      setTimeout(function(){
-        var import_type = $(".import_balance:checked").val();
-        var filename = $("#hidden_filename").val();
+	    var import_type = $(".import_balance:checked").val();
+	    var filename = $("#hidden_filename").val();
+	    $("#import_first").html("0");
+	    $.ajax({
+	      url:"<?php echo URL::to('user/import_opening_balance_to_clients'); ?>",
+	      type:"post",
+	      dataType:"json",
+	      data:{filename:filename,bal_date:bal_date,import_type:import_type,session_id:session_id,page:"0"},
+	      success: function(result)
+	      {
+	      	if(result['status'] == "start")
+	      	{
+	      		$("#import_first").html(result['page']);
+	      		import_opening_balance_to_clients(filename,bal_date,import_type,session_id,result['page']);
+	      	}
+	      	else{
+	      		$("#import_tbody_list").html("");
+		        $("#hidden_filename").val("");
+		        $("#hidden_session_id").val("");
+		        $(".opening_balance_date").val("");
+		        $(".balance_file").val("");
 
-        $.ajax({
-          url:"<?php echo URL::to('user/import_opening_balance_to_clients'); ?>",
-          type:"post",
-          data:{filename:filename,bal_date:bal_date,import_type:import_type,session_id:session_id},
-          success: function(result)
-          {
-            $("#import_tbody_list").html("");
-            $("#hidden_filename").val("");
-            $("#hidden_session_id").val("");
-            $(".opening_balance_date").val("");
-            $(".balance_file").val("");
-
-            $(".import_table").hide();
-            $(".start_import").hide();
-            $("body").removeClass("loading_import");
-            $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>File Imported Successfully</p>",width:"30%",fixed:true});
-          }
-        });
-      },5000);
+		        $(".import_table").hide();
+		        $(".start_import").hide();
+		        $("body").removeClass("loading_import");
+		        $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>File Imported Successfully</p>",width:"30%",fixed:true});
+	      	}
+	      }
+	    });
     }
   }
 });

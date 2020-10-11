@@ -1676,3 +1676,6 @@ Route::post('/user/save_yearend_liability_date', 'user\YearendController@save_ye
 
 Route::post('/user/change_auto_close_status', 'user\TaskmanagerController@change_auto_close_status');
 Route::post('/user/get_clientname_from_pms', 'user\UserController@get_clientname_from_pms');
+
+Route::post('/user/get_client_counts_opening_balance', 'user\OpeningbalanceController@get_client_counts_opening_balance');
+Route::post('/user/set_global_opening_bal_date', 'user\OpeningbalanceController@set_global_opening_bal_date');

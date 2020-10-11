@@ -16,7 +16,7 @@ body{background:url('<?php echo URL::to('assets/images/weekly_bg.jpg')?>') no-re
     <?php
     $current_week = DB::table('week')->orderBy('week_id','desc')->first();
     ?>
-    <a href="<?php echo URL::to('user/select_week/'.base64_encode($current_week->week_id)); ?>" class="common_black_button" style="float:right">Open Current Week</a>
+    
   </div>
     <div class="select_button">
         <ul>
@@ -32,6 +32,7 @@ body{background:url('<?php echo URL::to('assets/images/weekly_bg.jpg')?>') no-re
             }
             ?>            
         </ul>
+        <p style="float:left;clear: both;margin-top:15px"><a href="<?php echo URL::to('user/select_week/'.base64_encode($current_week->week_id)); ?>" class="common_black_button">Open Current Week</a></p>
         <p style="clear: both;font-size: 18px;font-weight: 800;color: #fff; text-shadow: 0px 1px 2px #000; position: absolute;bottom:8%;text-align: center;
     width: 98%;">You are In Weekly Payroll Task Management</p>
     </div>

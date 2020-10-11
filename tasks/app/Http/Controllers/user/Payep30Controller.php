@@ -66,8 +66,8 @@ class Payep30Controller extends Controller {
 		$id = base64_decode($id);
 		$year = DB::table('paye_p30_year')->where('year_id',$id)->first();		
 
-		$pay3_task = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->limit(5)->get();
-		$paye_count = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->limit(5)->count();
+		$pay3_task = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->get();
+		$paye_count = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->count();
 		// $payee_task = DB::table('paye_p30_task')->get();
 		// if(count($payee_task))
 		// {
@@ -2637,7 +2637,8 @@ class Payep30Controller extends Controller {
 				}
 			}
 		}
-		echo $task_array;
+		$year_details = DB::table("paye_p30_year")->where('year_id',$year)->first();
+		echo json_encode(array("task_array" => $task_array,"show_active" =>$year_details->show_active));
 	}
 	public function update_paye_p30_year_email_clients_status()
 	{
@@ -2673,7 +2674,8 @@ class Payep30Controller extends Controller {
 				}
 			}
 		}
-		echo $task_array;
+		$year_details = DB::table("paye_p30_year")->where('year_id',$year)->first();
+		echo json_encode(array("task_array" => $task_array,"show_active" =>$year_details->show_active));
 	}
 	public function paye_p30_create_csv()
 	{
@@ -3320,14 +3322,39 @@ class Payep30Controller extends Controller {
 				$get_task_id = DB::table('paye_p30_task')->where('paye_year',$year_id)->where('task_enumber',$row->task_enumber)->first();
 				if(count($get_task_id))
 				{
+					$tasknameval = str_replace(",","",$get_task_id->task_name);
+					$tasknameval = str_replace(",","",$tasknameval);
+					$tasknameval = str_replace(",","",$tasknameval);
+					$tasknameval = str_replace(",","",$tasknameval);
+					$tasknameval = str_replace(",","",$tasknameval);
+
+					$tasknameval = str_replace("&","",$tasknameval);
+					$tasknameval = str_replace("&","",$tasknameval);
+					$tasknameval = str_replace("&","",$tasknameval);
+					$tasknameval = str_replace("&","",$tasknameval);
+
+					$tasknameval = str_replace("'","",$tasknameval);
+					$tasknameval = str_replace("'","",$tasknameval);
+					$tasknameval = str_replace("'","",$tasknameval);
+					$tasknameval = str_replace("'","",$tasknameval);
+
+					$tasknameval = str_replace("?","",$tasknameval);
+					$tasknameval = str_replace("?","",$tasknameval);
+					$tasknameval = str_replace("?","",$tasknameval);
+
+					$tasknameval = str_replace("/","",$tasknameval);
+					$tasknameval = str_replace("/","",$tasknameval);
+					$tasknameval = str_replace("/","",$tasknameval);
+
+
 					if($task_id == "")
 					{
 						$task_id = $get_task_id->id;
-						$task_name = $get_task_id->task_name;
+						$task_name = $tasknameval;
 					}
 					else{
 						$task_id = $task_id.','.$get_task_id->id;
-						$task_name = $task_name.'||'.$get_task_id->task_name;
+						$task_name = $task_name.'||'.$tasknameval;
 					}
 				}
 			}
