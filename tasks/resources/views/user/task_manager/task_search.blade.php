@@ -515,9 +515,29 @@ input:checked + .slider:before {
             <input type="hidden" name="hidden_task_id_task_specifics" id="hidden_task_id_task_specifics" value="">
             <input type="hidden" name="show_auto_close_msg" id="show_auto_close_msg" value="">
             
-            <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="margin-top: 10px;">
-            <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="margin-top: 10px;">
-            <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
+            <div class="col-md-12" style="padding:0px;margin-top:10px">
+              <input type="button" class="common_black_button add_comment_allocate_to_btn" value="Add Comment and Allocate To" style="float: left;font-size:12px">
+              <select name="add_comment_allocate_to" class="form-control add_comment_allocate_to" style="float: left;width:20%;font-size:12px">
+                <option value="">Select User</option>
+                <?php
+                  if(count($userlist)){
+                    foreach ($userlist as $user) {
+                  ?>
+                    <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                  <?php
+                    }
+                  }
+                ?>
+              </select>
+
+              <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="float: right;font-size:12px">
+              <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="float: right;font-size:12px">
+              
+
+              <div class="col-md-12" style="float:right;margin-top:10px;padding:0px">
+                  <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
+              </div>
+            </div>
           </div>
         </div>
   </div>
@@ -1636,6 +1656,81 @@ $(window).click(function(e) {
               url:"<?php echo URL::to('user/add_comment_and_allocate'); ?>",
               type:"post",
               data:{task_id:task_id,comments:comments},
+              success:function(result)
+              {
+                var new_allocation = result;
+                if(new_allocation == "0")
+                {
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                }
+                else{
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  $(".task_specifics_modal").modal("hide");
+                  $.ajax({
+                    url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                    type:"post",
+                    data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+                    dataType:"json",
+                    success:function(result)
+                    {
+                      var author = $(".search_author").val();
+                      var open_task = $(".open_task_search:checked").val();
+                      var client_id = $("#copy_client_search").val();
+                      var client_id_search = $(".copy_client_search_class ").val();
+                      var subject = $(".subject_search_class").val();
+                      var recurring = $("#hidden_recurring_task").val();
+                      var due_date = $(".due_date_search_class").val();
+                      var creation_date = $(".creation_date_search_class").val();
+
+                      if(client_id_search == "")
+                      {
+                        $("#copy_client_search").val("");
+                        client_id = "";
+                      }
+                      
+                      $.ajax({
+                        url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
+                        type:"post",
+                        data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date},
+                        success:function(result)
+                        {
+                          $("#task_body_search").html(result);
+                          $("body").removeClass("loading");
+                        }
+                      })
+                    }
+                  })
+                }
+              }
+            })
+          }
+        },1000);
+      }
+      if($(e.target).hasClass('add_comment_allocate_to_btn'))
+      {
+        
+        setTimeout(function() {
+          var comments = CKEDITOR.instances['editor_1'].getData();
+          var task_id = $("#hidden_task_id_task_specifics").val();
+          var allocate_to = $(".add_comment_allocate_to").val();
+          if(comments == "")
+          {
+            alert("Please enter new comments and then click on the Add New Comment Button");
+          }
+          else if(allocate_to == "")
+          {
+            alert("Please select the user and then proceed with submit button.");
+          }
+          else{
+            $("body").addClass("loading");
+            $.ajax({
+              url:"<?php echo URL::to('user/add_comment_and_allocate_to'); ?>",
+              type:"post",
+              data:{task_id:task_id,comments:comments,allocate_to:allocate_to},
               success:function(result)
               {
                 var new_allocation = result;

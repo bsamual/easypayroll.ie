@@ -214,6 +214,7 @@ class OpeningbalanceController extends Controller {
 		}
 		$output = '';
 		$total_remaining = 0;
+		$total_breakdown = 0;
           $get_invoices = DB::select('SELECT * from `invoice_system` WHERE `client_id` = "'.$client_id.'" AND `invoice_date` <= "'.$check_client->opening_date.'" ORDER BY `invoice_date` DESC');
           if(count($get_invoices))
           {

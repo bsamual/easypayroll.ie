@@ -1,5 +1,6 @@
 @extends('userheader')
 @section('content')
+<script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
 .liability_class{
   cursor:pointer;
@@ -1217,7 +1218,7 @@ else{
 }
 if($(e.target).hasClass('image_submit'))
 {
-  e.preventDefault();
+  //e.preventDefault();
   var alert = 0;
   $(e.target).parents(".table_paye_p30").find(".payment_class").each(function() {
     var value = $(this).val();
@@ -1228,13 +1229,69 @@ if($(e.target).hasClass('image_submit'))
   });
   if(alert == 0)
   {
-    $(e.target).parents("form").submit();
+    $("body").addClass("loading");
+    $(e.target).parents("form").ajaxForm({
+        dataType:"json",
+        success:function(result){
+          if(result['error'] == "1")
+          {
+            $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:red>"+result['message']+"</p>", fixed:true});
+            $("body").removeClass("loading");
+          }
+          else{
+            var task_id = result['task_id'];
+            $(".payment_class_"+task_id+"-1").val(result['payment_month_1']);
+            $(".payment_class_"+task_id+"-2").val(result['payment_month_2']);
+            $(".payment_class_"+task_id+"-3").val(result['payment_month_3']);
+            $(".payment_class_"+task_id+"-4").val(result['payment_month_4']);
+            $(".payment_class_"+task_id+"-5").val(result['payment_month_5']);
+            $(".payment_class_"+task_id+"-6").val(result['payment_month_6']);
+            $(".payment_class_"+task_id+"-7").val(result['payment_month_7']);
+            $(".payment_class_"+task_id+"-8").val(result['payment_month_8']);
+            $(".payment_class_"+task_id+"-9").val(result['payment_month_9']);
+            $(".payment_class_"+task_id+"-10").val(result['payment_month_10']);
+            $(".payment_class_"+task_id+"-11").val(result['payment_month_11']);
+            $(".payment_class_"+task_id+"-12").val(result['payment_month_12']);
+            $(".task_total_row_"+task_id+"").find(".total_payment_class").val(result['total_payment_months']);
+            $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>"+result['message']+"</p>", fixed:true});
+            $("body").removeClass("loading");
+          }
+        }
+    });
   }
   else{
     var r = confirm("this process will overwrite the payments with valid payments form the uploaded ROS payment extract file.  Do you wish to continue?")
     if(r)
     {
-      $(e.target).parents("form").submit();
+      $("body").addClass("loading");
+      $(e.target).parents("form").ajaxForm({
+        dataType:"json",
+        success:function(result){
+          if(result['error'] == "1")
+          {
+            $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:red>"+result['message']+"</p>", fixed:true});
+            $("body").removeClass("loading");
+          }
+          else{
+            var task_id = result['task_id'];
+            $(".payment_class_"+task_id+"-1").val(result['payment_month_1']);
+            $(".payment_class_"+task_id+"-2").val(result['payment_month_2']);
+            $(".payment_class_"+task_id+"-3").val(result['payment_month_3']);
+            $(".payment_class_"+task_id+"-4").val(result['payment_month_4']);
+            $(".payment_class_"+task_id+"-5").val(result['payment_month_5']);
+            $(".payment_class_"+task_id+"-6").val(result['payment_month_6']);
+            $(".payment_class_"+task_id+"-7").val(result['payment_month_7']);
+            $(".payment_class_"+task_id+"-8").val(result['payment_month_8']);
+            $(".payment_class_"+task_id+"-9").val(result['payment_month_9']);
+            $(".payment_class_"+task_id+"-10").val(result['payment_month_10']);
+            $(".payment_class_"+task_id+"-11").val(result['payment_month_11']);
+            $(".payment_class_"+task_id+"-12").val(result['payment_month_12']);
+            $(".task_total_row_"+task_id+"").find(".total_payment_class").val(result['total_payment_months']);
+            $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>"+result['message']+"</p>", fixed:true});
+            $("body").removeClass("loading");
+          }
+        }
+      });
     }
   }
 }

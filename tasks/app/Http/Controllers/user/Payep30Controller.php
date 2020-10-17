@@ -3275,15 +3275,42 @@ class Payep30Controller extends Controller {
 								}
 							}
 						}
-						return redirect('user/paye_p30_manage/'.base64_encode($year_id).'?div_id='.$task_id)->with('message', 'Payments uploaded for the client "'.$get_details->task_name.'"');
+						$get_task = DB::table('paye_p30_task')->where('id',$task_id)->first();
+						$get_details1 = unserialize($get_task->month_liabilities_1);
+						$payment_month_1 = ($get_details1['payments'] == "")?'0.00':$get_details1['payments'];
+						$get_details2 = unserialize($get_task->month_liabilities_2);
+						$payment_month_2 = ($get_details2['payments'] == "")?'0.00':$get_details2['payments'];
+						$get_details3 = unserialize($get_task->month_liabilities_3);
+						$payment_month_3 = ($get_details3['payments'] == "")?'0.00':$get_details3['payments'];
+						$get_details4 = unserialize($get_task->month_liabilities_4);
+						$payment_month_4 = ($get_details4['payments'] == "")?'0.00':$get_details4['payments'];
+						$get_details5 = unserialize($get_task->month_liabilities_5);
+						$payment_month_5 = ($get_details5['payments'] == "")?'0.00':$get_details5['payments'];
+						$get_details6 = unserialize($get_task->month_liabilities_6);
+						$payment_month_6 = ($get_details6['payments'] == "")?'0.00':$get_details6['payments'];
+						$get_details7 = unserialize($get_task->month_liabilities_7);
+						$payment_month_7 = ($get_details7['payments'] == "")?'0.00':$get_details7['payments'];
+						$get_details8 = unserialize($get_task->month_liabilities_8);
+						$payment_month_8 = ($get_details8['payments'] == "")?'0.00':$get_details8['payments'];
+						$get_details9 = unserialize($get_task->month_liabilities_9);
+						$payment_month_9 = ($get_details9['payments'] == "")?'0.00':$get_details9['payments'];
+						$get_details10 = unserialize($get_task->month_liabilities_10);
+						$payment_month_10 = ($get_details10['payments'] == "")?'0.00':$get_details10['payments'];
+						$get_details11 = unserialize($get_task->month_liabilities_11);
+						$payment_month_11 = ($get_details11['payments'] == "")?'0.00':$get_details11['payments'];
+						$get_details12 = unserialize($get_task->month_liabilities_12);
+						$payment_month_12 = ($get_details12['payments'] == "")?'0.00':$get_details12['payments'];
+
+						$total_payment_months = number_format_invoice(number_format_invoice_without_comma($payment_month_1) + number_format_invoice_without_comma($payment_month_2) + number_format_invoice_without_comma($payment_month_3) + number_format_invoice_without_comma($payment_month_4) + number_format_invoice_without_comma($payment_month_5) + number_format_invoice_without_comma($payment_month_6) + number_format_invoice_without_comma($payment_month_7) + number_format_invoice_without_comma($payment_month_8) + number_format_invoice_without_comma($payment_month_9) + number_format_invoice_without_comma($payment_month_10) + number_format_invoice_without_comma($payment_month_11) + number_format_invoice_without_comma($payment_month_12));
+						echo json_encode(array("error" => '0', "message" => 'Payments uploaded for the client "'.$get_details->task_name.'"','task_id' => $task_id, 'payment_month_1' => number_format_invoice($payment_month_1),'payment_month_2' => number_format_invoice($payment_month_2),'payment_month_3' => number_format_invoice($payment_month_3),'payment_month_4' => number_format_invoice($payment_month_4),'payment_month_5' => number_format_invoice($payment_month_5),'payment_month_6' => number_format_invoice($payment_month_6),'payment_month_7' => number_format_invoice($payment_month_7),'payment_month_8' => number_format_invoice($payment_month_8),'payment_month_9' => number_format_invoice($payment_month_9),'payment_month_10' => number_format_invoice($payment_month_10),'payment_month_11' => number_format_invoice($payment_month_11),'payment_month_12' => number_format_invoice($payment_month_12), 'total_payment_months' => $total_payment_months));
 					}
 					else{
-						return redirect('user/paye_p30_manage/'.base64_encode($year_id).'?div_id='.$task_id)->with('message', 'Invalid file, the file must be a csv file in the format of a payment file form ROS.');
+						echo json_encode(array("error" => '1', "message" => 'Invalid file, the file must be a csv file in the format of a payment file form ROS.', ));
 					}
 				}
 			}
 			else{
-				return redirect('user/paye_p30_manage/'.base64_encode($year_id).'?div_id='.$task_id)->with('message', 'File Not Uploaded');
+				echo json_encode(array("error" => '1', "message" => 'File Not Uploaded', ));
 			}
 		}
 	}

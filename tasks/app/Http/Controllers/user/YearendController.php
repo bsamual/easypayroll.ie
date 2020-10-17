@@ -2121,11 +2121,53 @@ class YearendController extends Controller {
                               if($liability_details->date_filled == 1)
                               {
                                     $yearend_date = $liability_details->yearend_date;
+                                    $exp_yearend_date = explode("-",$yearend_date);
+                                    if($yearend_date != "")
+                                    {
+                                          if($exp_yearend_date[1] == "Jan") { $year_month = "01"; }
+                                          elseif($exp_yearend_date[1] == "Feb") { $year_month = "02"; }
+                                          elseif($exp_yearend_date[1] == "Mar") { $year_month = "03"; }
+                                          elseif($exp_yearend_date[1] == "Apr") { $year_month = "04"; }
+                                          elseif($exp_yearend_date[1] == "May") { $year_month = "05"; }
+                                          elseif($exp_yearend_date[1] == "Jun") { $year_month = "06"; }
+                                          elseif($exp_yearend_date[1] == "Jul") { $year_month = "07"; }
+                                          elseif($exp_yearend_date[1] == "Aug") { $year_month = "08"; }
+                                          elseif($exp_yearend_date[1] == "Sep") { $year_month = "09"; }
+                                          elseif($exp_yearend_date[1] == "Oct") { $year_month = "10"; }
+                                          elseif($exp_yearend_date[1] == "Nov") { $year_month = "11"; }
+                                          else { $year_month = "12"; }
+
+                                          $formatted_date = strtotime($exp_yearend_date[2].'-'.$year_month.'-'.$exp_yearend_date[0]);
+                                    }
+                                    else{
+                                          $formatted_date = 0;
+                                    }
                                     $date_checked = 'checked';
                                     $date_disabled = '';
                               }
                               else{
                                     $yearend_date = $liability_details->yearend_date;
+                                    $exp_yearend_date = explode("-",$yearend_date);
+                                    if($yearend_date != "")
+                                    {
+                                          if($exp_yearend_date[1] == "Jan") { $year_month = "01"; }
+                                          elseif($exp_yearend_date[1] == "Feb") { $year_month = "02"; }
+                                          elseif($exp_yearend_date[1] == "Mar") { $year_month = "03"; }
+                                          elseif($exp_yearend_date[1] == "Apr") { $year_month = "04"; }
+                                          elseif($exp_yearend_date[1] == "May") { $year_month = "05"; }
+                                          elseif($exp_yearend_date[1] == "Jun") { $year_month = "06"; }
+                                          elseif($exp_yearend_date[1] == "Jul") { $year_month = "07"; }
+                                          elseif($exp_yearend_date[1] == "Aug") { $year_month = "08"; }
+                                          elseif($exp_yearend_date[1] == "Sep") { $year_month = "09"; }
+                                          elseif($exp_yearend_date[1] == "Oct") { $year_month = "10"; }
+                                          elseif($exp_yearend_date[1] == "Nov") { $year_month = "11"; }
+                                          else { $year_month = "12"; }
+
+                                          $formatted_date = strtotime($exp_yearend_date[2].'-'.$year_month.'-'.$exp_yearend_date[0]);
+                                    }
+                                    else{
+                                          $formatted_date = 0;
+                                    }
                                     $date_checked = '';
                                     $date_disabled = 'disabled';
                               }
@@ -2139,6 +2181,7 @@ class YearendController extends Controller {
                               $yearend_date = '';
                               $date_checked = '';
                               $date_disabled = 'disabled';
+                              $formatted_date = 0;
                         }
 
                         $setting_client = $single_client->setting_id;
@@ -2186,6 +2229,7 @@ class YearendController extends Controller {
                               $color_balance = 'color:#f00';
                           }
 
+
                         if($get_checkbox == 0){
                               $output_result.='<tr id="client_'.$client_details->client_id.'" class="client_'.$client_details->active.'"">
                               <td style="'.$color.'">'.$client_details->client_id.'</td>
@@ -2194,9 +2238,16 @@ class YearendController extends Controller {
                               <td style="'.$color.'">'.$client_details->company.'</td>
                               <td style="'.$color_balance.'"><span class="balance_class">'.number_format_invoice_without_decimal($balance).'</span></td>
                               <td style="'.$color_liability.'">'.number_format_invoice_without_decimal($liability).'</td>
-                              <td><input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.number_format_invoice_without_decimal($payments).'" /></td>
-                              <td><input type="text" class="form-control prelim_class" data-element="'.$client_details->client_id.'"  placeholder="Prelim" value="'.number_format_invoice_without_decimal($prelim).'" /></td>
                               <td>
+                                    <spam class="payment_spam_class" style="display:none">'.number_format_invoice_without_comma($payments).'</spam>
+                                    <input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.number_format_invoice_without_decimal($payments).'" />
+                              </td>
+                              <td>
+                                    <spam class="prelim_spam_class" style="display:none">'.number_format_invoice_without_comma($prelim).'</spam>
+                                    <input type="text" class="form-control prelim_class" data-element="'.$client_details->client_id.'"  placeholder="Prelim" value="'.number_format_invoice_without_decimal($prelim).'" />
+                              </td>
+                              <td>
+                                    <spam class="date_spam_class" style="display:none">'.$formatted_date.'</spam>
                                     <input type="checkbox" class="date_selection" id="date_selection_'.$client_details->client_id.'" data-element="'.$client_details->client_id.'" style="float: left;" value="1" '.$date_checked.'><label for="date_selection_'.$client_details->client_id.'" style="float:left;margin-top:5px">&nbsp;</label>
                                     <input type="text" class="form-control date_class" data-element="'.$client_details->client_id.'"  placeholder="Date" style="width:70%" value="'.$yearend_date.'" '.$date_disabled.'/>
                               </td>
@@ -2600,5 +2651,28 @@ class YearendController extends Controller {
 
             $data['yearend_date'] = $dateval;
             DB::table('year_client_liability')->where('year_id',$year_id)->where('client_id',$client_id)->where('row_id', $row_id)->where('setting_id',$setting_id)->update($data);
+
+            $exp_yearend_date = explode("-",$dateval);
+            if($dateval != "")
+            {
+                  if($exp_yearend_date[1] == "Jan") { $year_month = "01"; }
+                  elseif($exp_yearend_date[1] == "Feb") { $year_month = "02"; }
+                  elseif($exp_yearend_date[1] == "Mar") { $year_month = "03"; }
+                  elseif($exp_yearend_date[1] == "Apr") { $year_month = "04"; }
+                  elseif($exp_yearend_date[1] == "May") { $year_month = "05"; }
+                  elseif($exp_yearend_date[1] == "Jun") { $year_month = "06"; }
+                  elseif($exp_yearend_date[1] == "Jul") { $year_month = "07"; }
+                  elseif($exp_yearend_date[1] == "Aug") { $year_month = "08"; }
+                  elseif($exp_yearend_date[1] == "Sep") { $year_month = "09"; }
+                  elseif($exp_yearend_date[1] == "Oct") { $year_month = "10"; }
+                  elseif($exp_yearend_date[1] == "Nov") { $year_month = "11"; }
+                  else { $year_month = "12"; }
+
+                  $formatted_date = strtotime($exp_yearend_date[2].'-'.$year_month.'-'.$exp_yearend_date[0]);
+            }
+            else{
+                  $formatted_date = 0;
+            }
+            echo $formatted_date;
       }
 }

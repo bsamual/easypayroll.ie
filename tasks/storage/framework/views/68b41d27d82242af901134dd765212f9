@@ -572,9 +572,29 @@ input:checked + .slider:before {
             <input type="hidden" name="hidden_task_id_task_specifics" id="hidden_task_id_task_specifics" value="">
             <input type="hidden" name="show_auto_close_msg" id="show_auto_close_msg" value="">
             
-            <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="margin-top: 10px;">
-            <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="margin-top: 10px;">
-            <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
+            <div class="col-md-12" style="padding:0px;margin-top:10px">
+              <input type="button" class="common_black_button add_comment_allocate_to_btn" value="Add Comment and Allocate To" style="float: left;font-size:12px">
+              <select name="add_comment_allocate_to" class="form-control add_comment_allocate_to" style="float: left;width:20%;font-size:12px">
+                <option value="">Select User</option>
+                <?php
+                  if(count($userlist)){
+                    foreach ($userlist as $user) {
+                  ?>
+                    <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                  <?php
+                    }
+                  }
+                ?>
+              </select>
+
+              <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="float: right;font-size:12px">
+              <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="float: right;font-size:12px">
+              
+
+              <div class="col-md-12" style="float:right;margin-top:10px;padding:0px">
+                  <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
+              </div>
+            </div>
           </div>
         </div>
   </div>
@@ -1334,51 +1354,46 @@ input:checked + .slider:before {
 	                      </table>
 	                    </td>
 	                    <td style="vertical-align: baseline;background: #2fd9ff;width:15%">
-	                      <table class="table">
+	                      <table class="table" style="margin-bottom: 105px;">
 	                        <tr>
 	                          <td style="background:#2fd9ff" class="<?php echo $disabled_icon; ?>">
-	                            <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="<?php echo $task->id; ?>" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800">
+                              <spam style="font-weight:700;text-decoration: underline;font-size: 16px;">Task ID:</spam> <spam style="font-size: 16px;"><?php echo $task->taskid; ?></spam>
+                              <a href="javascript:" class="fa fa-files-o copy_task" data-element="<?php echo $task->id; ?>" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800;float: right"></a>
+	                            <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="<?php echo $task->id; ?>" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800;float: right">
 	                              </a> 
-	                            <a href="javascript:" class="fa fa-files-o copy_task" data-element="<?php echo $task->id; ?>" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800"></a></td>
-	                        </tr>
-	                        <tr>
-	                          <td style="background:#2fd9ff"><spam style="font-weight:700;text-decoration: underline;">Task ID:</spam> <?php echo $task->taskid; ?></td>
+	                            </td>
 	                        </tr>
 	                        <tr>
 	                          <td style="background:#2fd9ff">
-	                            <spam style="font-weight:700;text-decoration: underline;">Progress:</spam> 
-	                            <a href="javascript:" class="fa fa-sliders" title="Set progress" data-placement="bottom" data-popover-content="#a1_<?php echo $task->id; ?>" data-toggle="popover" data-trigger="click" tabindex="0" data-original-title="Set Progress"  style="padding:5px;font-weight:700"></a>
+                              <spam style="font-weight:700;text-decoration: underline;float:left">Progress:</spam> 
+                              <a href="javascript:" class="fa fa-sliders" title="Set progress" data-placement="bottom" data-popover-content="#a1_<?php echo $task->id; ?>" data-toggle="popover" data-trigger="click" tabindex="0" data-original-title="Set Progress"  style="padding:5px;font-weight:700;float:left"></a>
 
-	                            <!-- Content for Popover #1 -->
-	                            <div class="hidden" id="a1_<?php echo $task->id; ?>">
-	                              <div class="popover-heading">
-	                                Set Progress Percentage
-	                              </div>
-	                              <div class="popover-body">
-	                                <input type="number" class="form-control input-sm progress_value" id="progress_value_<?php echo $task->id; ?>" value="" style="width:60%;float:left">
-	                                <a href="javascript:" class="common_black_button set_progress" data-element="<?php echo $task->id; ?>" style="font-size: 11px;line-height: 29px;">Set</a>
-	                              </div>
-	                            </div>
-
-
-	                            <br/>
-	                            <div class="progress progress_<?php echo $task->id; ?>" style="margin-top:20px">
-	                              <div class="progress-bar" role="progressbar" aria-valuenow="<?php echo $task->progress; ?>" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $task->progress; ?>%">
-	                                <?php echo $task->progress; ?>%
-	                              </div>
-	                            </div>
-	                            
-	                          </td>
+                              <!-- Content for Popover #1 -->
+                              <div class="hidden" id="a1_<?php echo $task->id; ?>">
+                                <div class="popover-heading">
+                                  Set Progress Percentage
+                                </div>
+                                <div class="popover-body">
+                                  <input type="number" class="form-control input-sm progress_value" id="progress_value_<?php echo $task->id; ?>" value="" style="width:60%;float:left">
+                                  <a href="javascript:" class="common_black_button set_progress" data-element="<?php echo $task->id; ?>" style="font-size: 11px;line-height: 29px;">Set</a>
+                                </div>
+                              </div>
+                              <div class="progress progress_<?php echo $task->id; ?>" style="width:60%;margin-bottom:5px">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="<?php echo $task->progress; ?>" aria-valuemin="0" aria-valuemax="100" style="width:<?php echo $task->progress; ?>%">
+                                  <?php echo $task->progress; ?>%
+                                </div>
+                              </div>
+                            </td>
 	                        </tr>
 	                        <tr>
 	                          <td style="background:#2fd9ff">
 	                            <?php
-	                            if($task->status == 1)
-	                            {
-	                              ?>
-	                              <a href="javascript:" class="common_black_button mark_as_incomplete" data-element="<?php echo $task->id; ?>">Completed</a>
-	                              <?php
-	                            }
+                              if($task->status == 1)
+                              {
+                                ?>
+                                <a href="javascript:" class="common_black_button mark_as_incomplete" data-element="<?php echo $task->id; ?>" style="font-size:12px">Completed</a>
+                                <?php
+                              }
                               elseif($task->status == 2)
                               {
                                 if(Session::has('taskmanager_user'))
@@ -1396,111 +1411,117 @@ input:checked + .slider:before {
                                   $complete_button = 'mark_as_complete';
                                 }
                                 ?>
-                                <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
-                                <a href="javascript:" class="common_black_button activate_task_button" data-element="<?php echo $task->id; ?>">Activate</a>
+                                <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>" style="font-size:12px">Mark Complete</a>
+                                <a href="javascript:" class="common_black_button activate_task_button" data-element="<?php echo $task->id; ?>" style="font-size:12px">Activate</a>
                                 <?php
                               }
-	                            else{
-	                              if(Session::has('taskmanager_user'))
-	                              {
-	                                $allocated_person = Session::get('taskmanager_user');
-	                                if($task->author == $allocated_person)
-	                                {
-	                                  $complete_button = 'mark_as_complete_author';
-	                                }
-	                                else{
-	                                  $complete_button = 'mark_as_complete';
-	                                }
-	                              }
-	                              else{
-	                                $complete_button = 'mark_as_complete';
-	                              }
+                              else{
+                                if(Session::has('taskmanager_user'))
+                                {
+                                  $allocated_person = Session::get('taskmanager_user');
+                                  if($task->author == $allocated_person)
+                                  {
+                                    $complete_button = 'mark_as_complete_author';
+                                  }
+                                  else{
+                                    $complete_button = 'mark_as_complete';
+                                  }
+                                }
+                                else{
+                                  $complete_button = 'mark_as_complete';
+                                }
                                 
-	                              ?>
-	                              <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>">Mark Complete</a><br/><br/>
-                                <a href="javascript:" class="common_black_button park_task_button" data-element="<?php echo $task->id; ?>">Park Task</a>
-	                              <?php
-	                            }
-	                            ?>
+                                ?>
+                                <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>" style="font-size:12px">Mark Complete</a>
+                                <a href="javascript:" class="common_black_button park_task_button" data-element="<?php echo $task->id; ?>" style="font-size:12px">Park Task</a>
+                                <?php
+                              }
+                              ?>
+	                            
+	                            
 	                          </td>
 	                        </tr>
 	                        <tr>
-	                          <td style="background:#2fd9ff" class="<?php echo $disabled_icon; ?>">
+	                          <td style="background:#2fd9ff">
 	                            <spam style="font-weight:700;text-decoration: underline;">Completion Files:</spam><br/>
-	                            <a href="javascript:" class="fa fa-plus faplus_completion <?php echo $disabled; ?>" data-element="<?php echo $task->id; ?>" style="padding:5px"></a>
-	                            <a href="javascript:" class="fa fa-edit fanotepad_completion <?php echo $disabled; ?>" style="padding:5px;"></a>
-	                            <?php
-	                            if($task->client_id != "")
-	                            {
-	                              ?>
-	                              <a href="javascript:" class="infiles_link_completion <?php echo $disabled; ?>" data-element="<?php echo $task->id; ?>">Infiles</a>
-	                              <?php
-	                            }
-	                            ?>
-	                            
-	                            <input type="hidden" name="hidden_completion_client_id" id="hidden_completion_client_id_<?php echo $task->id; ?>" value="<?php echo $task->client_id; ?>">
-	                            <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_<?php echo $task->id; ?>" value="">
+                              <a href="javascript:" class="fa fa-plus faplus_completion <?php echo $disabled; ?>" data-element="<?php echo $task->id; ?>" style="padding:5px"></a>
+                              <a href="javascript:" class="fa fa-edit fanotepad_completion <?php echo $disabled; ?>" style="padding:5px;"></a>
+                              <?php
+                              if($task->client_id != "")
+                              {
+                                ?>
+                                <a href="javascript:" class="infiles_link_completion <?php echo $disabled; ?>" data-element="<?php echo $task->id; ?>">Infiles</a>
+                                <?php
+                              }
+                              ?>
+                              
+                              <input type="hidden" name="hidden_completion_client_id" id="hidden_completion_client_id_<?php echo $task->id; ?>" value="<?php echo $task->client_id; ?>">
+                              <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_<?php echo $task->id; ?>" value="">
 
-	                            
-	                            <div class="notepad_div_completion_notes" style="z-index:9999; position:absolute">
-	                              <textarea name="notepad_contents_completion" class="form-control notepad_contents_completion" placeholder="Enter Contents"></textarea>
-	                              <input type="hidden" name="hidden_task_id_completion_notepad" id="hidden_task_id_completion_notepad" value="<?php echo $task->id; ?>">
-	                              <input type="button" name="notepad_completion_submit" class="btn btn-sm btn-primary notepad_completion_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-	                              <spam class="error_files_notepad"></spam>
-	                            </div>
+                              
+                              <div class="notepad_div_completion_notes" style="z-index:9999; position:absolute">
+                                <textarea name="notepad_contents_completion" class="form-control notepad_contents_completion" placeholder="Enter Contents"></textarea>
+                                <input type="hidden" name="hidden_task_id_completion_notepad" id="hidden_task_id_completion_notepad" value="<?php echo $task->id; ?>">
+                                <input type="button" name="notepad_completion_submit" class="btn btn-sm btn-primary notepad_completion_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                                <spam class="error_files_notepad"></spam>
+                              </div>
 
 
-	                            <?php
-	                            $fileoutput ='<div id="add_files_attachments_completion_div_'.$task->id.'">';
-	                            if(count($taskfiles))
-	                            {
-	                              foreach($taskfiles as $file)
-	                              {
-	                                if($file->status == 2)
-	                                {
-	                                  $fileoutput.='<p><a href="'.URL::to($file->url).'/'.$file->filename.'" class="file_attachments" download>'.$file->filename.'</a> <a href="'.URL::to('user/delete_taskmanager_files?file_id='.$file->id.'').'" class="fa fa-trash delete_attachments '.$disabled.'"></a></p>';
-	                                }
-	                              }
-	                            }
-	                            $fileoutput.='</div>';
-	                            $fileoutput.='<div id="add_notepad_attachments_completion_div_'.$task->id.'">';
-	                            if(count($tasknotepad))
-	                            {
-	                              foreach($tasknotepad as $note)
-	                              {
-	                                if($note->status == 2)
-	                                {
-	                                  $fileoutput.='<p><a href="'.URL::to($note->url).'/'.$note->filename.'" class="file_attachments" download>'.$note->filename.'</a> <a href="'.URL::to('user/delete_taskmanager_notepad?file_id='.$note->id.'').'" class="fa fa-trash delete_attachments '.$disabled.'"></a></p>';
-	                                }
-	                              }
-	                            }
-	                            $fileoutput.='</div>';
-	                            $fileoutput.='<div id="add_infiles_attachments_completion_div_'.$task->id.'">';
-	                            if(count($taskinfiles))
-	                            {
-	                              $i=1;
-	                                foreach($taskinfiles as $infile)
-	                                {
-	                                  if($infile->status == 2)
-	                                  {
-	                                    if($i == 1) { $fileoutput.='Linked Infiles:<br/>'; }
-	                                    $file = DB::table('in_file')->where('id',$infile->infile_id)->first();
-	                                    $ele = URL::to('user/infile_search?client_id='.$task->client_id.'&fileid='.$file->id.'');
-	                                    $fileoutput.='<p class="link_infile_p"><a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$i.'</a>
-	                                    <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.date('d-M-Y', strtotime($file->data_received)).'</a>
-	                                    <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$file->description.'</a>
+                              <?php
+                              $fileoutput ='<div id="add_files_attachments_completion_div_'.$task->id.'">';
+                              if(count($taskfiles))
+                              {
+                                foreach($taskfiles as $file)
+                                {
+                                  if($file->status == 2)
+                                  {
+                                    $fileoutput.='<p><a href="'.URL::to($file->url).'/'.$file->filename.'" class="file_attachments" download>'.$file->filename.'</a> <a href="'.URL::to('user/delete_taskmanager_files?file_id='.$file->id.'').'" class="fa fa-trash delete_attachments '.$disabled.'"></a></p>';
+                                  }
+                                }
+                              }
+                              $fileoutput.='</div>';
+                              $fileoutput.='<div id="add_notepad_attachments_completion_div_'.$task->id.'">';
+                              if(count($tasknotepad))
+                              {
+                                foreach($tasknotepad as $note)
+                                {
+                                  if($note->status == 2)
+                                  {
+                                    $fileoutput.='<p><a href="'.URL::to($note->url).'/'.$note->filename.'" class="file_attachments" download>'.$note->filename.'</a> <a href="'.URL::to('user/delete_taskmanager_notepad?file_id='.$note->id.'').'" class="fa fa-trash delete_attachments '.$disabled.'"></a></p>';
+                                  }
+                                }
+                              }
+                              $fileoutput.='</div>';
+                              $fileoutput.='<div id="add_infiles_attachments_completion_div_'.$task->id.'">';
+                              if(count($taskinfiles))
+                              {
+                                $i=1;
+                                  foreach($taskinfiles as $infile)
+                                  {
+                                    if($infile->status == 2)
+                                    {
+                                      if($i == 1) { $fileoutput.='Linked Infiles:<br/>'; }
+                                      $file = DB::table('in_file')->where('id',$infile->infile_id)->first();
+                                      $ele = URL::to('user/infile_search?client_id='.$task->client_id.'&fileid='.$file->id.'');
+                                      $fileoutput.='<p class="link_infile_p"><a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$i.'</a>
+                                      <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.date('d-M-Y', strtotime($file->data_received)).'</a>
+                                      <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$file->description.'</a>
 
-	                                    <a href="'.URL::to('user/delete_taskmanager_infiles?file_id='.$infile->id.'').'" class="fa fa-trash delete_attachments '.$disabled.'"></a>
-	                                    </p>';
-	                                    $i++;
-	                                  }
-	                                }
-	                            }
-	                            $fileoutput.='</div>';
-	                            echo $fileoutput;
-	                            ?>
+                                      <a href="'.URL::to('user/delete_taskmanager_infiles?file_id='.$infile->id.'').'" class="fa fa-trash delete_attachments '.$disabled.'"></a>
+                                      </p>';
+                                      $i++;
+                                    }
+                                  }
+                              }
+                              $fileoutput.='</div>';
+                              echo $fileoutput;
+                              ?>
 	                          </td>
 	                        </tr>
+                          <tr>
+                            <td style="background:#2fd9ff">
+                            </td>
+                          </tr>
 	                      </table>
 	                    </td>
 	                  </tr>
@@ -4789,6 +4810,271 @@ $(window).click(function(e) {
           }
         })
       },1000);
+  }
+  if($(e.target).hasClass('add_comment_allocate_to_btn'))
+  {
+      var comments = CKEDITOR.instances['editor_1'].getData();
+      var task_id = $("#hidden_task_id_task_specifics").val();
+      var allocate_to = $(".add_comment_allocate_to").val();
+      if(comments == "")
+      {
+        alert("Please enter new comments and then click on the Add New Comment Button");
+      }
+      else if(allocate_to == "")
+      {
+        alert("Please select the user and then proceed with submit button.");
+      }
+      else{
+          $("body").addClass("loading");
+          setTimeout(function() {
+            $.ajax({
+              url:"<?php echo URL::to('user/add_comment_and_allocate_to'); ?>",
+              type:"post",
+              data:{task_id:task_id,comments:comments,allocate_to:allocate_to},
+              success:function(result)
+              {
+                var new_allocation = result;
+                if(new_allocation == "0")
+                {
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  $("body").removeClass("loading");
+                }
+                else{
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  $(".task_specifics_modal").modal("hide");
+                  $.ajax({
+                    url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                    type:"post",
+                    data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+                    dataType:"json",
+                    success:function(result)
+                    {
+                      var htmlval = $("#allocation_history_div_"+task_id).html();
+                      $("#allocation_history_div_"+task_id).html(result['pval']+htmlval);
+                      var htmlval2 = $("#history_body").find("tbody").html();
+                      $("#history_body").find("tbody").html(result['trval']+htmlval2);
+                      $(".edit_allocate_user_"+task_id).attr("data-allocated",new_allocation);
+                      $("#allocated_to_name_"+task_id).html(result['to']);
+                      $("#hidden_tasks_tr_"+task_id).find(".allocated_sort_val").html(result['to']);
+                      var count = 1;
+                      $("#allocation_history_div_"+task_id).find("p").each(function() {
+                        if(count > 5)
+                        {
+                          $(this).detach();
+                        }
+                        count++;
+                      })
+                      $(".allocation_modal").modal("hide");
+                      var layout = $("#hidden_compressed_layout").val();
+                      if(layout == "1")
+                      {
+                        if($("#task_tr_"+task_id).hasClass('author_tr'))
+                        {
+                        }
+                        else{
+                          var nexttask_id = $("#hidden_tasks_tr_"+task_id).nextAll('.hidden_tasks_tr:visible').first().attr("data-element");
+                          var prevtask_id = $("#hidden_tasks_tr_"+task_id).prevAll('.hidden_tasks_tr:visible').first().attr("data-element");
+                          if (typeof nexttask_id !== "undefined") {
+                            var taskidval = nexttask_id;
+                          }
+                          else if (typeof prevtask_id !== "undefined") {
+                            var taskidval = prevtask_id;
+                          }
+                          else{
+                            var taskidval = '';
+                          }
+
+                          $("#task_tr_"+task_id).next().detach();
+                          $("#task_tr_"+task_id).detach();
+                          $("#hidden_tasks_tr_"+task_id).detach();
+
+                          $("#task_tr_"+taskidval).show();
+                          $("#task_tr_"+taskidval).next().show();
+                          $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
+
+                          var opentask = $("#open_task_count_val").html();
+                          var countopen = parseInt(opentask) - 1;
+                          $("#open_task_count_val").html(countopen);
+                        }
+                        $("body").removeClass("loading");
+                      }
+                      else{
+                        var user_id = $(".select_user_home").val();
+                        $.ajax({
+                          url:"<?php echo URL::to('user/refresh_taskmanager'); ?>",
+                          type:"post",
+                          data:{user_id:user_id},
+                              dataType:"json",
+                          success: function(result)
+                          {
+                            $("#task_body_open").html(result['open_tasks']);
+                            $("#task_body_layout").html(result['layout']);
+
+                            var layout = $("#hidden_compressed_layout").val();
+                            var view = $(".select_view").val();
+                            $(".tasks_tr").hide();
+                            $(".tasks_tr").next().hide();
+                            $(".hidden_tasks_tr").hide();
+                            if(view == "3")
+                            {
+                              if(layout == "1")
+                              {
+                                $(".author_tr:first").show();
+                                $(".author_tr:first").next().show();
+                                $(".table_layout").show();
+                                $(".table_layout").find(".hidden_author_tr").show();
+                                $(".table_layout").find(".hidden_author_tr:first").find("td").css("background","#2fd9ff");
+                              }
+                              else{
+                                $(".author_tr").show();
+                                $(".author_tr").next().show();
+                                $(".table_layout").hide();
+                                $(".table_layout").find(".hidden_author_tr").hide();
+                              }
+                              var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                              var opentask = $(".hidden_allocated_tr").length;
+                              var authored = $(".hidden_author_tr").length;
+                              $("#redline_task_count_val").html(redline);
+                              $("#open_task_count_val").html(opentask);
+                              $("#authored_task_count_val").html(authored);
+                            }
+                            else if(view == "2"){
+                              $("#open_task_count").hide();
+                              $("#redline_task_count").show();
+                              $("#authored_task_count").hide();
+                              if(layout == "1")
+                              {
+                                var i = 1;
+                                $(".redline_indication").each(function() {
+                                  if(i == 1)
+                                  {
+                                    if($(this).parents(".tasks_tr").hasClass('allocated_tr'))
+                                    {
+                                      $(this).parents(".allocated_tr").show();
+                                      $(this).parents(".allocated_tr").next().show();
+                                      i++;
+                                    }
+                                  }
+                                });
+                                $(".table_layout").show();
+                                $(".redline_indication_layout").parents(".hidden_allocated_tr").show();
+                                
+                                var j = 1;
+                                $(".redline_indication_layout").each(function() {
+                                  if(j == 1)
+                                  {
+                                    if($(this).parents(".hidden_tasks_tr").hasClass('hidden_allocated_tr'))
+                                    {
+                                      $(this).parents(".hidden_allocated_tr").find("td").css("background","#2fd9ff");
+                                      j++;
+                                    }
+                                  }
+                                });
+                              }
+                              else{
+                                $(".redline_indication").parents(".allocated_tr").show();
+                                $(".redline_indication").parents(".tasksallocated_tr_tr").next().show();
+                                $(".table_layout").hide();
+                                $(".table_layout").find(".hidden_allocated_tr").hide();
+                              }
+
+                              var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                              var opentask = $(".hidden_allocated_tr").length;
+                              var authored = $(".hidden_author_tr").length;
+                              $("#redline_task_count_val").html(redline);
+                              $("#open_task_count_val").html(opentask);
+                              $("#authored_task_count_val").html(authored);
+                            }
+                            else if(view == "1"){
+                              if(layout == "1")
+                              {
+                                $(".allocated_tr:first").show();
+                                $(".allocated_tr:first").next().show();
+                                $(".table_layout").show();
+                                $(".table_layout").find(".hidden_allocated_tr").show();
+                                $(".table_layout").find(".hidden_allocated_tr:first").find("td").css("background","#2fd9ff");
+                              }
+                              else{
+                                $(".allocated_tr").show();
+                                $(".allocated_tr").next().show();
+                                $(".table_layout").hide();
+                                $(".table_layout").find(".hidden_allocated_tr").hide();
+                              }
+                              var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                              var opentask = $(".hidden_allocated_tr").length;
+                              var authored = $(".hidden_author_tr").length;
+                              $("#redline_task_count_val").html(redline);
+                              $("#open_task_count_val").html(opentask);
+                              $("#authored_task_count_val").html(authored);
+                            }
+                            $("[data-toggle=popover]").popover({
+                                html : true,
+                                content: function() {
+                                  var content = $(this).attr("data-popover-content");
+                                  return $(content).children(".popover-body").html();
+                                },
+                                title: function() {
+                                  var title = $(this).attr("data-popover-content");
+                                  return $(title).children(".popover-heading").html();
+                                }
+                            });
+
+                            if(layout == "0")
+                            {
+                                if(taskidval != "")
+                                {
+                                  //$(document).scrollTop( $("#"+taskidval).offset().top - parseInt(250) );
+                                }
+                            }
+                            else{
+                              $("#"+taskidval).show();
+                              $("#"+taskidval).next().show();
+                            
+                              var hidden_tr = taskidval.substr(8);
+                              $("#hidden_tasks_tr_"+hidden_tr).find("td").css("background","#2fd9ff");
+                            }
+
+                            if(layout == "1")
+                            {
+                              $(".open_layout_div").addClass("open_layout_div_change");
+                              var open_tasks_height = $(".open_layout_div").height();
+                              var margintop = parseInt(open_tasks_height);
+                              $(".open_layout_div").css("position","fixed");
+                              $(".open_layout_div").css("height","312px");
+                              if(open_tasks_height > 312)
+                              {
+                                $(".open_layout_div").css("overflow-y","scroll");
+                              }
+                              if(open_tasks_height < 50)
+                              {
+                                $(".table_layout").css("margin-top","20px");
+                              }
+                                else{
+                                  $(".table_layout").css("margin-top","335px");
+                                }
+                            }
+                            else{
+                              $(".open_layout_div").removeClass("open_layout_div_change");
+                              $(".open_layout_div").css("position","unset");
+                              $(".open_layout_div").css("height","auto");
+                              $(".open_layout_div").css("overflow-y","unset");
+                                $(".table_layout").css("margin-top","0px");
+                            }
+                            $("body").removeClass("loading");
+                          }
+                        })
+                      }
+                    }
+                  })
+                }
+              }
+            })
+          },1000);
+      }
   }
   if($(e.target).hasClass('link_to_task_specifics'))
   {

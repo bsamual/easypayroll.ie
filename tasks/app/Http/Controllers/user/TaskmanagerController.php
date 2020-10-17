@@ -2068,6 +2068,83 @@ class TaskmanagerController extends Controller {
 		}
 		echo $new_allocation;
 	}
+	public function add_comment_and_allocate_to()
+	{
+		$comment = Input::get('comments');
+		$task_id = Input::get('task_id');
+		$allocate_to = Input::get('allocate_to');
+
+		$user = Session::get('taskmanager_user');
+		$details = DB::table('user')->where('user_id',$user)->first();
+		$username = $details->lastname.' '.$details->firstname;
+		$message = '<spam style="color:#006bc7">####<strong>'.$username.'</strong> has added the following comment to this Task on <strong>'.date('d M Y').'</strong>####</spam> <br/><spam style="font-weight:400">'.$comment.'</spam>';
+
+		$specficsval = str_replace("&amp;", "&", $message);
+
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+		$specficsval = str_replace("&amp;", "&", $specficsval);
+
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+		$specficsval = str_replace("<p>&nbsp;</p>", "", $specficsval);
+
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+		$specficsval = str_replace("<p></p>", "", $specficsval);
+
+		$dataval['task_id'] = $task_id;
+		$dataval['from_user'] = $user;
+		$dataval['created_date'] = date('Y-m-d');
+		$dataval['message'] = $specficsval;
+		$dataval['status'] = 4;
+
+		DB::table('taskmanager_specifics')->insert($dataval);
+
+		if(Session::has('taskmanager_user'))
+		{
+			$sess_user = Session::get('taskmanager_user');
+			$task_details = DB::table('taskmanager')->where('id',$task_id)->first();
+
+			$dataupdate_spec_status['author_spec_status'] = 1;
+			$dataupdate_spec_status['allocated_spec_status'] = 1;
+
+			DB::table('taskmanager')->where('id',$task_id)->update($dataupdate_spec_status);
+		}
+		echo $allocate_to;
+	}
 	public function download_pdf_specifics()
 	{
 		$task_id = Input::get('task_id');
@@ -2645,46 +2722,41 @@ class TaskmanagerController extends Controller {
 	              </table>
 	            </td>
 	            <td style="vertical-align: baseline;background: #2fd9ff;width:15%">
-	              <table class="table">
+	              <table class="table" style="margin-bottom: 105px;">
 	                <tr>
 	                  <td style="background:#2fd9ff" class="'.$disabled_icon.'">
-	                  <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800">
-                              </a>
-	                  <a href="javascript:" class="fa fa-files-o copy_task" data-element="'.$task->id.'" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800"></a></td>
+		                  <spam style="font-weight:700;text-decoration: underline;font-size: 16px;">Task ID:</spam> <spam style="font-size: 16px;">'.$task->taskid.'</spam>
+                          <a href="javascript:" class="fa fa-files-o copy_task" data-element="'.$task->id.'" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800;float: right"></a>
+                          <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800;float: right">
+                              </a> 
+	                  </td>
 
-	                </tr>
-	                <tr>
-	                  <td style="background:#2fd9ff"><spam style="font-weight:700;text-decoration: underline;">Task ID:</spam> '.$task->taskid.'</td>
 	                </tr>
 	                <tr>
 	                  <td style="background:#2fd9ff">
-	                    <spam style="font-weight:700;text-decoration: underline;">Progress:</spam> 
-	                    <a href="javascript:" class="fa fa-sliders" data-placement="bottom" data-popover-content="#a1_'.$task->id.'" data-toggle="popover" data-trigger="click" tabindex="0" title="Set Progress" data-original-title="Set Progress"  style="padding:5px;font-weight:700"></a>
-
-                            <!-- Content for Popover #1 -->
-                            <div class="hidden" id="a1_'.$task->id.'">
-                              <div class="popover-heading">
-                                Set Progress Percentage
+	                  		<spam style="font-weight:700;text-decoration: underline;float:left">Progress:</spam> 
+                              <a href="javascript:" class="fa fa-sliders" title="Set progress" data-placement="bottom" data-popover-content="#a1_'.$task->id.'" data-toggle="popover" data-trigger="click" tabindex="0" data-original-title="Set Progress"  style="padding:5px;font-weight:700;float:left"></a>
+                              <div class="hidden" id="a1_'.$task->id.'">
+                                <div class="popover-heading">
+                                  Set Progress Percentage
+                                </div>
+                                <div class="popover-body">
+                                  <input type="number" class="form-control input-sm progress_value" id="progress_value_'.$task->id.'" value="" style="width:60%;float:left">
+                                  <a href="javascript:" class="common_black_button set_progress" data-element="'.$task->id.'" style="font-size: 11px;line-height: 29px;">Set</a>
+                                </div>
                               </div>
-                              <div class="popover-body">
-                                <input type="number" class="form-control input-sm progress_value" id="progress_value_'.$task->id.'" value="" style="width:60%;float:left">
-                                <a href="javascript:" class="common_black_button set_progress" data-element="'.$task->id.'" style="font-size: 11px;line-height: 29px;">Set</a>
+                              <div class="progress progress_'.$task->id.'" style="width:60%;margin-bottom:5px">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$task->progress.'%">
+                                  '.$task->progress.'%
+                                </div>
                               </div>
-                            </div>
-
-	                    <br/>
-                            <div class="progress progress_'.$task->id.'" style="margin-top:20px">
-                              <div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$task->progress.'%">
-                                '.$task->progress.'%
-                              </div>
-                            </div>
 	                  </td>
 	                </tr>
 	                <tr>
 	                  <td style="background:#2fd9ff">';
 	                    if($task->status == 1)
 	                    {
-	                      $open_tasks.='<a href="javascript:" class="common_black_button mark_as_incomplete" data-element="'.$task->id.'">Completed</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button mark_as_incomplete" data-element="'.$task->id.'" style="font-size:12px">Completed</a>';
 	                    }
 	                    elseif($task->status == 1)
 	                    {
@@ -2703,8 +2775,8 @@ class TaskmanagerController extends Controller {
                                 $complete_button = 'mark_as_complete';
                             }
                             
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
-	                      <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'">Activate</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+	                      <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'" style="font-size:12px">Activate</a>';
 	                    }
 	                    else{
 	                    	if(Session::has('taskmanager_user'))
@@ -2722,8 +2794,8 @@ class TaskmanagerController extends Controller {
                                 $complete_button = 'mark_as_complete';
                             }
                             
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
-	                      <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'">Park Task</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+	                      <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'" style="font-size:12px">Park Task</a>';
 	                    }
 	                  $open_tasks.='</td>
 	                </tr>
@@ -2796,6 +2868,10 @@ class TaskmanagerController extends Controller {
 	                    $open_tasks.= $fileoutput;
 	                  $open_tasks.='</td>
 	                </tr>
+	                <tr>
+	                    <td style="background:#2fd9ff">
+	                    </td>
+	                  </tr>
 	              </table>
 	            </td>
 	          </tr>
@@ -3213,46 +3289,41 @@ class TaskmanagerController extends Controller {
 	              </table>
 	            </td>
 	            <td style="vertical-align: baseline;background: #2fd9ff;width:15%">
-	              <table class="table">
+	              <table class="table" style="margin-bottom: 105px;">
 	                <tr>
 	                  <td style="background:#2fd9ff" class="'.$disabled_icon.'">
-	                  <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800">
-                              </a>
-	                  <a href="javascript:" class="fa fa-files-o copy_task" data-element="'.$task->id.'" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800"></a></td>
+		                  <spam style="font-weight:700;text-decoration: underline;font-size: 16px;">Task ID:</spam> <spam style="font-size: 16px;">'.$task->taskid.'</spam>
+                          <a href="javascript:" class="fa fa-files-o copy_task" data-element="'.$task->id.'" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800;float: right"></a>
+                          <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800;float: right">
+                              </a> 
+	                  </td>
 
-	                </tr>
-	                <tr>
-	                  <td style="background:#2fd9ff"><spam style="font-weight:700;text-decoration: underline;">Task ID:</spam> '.$task->taskid.'</td>
 	                </tr>
 	                <tr>
 	                  <td style="background:#2fd9ff">
-	                    <spam style="font-weight:700;text-decoration: underline;">Progress:</spam> 
-	                    <a href="javascript:" class="fa fa-sliders" data-placement="bottom" data-popover-content="#a1_'.$task->id.'" data-toggle="popover" data-trigger="click" tabindex="0" title="Set Progress" data-original-title="Set Progress"  style="padding:5px;font-weight:700"></a>
-
-                            <!-- Content for Popover #1 -->
-                            <div class="hidden" id="a1_'.$task->id.'">
-                              <div class="popover-heading">
-                                Set Progress Percentage
+	                  		<spam style="font-weight:700;text-decoration: underline;float:left">Progress:</spam> 
+                              <a href="javascript:" class="fa fa-sliders" title="Set progress" data-placement="bottom" data-popover-content="#a1_'.$task->id.'" data-toggle="popover" data-trigger="click" tabindex="0" data-original-title="Set Progress"  style="padding:5px;font-weight:700;float:left"></a>
+                              <div class="hidden" id="a1_'.$task->id.'">
+                                <div class="popover-heading">
+                                  Set Progress Percentage
+                                </div>
+                                <div class="popover-body">
+                                  <input type="number" class="form-control input-sm progress_value" id="progress_value_'.$task->id.'" value="" style="width:60%;float:left">
+                                  <a href="javascript:" class="common_black_button set_progress" data-element="'.$task->id.'" style="font-size: 11px;line-height: 29px;">Set</a>
+                                </div>
                               </div>
-                              <div class="popover-body">
-                                <input type="number" class="form-control input-sm progress_value" id="progress_value_'.$task->id.'" value="" style="width:60%;float:left">
-                                <a href="javascript:" class="common_black_button set_progress" data-element="'.$task->id.'" style="font-size: 11px;line-height: 29px;">Set</a>
+                              <div class="progress progress_'.$task->id.'" style="width:60%;margin-bottom:5px">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$task->progress.'%">
+                                  '.$task->progress.'%
+                                </div>
                               </div>
-                            </div>
-
-	                    <br/>
-                            <div class="progress progress_'.$task->id.'" style="margin-top:20px">
-                              <div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$task->progress.'%">
-                                '.$task->progress.'%
-                              </div>
-                            </div>
 	                  </td>
 	                </tr>
 	                <tr>
 	                  <td style="background:#2fd9ff">';
 	                    if($task->status == 1)
 	                    {
-	                      $open_tasks.='<a href="javascript:" class="common_black_button mark_as_incomplete" data-element="'.$task->id.'">Completed</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button mark_as_incomplete" data-element="'.$task->id.'" style="font-size:12px">Completed</a>';
 	                    }
 	                    elseif($task->status == 1)
 	                    {
@@ -3271,8 +3342,8 @@ class TaskmanagerController extends Controller {
                                 $complete_button = 'mark_as_complete';
                             }
                             
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
-	                      <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'">Activate</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+	                      <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'" style="font-size:12px">Activate</a>';
 	                    }
 	                    else{
 	                    	if(Session::has('taskmanager_user'))
@@ -3290,8 +3361,8 @@ class TaskmanagerController extends Controller {
                                 $complete_button = 'mark_as_complete';
                             }
                             
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>
-	                      <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'">Park Task</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+	                      <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'" style="font-size:12px">Park Task</a>';
 	                    }
 	                  $open_tasks.='</td>
 	                </tr>
@@ -3364,6 +3435,10 @@ class TaskmanagerController extends Controller {
 	                    $open_tasks.= $fileoutput;
 	                  $open_tasks.='</td>
 	                </tr>
+	                <tr>
+	                    <td style="background:#2fd9ff">
+	                    </td>
+	                  </tr>
 	              </table>
 	            </td>
 	          </tr>
@@ -3435,7 +3510,7 @@ class TaskmanagerController extends Controller {
 	                    </table>
                     </td>
                     <td style="background: #dcdcdc;padding:0px;">
-                    	<table style="width:100%">
+                    	<table style="width:100%" >
 	                    	<tr>
 	                    		<td style="width:40%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>
 	                    		<td class="layout_progress_'.$task->id.'" class="progress_sort_val" style="width:40%;padding:10px; font-size:14px; font-weight:800;">'.$task->progress.'%</td>
@@ -4084,48 +4159,45 @@ class TaskmanagerController extends Controller {
 	              </table>
 	            </td>
 	            <td style="vertical-align: baseline;background: #2fd9ff;width:15%">
-	              <table class="table">
+	              <table class="table" style="margin-bottom: 105px;">
 	                <tr>
 	                  <td style="background:#2fd9ff" class="'.$disabled_icon.'">
-	                  <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800">
+		                  <spam style="font-weight:700;text-decoration: underline;font-size: 16px;">Task ID:</spam> <spam style="font-size: 16px;">'.$task->taskid.'</spam>
+                          <a href="javascript:" class="fa fa-files-o copy_task" data-element="'.$task->id.'" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800;float: right"></a>
+                          <a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800;float: right">
                               </a> 
-	                  <a href="javascript:" class="fa fa-files-o copy_task '.$disabled.'" data-element="'.$task->id.'" title="Copy this Task" style="padding:5px;font-size:20px;font-weight: 800"></a></td>
-	                </tr>
-	                <tr>
-	                  <td style="background:#2fd9ff"><spam style="font-weight:700;text-decoration: underline;">Task ID:</spam> '.$task->taskid.'</td>
+	                  </td>
+
 	                </tr>
 	                <tr>
 	                  <td style="background:#2fd9ff">
-	                    <spam style="font-weight:700;text-decoration: underline;">Progress:</spam> 
-	                    <a href="javascript:" class="fa fa-sliders" data-placement="bottom" data-popover-content="#a1_'.$task->id.'" data-toggle="popover" data-trigger="click" tabindex="0" title="Set Progress" data-original-title="Set Progress"  style="padding:5px;font-weight:700"></a>
-
-                            <!-- Content for Popover #1 -->
-                            <div class="hidden" id="a1_'.$task->id.'">
-                              <div class="popover-heading">
-                                Set Progress Percentage
+	                  		<spam style="font-weight:700;text-decoration: underline;float:left">Progress:</spam> 
+                              <a href="javascript:" class="fa fa-sliders" title="Set progress" data-placement="bottom" data-popover-content="#a1_'.$task->id.'" data-toggle="popover" data-trigger="click" tabindex="0" data-original-title="Set Progress"  style="padding:5px;font-weight:700;float:left"></a>
+                              <div class="hidden" id="a1_'.$task->id.'">
+                                <div class="popover-heading">
+                                  Set Progress Percentage
+                                </div>
+                                <div class="popover-body">
+                                  <input type="number" class="form-control input-sm progress_value" id="progress_value_'.$task->id.'" value="" style="width:60%;float:left">
+                                  <a href="javascript:" class="common_black_button set_progress" data-element="'.$task->id.'" style="font-size: 11px;line-height: 29px;">Set</a>
+                                </div>
                               </div>
-                              <div class="popover-body">
-                                <input type="number" class="form-control input-sm progress_value" id="progress_value_'.$task->id.'" value="" style="width:60%;float:left">
-                                <a href="javascript:" class="common_black_button set_progress" data-element="'.$task->id.'" style="font-size: 11px;line-height: 29px;">Set</a>
+                              <div class="progress progress_'.$task->id.'" style="width:60%;margin-bottom:5px">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$task->progress.'%">
+                                  '.$task->progress.'%
+                                </div>
                               </div>
-                            </div>
-
-	                    <br/>
-                            <div class="progress progress_'.$task->id.'" style="margin-top:20px">
-                              <div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="width:'.$task->progress.'%">
-                                '.$task->progress.'%
-                              </div>
-                            </div>
 	                  </td>
 	                </tr>
 	                <tr>
 	                  <td style="background:#2fd9ff">';
 	                    if($task->status == 1)
 	                    {
-	                      $open_tasks.='<a href="javascript:" class="common_black_button mark_as_incomplete" data-element="'.$task->id.'">Completed</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button mark_as_incomplete" data-element="'.$task->id.'" style="font-size:12px">Completed</a>';
 	                    }
-	                    else{
-	                      	if(Session::has('taskmanager_user'))
+	                    elseif($task->status == 1)
+	                    {
+	                      if(Session::has('taskmanager_user'))
                             {
                                 $allocated_person = Session::get('taskmanager_user');
                                 if($task->author == $allocated_person)
@@ -4139,17 +4211,36 @@ class TaskmanagerController extends Controller {
                             else{
                                 $complete_button = 'mark_as_complete';
                             }
-
                             
-	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'">Mark Complete</a>';
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+	                      <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'" style="font-size:12px">Activate</a>';
+	                    }
+	                    else{
+	                    	if(Session::has('taskmanager_user'))
+                            {
+                                $allocated_person = Session::get('taskmanager_user');
+                                if($task->author == $allocated_person)
+                                {
+                                  $complete_button = 'mark_as_complete_author';
+                                }
+                                else{
+                                  $complete_button = 'mark_as_complete';
+                                }
+                            }
+                            else{
+                                $complete_button = 'mark_as_complete';
+                            }
+                            
+	                      $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+	                      <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'" style="font-size:12px">Park Task</a>';
 	                    }
 	                  $open_tasks.='</td>
 	                </tr>
 	                <tr>
-	                  <td style="background:#2fd9ff">
+	                  <td style="background:#2fd9ff" class="'.$disabled_icon.'">
 	                    <spam style="font-weight:700;text-decoration: underline;">Completion Files:</spam><br/>
 	                    <a href="javascript:" class="fa fa-plus faplus_completion '.$disabled.'" data-element="'.$task->id.'" style="padding:5px"></a>
-	                    <a href="javascript:" class="fa fa-edit fanotepad_completion '.$disabled.'" style="padding:5px;"></a>';
+	                    <a href="javascript:" class="fa fa-edit fanotepad_completion '.$disabled.'" style="padding:5px"></a>';
 	                    if($task->client_id != "")
 	                    {
 	                      $open_tasks.='<a href="javascript:" class="infiles_link_completion '.$disabled.'" data-element="'.$task->id.'">Infiles</a>';
@@ -4213,6 +4304,10 @@ class TaskmanagerController extends Controller {
 	                    $open_tasks.= $fileoutput;
 	                  $open_tasks.='</td>
 	                </tr>
+	                <tr>
+	                    <td style="background:#2fd9ff">
+	                    </td>
+	                  </tr>
 	              </table>
 	            </td>
 	          </tr>

@@ -1679,3 +1679,5 @@ Route::post('/user/get_clientname_from_pms', 'user\UserController@get_clientname
 
 Route::post('/user/get_client_counts_opening_balance', 'user\OpeningbalanceController@get_client_counts_opening_balance');
 Route::post('/user/set_global_opening_bal_date', 'user\OpeningbalanceController@set_global_opening_bal_date');
+
+Route::post('/user/add_comment_and_allocate_to', 'user\TaskmanagerController@add_comment_and_allocate_to');

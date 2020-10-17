@@ -342,7 +342,7 @@ function ajaxdatecomplete()
       data:{dateval:dateval,client_id:client_id,setting_id:setting_id,year_id:year_id},
       success:function(result)
       {
-        
+        $(this).parents("td").find(".date_spam_class").html(result);
       }
     })
   });
@@ -368,8 +368,6 @@ $(".setting_class").change(function(){
   $("body").addClass("loading");
   var id = $(this).val();
   var yearid = $("#year_id").val();
-  
-
   $.ajax({
         url:"<?php echo URL::to('user/yearend_liability_setting_result')?>",
         type:"post",
@@ -377,7 +375,6 @@ $(".setting_class").change(function(){
         data:{id:id, yearid:yearid},
         success: function(result) { 
           $(".table_result").html(result['output_result']);
-
           $('#liability_expand').DataTable({
               fixedHeader: {
                 headerOffset: 75
@@ -389,9 +386,7 @@ $(".setting_class").change(function(){
               paging: false,
               info: false
           });
-
           ajaxdatecomplete();
-
           $("body").removeClass("loading");
         } 
   });
@@ -424,7 +419,6 @@ $(window).keyup(function(e) {
         valueTimmer = setTimeout(doneTyping_prelim, valueInterval,input_val, client_id, year_id, setting_id, that);   
     }
 });
-
 function doneTyping_payment (payment_value, client_id, year_id, setting_id, that) {
   $.ajax({
         url:"<?php echo URL::to('user/yearend_liability_payment')?>",
@@ -433,11 +427,17 @@ function doneTyping_payment (payment_value, client_id, year_id, setting_id, that
         data:{setting_id:setting_id, value:payment_value, year_id:year_id, client_id:client_id},
         success: function(result) { 
           $("#client_"+result['client_id']).find(".balance_class").html(result['balance']);
+          payment_value = payment_value.replace(",", "");
+          payment_value = payment_value.replace(",", "");
+          payment_value = payment_value.replace(",", "");
+          payment_value = payment_value.replace(",", "");
+          payment_value = payment_value.replace(",", "");
+          payment_value = payment_value.replace(",", "");
+          that.parents("td").find(".payment_spam_class").html(payment_value);
           ajaxdatecomplete();
         } 
   });            
 }
-
 function doneTyping_prelim (prelim_value, client_id, year_id, setting_id, that) {
   $.ajax({
         url:"<?php echo URL::to('user/yearend_liability_prelim')?>",
@@ -445,12 +445,18 @@ function doneTyping_prelim (prelim_value, client_id, year_id, setting_id, that) 
         dataType:"json",
         data:{setting_id:setting_id, value:prelim_value, year_id:year_id, client_id:client_id},
         success: function(result) { 
+          prelim_value = prelim_value.replace(",", "");
+          prelim_value = prelim_value.replace(",", "");
+          prelim_value = prelim_value.replace(",", "");
+          prelim_value = prelim_value.replace(",", "");
+          prelim_value = prelim_value.replace(",", "");
+          prelim_value = prelim_value.replace(",", "");
+          that.parents("td").find(".prelim_spam_class").html(prelim_value);
           ajaxdatecomplete();
           
         } 
   });            
 }
-
 </script>
 
 @stop
