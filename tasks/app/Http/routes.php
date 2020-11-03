@@ -1583,6 +1583,7 @@ Route::post('/user/change_taskmanager_user', 'user\TaskmanagerController@change_
 Route::get('/user/delete_taskmanager_files', 'user\TaskmanagerController@delete_taskmanager_files');
 Route::get('/user/delete_taskmanager_notepad', 'user\TaskmanagerController@delete_taskmanager_notepad');
 Route::get('/user/delete_taskmanager_infiles', 'user\TaskmanagerController@delete_taskmanager_infiles');
+Route::get('/user/delete_taskmanager_yearend', 'user\TaskmanagerController@delete_taskmanager_yearend');
 Route::post('/user/taskmanager_change_due_date', 'user\TaskmanagerController@taskmanager_change_due_date');
 Route::post('/user/taskmanager_change_allocations', 'user\TaskmanagerController@taskmanager_change_allocations');
 Route::post('/user/show_existing_comments', 'user\TaskmanagerController@show_existing_comments');
@@ -1681,3 +1682,26 @@ Route::post('/user/get_client_counts_opening_balance', 'user\OpeningbalanceContr
 Route::post('/user/set_global_opening_bal_date', 'user\OpeningbalanceController@set_global_opening_bal_date');
 
 Route::post('/user/add_comment_and_allocate_to', 'user\TaskmanagerController@add_comment_and_allocate_to');
+
+
+Route::post('/user/get_supplier_names_from_infile', 'user\InfileController@get_supplier_names_from_infile');
+Route::post('/user/set_supplier_names_from_infile', 'user\InfileController@set_supplier_names_from_infile');
+Route::post('/user/change_percent_value', 'user\InfileController@change_percent_value');
+Route::get('/user/infile_supplier_search', 'user\InfileController@infile_supplier_search');
+Route::post('/user/infile_supplier_search_select', 'user\InfileController@infile_supplier_search_select');
+
+Route::get('/user/update_supplier_infile_attachment', 'user\InfileController@update_supplier_infile_attachment');
+Route::get('/user/update_percent_one_infile_attachment', 'user\InfileController@update_percent_one_infile_attachment');
+Route::get('/user/update_percent_two_infile_attachment', 'user\InfileController@update_percent_two_infile_attachment');
+Route::get('/user/update_percent_three_infile_attachment', 'user\InfileController@update_percent_three_infile_attachment');
+Route::get('/user/update_percent_four_infile_attachment', 'user\InfileController@update_percent_four_infile_attachment');
+Route::post('/user/infile_attachment_date_filled', 'user\InfileController@infile_attachment_date_filled');
+Route::get('/user/infile_download_bpso_all_image_csv', 'user\InfileController@infile_download_bpso_all_image_csv');
+Route::get('/user/infile_download_bpso_all_image_both', 'user\InfileController@infile_download_bpso_all_image_both');
+
+Route::post('/user/change_show_hide_ps_status', 'user\InfileController@change_show_hide_ps_status');
+
+Route::post('/user/show_completion_yearend', 'user\TaskmanagerController@show_completion_yearend');
+Route::post('/user/show_linked_completion_yearend', 'user\TaskmanagerController@show_linked_completion_yearend');
+
+

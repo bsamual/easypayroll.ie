@@ -561,6 +561,23 @@ input:checked + .slider:before {
         </div>
   </div>
 </div>
+<div class="modal fade yearend_completion_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:45%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Link Infiles</h4>
+          </div>
+          <div class="modal-body" id="yearend_completion_body">  
+
+          </div>
+          <div class="modal-footer">  
+            <input type="hidden" name="hidden_completion_yearend_task_id" id="hidden_completion_yearend_task_id" class="hidden_completion_infiles_task_id" value="">
+            <input type="button" class="common_black_button" id="link_yearend_completion_button" value="Submit">
+          </div>
+        </div>
+  </div>
+</div>
 <div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_job_form">
@@ -950,6 +967,7 @@ input:checked + .slider:before {
 	                  $taskfiles = DB::table('taskmanager_files')->where('task_id',$task->id)->get();
 	                  $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	                  $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+                    $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
 
 	                  if($task->client_id == "")
 	                  {
@@ -1366,12 +1384,44 @@ input:checked + .slider:before {
                               {
                                 ?>
                                 <a href="javascript:" class="infiles_link_completion <?php echo $disabled; ?>" data-element="<?php echo $task->id; ?>">Infiles</a>
+                                <a href="javascript:" class="yearend_link_completion <?php echo $disabled; ?>" data-element="<?php echo $task->id; ?>">Yearend</a>
                                 <?php
+                              }
+                              $get_infiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+                              $get_yearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
+                              $idsval = '';
+                              $idsval_yearend = '';
+                              if(count($get_infiles))
+                              {
+                                foreach($get_infiles as $set_infile)
+                                {
+                                  if($idsval == "")
+                                  {
+                                    $idsval = $set_infile->infile_id;
+                                  }
+                                  else{
+                                    $idsval = $idsval.','.$set_infile->infile_id;
+                                  }
+                                }
+                              }
+                              if(count($get_yearend))
+                              {
+                                foreach($get_yearend as $set_yearend)
+                                {
+                                  if($idsval_yearend == "")
+                                  {
+                                    $idsval_yearend = $set_yearend->setting_id;
+                                  }
+                                  else{
+                                    $idsval_yearend = $idsval_yearend.','.$set_yearend->setting_id;
+                                  }
+                                }
                               }
                               ?>
                               
                               <input type="hidden" name="hidden_completion_client_id" id="hidden_completion_client_id_<?php echo $task->id; ?>" value="<?php echo $task->client_id; ?>">
-                              <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_<?php echo $task->id; ?>" value="">
+                              <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_<?php echo $task->id; ?>" value="<?php echo $idsval; ?>">
+                              <input type="hidden" name="hidden_yearend_completion_id" id="hidden_yearend_completion_id_<?php echo $task->id; ?>" value="<?php echo $idsval_yearend; ?>">
 
                               
                               <div class="notepad_div_completion_notes" style="z-index:9999; position:absolute">
@@ -1423,6 +1473,30 @@ input:checked + .slider:before {
                                       <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$file->description.'</a>
 
                                       <a href="'.URL::to('user/delete_taskmanager_infiles?file_id='.$infile->id.'').'" class="fa fa-trash delete_attachments '.$disabled.'"></a>
+                                      </p>';
+                                      $i++;
+                                    }
+                                  }
+                              }
+                              $fileoutput.='</div>';
+                              $fileoutput.='<div id="add_yearend_attachments_completion_div_'.$task->id.'">';
+                              if(count($taskyearend))
+                              {
+                                $i=1;
+                                  foreach($taskyearend as $yearend)
+                                  {
+                                    if($yearend->status == 2)
+                                    {
+                                      if($i == 1) { $fileoutput.='Linked Yearend:<br/>'; }
+                                      $file = DB::table('year_setting')->where('id',$yearend->setting_id)->first();
+                                      $get_client_id = DB::table('taskmanager')->where('id',$task->id)->first();
+                                      $year_client_id = $get_client_id->client_id;
+                                      $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
+
+                                      $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
+                                      $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
+                                      <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                                      <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$yearend->id.'').'" class="fa fa-trash delete_attachments"></a>
                                       </p>';
                                       $i++;
                                     }
@@ -6099,6 +6173,36 @@ $(window).click(function(e) {
       })
     }
   }
+  if(e.target.id == "link_yearend_completion_button")
+  {
+    var checkcount = $(".yearend_completion_check:checked").length;
+    var task_id = $("#hidden_completion_yearend_task_id").val();
+    if(checkcount > 0)
+    {
+      var ids = '';
+      $(".yearend_completion_check:checked").each(function() {
+        if(ids == "")
+        {
+          ids = $(this).val();
+        }
+        else{
+          ids = ids+','+$(this).val();
+        }
+      });
+
+      $("#hidden_yearend_completion_id_"+task_id).val(ids);
+      $(".yearend_completion_modal").modal("hide");
+      $.ajax({
+        url:"<?php echo URL::to('user/show_linked_completion_yearend'); ?>",
+        type:"post",
+        data:{ids:ids,task_id:task_id},
+        success:function(result)
+        {
+          $("#add_yearend_attachments_completion_div_"+task_id).html(result);
+        }
+      })
+    }
+  }
   if(e.target.id == "show_incomplete_files")
   {
     if($(e.target).is(":checked"))
@@ -6117,6 +6221,15 @@ $(window).click(function(e) {
 	{
 		alert('Please uncheck the option "Block Popup windows" to allow the popup window generated from our website.');
 	}
+  }
+  if($(e.target).hasClass('link_yearend'))
+  {
+    var href = $(e.target).attr("data-element");
+  var printWin = window.open(href,'_blank','location=no,height=570,width=650,top=80, left=250,leftscrollbars=yes,status=yes');
+  if (printWin == null || typeof(printWin)=='undefined')
+  {
+    alert('Please uncheck the option "Block Popup windows" to allow the popup window generated from our website.');
+  }
   }
   if($(e.target).hasClass('infiles_link'))
   {
@@ -6184,6 +6297,30 @@ $(window).click(function(e) {
           $("#hidden_completion_infiles_task_id").val(task_id);
           $(".infiles_completion_modal").modal("show");
           $("#infiles_completion_body").html(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('yearend_link_completion'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    var client_id = $("#hidden_completion_client_id_"+task_id).val();
+    var ids = $("#hidden_yearend_completion_id_"+task_id).val();
+
+    if(client_id == "")
+    {
+      alert("Please select the client and then choose infiles");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/show_completion_yearend'); ?>",
+        type:"post",
+        data:{client_id:client_id,ids:ids},
+        success: function(result)
+        {
+          $("#hidden_completion_yearend_task_id").val(task_id);
+          $(".yearend_completion_modal").modal("show");
+          $("#yearend_completion_body").html(result);
         }
       })
     }

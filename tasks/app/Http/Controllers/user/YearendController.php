@@ -2401,7 +2401,7 @@ class YearendController extends Controller {
               "Expires" => "0"
             );
 
-            $columns = array('Client Id', 'First Name', 'Last Name', 'Company Name', 'Balance', 'Liability', 'Payments', ''.$prelim_year.' Prelim', 'File Uploaded');
+            $columns = array('Client Id', 'First Name', 'Last Name', 'Company Name', 'Balance', 'Liability', 'Payments', ''.$prelim_year.' Prelim','Date Filled', 'File Uploaded');
 
             
 
@@ -2470,6 +2470,7 @@ class YearendController extends Controller {
                                     $payments = $liability_details->payments;
                                     $balance = $liability_details->balance;
                                     $prelim = $liability_details->prelim;
+                                    $date_filled = $liability_details->yearend_date;
 
                                     if($liability == ''){
                                           $liability = '0.00';
@@ -2487,6 +2488,7 @@ class YearendController extends Controller {
                                     $payments = '';
                                     $balance = '0.00';
                                     $prelim = '';
+                                    $date_filled = '';
                               }
 
                               /*$columns_2 = array($client_details->client_id, $client_details->firstname, $client_details->surname, $client_details->company, $balance, $liability, $payments, $prelim,$output_attachement);
@@ -2501,24 +2503,24 @@ class YearendController extends Controller {
                                     if(count($final_attachement)){
                                           foreach ($final_attachement as $key => $single_attachement) {
                                                 if($key == 0){
-                                                      $columns_2 = array($client_details->client_id, $client_details->firstname, $client_details->surname, $client_details->company, number_format_invoice_without_decimal($balance), number_format_invoice_without_decimal($liability), number_format_invoice_without_decimal($payments), number_format_invoice_without_decimal($prelim),$single_attachement->attachments);
+                                                      $columns_2 = array($client_details->client_id, $client_details->firstname, $client_details->surname, $client_details->company, number_format_invoice_without_decimal($balance), number_format_invoice_without_decimal($liability), number_format_invoice_without_decimal($payments), number_format_invoice_without_decimal($prelim),$date_filled,$single_attachement->attachments);
                                                       fputcsv($file, $columns_2);
                                                 }
                                                 else{
-                                                      $columns_2 = array('', '', '', '', '', '', '', '',$single_attachement->attachments);
+                                                      $columns_2 = array('', '', '', '', '', '', '', '','',$single_attachement->attachments);
                                                       fputcsv($file, $columns_2);
                                                 }
                                                 
                                           }
                                     }
                                     else{
-                                          $columns_2 = array($client_details->client_id, $client_details->firstname, $client_details->surname, $client_details->company, number_format_invoice_without_decimal($balance), number_format_invoice_without_decimal($liability), number_format_invoice_without_decimal($payments), number_format_invoice_without_decimal($prelim),'');
+                                          $columns_2 = array($client_details->client_id, $client_details->firstname, $client_details->surname, $client_details->company, number_format_invoice_without_decimal($balance), number_format_invoice_without_decimal($liability), number_format_invoice_without_decimal($payments), number_format_invoice_without_decimal($prelim),$date_filled,'');
                                           fputcsv($file, $columns_2);
                                     }
 
                               }
                               else{
-                                    $columns_2 = array($client_details->client_id, $client_details->firstname, $client_details->surname, $client_details->company, number_format_invoice_without_decimal($balance), number_format_invoice_without_decimal($liability), number_format_invoice_without_decimal($payments), number_format_invoice_without_decimal($prelim),'');
+                                    $columns_2 = array($client_details->client_id, $client_details->firstname, $client_details->surname, $client_details->company, number_format_invoice_without_decimal($balance), number_format_invoice_without_decimal($liability), number_format_invoice_without_decimal($payments), number_format_invoice_without_decimal($prelim),$date_filled,'');
                                           fputcsv($file, $columns_2);
                               }
 

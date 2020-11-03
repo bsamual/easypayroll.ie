@@ -170,7 +170,7 @@ a:hover{text-decoration: underline;}
           	<h4 style="font-weight:700">File Information:</h4>
             <h4 style="line-height: 27px;" id="import_note_1">
               <p>The file must be in CSV format.<br/>
-              The date must be in the format dd-mm-yyyy (for Ex: 07-09-2020)<br/>
+              The date must be in either dd-mm-yyyy (for Ex: 07-09-2020) OR dd/mm/yyyy (for Ex: 07/09/2020) format.<br/>
               The titles must be<br/>
               1. Code<br/>
               2. Balance<br/>
@@ -188,7 +188,7 @@ a:hover{text-decoration: underline;}
           <h4 style="font-weight:700">Opening Balance Date:</h4>
         </div>
         <div class="col-md-7">
-          <input type="text" name="opening_balance_date" class="form-control opening_balance_date" value="">
+          <input type="text" name="opening_balance_date" class="form-control opening_balance_date" value="" style="cursor:pointer">
         </div>
       </div>
       <div class="col-md-12" style="margin-bottom: 20px">
@@ -247,6 +247,7 @@ $(function(){
     $(".opening_balance_date").datetimepicker({     
        format: 'L',
        format: 'DD-MMM-YYYY',
+       ignoreReadonly: true
     });
 });
 
@@ -264,6 +265,7 @@ function import_opening_balance_function(filename,import_type,page,session_id,co
       {
       	$("#count_first").html(countval);
         $("#count_last").html(totalcount);
+        $("#import_tbody_list").append(result['output']);
         import_opening_balance_function(filename,import_type,result['page'],session_id,countval,totalcount);
       }
       else{
@@ -279,7 +281,7 @@ function import_opening_balance_function(filename,import_type,page,session_id,co
           			$("#import_last").html(eresult);
           			$(".import_table").show();
 			        $(".start_import").show();
-			        $("#import_tbody_list").html(result['output']);
+			        $("#import_tbody_list").append(result['output']);
 			        $("#hidden_filename").val(result['upload_dir']);
 			        $("#hidden_session_id").val(result['session_id']);
 			        $("#count_first").html("");
@@ -366,6 +368,7 @@ $(window).click(function(e){
                 	$("#count_first").html("100");
                 	$("#count_last").html(e['highestRow']);
                   $("body").removeClass("loading");
+                  $("#import_tbody_list").html(e['output']);
                   $("body").addClass("loading_content");
                   import_opening_balance_function(e['upload_dir'],e['import_type'],e['page'],e['session_id'],"100",e['highestRow']);
                 }

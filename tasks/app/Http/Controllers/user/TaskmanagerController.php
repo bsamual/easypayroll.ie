@@ -366,6 +366,59 @@ class TaskmanagerController extends Controller {
 
 		echo $output;
 	}
+	public function show_completion_yearend()
+	{
+		$client_id = Input::get('client_id');
+		$ids = explode(",",Input::get('ids'));
+
+		$output = '<table class="table">
+		<thead>
+			<tr>
+				<th>S.No</th>
+				<th style="text-align:left">Document</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>';
+		$i = 1;
+		$yearend = DB::table('year_client')->where('client_id',$client_id)->orderBy('id','desc')->first();
+		if(count($yearend))
+		{
+			$setting_id = explode(',',$yearend->setting_id);
+			$setting_active = explode(',',$yearend->setting_active);
+			foreach($setting_id as $skey => $setting)
+			{
+				$setting_name = DB::table('year_setting')->where('id',$setting)->first();
+				if($setting_active[$skey] == "0")
+				{
+					$ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend->id).'');
+					if(in_array($setting,$ids))
+					{
+						$checked = 'checked';
+					}
+					else{
+						$checked = '';
+					}
+					$output.='<tr>
+						<td>'.$i.'</td>
+						<td style="text-align:left"><a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$setting_name->document.'</a></td>
+						<td style="text-align:left"><input type="checkbox" name="yearend_check" class="yearend_completion_check" value="'.$setting.'" '.$checked.'><label>&nbsp;</label></td>
+					</tr>';
+					$i++;
+				}
+			}
+		}
+		if($i == 1)
+		{
+			$output.='<tr>
+				<td colspan="3">No Yearend Document Found</td>
+			</tr>';
+		}
+		$output.='</tbody>
+		</table>';
+
+		echo $output;
+	}
 	public function infile_upload_images_taskmanager_add()
 	{
 		$upload_dir = 'uploads/taskmanager_image';
@@ -790,6 +843,40 @@ class TaskmanagerController extends Controller {
                 <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$file->description.'</a>
                 <a href="'.URL::to('user/delete_taskmanager_infiles?file_id='.$insertedid.'').'" class="fa fa-trash delete_attachments"></a>
                 </p>';
+				$i++;
+			}
+		}
+		echo $output;
+	}
+	public function show_linked_completion_yearend()
+	{
+		$ids = explode(",",Input::get('ids'));
+		$task_id = Input::get('task_id');
+		
+		DB::table('taskmanager_yearend')->where('task_id',$task_id)->where('status',2)->delete();
+		$output = 'Linked Yearend:<br/>';
+		if(count($ids))
+		{
+			$i = 1;
+			foreach($ids as $id)
+			{
+				$dataval['task_id'] = $task_id;
+				$dataval['setting_id'] = $id;
+				$dataval['status'] = 2;
+
+				$insertedid = DB::table('taskmanager_yearend')->insertGetid($dataval);
+				$file = DB::table('year_setting')->where('id',$id)->first();
+				$get_client_id = DB::table('taskmanager')->where('id',$task_id)->first();
+				$year_client_id = $get_client_id->client_id;
+				$yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
+
+				$ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
+
+				$output.='<p class="link_yearend_p">
+							  <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
+                              <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                              <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$insertedid.'').'" class="fa fa-trash delete_attachments"></a>
+                          </p>';
 				$i++;
 			}
 		}
@@ -1482,6 +1569,13 @@ class TaskmanagerController extends Controller {
 		$file_id = Input::get('file_id');
 		$get_details = DB::table('taskmanager_infiles')->where('id',$file_id)->first();
 		DB::table('taskmanager_infiles')->where('id',$file_id)->delete();
+		//return redirect('user/task_manager?tr_task_id='.$get_details->task_id);
+	}
+	public function delete_taskmanager_yearend()
+	{
+		$file_id = Input::get('file_id');
+		$get_details = DB::table('taskmanager_yearend')->where('id',$file_id)->first();
+		DB::table('taskmanager_yearend')->where('id',$file_id)->delete();
 		//return redirect('user/task_manager?tr_task_id='.$get_details->task_id);
 	}
 	public function taskmanager_change_due_date()
@@ -2807,10 +2901,43 @@ class TaskmanagerController extends Controller {
 	                    <a href="javascript:" class="fa fa-edit fanotepad_completion '.$disabled.'" style="padding:5px"></a>';
 	                    if($task->client_id != "")
 	                    {
-	                      $open_tasks.='<a href="javascript:" class="infiles_link_completion '.$disabled.'" data-element="'.$task->id.'">Infiles</a>';
+	                      $open_tasks.='<a href="javascript:" class="infiles_link_completion '.$disabled.'" data-element="'.$task->id.'">Infiles</a>
+	                      <a href="javascript:" class="yearend_link_completion '.$disabled.'" data-element="'.$task->id.'">Yearend</a>';
 	                    }
+	                    $get_infiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+	                      $get_yearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
+	                      $idsval = '';
+	                      $idsval_yearend = '';
+	                      if(count($get_infiles))
+	                      {
+	                      	foreach($get_infiles as $set_infile)
+	                      	{
+	                      		if($idsval == "")
+	                      		{
+	                      			$idsval = $set_infile->infile_id;
+	                      		}
+	                      		else{
+	                      			$idsval = $idsval.','.$set_infile->infile_id;
+	                      		}
+	                      	}
+	                      }
+	                      if(count($get_yearend))
+	                      {
+	                      	foreach($get_yearend as $set_yearend)
+	                      	{
+	                      		if($idsval_yearend == "")
+	                      		{
+	                      			$idsval_yearend = $set_yearend->setting_id;
+	                      		}
+	                      		else{
+	                      			$idsval_yearend = $idsval_yearend.','.$set_yearend->setting_id;
+	                      		}
+	                      	}
+	                      }
+
 	                    $open_tasks.='<input type="hidden" name="hidden_completion_client_id" id="hidden_completion_client_id_'.$task->id.'" value="'.$task->client_id.'">
-	                    <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_'.$task->id.'" value="">
+	                    <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_'.$task->id.'" value="'.$idsval.'">
+	                    <input type="hidden" name="hidden_yearend_completion_id" id="hidden_yearend_completion_id_'.$task->id.'" value="'.$idsval_yearend.'">
 
 	                    
 	                    <div class="notepad_div_completion_notes" style="z-index:9999; position:absolute">
@@ -2865,6 +2992,30 @@ class TaskmanagerController extends Controller {
 	                        }
 	                    }
 	                    $fileoutput.='</div>';
+	                    $fileoutput.='<div id="add_yearend_attachments_completion_div_'.$task->id.'">';
+                              if(count($taskyearend))
+                              {
+                                $i=1;
+                                  foreach($taskyearend as $yearend)
+                                  {
+                                    if($yearend->status == 2)
+                                    {
+                                      if($i == 1) { $fileoutput.='Linked Yearend:<br/>'; }
+                                      $file = DB::table('year_setting')->where('id',$yearend->setting_id)->first();
+                                      $get_client_id = DB::table('taskmanager')->where('id',$task->id)->first();
+                                      $year_client_id = $get_client_id->client_id;
+                                      $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
+
+                                      $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
+                                      $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
+                                      <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                                      <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$yearend->id.'').'" class="fa fa-trash delete_attachments"></a>
+                                      </p>';
+                                      $i++;
+                                    }
+                                  }
+                              }
+                              $fileoutput.='</div>';
 	                    $open_tasks.= $fileoutput;
 	                  $open_tasks.='</td>
 	                </tr>
@@ -3000,6 +3151,7 @@ class TaskmanagerController extends Controller {
 	          $taskfiles = DB::table('taskmanager_files')->where('task_id',$task->id)->get();
 	          $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	          $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+	          $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
 
 	          if($task->client_id == "")
 	          {
@@ -3374,10 +3526,42 @@ class TaskmanagerController extends Controller {
 	                    <a href="javascript:" class="fa fa-edit fanotepad_completion '.$disabled.'" style="padding:5px"></a>';
 	                    if($task->client_id != "")
 	                    {
-	                      $open_tasks.='<a href="javascript:" class="infiles_link_completion '.$disabled.'" data-element="'.$task->id.'">Infiles</a>';
+	                      $open_tasks.='<a href="javascript:" class="infiles_link_completion '.$disabled.'" data-element="'.$task->id.'">Infiles</a>
+	                      <a href="javascript:" class="yearend_link_completion '.$disabled.'" data-element="'.$task->id.'">Yearend</a>';
 	                    }
+	                    $get_infiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+	                      $get_yearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
+	                      $idsval = '';
+	                      $idsval_yearend = '';
+	                      if(count($get_infiles))
+	                      {
+	                      	foreach($get_infiles as $set_infile)
+	                      	{
+	                      		if($idsval == "")
+	                      		{
+	                      			$idsval = $set_infile->infile_id;
+	                      		}
+	                      		else{
+	                      			$idsval = $idsval.','.$set_infile->infile_id;
+	                      		}
+	                      	}
+	                      }
+	                      if(count($get_yearend))
+	                      {
+	                      	foreach($get_yearend as $set_yearend)
+	                      	{
+	                      		if($idsval_yearend == "")
+	                      		{
+	                      			$idsval_yearend = $set_yearend->setting_id;
+	                      		}
+	                      		else{
+	                      			$idsval_yearend = $idsval_yearend.','.$set_yearend->setting_id;
+	                      		}
+	                      	}
+	                      }
 	                    $open_tasks.='<input type="hidden" name="hidden_completion_client_id" id="hidden_completion_client_id_'.$task->id.'" value="'.$task->client_id.'">
-	                    <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_'.$task->id.'" value="">
+	                    <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_'.$task->id.'" value="'.$idsval.'">
+	                    <input type="hidden" name="hidden_yearend_completion_id" id="hidden_yearend_completion_id_'.$task->id.'" value="'.$idsval_yearend.'">
 
 	                    
 	                    <div class="notepad_div_completion_notes" style="z-index:9999; position:absolute">
@@ -3432,6 +3616,30 @@ class TaskmanagerController extends Controller {
 	                        }
 	                    }
 	                    $fileoutput.='</div>';
+	                    $fileoutput.='<div id="add_yearend_attachments_completion_div_'.$task->id.'">';
+                              if(count($taskyearend))
+                              {
+                                $i=1;
+                                  foreach($taskyearend as $yearend)
+                                  {
+                                    if($yearend->status == 2)
+                                    {
+                                      if($i == 1) { $fileoutput.='Linked Yearend:<br/>'; }
+                                      $file = DB::table('year_setting')->where('id',$yearend->setting_id)->first();
+                                      $get_client_id = DB::table('taskmanager')->where('id',$task->id)->first();
+                                      $year_client_id = $get_client_id->client_id;
+                                      $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
+
+                                      $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
+                                      $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
+                                      <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                                      <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$yearend->id.'').'" class="fa fa-trash delete_attachments"></a>
+                                      </p>';
+                                      $i++;
+                                    }
+                                  }
+                              }
+                              $fileoutput.='</div>';
 	                    $open_tasks.= $fileoutput;
 	                  $open_tasks.='</td>
 	                </tr>
@@ -3883,6 +4091,7 @@ class TaskmanagerController extends Controller {
 	          $taskfiles = DB::table('taskmanager_files')->where('task_id',$task->id)->get();
 	          $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	          $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+	          $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
 
 	          if($task->client_id == "")
 	          {
@@ -4243,10 +4452,42 @@ class TaskmanagerController extends Controller {
 	                    <a href="javascript:" class="fa fa-edit fanotepad_completion '.$disabled.'" style="padding:5px"></a>';
 	                    if($task->client_id != "")
 	                    {
-	                      $open_tasks.='<a href="javascript:" class="infiles_link_completion '.$disabled.'" data-element="'.$task->id.'">Infiles</a>';
+	                      $open_tasks.='<a href="javascript:" class="infiles_link_completion '.$disabled.'" data-element="'.$task->id.'">Infiles</a>
+	                      <a href="javascript:" class="yearend_link_completion '.$disabled.'" data-element="'.$task->id.'">Yearend</a>';
 	                    }
+	                    $get_infiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+	                      $get_yearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
+	                      $idsval = '';
+	                      $idsval_yearend = '';
+	                      if(count($get_infiles))
+	                      {
+	                      	foreach($get_infiles as $set_infile)
+	                      	{
+	                      		if($idsval == "")
+	                      		{
+	                      			$idsval = $set_infile->infile_id;
+	                      		}
+	                      		else{
+	                      			$idsval = $idsval.','.$set_infile->infile_id;
+	                      		}
+	                      	}
+	                      }
+	                      if(count($get_yearend))
+	                      {
+	                      	foreach($get_yearend as $set_yearend)
+	                      	{
+	                      		if($idsval_yearend == "")
+	                      		{
+	                      			$idsval_yearend = $set_yearend->setting_id;
+	                      		}
+	                      		else{
+	                      			$idsval_yearend = $idsval_yearend.','.$set_yearend->setting_id;
+	                      		}
+	                      	}
+	                      }
 	                    $open_tasks.='<input type="hidden" name="hidden_completion_client_id" id="hidden_completion_client_id_'.$task->id.'" value="'.$task->client_id.'">
-	                    <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_'.$task->id.'" value="">
+	                    <input type="hidden" name="hidden_infiles_completion_id" id="hidden_infiles_completion_id_'.$task->id.'" value="'.$idsval.'">
+	                    <input type="hidden" name="hidden_yearend_completion_id" id="hidden_yearend_completion_id_'.$task->id.'" value="'.$idsval_yearend.'">
 
 	                    
 	                    <div class="notepad_div_completion_notes" style="z-index:9999; position:absolute">
@@ -4301,6 +4542,30 @@ class TaskmanagerController extends Controller {
 	                        }
 	                    }
 	                    $fileoutput.='</div>';
+	                    $fileoutput.='<div id="add_yearend_attachments_completion_div_'.$task->id.'">';
+                              if(count($taskyearend))
+                              {
+                                $i=1;
+                                  foreach($taskyearend as $yearend)
+                                  {
+                                    if($yearend->status == 2)
+                                    {
+                                      if($i == 1) { $fileoutput.='Linked Yearend:<br/>'; }
+                                      $file = DB::table('year_setting')->where('id',$yearend->setting_id)->first();
+                                      $get_client_id = DB::table('taskmanager')->where('id',$task->id)->first();
+                                      $year_client_id = $get_client_id->client_id;
+                                      $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
+
+                                      $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
+                                      $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
+                                      <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                                      <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$yearend->id.'').'" class="fa fa-trash delete_attachments"></a>
+                                      </p>';
+                                      $i++;
+                                    }
+                                  }
+                              }
+                              $fileoutput.='</div>';
 	                    $open_tasks.= $fileoutput;
 	                  $open_tasks.='</td>
 	                </tr>
@@ -4519,6 +4784,7 @@ class TaskmanagerController extends Controller {
 	          $taskfiles = DB::table('taskmanager_files')->where('task_id',$task->id)->get();
 	          $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	          $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+	          $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
 
 	          if($task->client_id == "")
 	          {
@@ -4642,6 +4908,7 @@ class TaskmanagerController extends Controller {
 	                        }
 	                      }
 	                    }
+
 	                    $open_tasks.=$fileoutput;
 	                  $open_tasks.='</div>
 	                </div>
@@ -4743,6 +5010,26 @@ class TaskmanagerController extends Controller {
 	                            $file = DB::table('in_file')->where('id',$infile->infile_id)->first();
 	                            $ele = URL::to('user/infile_search?client_id='.$task->client_id.'&fileid='.$file->id.'');
 	                            $fileoutput.=$i.'&nbsp;'.date('d-M-Y', strtotime($file->data_received)).'&nbsp;'.$file->description.'
+	                            <br/>';
+	                            $i++;
+	                          }
+	                        }
+	                    }
+	                    if(count($taskyearend))
+	                    {
+	                      $i=1;
+	                        foreach($taskyearend as $yearend)
+	                        {
+	                          if($yearend->status == 2)
+	                          {
+	                            if($i == 1) { $fileoutput.='Linked Yearend:<br/>'; }
+	                            $file = DB::table('year_setting')->where('id',$yearend->setting_id)->first();
+	                              $get_client_id = DB::table('taskmanager')->where('id',$task_id)->first();
+	                              $year_client_id = $get_client_id->client_id;
+	                              $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
+
+	                              $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
+	                            $fileoutput.=$i.'&nbsp;'.$file->document.'
 	                            <br/>';
 	                            $i++;
 	                          }

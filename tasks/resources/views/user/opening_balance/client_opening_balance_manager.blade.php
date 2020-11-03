@@ -208,7 +208,7 @@ a:hover{text-decoration: underline;}
           <h4 style="font-weight:700">Opening Balance Date:</h4>
         </div>
         <div class="col-md-7">
-          <input type="text" name="opening_balance_date" class="form-control opening_balance_date" value="<?php echo $date; ?>" <?php echo $disabled; ?>>
+          <input type="text" name="opening_balance_date" class="form-control opening_balance_date" value="<?php echo $date; ?>" <?php echo $disabled; ?> style="cursor:pointer">
         </div>
       </div>
     </div>
@@ -335,6 +335,7 @@ $(function(){
     $(".opening_balance_date").datetimepicker({     
        format: 'L',
        format: 'DD-MMM-YYYY',
+       ignoreReadonly: true
     });
 });
 

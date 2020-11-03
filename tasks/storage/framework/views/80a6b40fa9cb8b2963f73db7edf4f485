@@ -221,7 +221,7 @@ a:hover{text-decoration: underline;}
   </div>
   <div class="modal_load_import" style="text-align: center;">
     <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the verified data's are imported.</p>
-    <p style="font-size:18px;font-weight: 600;">Importing: <span id="import_first">0</span> of <span id="import_last"></span></p>
+    <p style="font-size:18px;font-weight: 600;">Importing: <span id="import_first">0</span> of <span id="import_last"></span> Clients</p>
   </div>
   <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
   <input type="hidden" name="show_alert" id="show_alert" value="">
@@ -263,6 +263,7 @@ function import_opening_balance_function(filename,import_type,page,session_id,co
       {
       	$("#count_first").html(countval);
         $("#count_last").html(totalcount);
+        $("#import_tbody_list").append(result['output']);
         import_opening_balance_function(filename,import_type,result['page'],session_id,countval,totalcount);
       }
       else{
@@ -278,7 +279,7 @@ function import_opening_balance_function(filename,import_type,page,session_id,co
           			$("#import_last").html(eresult);
           			$(".import_table").show();
 			        $(".start_import").show();
-			        $("#import_tbody_list").html(result['output']);
+			        $("#import_tbody_list").append(result['output']);
 			        $("#hidden_filename").val(result['upload_dir']);
 			        $("#hidden_session_id").val(result['session_id']);
 			        $("#count_first").html("");
@@ -365,6 +366,7 @@ $(window).click(function(e){
                 	$("#count_first").html("100");
                 	$("#count_last").html(e['highestRow']);
                   $("body").removeClass("loading");
+                  $("#import_tbody_list").html(e['output']);
                   $("body").addClass("loading_content");
                   import_opening_balance_function(e['upload_dir'],e['import_type'],e['page'],e['session_id'],"100",e['highestRow']);
                 }
