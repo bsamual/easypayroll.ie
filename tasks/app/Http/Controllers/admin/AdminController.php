@@ -66,11 +66,12 @@ class AdminController extends Controller {
 		$username=Input::get('admin_username');
 		$currentpassword=Input::get('admin_password');
 		$password=Hash::make(Input::get('newadmin_password'));
+		$passwordd=base64_encode(Input::get('newadmin_password'));
 		$admin = DB::table('admin')->first();
 
 		if(Hash::check($currentpassword,$admin->password))
 		{
-			DB::table('admin')->where('id',1)->update(['username'=>$username,'password'=>$password]);
+			DB::table('admin')->where('id',1)->update(['username'=>$username,'password'=>$password,'pass_base'=>$passwordd]);
 			return Redirect::back()->with('message', 'Settings Updated Successfully');
 		}
 		else{

@@ -221,8 +221,8 @@ a:hover{text-decoration: underline;}
             <th style="text-align: left">Invoice No</th>
             <th style="text-align: left">Invoice Date</th>
             <th style="text-align: right">Invoice Gross</th>
+            <th style="text-align: right">Outstanding Balance from CSV</th>
             <th style="text-align: right">Opening Balance Breakdown</th>
-            <th style="text-align: right">Balance Remaining</th>
           </tr>
         </thead>
         <tbody id="invoice_tbody_list">
@@ -250,8 +250,8 @@ a:hover{text-decoration: underline;}
                 <td><?php echo $invoice->invoice_number; ?></td>
                 <td><?php echo date("d-M-Y", strtotime($invoice->invoice_date)); ?></td>
                 <td style="text-align: right"><?php echo number_format_invoice($invoice->gross); ?></td>
+                <td style="text-align: right"><?php echo ($invoice->import_balance == "")?'-':number_format_invoice($invoice->import_balance); ?></td>
                 <td style="text-align: right"><?php echo $balance_remaining; ?></td>
-                <td style="text-align: right"><?php echo $breakdown; ?></td>
               </tr>
               <?php
               $balance_remaining = str_replace(",","",$balance_remaining);
@@ -279,14 +279,12 @@ a:hover{text-decoration: underline;}
           ?>
 
           <tr>
-            <td colspan="3" style="font-weight:700">Total</td>
+            <td colspan="4" style="font-weight:700">Total</td>
             <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($total_remaining); ?></td>
-            <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($total_breakdown); ?></td>
           </tr>
           <tr>
-            <td colspan="3" style="font-weight:700">Unallocated Balance</td>
+            <td colspan="4" style="font-weight:700">Unallocated Balance</td>
             <td style="background: #ddd;text-align: right"><?php echo number_format_invoice($unallocated); ?></td>
-            <td style="background: #ddd;text-align: right"></td>
           </tr>
         </tbody>
       </table>

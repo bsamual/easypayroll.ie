@@ -262,6 +262,9 @@ $(window).click(function(e) {
     $.ajax({
       url:"<?php echo URL::to('user/save_yearend_date_status'); ?>",
       type:"post",
+      headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
       data:{status:status,client_id:client_id,setting_id:setting_id,year_id:year_id},
       success:function(result)
       {
@@ -310,6 +313,9 @@ if($(e.target).hasClass('export_button'))
           url: "<?php echo URL::to('user/yearend_liability_export')?>",
           type:"post",
           data:{setting_id:setting_id,year_id:year_id},
+          headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
           success:function(result){
 
              SaveToDisk("<?php echo URL::to('papers'); ?>/Export_Liability.csv",'Export_Liability.csv');
@@ -340,6 +346,9 @@ function ajaxdatecomplete()
       url:"<?php echo URL::to('user/save_yearend_liability_date'); ?>",
       type:"post",
       data:{dateval:dateval,client_id:client_id,setting_id:setting_id,year_id:year_id},
+      headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
       success:function(result)
       {
         $(this).parents("td").find(".date_spam_class").html(result);
@@ -373,6 +382,9 @@ $(".setting_class").change(function(){
         type:"post",
         dataType:"json",
         data:{id:id, yearid:yearid},
+        headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
         success: function(result) { 
           $(".table_result").html(result['output_result']);
           $('#liability_expand').DataTable({
@@ -425,6 +437,9 @@ function doneTyping_payment (payment_value, client_id, year_id, setting_id, that
         type:"post",
         dataType:"json",
         data:{setting_id:setting_id, value:payment_value, year_id:year_id, client_id:client_id},
+        headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
         success: function(result) { 
           $("#client_"+result['client_id']).find(".balance_class").html(result['balance']);
           payment_value = payment_value.replace(",", "");
@@ -444,6 +459,9 @@ function doneTyping_prelim (prelim_value, client_id, year_id, setting_id, that) 
         type:"post",
         dataType:"json",
         data:{setting_id:setting_id, value:prelim_value, year_id:year_id, client_id:client_id},
+        headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
         success: function(result) { 
           prelim_value = prelim_value.replace(",", "");
           prelim_value = prelim_value.replace(",", "");

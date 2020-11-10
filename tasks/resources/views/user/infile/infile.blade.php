@@ -1366,6 +1366,7 @@ elseif(Session::has('countupdated'))
 			            $downloadfile.='</table>
 	              	</div>
 	              	<div class="col-md-4 show_iframe" style="display:none;z-index: 99999999999;">
+	              		<a href="javascript:" class="show_iframe_download common_black_button" style="float:right; margin-top:-36px" download>Download</a> 
 	              		<div style="width:100%;background:#b0a8a8;height:400px">
 	              			<iframe name="attachment_pdf" class="attachment_pdf" src="" width="100%" height="100%" style="width:100%"></iframe>
 	              		</div>
@@ -1765,17 +1766,7 @@ elseif(Session::has('countupdated'))
 
 
 <script>
-<?php
-if(!empty($_GET['infile_item']))
-{
-  $divid = $_GET['infile_item'];
-  ?>
-  $(function() {
-    $(document).scrollTop( $("#infile_<?php echo $divid; ?>").offset().top);  
-  });
-  <?php
-}
-?>
+
 //on keyup, start the countdown
 var typingTimer;                //timer identifier
 var doneTypingInterval = 1000;  //time in ms, 5 second for example
@@ -2112,7 +2103,15 @@ $(document).ready(function () {
         }
     });
   }
-
+  	<?php
+	if(!empty($_GET['infile_item']))
+	{
+	  $divid = $_GET['infile_item'];
+	  ?>
+	  $(document).scrollTop($("#infile_<?php echo $divid; ?>").offset().top - 50);
+	  <?php
+	}
+	?>
 
 });
 
@@ -4012,24 +4011,22 @@ $(window).click(function(e) {
     if(exttype == "pdf" || exttype == "jpg" || exttype == "jpeg" || exttype == "png" || exttype == "tif" || exttype == "gif")
     {
     	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",element);
+    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
     	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
     	var pos = $(e.target).position();
 	    var leftposi = parseInt(pos.left);
-	    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"absolute","top":pos.top,"right":'18px'});
+	    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+    }
+    else{
+    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src","<?php echo URL::to('user/file_not_supported'); ?>");
+    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
+    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
+    	var pos = $(e.target).position();
+	    var leftposi = parseInt(pos.left);
+	    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
     }
     $(e.target).parents("tr:first").find(".fa-circle").show();
-    if(exttype == "pdf" || exttype == "jpg" || exttype == "jpeg" || exttype == "png" || exttype == "tif" || exttype == "gif")
-	{
-		$('body').removeClass('loading');
-	}
-	else{
-		setTimeout(function(){
-	      	SaveToDisk(element,element.split('/').reverse()[0]);
-	      	$('body').removeClass('loading');
-	    }, 3000);
-	}
-    
-    
+    $('body').removeClass('loading');
     return false; 
   }
 

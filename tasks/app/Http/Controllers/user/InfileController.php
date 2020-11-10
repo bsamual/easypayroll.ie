@@ -1151,6 +1151,11 @@ class InfileController extends Controller {
 		$data['description'] = Input::get('description');
 		$data['hard_files'] = (Input::get("hard_files_checkbox") != 0)?1:0;
 
+		$data['percent_one'] = '0.00';
+		$data['percent_two'] = '9.00';
+		$data['percent_three'] = '13.50';
+		$data['percent_four'] = '23.00';
+
 		$file_id = DB::table('in_file')->insertGetId($data);
 
 		if(Session::has('file_attach_add'))
@@ -1232,7 +1237,6 @@ class InfileController extends Controller {
 		else{
 			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Successfully and saved the Selection.')->with('client_session_id', $clientid);
 		}
-		
 	}
 	public function clear_session_attachments()
 	{
@@ -2777,6 +2781,10 @@ class InfileController extends Controller {
 		$fileid = Input::get('fileid');
 		$data['show_previous'] = $status;
 		DB::table('in_file')->where('id',$fileid)->update($data);
+	}
+	public function file_not_supported()
+	{
+		return view('welcome');
 	}
 }
 

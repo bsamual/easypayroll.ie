@@ -1992,18 +1992,21 @@ class YearendController extends Controller {
                   $data['client_id'] = $client_id;
                   $data['row_id'] = $row_id;
                   $data['setting_id'] = $setting_id;
-
+                  $payment = $check_row_setting->payments;
                   if($type == 1){
                         $data['liability1'] = $value;
                         $data['liability1_updatetime'] = $current_time;
+                        $data['balance'] = number_format_invoice_without_comma($data['liability1'] - $payment);
                   }
                   elseif($type == 2){
                         $data['liability2'] = $value;
                         $data['liability2_updatetime'] = $current_time;
+                        $data['balance'] = number_format_invoice_without_comma($data['liability2'] - $payment);
                   }
                   elseif($type == 3){
                         $data['liability3'] = $value;
                         $data['liability3_updatetime'] = $current_time;
+                        $data['balance'] = number_format_invoice_without_comma($data['liability3'] - $payment);
                   }
 
                  DB::table('year_client_liability')->where('row_id', $row_id)->where('setting_id', $setting_id)->update($data);
@@ -2016,7 +2019,6 @@ class YearendController extends Controller {
       public function yeadendliability($id=""){
             $id = base64_decode($id);
             $year_setting = DB::table('year_end_year')->where('year', $id)->first();
-
             $explode_setting = explode(',', $year_setting->setting_id);
 
             $output_setting='';
@@ -2232,15 +2234,15 @@ class YearendController extends Controller {
 
                         if($get_checkbox == 0){
                               $output_result.='<tr id="client_'.$client_details->client_id.'" class="client_'.$client_details->active.'"">
-                              <td style="'.$color.'">'.$client_details->client_id.'</td>
-                              <td style="'.$color.'">'.$client_details->firstname.'</td>
-                              <td style="'.$color.'">'.$client_details->surname.'</td>
-                              <td style="'.$color.'">'.$client_details->company.'</td>
-                              <td style="'.$color_balance.'"><span class="balance_class">'.number_format_invoice_without_decimal($balance).'</span></td>
-                              <td style="'.$color_liability.'">'.number_format_invoice_without_decimal($liability).'</td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->client_id.'</a></td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->firstname.'</a></td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->surname.'</a></td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->company.'</a></td>
+                              <td style="'.$color_balance.'"><span class="balance_class">'.number_format_invoice($balance).'</span></td>
+                              <td style="'.$color_liability.'">'.number_format_invoice($liability).'</td>
                               <td>
-                                    <spam class="payment_spam_class" style="display:none">'.number_format_invoice_without_comma($payments).'</spam>
-                                    <input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.number_format_invoice_without_decimal($payments).'" />
+                                    <spam class="payment_spam_class" style="display:none">'.number_format_invoice($payments).'</spam>
+                                    <input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.number_format_invoice($payments).'" />
                               </td>
                               <td>
                                     <spam class="prelim_spam_class" style="display:none">'.number_format_invoice_without_comma($prelim).'</spam>

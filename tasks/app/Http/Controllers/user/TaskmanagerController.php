@@ -2516,6 +2516,7 @@ class TaskmanagerController extends Controller {
 	          $taskfiles = DB::table('taskmanager_files')->where('task_id',$task->id)->get();
 	          $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	          $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
+	          $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
 
 	          if($task->client_id == "")
 	          {
@@ -4752,7 +4753,7 @@ class TaskmanagerController extends Controller {
                 <td class="taskid_td task_name_val" style="'.$color.'">'.$title.'</td>
                 <td class="author_td" style="'.$color.'">'.$author_to.'</td>
                 <td class="allocated_td" style="'.$color.'">'.$allocated_to.'</td>
-                <td class="allocated_td" style="'.$color.';text-align:center">';
+                <td class="" style="'.$color.';text-align:center">';
                   if($task->status == 2)
                   {
                     $outputtask.='<i class="fa fa-pause" aria-hidden="true"></i><br/>'.date('d-M-Y',strtotime($task->park_date)).'';
@@ -5344,16 +5345,9 @@ class TaskmanagerController extends Controller {
 				$data_specifics['message'] = $message;
 				$data_specifics['allocated_date'] = date('Y-m-d H:i:s');
 				$data_specifics['status'] = 0;
-
 				DB::table('taskmanager_specifics')->insert($data_specifics);
-
-
-
 			}
 		}
-
-		
-
 	      $dataval['park_status'] = 1;
 	      DB::table('user')->where('user_id',$userid)->update($dataval);
 	}

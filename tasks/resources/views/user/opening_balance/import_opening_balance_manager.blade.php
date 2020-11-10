@@ -17,8 +17,6 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
 }
@@ -217,12 +215,12 @@ a:hover{text-decoration: underline;}
   </div>
   <div class="modal_load"></div>
   <div class="modal_load_content" style="text-align: center;">
-    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the data's from the CSV file is verified.</p>
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the data from the CSV file are verified.</p>
     <p style="font-size:18px;font-weight: 600;">Loading: <span id="count_first"></span> of <span id="count_last"></span></p>
   </div>
   <div class="modal_load_import" style="text-align: center;">
-    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the verified data's are imported.</p>
-    <p style="font-size:18px;font-weight: 600;">Importing: <span id="import_first">0</span> of <span id="import_last"></span> Clients</p>
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the verified data are imported.</p>
+    <p style="font-size:18px;font-weight: 600;">Importing Invoices for <span id="import_first">0</span> of <span id="import_last"></span> Clients</p>
   </div>
   <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
   <input type="hidden" name="show_alert" id="show_alert" value="">

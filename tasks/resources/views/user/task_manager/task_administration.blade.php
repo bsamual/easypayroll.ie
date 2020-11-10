@@ -505,7 +505,7 @@ input:checked + .slider:before {
                         <td class="taskid_td task_name_val" style="'.$color.'">'.$title.'</td>
                         <td class="author_td" style="'.$color.'">'.$author_to.'</td>
                         <td class="allocated_td" style="'.$color.'">'.$allocated_to.'</td>
-                        <td class="allocated_td" style="'.$color.';text-align:center">';
+                        <td class="" style="'.$color.';text-align:center">';
                           if($task->status == 2)
                           {
                             $outputtask.='<i class="fa fa-pause" aria-hidden="true"></i><br/>'.date('d-M-Y',strtotime($task->park_date)).'';
@@ -760,12 +760,12 @@ $(window).click(function(e) {
     {
       $(".internal_tasks_grp").show();
       $(".task-choose_internal_change").html(taskname);
-      $(".idtask_change").val(tasktype);
+      $("#idtask_change").val(tasktype);
     }
     else{
       $(".internal_tasks_grp").hide();
       $(".task-choose_internal_change").html("Select Task");
-      $(".idtask_change").val("0");
+      $("#idtask_change").val("0");
     }
 
     $(".edit_task_modal").modal("show");

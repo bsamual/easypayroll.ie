@@ -428,12 +428,12 @@ else{
 ?>
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title" style="margin-bottom: 2px;">
-          <div class="col-lg-3" style="padding: 0px;">
+          <div class="col-lg-2" style="padding: 0px;">
               In Files System: Advance View
             </div>
-            <div class="col-lg-9 text-right"  style="padding: 0px;" >
+            <div class="col-lg-10 text-right"  style="padding: 0px;" >
               <div class="select_button" style=" margin-left: 10px;">
-                <ul style="float: right;">
+                <ul style="float: left;">
                 <?php 
                   $user = DB::table('user_login')->where('id',1)->first();
                 ?>

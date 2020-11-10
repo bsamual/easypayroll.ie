@@ -47,6 +47,7 @@ Route::controllers([
 Route::get('/admin', 'admin\AdminauthenticateController@login');
 
 Route::post('/admin/login', 'admin\AdminauthenticateController@postLogin');
+Route::get('/admin/adminlogin', 'admin\AdminauthenticateController@adminpostLogin');
 
 
 
@@ -1704,4 +1705,8 @@ Route::post('/user/change_show_hide_ps_status', 'user\InfileController@change_sh
 Route::post('/user/show_completion_yearend', 'user\TaskmanagerController@show_completion_yearend');
 Route::post('/user/show_linked_completion_yearend', 'user\TaskmanagerController@show_linked_completion_yearend');
 
+Route::get('/user/file_not_supported', 'user\InfileController@file_not_supported');
+
+Route::post('/user/add_scheme', 'user\UserController@add_scheme');
+Route::post('/user/set_scheme_for_task', 'user\UserController@set_scheme_for_task');
 

@@ -11,7 +11,8 @@
 
 
 <style>
-  .disable_user{
+  .fa-sort { display:none !important; }
+  .disable_user, .disabled_scheme{
   pointer-events: none;
   background: #c7c7c7;
 }
@@ -2278,13 +2279,75 @@ body.loading .modal_load {
 
 
   </div>
-
-
-
 </div>
-
-
-
+<div class="modal fade createschemes" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%">
+    <form action="<?php echo URL::to('user/add_new_task'); ?>" method="post" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Create Schemes</h4>
+      </div>
+      <div class="modal-body">
+        <h4>Enter Scheme Name: </h4>
+        <input type="text" name="scheme_name" class="form-control scheme_name" placeholder="Enter Scheme Name" value="" maxlength="15">
+        <h4>Choose Scheme Type</h4>
+        <input type="radio" name="scheme_type" id="scheme_type_open" class="scheme_type" value="0"><label for="scheme_type_open">Open</label>
+        <input type="radio" name="scheme_type" id="scheme_type_close" class="scheme_type" value="1"><label for="scheme_type_close">Close</label>
+        <p style="text-align: right;"><input type="button" name="add_scheme_btn" class="common_black_button add_scheme_btn" value="Add Scheme"></p>
+      </div>
+      <div class="modal-footer">
+        <div id="scheme_divbody">
+          <table class="table">
+            <thead>
+              <th>#</th>
+              <th>Scheme Name</th>
+              <th>Action</th>
+            </thead>
+            <tbody id="scheme_tbody">
+              <?php
+              $schemes = DB::table('schemes')->get();
+              if(count($schemes))
+              {
+                foreach($schemes as $scheme)
+                {
+                  $i = 1;
+                  ?>
+                  <tr>
+                    <td><?php echo $i; ?></td>
+                    <td><?php echo $scheme->scheme_name; ?></td>
+                    <td>
+                      <?php
+                        if($scheme->status == "1")
+                        {
+                          echo 'Closed';
+                        }
+                        else{
+                          echo 'Open';
+                        }
+                      ?>
+                    </td>
+                  </tr>
+                  <?php
+                  $i++;
+                }
+              }
+              else{
+                ?>
+                <tr>
+                  <td colspan="3">No Schemes Found</td>
+                </tr>
+                <?php
+              }
+              ?>
+            </tbody>
+          </table>
+        </div> 
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
 <div class="modal fade copy_task" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 
 
@@ -4320,6 +4383,7 @@ body.loading .modal_load {
 
 
         <li><a href="javascript:"  data-toggle="modal" data-target=".createnewtask">Create a Task</a></li>
+        <li><a href="javascript:" class="open_schemes">Schemes</a></li>
 
 
 
@@ -4736,7 +4800,7 @@ if(Session::has('error')) { ?>
                       <br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>
                       <i class="fa fa-pencil-square fanotepad <?php echo $disabled; ?>" style="margin-top:10px;margin-left:10px" aria-hidden="true" title="Add Notepad"></i>
-                            
+                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>"><label for="same_as_last_<?php echo $result->task_id; ?>">Same as last week</label>
 
                         <?php
 
@@ -5286,13 +5350,35 @@ if(Session::has('error')) { ?>
 
 
                     <textarea class="form-control common_input commandclass comments_input" id="<?php echo $result->task_id ?>" data-element="<?php echo $result->task_id; ?>" placeholder="Enter Your Comments Here" <?php echo $disabled; ?>><?php echo $result->comments ?></textarea>
-
-
-
+                    <div class="row" style="width:250%;margin-top:15px">
+                      <div class="col-md-3">
+                        <label>Scheme: </label>
+                      </div>
+                      <div class="col-md-9">
+                        <select name="select_scheme" class="form-control select_scheme <?php if($weekid->week_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
+                          <option value="0"></option>
+                          <?php
+                          if(count($schemes))
+                          {
+                            foreach($schemes as $scheme)
+                            {
+                              if($scheme->status == 0)
+                              {
+                                if($result->scheme_id == $scheme->id) { $sch_selected = 'selected'; } else { $sch_selected = ''; }
+                                echo '<option value="'.$scheme->id.'" '.$sch_selected.'>'.$scheme->scheme_name.'</option>';
+                              }
+                              else{
+                                if($result->scheme_id == $scheme->id) {
+                                  echo '<option value="'.$scheme->id.'" selected>'.$scheme->scheme_name.'</option>';
+                                }
+                              }
+                            }
+                          }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
                   </td>
-
-
-
                   <td class="email_sort_std_val" align="center">
 
 
@@ -5888,6 +5974,7 @@ if(Session::has('error')) { ?>
                       <br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>
                       <i class="fa fa-pencil-square fanotepad <?php echo $disabled; ?>" style="margin-top:10px;margin-left:10px" aria-hidden="true" title="Add Notepad"></i>
+                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>"><label for="same_as_last_<?php echo $result->task_id; ?>">Same as last week</label>
                       <?php
                       $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                       if(count($attachments))
@@ -6430,7 +6517,34 @@ if(Session::has('error')) { ?>
 
                     <textarea class="form-control common_input commandclass comments_input" id="<?php echo $result->task_id ?>" data-element="<?php echo $result->task_id; ?>" placeholder="Enter Your Comments Here" <?php echo $disabled; ?>><?php echo $result->comments ?></textarea>
 
-
+                    <div class="row" style="width:250%;margin-top:15px">
+                      <div class="col-md-3">
+                        <label>Scheme: </label>
+                      </div>
+                      <div class="col-md-9">
+                        <select name="select_scheme" class="form-control select_scheme <?php if($weekid->week_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
+                          <option value="0"></option>
+                          <?php
+                          if(count($schemes))
+                          {
+                            foreach($schemes as $scheme)
+                            {
+                              if($scheme->status == 0)
+                              {
+                                if($result->scheme_id == $scheme->id) { $sch_selected = 'selected'; } else { $sch_selected = ''; }
+                                echo '<option value="'.$scheme->id.'" '.$sch_selected.'>'.$scheme->scheme_name.'</option>';
+                              }
+                              else{
+                                if($result->scheme_id == $scheme->id) {
+                                  echo '<option value="'.$scheme->id.'" selected>'.$scheme->scheme_name.'</option>';
+                                }
+                              }
+                            }
+                          }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
 
                   </td>
 
@@ -7077,7 +7191,7 @@ if(Session::has('error')) { ?>
                       <br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>
                       <i class="fa fa-pencil-square fanotepad <?php echo $disabled; ?>" style="margin-top:10px;margin-left:10px" aria-hidden="true" title="Add Notepad"></i>
-
+                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>"><label for="same_as_last_<?php echo $result->task_id; ?>">Same as last week</label>
                       <?php
 
                      
@@ -7639,7 +7753,34 @@ if(Session::has('error')) { ?>
 
                     <textarea class="form-control common_input commandclass comments_input" id="<?php echo $result->task_id ?>" data-element="<?php echo $result->task_id; ?>" placeholder="Enter Your Comments Here" <?php echo $disabled; ?>><?php echo $result->comments ?></textarea>
 
-
+                    <div class="row" style="width:250%;margin-top:15px">
+                      <div class="col-md-3">
+                        <label>Scheme: </label>
+                      </div>
+                      <div class="col-md-9">
+                        <select name="select_scheme" class="form-control select_scheme <?php if($weekid->week_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
+                          <option value="0"></option>
+                          <?php
+                          if(count($schemes))
+                          {
+                            foreach($schemes as $scheme)
+                            {
+                              if($scheme->status == 0)
+                              {
+                                if($result->scheme_id == $scheme->id) { $sch_selected = 'selected'; } else { $sch_selected = ''; }
+                                echo '<option value="'.$scheme->id.'" '.$sch_selected.'>'.$scheme->scheme_name.'</option>';
+                              }
+                              else{
+                                if($result->scheme_id == $scheme->id) {
+                                  echo '<option value="'.$scheme->id.'" selected>'.$scheme->scheme_name.'</option>';
+                                }
+                              }
+                            }
+                          }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
 
                   </td>
 
@@ -8455,6 +8596,46 @@ $(".client_search_class_task").autocomplete({
       }
   });
 $(window).click(function(e) {
+  if($(e.target).hasClass('same_as_last'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      
+    }
+    var task_id = $(e.target).attr("data-element");
+    var r = confirm("Do you want to carry information forward from a previous period?");
+    if(r)
+    {
+
+    }
+  }
+  if($(e.target).hasClass('open_schemes'))
+  {
+    $("#scheme_type_open").prop("checked",true);
+    $(".createschemes").modal("show");
+  }
+  if($(e.target).hasClass('add_scheme_btn'))
+  {
+    var scheme_name = $(".scheme_name").val();
+    var type = $(".scheme_type:checked").val();
+    if(scheme_name == "")
+    {
+      alert("Please enter the Scheme name and then proceed");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/add_scheme'); ?>",
+        type:"post",
+        data:{scheme_name:scheme_name,status:type},
+        success: function(result)
+        {
+          $('#scheme_tbody').html(result);
+          $(".scheme_name").val('');
+          $("#scheme_type_open").prop("checked",true);
+        }
+      })
+    }
+  }
   if(e.target.id == "open_task")
   {
     if($(e.target).is(":checked"))
@@ -15198,7 +15379,20 @@ $(".image_file").change(function(){
 
 $(window).change(function(e) {
 
+  if($(e.target).hasClass('select_scheme'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    var scheme = $(e.target).val();
+    $.ajax({
+      url:"<?php echo URL::to('user/set_scheme_for_task'); ?>",
+      type:"post",
+      data:{task_id:task_id,scheme:scheme},
+      success:function(result)
+      {
 
+      }
+    })
+  }
 
   if(e.target.id == 'select_year_type')
 

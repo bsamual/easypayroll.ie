@@ -2190,7 +2190,7 @@ if($(e.target).hasClass("month_remove")){
         $(e.target).parents("tr").find(".diff_class").val(result['different']);
         $(".month"+month+"_class_"+task_id+'-'+period).html(result['value']);
         $(".month"+month+"_class_"+task_id+'-'+period).css({"text-align":"center"});
-        $(".task_row_"+task_id).find(".month"+month).find(".payp30_red").addClass("payp30_black task_class_colum ");
+        $(".task_row_"+task_id).find(".month"+month).find(".payp30_red").addClass("payp30_black task_class_colum_month ");
         $(".task_row_"+task_id).find(".month"+month).find(".payp30_red").removeClass("payp30_red");
         if($(".task_row_"+task_id).find(".month"+month).find(".blueinfo").length > 0)
         {

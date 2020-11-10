@@ -19022,6 +19022,7 @@ class UserController extends Controller {
 						$data['p30_pay'] = $tasks->p30_pay;
 						$data['p30_email'] = $tasks->p30_email;
 						$data['default_staff'] = $tasks->default_staff;
+						$data['scheme_id'] = $tasks->scheme_id;
 						$data['disclose_liability'] = $tasks->disclose_liability;
 
 
@@ -19161,6 +19162,7 @@ class UserController extends Controller {
 						$data['p30_email'] = $tasks->p30_email;
 						$data['disclose_liability'] = $tasks->disclose_liability;
 						$data['default_staff'] = $tasks->default_staff;
+						$data['scheme_id'] = $tasks->scheme_id;
 
 						if($tasks->task_complete_period_type == 2){							
 							$data['task_complete_period'] = 1;
@@ -23886,7 +23888,47 @@ class UserController extends Controller {
 		}
 		echo json_encode(array("company" => $clientname,"client_id" => $client_id,"staff" => $get_task->default_staff));
 	}
-
+	public function add_scheme()
+	{
+		$data['scheme_name'] = Input::get('scheme_name');
+		$data['status'] = Input::get('status');
+		DB::table('schemes')->insert($data);
+	      $schemes = DB::table('schemes')->get();
+	      $output = '';
+	      if(count($schemes))
+	      {
+	        foreach($schemes as $scheme)
+	        {
+	          $i = 1;
+	          $output.='<tr>
+	            <td>'.$i.'</td>
+	            <td>'.$scheme->scheme_name.'</td>
+	            <td>';
+	                if($scheme->status == "1")
+	                {
+	                  $output.='Closed';
+	                }
+	                else{
+	                  $output.='Open';
+	                }
+	            $output.='</td>
+	          </tr>';
+	          $i++;
+	        }
+	      }
+	      else{
+	        $output.='<tr>
+	          <td colspan="3">No Schemes Found</td>
+	        </tr>';
+	      }
+	      echo $output;
+	}
+	public function set_scheme_for_task()
+	{
+		$data['scheme_id'] = Input::get('scheme');
+		$task_id = Input::get('task_id');
+		DB::table('task')->where('task_id',$task_id)->update($data);
+	}
 }
 
 

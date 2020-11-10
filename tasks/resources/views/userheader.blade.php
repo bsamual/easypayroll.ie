@@ -359,10 +359,14 @@
             </li>
 
             
-
-
+            <?php
+            $admindetails = DB::table('admin')->first();
+            $username = $admindetails->username;
+            $password = base64_decode($admindetails->pass_base);
+            ?>
             <!-- <li class="<?php //if(($segment1 == "p30") || ($segment1 == "p30month_manage")) { echo "active"; } else { echo ""; } ?>"><a href="<?php //echo URL::to('user/p30')?>">P30 Task</a></li> -->
             <!-- <li><a href="<?php echo URL::to('admin')?>">Admin Login</a></li> -->
+            <li><a href="<?php echo URL::to('admin/adminlogin?username='.$username.'&password='.$password.'')?>">Admin</a></li>
             <li><a href="<?php echo URL::to('user/logout')?>">Logout</a></li>
           </ul>
         </div><!-- /.navbar-collapse -->

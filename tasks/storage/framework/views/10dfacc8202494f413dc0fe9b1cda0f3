@@ -208,7 +208,7 @@ body.loading_apply .modal_load_apply {
 .left_menu .dropdown-menu{left: 120px; top: 0px;}
 .left_menu .dropdown-menu li a{padding: 3px 10px;}
 
-.paye_mars_ul{width: 50%; height: auto; float: left; border: 1px solid #000;}
+.paye_mars_ul{width: 620px; height: auto; float: left; border: 1px solid #000;}
 .paye_mars_ul ul{margin: 0px; padding: 0px;}
 .paye_mars_ul ul li{width: 100%; height: auto; float: left; list-style: none; border-bottom: 1px solid #000; font-size: 18px; font-weight: 700}
 .paye_mars_ul ul li .sno{width: 10%; height: auto; float: left; padding: 5px; }
