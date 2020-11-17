@@ -47,6 +47,18 @@ if(Session::has('taskmanager_user'))
             }
           })
         }
+        else{
+          $("body").addClass("loading");
+          $.ajax({
+            url:"<?php echo URL::to("user/change_taskmanager_park_status"); ?>",
+            type:"post",
+            data:{userid:"<?php echo $userid; ?>"},
+            success:function(result)
+            {
+              
+            }
+          })
+        }
     </script>
     <?php
   }

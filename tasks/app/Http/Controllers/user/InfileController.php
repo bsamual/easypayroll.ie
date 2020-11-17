@@ -203,7 +203,7 @@ class InfileController extends Controller {
 	          if(count($attachments)){                        
                 foreach($attachments as $attachment){
 
-                    $downloadfile.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                    $downloadfile.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
                 }
               }
               else{
@@ -226,7 +226,7 @@ class InfileController extends Controller {
               if(count($notes_attachments)){                        
                 foreach($notes_attachments as $attachment){
 
-                    $download_notes.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                    $download_notes.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
                 }
               }
               else{
@@ -250,7 +250,7 @@ class InfileController extends Controller {
               if(count($attach_notes_only)){                        
                 foreach($attach_notes_only as $attachment){
 
-                    $notes_only.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                    $notes_only.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
                 }
               }
               else{
@@ -848,7 +848,7 @@ class InfileController extends Controller {
                 	if($attachment->textstatus == 1) { $texticon="display:none"; $hide = 'display:initial'; } else { $texticon="display:initial"; $hide = 'display:none'; }
                     if($attachment->check_file == 1) { $textdisabled ='disabled'; $checked = 'checked'; } else { $textdisabled =''; $checked = ''; }
                     $downloadfile.= '<div class="file_attachment_div"><input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label> 
-                    	<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" '.$color.'>'.$attachment->attachment.'</a>
+                    	<a href="javascript:" class="fileattachment file_attach_bpso" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'" '.$color.'>'.$attachment->attachment.'</a>
                     	<a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a>
                     	<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Text" style="'.$texticon.'"></a>
                     	<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$attachment->id.'" value="'.$attachment->textval.'" placeholder="Add Text" '.$textdisabled.' style="'.$hide.'">
@@ -885,7 +885,7 @@ class InfileController extends Controller {
               if(count($notes_attachments)){                        
                 foreach($notes_attachments as $attachment){
                 	if($attachment->check_file == 1) { $checked = 'checked'; } else { $checked = ''; }
-                    $download_notes.= '<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label><a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                    $download_notes.= '<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label><a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
                 }
               }
               else{
@@ -908,7 +908,7 @@ class InfileController extends Controller {
               if(count($attach_notes_only)){                        
                 foreach($attach_notes_only as $attachment){
 
-                    $notes_only.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                    $notes_only.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
                 }
               }
               else{
@@ -2229,7 +2229,7 @@ class InfileController extends Controller {
 									<td style="min-width:300px;max-width:300px;">
 										<div class="file_attachment_div" style="width:100%">
 										  	<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label>
-											<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" '.$color.' data-toggle="tooltip" title="'.$attachment->attachment.'">'.substr($attachment->attachment,0,15).'</a>
+											<a href="javascript:" class="fileattachment file_attach_bpso" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'" '.$color.' data-toggle="tooltip" title="'.$attachment->attachment.'">'.substr($attachment->attachment,0,15).'</a>
 											<a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a>
 											<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Text" style="'.$texticon.'"></a>
 											<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$attachment->id.'" value="'.$attachment->textval.'" placeholder="Add Text" '.$textdisabled.' style="'.$hide.'">
@@ -2316,6 +2316,10 @@ class InfileController extends Controller {
 			            $downloadfile.='</table>
 	              	</div>
 	              	<div class="col-md-4 show_iframe" style="display:none;z-index: 99999999999;">
+	              		<a href="javascript:" class="show_iframe_prev common_black_button" style="float:left; margin-top:-36px" >Previous</a> 
+	              		<a href="javascript:" class="show_iframe_next common_black_button" style="float:left; margin-top:-36px;margin-left:105px">Next</a> 
+	              		<label class="pdf_multipage">Note: Multipage</label>
+	              		<a href="javascript:" class="show_iframe_download common_black_button" style="float:right; margin-top:-36px" download>Download</a> 
 	              		<div style="width:100%;background:#b0a8a8;height:400px">
 	              			<iframe name="attachment_pdf" class="attachment_pdf" src="" width="100%" height="100%" style="width:100%"></iframe>
 	              		</div>
@@ -2424,7 +2428,27 @@ class InfileController extends Controller {
 		$fileid = Input::get('fileid');
 		$value = Input::get('input');
 		$attachmentid = Input::get('attachmentid');
-		$data['supplier'] = $value;
+		$type = Input::get('type');
+		if($type == "1")
+		{
+			$get_suppliers = DB::table('in_file')->where('id',$fileid)->first();
+			if(count($get_suppliers))
+			{
+				$suppliers = explode(",",strtolower($get_suppliers->supplier));
+				if (!in_array(strtolower(trim($value)), $suppliers))
+				{
+					if(trim($get_suppliers->supplier) == "")
+					{
+						$dataval['supplier'] = trim($value);
+					}
+					else{
+						$dataval['supplier'] = $get_suppliers->supplier.','.trim($value);
+					}
+					DB::table('in_file')->where('id',$fileid)->update($dataval);
+				}
+			}
+		}
+		$data['supplier'] = trim($value);
 		DB::table('in_file_attachment')->where('id',$attachmentid)->update($data);
 	}
 	public function update_percent_one_infile_attachment()
@@ -2719,13 +2743,13 @@ class InfileController extends Controller {
 		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->get();
 		if(count($files))
 		{
-			$columns_1 = array('Completed Date', 'P/S Date', 'Supplier/Customer', '%', '%', '%', '%', 'Net', 'Vat', 'Gross', 'Filename');
+			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', '%', '%', '%', '%', 'Net', 'Vat', 'Gross', 'Filename');
 			$fileopen = fopen('public/Infile_'.$type.'_attachments.csv', 'w');
 		    fputcsv($fileopen, $columns_1);
 
 			foreach($files as $file)
 			{
-				$columns_2 = array($details->complete_date, $file->date_attachment, $file->supplier, $file->percent_one, $file->percent_two, $file->percent_three, $file->percent_four, $file->net, $file->vat, $file->gross, $file->attachment);
+				$columns_2 = array($file->textval, $file->date_attachment, $file->supplier, $file->percent_one, $file->percent_two, $file->percent_three, $file->percent_four, $file->net, $file->vat, $file->gross, $file->attachment);
 				fputcsv($fileopen, $columns_2);
 			}
 
@@ -2742,13 +2766,13 @@ class InfileController extends Controller {
 		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->get();
 		if(count($files))
 		{
-			$columns_1 = array('Completed Date', 'P/S Date', 'Supplier/Customer', '%', '%', '%', '%', 'Net', 'Vat', 'Gross', 'Filename');
+			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', '%', '%', '%', '%', 'Net', 'Vat', 'Gross', 'Filename');
 			$fileopen = fopen('public/Infile_'.$type.'_attachments.csv', 'w');
 		    fputcsv($fileopen, $columns_1);
 
 			foreach($files as $file)
 			{
-				$columns_2 = array($details->complete_date, $file->date_attachment, $file->supplier, $file->percent_one, $file->percent_two, $file->percent_three, $file->percent_four, $file->net, $file->vat, $file->gross, $file->attachment);
+				$columns_2 = array($file->textval, $file->date_attachment, $file->supplier, $file->percent_one, $file->percent_two, $file->percent_three, $file->percent_four, $file->net, $file->vat, $file->gross, $file->attachment);
 				fputcsv($fileopen, $columns_2);
 			}
 
@@ -2785,6 +2809,13 @@ class InfileController extends Controller {
 	public function file_not_supported()
 	{
 		return view('welcome');
+	}
+	public function check_pdf_pages()
+	{
+ 		$path = Input::get('src');
+ 		$pdf = file_get_contents($path); 
+		$number = preg_match_all("/\/Page\W/", $pdf, $dummy); 
+		echo $number;
 	}
 }
 

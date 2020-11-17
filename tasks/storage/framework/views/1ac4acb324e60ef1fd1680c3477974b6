@@ -8,6 +8,14 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
+.pdf_multipage {
+	float: left;
+	margin-top: -36px;
+margin-left: 200px;
+color: #f00;
+font-size: 18px;
+}
+.disabled_prev { pointer-events: none; background: #dfdfdf !important; }
 .fa-circle { color:green; }
 .td_supplier { cursor: pointer; }
 .tasks_drop {text-align: left !important; }
@@ -288,7 +296,7 @@ body{
 
     position:   fixed;
 
-    z-index:    999999999;
+    z-index:    99999999999;
 
     top:        0;
 
@@ -1278,7 +1286,7 @@ elseif(Session::has('countupdated'))
 									<td style="min-width:300px;max-width:300px;">
 										<div class="file_attachment_div" style="width:100%">
 										  	<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label>
-											<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" '.$color.' data-toggle="tooltip" title="'.$attachment->attachment.'">'.substr($attachment->attachment,0,15).'</a>
+											<a href="javascript:" class="fileattachment file_attach_bpso" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" '.$color.' data-toggle="tooltip" title="'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.substr($attachment->attachment,0,15).'</a>
 											<a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a>
 											<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Text" style="'.$texticon.'"></a>
 											<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$attachment->id.'" value="'.$attachment->textval.'" placeholder="Add Text" '.$textdisabled.' style="'.$hide.'">
@@ -1298,65 +1306,33 @@ elseif(Session::has('countupdated'))
 									<td>
 										<input type="radio" name="check_'.$attachment->id.'" class="o_check" id="o_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$ochecked.' title="Other Sundry"><label for="o_check_'.$attachment->id.'" title="Other Sundry">O</label> 
 									</td>';
-									if($file->show_previous == 1)
-									{
-										$downloadfile.='<td class="td_input">
-											<input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$attachment->id.'" value="'.$attachment->supplier.'" data-value="'.$attachment->supplier.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$attachment->id.'" value="'.$attachment->date_attachment.'" data-value="'.$attachment->date_attachment.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.' percent_one_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_one).'" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.' percent_two_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_two).'" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.' percent_three_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_three).'" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.' percent_four_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_four).'" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input" style="border-left:1px solid #b5b3b3">
-											<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->net).'" data-value="'.number_format_invoice_empty($attachment->net).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-										</td>
-										<td class="td_input">
-											<input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->vat).'" data-value="'.number_format_invoice_empty($attachment->vat).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-										</td>
-										<td class="td_input">
-											<input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->gross).'" data-value="'.number_format_invoice_empty($attachment->gross).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-										</td>';
-									}
-									else{
-										$downloadfile.='<td class="td_input">
-											<input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$attachment->id.'" value="" data-value="'.$attachment->supplier.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$attachment->id.'" value="" data-value="'.$attachment->date_attachment.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.' percent_one_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.' percent_two_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.' percent_three_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input">
-											<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.' percent_four_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-										</td>
-										<td class="td_input" style="border-left:1px solid #b5b3b3">
-											<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->net).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-										</td>
-										<td class="td_input">
-											<input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->vat).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-										</td>
-										<td class="td_input">
-											<input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->gross).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-										</td>';
-									}
+									$downloadfile.='<td class="td_input">
+										<input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$attachment->id.'" value="" data-value="'.$attachment->supplier.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
+									</td>
+									<td class="td_input">
+										<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$attachment->id.'" value="" data-value="'.$attachment->date_attachment.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
+									</td>
+									<td class="td_input">
+										<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.' percent_one_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+									</td>
+									<td class="td_input">
+										<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.' percent_two_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+									</td>
+									<td class="td_input">
+										<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.' percent_three_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+									</td>
+									<td class="td_input">
+										<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.' percent_four_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+									</td>
+									<td class="td_input" style="border-left:1px solid #b5b3b3">
+										<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->net).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
+									</td>
+									<td class="td_input">
+										<input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->vat).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
+									</td>
+									<td class="td_input">
+										<input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->gross).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
+									</td>';
 									$downloadfile.='<td class="td_input">
 										<i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
 									</td>
@@ -1365,6 +1341,9 @@ elseif(Session::has('countupdated'))
 			            $downloadfile.='</table>
 	              	</div>
 	              	<div class="col-md-4 show_iframe" style="display:none;z-index: 99999999999;">
+	              		<a href="javascript:" class="show_iframe_prev common_black_button" style="float:left; margin-top:-36px" >Previous</a> 
+	              		<a href="javascript:" class="show_iframe_next common_black_button" style="float:left; margin-top:-36px;margin-left:105px">Next</a> 
+	              		<label class="pdf_multipage">Note: Multipage</label>
 	              		<a href="javascript:" class="show_iframe_download common_black_button" style="float:right; margin-top:-36px" download>Download</a> 
 	              		<div style="width:100%;background:#b0a8a8;height:400px">
 	              			<iframe name="attachment_pdf" class="attachment_pdf" src="" width="100%" height="100%" style="width:100%"></iframe>
@@ -1413,7 +1392,7 @@ elseif(Session::has('countupdated'))
 
                 foreach($notes_attachments as $attachment){
                    if($attachment->check_file == 1) { $checked = 'checked'; } else { $checked = ''; }
-                    $download_notes.= '<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label><a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" '.$color.'>'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                    $download_notes.= '<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label><a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'" '.$color.'>'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
 
                 }
 
@@ -1459,7 +1438,7 @@ elseif(Session::has('countupdated'))
 
 
 
-                    $notes_only.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'" '.$color.'><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                    $notes_only.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disable_class.'" '.$color.'><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
 
                 }
 
@@ -1551,14 +1530,7 @@ elseif(Session::has('countupdated'))
 					<div style="clear:both"></div>
               	</td>
               	<td '.$color.' colspan="5">';
-              		if($file->show_previous == 1)
-              		{
-              			$output.='<input type="button" class="common_black_button show_previous" value="Hide Entered P/S" data-element="'.$file->id.'">';
-              		}
-              		else{
-              			$output.='<input type="button" class="common_black_button show_previous" value="Load Previously Entered P/S" data-element="'.$file->id.'">';
-              		}
-              	$output.='<input type="hidden" class="hidden_show_hide_ps" id="hidden_show_hide_ps" value="'.$file->show_previous.'">
+              		$output.='<input type="button" class="common_black_button show_previous" value="Load Previously Entered P/S" data-element="'.$file->id.'">
               	</td>
             </tr>
             <tr class="infile_tr_body infile_tr_body_'.$file->id.'" data-element="'.$file->id.'">
@@ -1877,7 +1849,7 @@ function doneTyping_supplier (input,attachmentid,fileid) {
   	$.ajax({
         url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
         type:"get",
-        data:{input:input,attachmentid:attachmentid,fileid:fileid},
+        data:{input:input,attachmentid:attachmentid,fileid:fileid,type:"0"},
         success: function(result) {
         }
     });
@@ -1951,7 +1923,7 @@ $(".supplier").blur(function() {
 	$.ajax({
         url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
         type:"get",
-        data:{input:input_val,attachmentid:attachmentid,fileid:fileid},
+        data:{input:input_val,attachmentid:attachmentid,fileid:fileid,type:"1"},
         success: function(result) {
         }
     });
@@ -2388,62 +2360,43 @@ $(".supplier").autocomplete({
 $(window).dblclick(function(e) {
 	if($(e.target).parents('.td_percent_one').length > 0)
 	{
-		$(".percent_one_div").show();
+		$(e.target).parents('.td_percent_one').find(".percent_one_div").show();
 	}
 	if($(e.target).parents('.td_percent_two').length > 0)
 	{
-		$(".percent_two_div").show();
+		$(e.target).parents('.td_percent_two').find(".percent_two_div").show();
 	}
 	if($(e.target).parents('.td_percent_three').length > 0)
 	{
-		$(".percent_three_div").show();
+		$(e.target).parents('.td_percent_three').find(".percent_three_div").show();
 	}
 	if($(e.target).parents('.td_percent_four').length > 0)
 	{
-		$(".percent_four_div").show();
+		$(e.target).parents('.td_percent_four').find(".percent_four_div").show();
 	}
 });
 $(window).click(function(e) {
+	if($(e.target).hasClass('show_iframe_next'))
+	{
+		$(".fa-circle:visible").parents(".attachment_tr").next().find(".fileattachment").trigger("click");
+	}
+	if($(e.target).hasClass('show_iframe_prev'))
+	{
+		$(".fa-circle:visible").parents(".attachment_tr").prev().find(".fileattachment").trigger("click");
+	}
 	if($(e.target).hasClass('show_previous'))
 	{
-		var status = $("#hidden_show_hide_ps").val();
-		var fileid = $(e.target).attr("data-element");
-		if(status == "1")
+		$("body").addClass("loading");
+		setTimeout(function(result)
 		{
-			$("#hidden_show_hide_ps").val("0");
-			var status = "0";
-			$.ajax({
-				url:"<?php echo URL::to('user/change_show_hide_ps_status'); ?>",
-				type:"post",
-				data:{status:status,fileid:fileid},
-				success: function(result)
-				{
-					var fileid = $(e.target).parents("tr:first").attr("data-element");
-					$(".infile_tr_body_"+fileid).find(".ps_data").each(function(){
-						$(this).val("");
-					});
-					$(e.target).val("Load Previously Entered P/S");
-				}
-			})
-		}
-		else{
-			$("#hidden_show_hide_ps").val("1");
-			var status = "1";
-			$.ajax({
-				url:"<?php echo URL::to('user/change_show_hide_ps_status'); ?>",
-				type:"post",
-				data:{status:status,fileid:fileid},
-				success: function(result)
-				{
-					var fileid = $(e.target).parents("tr:first").attr("data-element");
-					$(".infile_tr_body_"+fileid).find(".ps_data").each(function(){
-						var value = $(this).attr("data-value");
-						$(this).val(value);
-					});
-					$(e.target).val("Hide Entered P/S");
-				}
-			})
-		}
+			var fileid = $(e.target).attr("data-element");
+			$(".infile_tr_body_"+fileid).find(".ps_data").each(function(){
+				var value = $(this).attr("data-value");
+				$(this).val(value);
+			});
+			$(e.target).addClass("disabled_prev");
+			$("body").removeClass("loading");
+		},2000);
 	}
 	if($(e.target).hasClass('supplier'))
 	{
@@ -2454,35 +2407,35 @@ $(window).click(function(e) {
 	}
 	if($(e.target).parents('.percent_one_div').length > 0)
 	{
-		$(".percent_one_div").show();
+		$(e.target).parents(".percent_one_div").show();
 	}
 	else{
 		$(".percent_one_div").hide();
 	}
 	if($(e.target).parents('.percent_two_div').length > 0)
 	{
-		$(".percent_two_div").show();
+		$(e.target).parents(".percent_two_div").show();
 	}
 	else{
 		$(".percent_two_div").hide();
 	}
 	if($(e.target).parents('.percent_three_div').length > 0)
 	{
-		$(".percent_three_div").show();
+		$(e.target).parents(".percent_three_div").show();
 	}
 	else{
 		$(".percent_three_div").hide();
 	}
 	if($(e.target).parents('.percent_four_div').length > 0)
 	{
-		$(".percent_four_div").show();
+		$(e.target).parents(".percent_four_div").show();
 	}
 	else{
 		$(".percent_four_div").hide();
 	}
 	if($(e.target).hasClass('submit_percent_one'))
 	{
-		var value = $(".change_percent_one").val();
+		var value = $(e.target).parents(".percent_one_div").find(".change_percent_one").val();
 		var fileid = $(e.target).attr("data-element");
 		if(value == "")
 		{
@@ -2514,7 +2467,7 @@ $(window).click(function(e) {
 	}
 	if($(e.target).hasClass('submit_percent_two'))
 	{
-		var value = $(".change_percent_two").val();
+		var value = $(e.target).parents(".percent_two_div").find(".change_percent_two").val();
 		var fileid = $(e.target).attr("data-element");
 		if(value == "")
 		{
@@ -2546,7 +2499,7 @@ $(window).click(function(e) {
 	}
 	if($(e.target).hasClass('submit_percent_three'))
 	{
-		var value = $(".change_percent_three").val();
+		var value = $(e.target).parents(".percent_three_div").find(".change_percent_three").val();
 		var fileid = $(e.target).attr("data-element");
 		if(value == "")
 		{
@@ -2578,7 +2531,7 @@ $(window).click(function(e) {
 	}
 	if($(e.target).hasClass('submit_percent_four'))
 	{
-		var value = $(".change_percent_four").val();
+		var value = $(e.target).parents(".percent_four_div").find(".change_percent_four").val();
 		var fileid = $(e.target).attr("data-element");
 		if(value == "")
 		{
@@ -3992,41 +3945,87 @@ $(window).click(function(e) {
   }
 
   if($(e.target).hasClass('fileattachment'))
-
   {
-
-    e.preventDefault();
-
-    var element = $(e.target).attr('data-element');
-
-    $('body').addClass('loading');
-
-    var attach_type = $(e.target).attr("data-original-title");
-    var ext = attach_type.split(".");
-    var exttype = ext[ext.length-1];
-    console.log(ext);
-    $(".show_iframe").hide();
-    $(".fa-circle").hide();
-    if(exttype == "pdf" || exttype == "jpg" || exttype == "jpeg" || exttype == "png" || exttype == "tif" || exttype == "gif")
-    {
-    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",element);
-    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-    	var pos = $(e.target).position();
-	    var leftposi = parseInt(pos.left);
-	    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
-    }
-    else{
-    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src","<?php echo URL::to('user/file_not_supported'); ?>");
-    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-    	var pos = $(e.target).position();
-	    var leftposi = parseInt(pos.left);
-	    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
-    }
-    $(e.target).parents("tr:first").find(".fa-circle").show();
-    $('body').removeClass('loading');
-    return false; 
+  	$(".pdf_multipage").hide();
+  	if($(e.target).hasClass('file_attach_bpso'))
+  	{
+  		e.preventDefault();
+	    var element = $(e.target).attr('data-element');
+	    var src = $(e.target).attr('data-src');
+	    var srcc = $(e.target).attr('data-src');
+	    $('body').addClass('loading');
+	    var attach_type = $(e.target).attr("data-original-title");
+	    var ext = attach_type.split(".");
+	    var exttype = ext[ext.length-1];
+	    $(".show_iframe").hide();
+	    $(".fa-circle").hide();
+	    if(exttype == "pdf")
+	    {
+	    	src = src.replace("uploads/","");
+	    	src = src.replace("=","@");
+	    	src = src.replace("=","@");
+	    	src = src.replace("=","@");
+	    	src = src.replace("=","@");
+	    	src = "<?php echo URL::to('uploads/index.html?file='); ?>"+src;
+	    	$.ajax({
+	    		url:"<?php echo URL::to("user/check_pdf_pages"); ?>",
+	    		type:"post",
+	    		data:{src:srcc},
+	    		success:function(result)
+	    		{
+	    			if(result > 1)
+	    			{
+	    				$(".pdf_multipage").show();
+	    			}
+	    			else{
+	    				$(".pdf_multipage").hide();
+	    			}
+	    			$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",src);
+			    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
+			    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
+			    	var pos = $(e.target).position();
+				    var leftposi = parseInt(pos.left);
+				    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+				    setTimeout(function() {
+				    	$('body').removeClass('loading');
+				    },2000);
+	    		}
+	    	});
+	    }
+	    else if(exttype == "jpg" || exttype == "jpeg" || exttype == "png" || exttype == "tif" || exttype == "tiff" || exttype == "gif")
+	    {
+	    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",element);
+	    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
+	    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
+	    	var pos = $(e.target).position();
+		    var leftposi = parseInt(pos.left);
+		    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+		    setTimeout(function() {
+		    	$('body').removeClass('loading');
+		    },2000);
+	    }
+	    else{
+	    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src","<?php echo URL::to('user/file_not_supported'); ?>");
+	    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
+	    	$(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
+	    	var pos = $(e.target).position();
+		    var leftposi = parseInt(pos.left);
+		    $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+		    $('body').removeClass('loading');
+	    }
+	    $(e.target).parents("tr:first").find(".fa-circle").show();
+	    return false;
+  	}
+  	else{
+  		e.preventDefault();
+	    var element = $(e.target).attr('data-element');
+	    $('body').addClass('loading');
+	    setTimeout(function(){
+	      SaveToDisk(element,element.split('/').reverse()[0]);
+	      $('body').removeClass('loading');
+	      }, 3000);
+	    return false;
+  	}
   }
 
   if($(e.target).hasClass('remove_dropzone_attach'))

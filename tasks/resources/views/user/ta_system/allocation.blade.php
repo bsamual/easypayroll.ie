@@ -16,6 +16,7 @@
 body{
   background: #f5f5f5 !important;
 }
+.popover-content{ font-size: 17px; }
 .common_black_button:hover{
   background: #5f5f5f;
     color: #fff;
@@ -410,13 +411,22 @@ if(isset($_GET['client_id']))
           }
         }                      
       }
+      if($jobs->comments != "")
+      {
+        $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+ data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+      }
+      else{
+        $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+ data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+      }
       $result_time_job.='               
               <tr class="'.$allocated_class.'">
                 <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
                 <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                 <td>'.$time_task->task_name.'</td>
                 <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                <td style="text-align:right">'.$jobs->job_time.'</td>
+                <td style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
                 <td style="text-align:right">'.number_format_invoice_without_decimal($cost).'</td>
                 <td style="text-align:right">'.$invoice.'</td>
               </tr>
@@ -676,7 +686,7 @@ else{
 
 <script>
 $(window).click(function(e) {
-
+$('[data-toggle="popover"]').popover();  
 if($(e.target).hasClass('download_csv_allocated_tasks'))
 {
   var client_id = $(".client_search").val();
@@ -1160,7 +1170,8 @@ $(function(){
 </script>
 
 <script>
-$(document).ready(function() {      
+$(document).ready(function() {   
+  $('[data-toggle="popover"]').popover();   
    $("#search_clientid").autocomplete({
       source: function(request, response) {
           $.ajax({

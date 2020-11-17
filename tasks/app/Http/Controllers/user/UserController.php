@@ -19035,13 +19035,38 @@ class UserController extends Controller {
 							$data['task_complete_period_type'] = 0;							
 						}
 
-						DB::table('task')->insert($data);
+						$taskidnew = DB::table('task')->insertGetid($data);
+
+						if($tasks->scheme_id > 0)
+						{
+							$scheme_det = DB::table('schemes')->where('id',$tasks->scheme_id)->first();
+							if(count($scheme_det))
+							{
+								$upload_dir = 'uploads/task_image';
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$upload_dir = $upload_dir.'/'.base64_encode($taskidnew);
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$myfile = fopen($upload_dir.'/'.$scheme_det->scheme_name.".txt", "w") or die("Unable to open file!");
+								$txt = "This Payroll is to be run under the Scheme: ".$scheme_det->scheme_name."";
+								fwrite($myfile, $txt);
+								fclose($myfile);
+
+								$datareceived['task_id'] = $taskidnew;
+								$datareceived['attachment'] = $scheme_det->scheme_name.".txt";
+								$datareceived['url'] = $upload_dir;
+								$datareceived['network_attach'] = 1;
+								$datareceived['copied'] = 0;
+								DB::table('task_attached')->insert($datareceived);
+							}
+						}
 					}
 				}
 				return redirect('user/select_week/'.base64_encode($weekid))->with('message','New Week Created Successfully');
 			}
-
-
 			else{
 				return Redirect::back()->with('error', 'Sorry! the new week you are trying to create is already exists. Please click Ok to go to that week.<a href="'.URL::to('user/select_week/'.base64_encode($check_weeks->week_id)).'" class="btn btn-sm common_black_button">OK</a><a href="javascript:" class="btn btn-sm common_black_button cancel_week">Cancel</a>');
 			}
@@ -19175,7 +19200,34 @@ class UserController extends Controller {
 
 
 
-						DB::table('task')->insert($data);
+						$taskidnew = DB::table('task')->insertGetid($data);
+
+						if($tasks->scheme_id > 0)
+						{
+							$scheme_det = DB::table('schemes')->where('id',$tasks->scheme_id)->first();
+							if(count($scheme_det))
+							{
+								$upload_dir = 'uploads/task_image';
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$upload_dir = $upload_dir.'/'.base64_encode($taskidnew);
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$myfile = fopen($upload_dir.'/'.$scheme_det->scheme_name.".txt", "w") or die("Unable to open file!");
+								$txt = "This Payroll is to be run under the Scheme: ".$scheme_det->scheme_name."";
+								fwrite($myfile, $txt);
+								fclose($myfile);
+
+								$datareceived['task_id'] = $taskidnew;
+								$datareceived['attachment'] = $scheme_det->scheme_name.".txt";
+								$datareceived['url'] = $upload_dir;
+								$datareceived['network_attach'] = 1;
+								$datareceived['copied'] = 0;
+								DB::table('task_attached')->insert($datareceived);
+							}
+						}
 
 
 
@@ -23892,25 +23944,26 @@ class UserController extends Controller {
 	{
 		$data['scheme_name'] = Input::get('scheme_name');
 		$data['status'] = Input::get('status');
-		DB::table('schemes')->insert($data);
+		$newschemeid = DB::table('schemes')->insertGetid($data);
 	      $schemes = DB::table('schemes')->get();
 	      $output = '';
 	      if(count($schemes))
 	      {
+	      	$i = 1;
 	        foreach($schemes as $scheme)
 	        {
-	          $i = 1;
+	          
 	          $output.='<tr>
 	            <td>'.$i.'</td>
 	            <td>'.$scheme->scheme_name.'</td>
 	            <td>';
 	                if($scheme->status == "1")
-	                {
-	                  $output.='Closed';
-	                }
-	                else{
-	                  $output.='Open';
-	                }
+                    {
+                      $output.='<a href="javascript:" data-src="'.URL::to('user/change_scheme_status?status=0&id='.$scheme->id.'').'" class="fa fa-times-circle change_scheme_status" data-element="1" title="Closed" style="color:red"></a>';
+                    }
+                    else{
+                      $output.='<a href="javascript:" data-src="'.URL::to('user/change_scheme_status?status=1&id='.$scheme->id.'').'" class="fa fa-check-circle-o change_scheme_status" data-element="0" title="Open" style="color:green"></a>';
+                    }
 	            $output.='</td>
 	          </tr>';
 	          $i++;
@@ -23921,13 +23974,132 @@ class UserController extends Controller {
 	          <td colspan="3">No Schemes Found</td>
 	        </tr>';
 	      }
-	      echo $output;
+	      echo json_encode(array("output" => $output,"option" => '<option value="'.$newschemeid.'">'.Input::get('scheme_name').'</option>'));
 	}
 	public function set_scheme_for_task()
 	{
 		$data['scheme_id'] = Input::get('scheme');
 		$task_id = Input::get('task_id');
 		DB::table('task')->where('task_id',$task_id)->update($data);
+	}
+	public function check_previous_week()
+	{
+		$task_id = Input::get('task_id');
+		$status = Input::get('status');
+		$datastatus['same_as_last'] = $status;
+		DB::table('task')->where('task_id',$task_id)->update($datastatus);
+		$week = Input::get('week');
+		$get_prev_week= DB::table('week')->where('week_id','<',$week)->orderBy('week_id','desc')->first();
+		$prev_week_id = $get_prev_week->week_id;
+		$get_curr_tasks = DB::table('task')->where('task_id',$task_id)->first();
+		$task_enumber = $get_curr_tasks->task_enumber;
+		$get_prev_tasks = DB::table('task')->where('task_enumber',$task_enumber)->where('task_week',$prev_week_id)->get();
+		if($status == "1")
+		{
+			if(count($get_prev_tasks))
+			{
+				foreach($get_prev_tasks as $tasks)
+				{
+					$attachments = DB::table('task_attached')->where('task_id',$tasks->task_id)->where('network_attach',1)->get();
+					if(count($attachments))
+					{
+						foreach($attachments as $attachment)
+						{
+							$data['task_id'] = $task_id;
+							$data['attachment'] = $attachment->attachment;
+							$data['url'] = $attachment->url;
+							$data['network_attach'] = $attachment->network_attach;
+							$data['copied'] = 1;
+							$id = DB::table('task_attached')->insertGetId($data);
+						}
+					}
+				}
+			}
+		}
+		else{
+			DB::table('task_attached')->where('task_id',$task_id)->where('copied',1)->delete();
+		}
+		if($get_curr_tasks->task_status == 1) { $disabled='disabled'; } elseif($get_curr_tasks->task_complete_period == 1){ $disabled='disabled'; } else{ $disabled=''; }
+		$output = '';
+		$attachments = DB::table('task_attached')->where('task_id',$task_id)->where('network_attach',1)->get();
+		if(count($attachments))
+		{
+		  $output.='<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+		  $output.='<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+		  $output.='<div class="scroll_attachment_div">';
+		      foreach($attachments as $attachment)
+		      {
+		          $output.='<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+		      }
+		  $output.='</div>';
+		}
+		echo $output;
+	}
+	public function check_previous_month()
+	{
+		$task_id = Input::get('task_id');
+		$status = Input::get('status');
+		$datastatus['same_as_last'] = $status;
+		DB::table('task')->where('task_id',$task_id)->update($datastatus);
+		$month = Input::get('month');
+		$get_prev_month= DB::table('month')->where('month_id','<',$month)->orderBy('month_id','desc')->first();
+		$prev_month_id = $get_prev_month->month_id;
+		$get_curr_tasks = DB::table('task')->where('task_id',$task_id)->first();
+		$task_enumber = $get_curr_tasks->task_enumber;
+		$get_prev_tasks = DB::table('task')->where('task_enumber',$task_enumber)->where('task_month',$prev_month_id)->get();
+		if($status == "1")
+		{
+			if(count($get_prev_tasks))
+			{
+				foreach($get_prev_tasks as $tasks)
+				{
+					$attachments = DB::table('task_attached')->where('task_id',$tasks->task_id)->where('network_attach',1)->get();
+					if(count($attachments))
+					{
+						foreach($attachments as $attachment)
+						{
+							$data['task_id'] = $task_id;
+							$data['attachment'] = $attachment->attachment;
+							$data['url'] = $attachment->url;
+							$data['network_attach'] = $attachment->network_attach;
+							$data['copied'] = 1;
+							$id = DB::table('task_attached')->insertGetId($data);
+						}
+					}
+				}
+			}
+		}
+		else{
+			DB::table('task_attached')->where('task_id',$task_id)->where('copied',1)->delete();
+		}
+		if($get_curr_tasks->task_status == 1) { $disabled='disabled'; } elseif($get_curr_tasks->task_complete_period == 1){ $disabled='disabled'; } else{ $disabled=''; }
+		$output = '';
+		$attachments = DB::table('task_attached')->where('task_id',$task_id)->where('network_attach',1)->get();
+		if(count($attachments))
+		{
+		  $output.='<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+		  $output.='<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+		  $output.='<div class="scroll_attachment_div">';
+		      foreach($attachments as $attachment)
+		      {
+		          $output.='<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+		      }
+		  $output.='</div>';
+		}
+		echo $output;
+	}
+	public function change_scheme_status()
+	{
+		$data['status'] = Input::get('status');
+		$scheme_id = Input::get('id');
+		DB::table('schemes')->where('id',$scheme_id)->update($data);
+		if($data['status'] == "1")
+		{
+			echo URL::to('user/change_scheme_status?status=0&id='.$scheme_id.'');
+		}
+		else{
+			echo URL::to('user/change_scheme_status?status=1&id='.$scheme_id.'');
+		}
 	}
 }
 

@@ -5304,12 +5304,18 @@ class TaskmanagerController extends Controller {
 
 		DB::table('taskmanager_specifics')->insert($data_specifics);
 	}
+	public function change_taskmanager_park_status()
+	{
+		$userid = Input::get('userid');
+		$dataval['park_status'] = 1;
+	    DB::table('user')->where('user_id',$userid)->update($dataval);
+	}
 	public function reactivate_park_task()
 	{
 		$userid = Input::get('userid');
 		$date = date('Y-m-d');
 
-		$park_task = DB::select("SELECT * FROM `taskmanager` WHERE `status` = '2' AND `due_date` = '".$date."' AND (`allocated_to` = '".$userid."' OR `allocated_to` = '0' OR `author` = '".$userid."')");
+		$park_task = DB::select("SELECT * FROM `taskmanager` WHERE `status` = '2' AND `park_date` <= '".$date."' AND (`allocated_to` = '".$userid."' OR `allocated_to` = '0' OR `author` = '".$userid."')");
 		if(count($park_task))
 		{
 			foreach($park_task as $task)

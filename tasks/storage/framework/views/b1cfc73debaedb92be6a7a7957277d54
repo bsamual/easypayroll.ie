@@ -235,9 +235,89 @@ $(document).ready(function() {
   $(".date_class").datetimepicker({     
      format: 'L',
      format: 'DD-MMM-YYYY',
-  });  
+  });
 });
+// $(".payment_class").blur(function() {
+//   var that = $(this);
+//   var input_val = $(this).val();
+//   var setting_id = $(".setting_class").val();        
+//   var client_id  = $(this).attr("data-element");
+//   var year_id  = $("#year_id").val();
+//   $.ajax({
+//         url:"<?php echo URL::to('user/yearend_liability_payment')?>",
+//         type:"post",
+//         dataType:"json",
+//         data:{setting_id:setting_id, value:payment_value, year_id:year_id, client_id:client_id},
+//         headers: {
+//               'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+//           },
+//         success: function(result) { 
+//           $("#client_"+result['client_id']).find(".balance_class").html(result['balance']);
+//           payment_value = payment_value.replace(",", "");
+//           payment_value = payment_value.replace(",", "");
+//           payment_value = payment_value.replace(",", "");
+//           payment_value = payment_value.replace(",", "");
+//           payment_value = payment_value.replace(",", "");
+//           payment_value = payment_value.replace(",", "");
+//           that.parents("td").find(".payment_spam_class").html(payment_value);
+//           $("#liability_expand").DataTable().destroy();
+//           var table = $('#liability_expand').DataTable({
+//               fixedHeader: {
+//                 headerOffset: 75
+//               },
+//               autoWidth: false,
+//               scrollX: false,
+//               fixedColumns: false,
+//               searching: false,
+//               paging: false,
+//               info: false,
+//               order: false,
+//           });
+//           ajaxdatecomplete();
+//         } 
+//   });        
+// })
+// $(".prelim_class").blur(function() {
+//   var that = $(this);
+//   var input_val = $(this).val();
+//   var setting_id = $(".setting_class").val();        
+//   var client_id  = $(this).attr("data-element");
+//   var year_id  = $("#year_id").val();
 
+//   $.ajax({
+//         url:"<?php echo URL::to('user/yearend_liability_prelim')?>",
+//         type:"post",
+//         dataType:"json",
+//         data:{setting_id:setting_id, value:prelim_value, year_id:year_id, client_id:client_id},
+//         headers: {
+//               'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+//           },
+//         success: function(result) { 
+//           prelim_value = prelim_value.replace(",", "");
+//           prelim_value = prelim_value.replace(",", "");
+//           prelim_value = prelim_value.replace(",", "");
+//           prelim_value = prelim_value.replace(",", "");
+//           prelim_value = prelim_value.replace(",", "");
+//           prelim_value = prelim_value.replace(",", "");
+//           that.parents("td").find(".prelim_spam_class").html(prelim_value);
+//           $("#liability_expand").DataTable().destroy();
+//           var table = $('#liability_expand').DataTable({
+//               fixedHeader: {
+//                 headerOffset: 75
+//               },
+//               autoWidth: false,
+//               scrollX: false,
+//               fixedColumns: false,
+//               searching: false,
+//               paging: false,
+//               info: false,
+//               order: false,
+//           }); 
+//           ajaxdatecomplete();
+          
+//         } 
+//   });     
+// })
 </script>
 
 
@@ -441,6 +521,11 @@ function doneTyping_payment (payment_value, client_id, year_id, setting_id, that
           },
         success: function(result) { 
           $("#client_"+result['client_id']).find(".balance_class").html(result['balance']);
+          var table = $('#liability_expand').DataTable();
+          $('#liability_expand').find("tbody").find("td").each(function() {
+            this.innerHTML = parseInt( this.innerHTML ) + 1;
+            table.cell( this ).invalidate().draw();
+          });
           payment_value = payment_value.replace(",", "");
           payment_value = payment_value.replace(",", "");
           payment_value = payment_value.replace(",", "");
@@ -448,6 +533,7 @@ function doneTyping_payment (payment_value, client_id, year_id, setting_id, that
           payment_value = payment_value.replace(",", "");
           payment_value = payment_value.replace(",", "");
           that.parents("td").find(".payment_spam_class").html(payment_value);
+
           ajaxdatecomplete();
         } 
   });            
@@ -469,6 +555,7 @@ function doneTyping_prelim (prelim_value, client_id, year_id, setting_id, that) 
           prelim_value = prelim_value.replace(",", "");
           prelim_value = prelim_value.replace(",", "");
           that.parents("td").find(".prelim_spam_class").html(prelim_value);
+
           ajaxdatecomplete();
           
         } 

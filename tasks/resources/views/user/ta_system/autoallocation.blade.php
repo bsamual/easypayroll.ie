@@ -550,6 +550,7 @@ else{
 
 <script>
 $(window).click(function(e) {
+  $('[data-toggle="popover"]').popover();  
   if($(e.target).hasClass('review_select_class')){
     var invoice = $(".invoice_select").val();    
     $(".invoice_select_click").val(invoice);
@@ -911,7 +912,8 @@ $(function(){
 </script>
 
 <script>
-$(document).ready(function() {      
+$(document).ready(function() {     
+    $('[data-toggle="popover"]').popover();   
    $("#search_clientid").autocomplete({
       source: function(request, response) {
           $.ajax({

@@ -407,11 +407,20 @@ if(isset($_GET['client_id']))
           else{
             $sub_minutes_calculate_unallocated = $sub_minutes_calculate_unallocated;
           }
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
           $result_unallocated_time_job.='<tr>                    
                 <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                 <td>'.$time_task->task_name.'</td>
                 <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                <td style="text-align:right;">'.$jobs->job_time.'</td>
+                <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
                 <td style="text-align:right;">'.number_format_invoice_without_decimal($cost).'</td>                    
               </tr>';  
         }         
@@ -434,11 +443,20 @@ if(isset($_GET['client_id']))
         else{
           $sub_minutes_calculate_unallocated = $sub_minutes_calculate_unallocated;
         }
+        if($jobs->comments != "")
+      {
+        $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+ data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+      }
+      else{
+        $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+ data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+      }
         $result_unallocated_time_job.='<tr>                    
           <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
           <td>'.$time_task->task_name.'</td>
           <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-          <td style="text-align:right;">'.$jobs->job_time.'</td>
+          <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
           <td style="text-align:right;">'.number_format_invoice_without_decimal($cost).'</td>                    
         </tr>';
       }
@@ -1003,6 +1021,7 @@ else{
 <input type="hidden" name="pagination" id="pagination" value="1">
 <script>
 $(window).click(function(e) {
+  $('[data-toggle="popover"]').popover();  
 if($(e.target).hasClass('invoice_class')){
 
   var editid = $(e.target).attr("data-element");
@@ -1292,7 +1311,8 @@ $(function(){
 </script>
 
 <script>
-$(document).ready(function() {      
+$(document).ready(function() {     
+   $('[data-toggle="popover"]').popover();   
    $("#search_clientid").autocomplete({
       source: function(request, response) {
           $.ajax({

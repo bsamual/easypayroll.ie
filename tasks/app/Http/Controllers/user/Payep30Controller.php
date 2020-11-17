@@ -3435,7 +3435,7 @@ class Payep30Controller extends Controller {
 		elseif($active == "11"){ $month_name = 'November'; }
 		else{ $month_name = 'December'; }
 
-		$columns = array('Client Name','ROS Liability','Task Liability');
+		$columns = array('Client Name','ROS Liability','Task Liability','Action','Pay','Email');
 		$file = fopen('papers/Paye P30 '.$month_name.' Month Report.csv', 'w');
 		fputcsv($file, $columns);
 
@@ -3444,6 +3444,11 @@ class Payep30Controller extends Controller {
 		{
 			foreach($tasks as $task)
 			{
+				$level_name = DB::table('p30_tasklevel')->where('id',$task->task_level)->first();
+			    if($task->task_level != 0){ $action = $level_name->name; }
+			    if($task->pay == 0){ $pay = 'No';}else{$pay = 'Yes';}
+			    if($task->email == 0){ $email = 'No';}else{$email = 'Yes';}
+
 				$data = array();
 				$liability = 'month_liabilities_'.$active;
 				$get_month = unserialize($task->$liability);
@@ -3451,7 +3456,7 @@ class Payep30Controller extends Controller {
 				$ros_liability = $get_month['ros_liability'];
 				$task_liability = $get_month['task_liability'];
 
-				$columns1 = array($task->task_name,number_format_invoice($ros_liability),number_format_invoice($task_liability));
+				$columns1 = array($task->task_name,number_format_invoice($ros_liability),number_format_invoice($task_liability),$action,$pay,$email);
 				fputcsv($file, $columns1);
 			}
 		}

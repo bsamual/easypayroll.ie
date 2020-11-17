@@ -1709,4 +1709,8 @@ Route::get('/user/file_not_supported', 'user\InfileController@file_not_supported
 
 Route::post('/user/add_scheme', 'user\UserController@add_scheme');
 Route::post('/user/set_scheme_for_task', 'user\UserController@set_scheme_for_task');
-
+Route::post('/user/check_previous_week', 'user\UserController@check_previous_week');
+Route::post('/user/check_previous_month', 'user\UserController@check_previous_month');
+Route::get('/user/change_scheme_status', 'user\UserController@change_scheme_status');
+Route::post('/user/change_taskmanager_park_status', 'user\TaskmanagerController@change_taskmanager_park_status');
+Route::post('/user/check_pdf_pages', 'user\InfileController@check_pdf_pages');

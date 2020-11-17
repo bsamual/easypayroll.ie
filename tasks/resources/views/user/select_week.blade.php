@@ -11,6 +11,27 @@
 
 
 <style>
+  .modal_load_content {
+      display:    none;
+      position:   fixed;
+      z-index:    999999;
+      top:        0;
+      left:       0;
+      height:     100%;
+      width:      100%;
+      background: rgba( 255, 255, 255, .8 ) 
+                  url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                  50% 50% 
+                  no-repeat;
+  }
+  body.loading_content {
+      overflow: hidden;   
+  }
+  body.loading_content .modal_load_content {
+      display: block;
+  }
+  .fa-link { margin-left:-29px; }
+  .fa-times-circle,.fa-check-circle-o { font-size: 23px; }
   .fa-sort { display:none !important; }
   .disable_user, .disabled_scheme{
   pointer-events: none;
@@ -175,7 +196,7 @@ table{
 
 
 
-    width: 235%;
+    width: 225%;
 
 
 
@@ -2280,38 +2301,39 @@ body.loading .modal_load {
 
   </div>
 </div>
-<div class="modal fade createschemes" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+<div class="modal fade createschemes" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
     <form action="<?php echo URL::to('user/add_new_task'); ?>" method="post" >
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close close_schemes" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Create Schemes</h4>
       </div>
       <div class="modal-body">
         <h4>Enter Scheme Name: </h4>
         <input type="text" name="scheme_name" class="form-control scheme_name" placeholder="Enter Scheme Name" value="" maxlength="15">
-        <h4>Choose Scheme Type</h4>
+        <h4>Select Scheme Type: </h4>
         <input type="radio" name="scheme_type" id="scheme_type_open" class="scheme_type" value="0"><label for="scheme_type_open">Open</label>
         <input type="radio" name="scheme_type" id="scheme_type_close" class="scheme_type" value="1"><label for="scheme_type_close">Close</label>
-        <p style="text-align: right;"><input type="button" name="add_scheme_btn" class="common_black_button add_scheme_btn" value="Add Scheme"></p>
+        <p style="text-align: left;margin-top:10px"><input type="button" name="add_scheme_btn" class="common_black_button add_scheme_btn" value="Create Scheme"></p>
       </div>
       <div class="modal-footer">
         <div id="scheme_divbody">
           <table class="table">
             <thead>
-              <th>#</th>
-              <th>Scheme Name</th>
-              <th>Action</th>
+              <th style="text-align:left">#</th>
+              <th style="text-align:left">Scheme Name</th>
+              <th style="text-align:left">Action</th>
             </thead>
             <tbody id="scheme_tbody">
               <?php
               $schemes = DB::table('schemes')->get();
               if(count($schemes))
               {
+                $i = 1;
                 foreach($schemes as $scheme)
                 {
-                  $i = 1;
+                  
                   ?>
                   <tr>
                     <td><?php echo $i; ?></td>
@@ -2320,10 +2342,10 @@ body.loading .modal_load {
                       <?php
                         if($scheme->status == "1")
                         {
-                          echo 'Closed';
+                          echo '<a href="javascript:" data-src="'.URL::to('user/change_scheme_status?status=0&id='.$scheme->id.'').'" class="fa fa-times-circle change_scheme_status" data-element="1" title="Closed" style="color:red"></a>';
                         }
                         else{
-                          echo 'Open';
+                          echo '<a href="javascript:" data-src="'.URL::to('user/change_scheme_status?status=1&id='.$scheme->id.'').'" class="fa fa-check-circle-o change_scheme_status" data-element="0" title="Open" style="color:green"></a>';
                         }
                       ?>
                     </td>
@@ -4262,11 +4284,11 @@ body.loading .modal_load {
 
 
 
-    <div class="col-lg-7 padding_00 button_top_right">
+    <div class="col-lg-7 padding_00 button_top_right" style="float:left">
 
 
 
-      <ul style="margin-right: 13%;">
+      <ul style="margin-right: 13%;float:left">
         <?php
           $this_week = $weekid->week_id;
           $prev_week = DB::table('week')->where('week_id','<',$this_week)->where('year',$weekid->year)->orderBy('week_id','desc')->first();
@@ -4536,7 +4558,7 @@ if(Session::has('error')) { ?>
 
 
 
-                <th width="200px">Action</th>
+                <th width="200px" style="width: 10%;">Action</th>
 
 
 
@@ -4780,7 +4802,7 @@ if(Session::has('error')) { ?>
 
 
 
-                    <style>
+                      <style>
 
                       .single_notify, .all_notify{font-weight: bold;}
 
@@ -4800,11 +4822,13 @@ if(Session::has('error')) { ?>
                       <br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>
                       <i class="fa fa-pencil-square fanotepad <?php echo $disabled; ?>" style="margin-top:10px;margin-left:10px" aria-hidden="true" title="Add Notepad"></i>
-                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>"><label for="same_as_last_<?php echo $result->task_id; ?>">Same as last week</label>
-
+                      <?php
+                      if($result->same_as_last == 1) { $prev_checked = "checked"; $prev_text = 'color:blue;text-decoration:underline;font-weight:600'; } 
+                      else { $prev_checked = ''; $prev_text = ''; }
+                      ?>
+                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>" <?php echo $prev_checked; ?>><label class="same_as_last_label" for="same_as_last_<?php echo $result->task_id; ?>" style="<?php echo $prev_text; ?>">Same as last week</label>
+                      <div class="files_received_div">
                         <?php
-
-                        
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
@@ -4818,7 +4842,7 @@ if(Session::has('error')) { ?>
                           echo '</div>';
                         }
                         ?>
-                            
+                      </div> 
 
 
 
@@ -5352,7 +5376,7 @@ if(Session::has('error')) { ?>
                     <textarea class="form-control common_input commandclass comments_input" id="<?php echo $result->task_id ?>" data-element="<?php echo $result->task_id; ?>" placeholder="Enter Your Comments Here" <?php echo $disabled; ?>><?php echo $result->comments ?></textarea>
                     <div class="row" style="width:250%;margin-top:15px">
                       <div class="col-md-3">
-                        <label>Scheme: </label>
+                        <label style="margin-top: 6px;">Scheme: </label>
                       </div>
                       <div class="col-md-9">
                         <select name="select_scheme" class="form-control select_scheme <?php if($weekid->week_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
@@ -5592,13 +5616,7 @@ if(Session::has('error')) { ?>
 
                     <a href="javascript:" class="<?php if($result->task_status == 1) { echo $disabled; } ?>" <?php if($result->task_complete_period == 1) { echo 'style="color:#f00;"'; } ?>><i class="fa <?php if($result->task_complete_period == 0) { echo 'fa-exclamation-triangle donot_complete'; } else{ echo 'fa-ban do_complete'; } ?>" data-toggle="tooltip" <?php if($result->task_complete_period == 0) { echo 'title="Do not complete this Period"'; } else { echo 'title="Disable: Do not complete this Period"'; }?> data-element="<?php echo $result->task_id; ?>" aria-hidden="true"></i></a>
 
-
-
-
-
-                     <br/><br/>
-
-                     <div style="width: 100%; height: auto; float: left; font-size: 30px; color: <?php if($result->client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
+                     <div style="height: auto; float: right; font-size: 30px; color: <?php if($result->client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
 
                       <i class="fa <?php if($result->client_id == '') { echo 'fa-chain-broken'; } else{ echo 'fa-link'; } ?>" data-toggle="tooltip" <?php if($result->client_id == '') { echo 'title="This task is not linked"'; } else { echo 'title="This task is linked"'; }?>></i>
 
@@ -5712,7 +5730,7 @@ if(Session::has('error')) { ?>
 
 
 
-                <th width="200px">Action</th>
+                <th width="200px" style="width: 10%;">Action</th>
 
 
 
@@ -5974,24 +5992,28 @@ if(Session::has('error')) { ?>
                       <br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>
                       <i class="fa fa-pencil-square fanotepad <?php echo $disabled; ?>" style="margin-top:10px;margin-left:10px" aria-hidden="true" title="Add Notepad"></i>
-                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>"><label for="same_as_last_<?php echo $result->task_id; ?>">Same as last week</label>
                       <?php
-                      $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
-                      if(count($attachments))
-                      {
-                        echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
-                        echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
-                        echo '<div class="scroll_attachment_div">';
-                            foreach($attachments as $attachment)
-                            {
-
-
-
-                                echo '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
-                            }
-                        echo '</div>';
-                      }
+                      if($result->same_as_last == 1) { $prev_checked = "checked"; $prev_text = 'color:blue;text-decoration:underline;font-weight:600'; } 
+                      else { $prev_checked = ''; $prev_text = ''; }
                       ?>
+                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>" <?php echo $prev_checked; ?>><label class="same_as_last_label" for="same_as_last_<?php echo $result->task_id; ?>" style="<?php echo $prev_text; ?>">Same as last week</label>
+
+                      <div class="files_received_div">
+                        <?php
+                        $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
+                        if(count($attachments))
+                        {
+                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '<div class="scroll_attachment_div">';
+                              foreach($attachments as $attachment)
+                              {
+                                  echo '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                              }
+                          echo '</div>';
+                        }
+                        ?>
+                      </div> 
 
                           <div class="img_div">
 
@@ -6519,7 +6541,7 @@ if(Session::has('error')) { ?>
 
                     <div class="row" style="width:250%;margin-top:15px">
                       <div class="col-md-3">
-                        <label>Scheme: </label>
+                        <label style="margin-top: 6px;">Scheme: </label>
                       </div>
                       <div class="col-md-9">
                         <select name="select_scheme" class="form-control select_scheme <?php if($weekid->week_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
@@ -6768,9 +6790,7 @@ if(Session::has('error')) { ?>
 
                       <a href="javascript:" class="<?php if($result->task_status == 1) { echo $disabled; } ?>" <?php if($result->task_complete_period == 1) { echo 'style="color:#f00;"'; } ?>><i class="fa <?php if($result->task_complete_period == 0) { echo 'fa-exclamation-triangle donot_complete'; } else{ echo 'fa-ban do_complete'; } ?>" data-toggle="tooltip" <?php if($result->task_complete_period == 0) { echo 'title="Do not complete this Period"'; } else { echo 'title="Disable: Do not complete this Period"'; }?> data-element="<?php echo $result->task_id; ?>" aria-hidden="true"></i></a>
 
-                    <br/><br/>
-
-                     <div style="width: 100%; height: auto; float: left; font-size: 30px; color: <?php if($result->client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
+                     <div style="height: auto; float: right; font-size: 30px; color: <?php if($result->client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
 
                       <i class="fa <?php if($result->client_id == '') { echo 'fa-chain-broken'; } else{ echo 'fa-link'; } ?>" data-toggle="tooltip" <?php if($result->client_id == '') { echo 'title="This task is not linked"'; } else { echo 'title="This task is linked"'; }?>></i>
 
@@ -6930,7 +6950,7 @@ if(Session::has('error')) { ?>
 
 
 
-                <th width="200px">Action</th>
+                <th width="200px" style="width: 10%;">Action</th>
 
 
 
@@ -7191,43 +7211,27 @@ if(Session::has('error')) { ?>
                       <br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>
                       <i class="fa fa-pencil-square fanotepad <?php echo $disabled; ?>" style="margin-top:10px;margin-left:10px" aria-hidden="true" title="Add Notepad"></i>
-                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>"><label for="same_as_last_<?php echo $result->task_id; ?>">Same as last week</label>
                       <?php
-
-                     
-
-                      $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
-
-
-
-                      if(count($attachments))
-
-
-
-                      {
-
-                           
-                           echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
-                           echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
-                           echo '<div class="scroll_attachment_div">';
-                            foreach($attachments as $attachment)
-                            {
-
-
-
-                                echo '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
-
-
-
-                            }
-                            echo '</div>';
-
-
-                      }
-
-
-
+                      if($result->same_as_last == 1) { $prev_checked = "checked"; $prev_text = 'color:blue;text-decoration:underline;font-weight:600'; } 
+                      else { $prev_checked = ''; $prev_text = ''; }
                       ?>
+                      <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>" <?php echo $prev_checked; ?>><label class="same_as_last_label" for="same_as_last_<?php echo $result->task_id; ?>" style="<?php echo $prev_text; ?>">Same as last week</label>
+                      <div class="files_received_div">
+                        <?php
+                        $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
+                        if(count($attachments))
+                        {
+                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '<div class="scroll_attachment_div">';
+                              foreach($attachments as $attachment)
+                              {
+                                  echo '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+                              }
+                          echo '</div>';
+                        }
+                        ?>
+                      </div> 
                           <div class="img_div">
 
 
@@ -7755,7 +7759,7 @@ if(Session::has('error')) { ?>
 
                     <div class="row" style="width:250%;margin-top:15px">
                       <div class="col-md-3">
-                        <label>Scheme: </label>
+                        <label style="margin-top: 6px;">Scheme: </label>
                       </div>
                       <div class="col-md-9">
                         <select name="select_scheme" class="form-control select_scheme <?php if($weekid->week_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
@@ -8003,9 +8007,7 @@ if(Session::has('error')) { ?>
 
                       <a href="javascript:" class="<?php if($result->task_status == 1) { echo $disabled; } ?>" <?php if($result->task_complete_period == 1) { echo 'style="color:#f00;"'; } ?>><i class="fa <?php if($result->task_complete_period == 0) { echo 'fa-exclamation-triangle donot_complete'; } else{ echo 'fa-ban do_complete'; } ?>" data-toggle="tooltip" <?php if($result->task_complete_period == 0) { echo 'title="Do not complete this Period"'; } else { echo 'title="Disable: Do not complete this Period"'; }?> data-element="<?php echo $result->task_id; ?>" aria-hidden="true"></i></a>
 
-                    <br/><br/>
-
-                     <div style="width: 100%; height: auto; float: left; font-size: 30px; color: <?php if($result->client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
+                     <div style="height: auto; float: right; font-size: 30px; color: <?php if($result->client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
 
                       <i class="fa <?php if($result->client_id == '') { echo 'fa-chain-broken'; } else{ echo 'fa-link'; } ?>" data-toggle="tooltip" <?php if($result->client_id == '') { echo 'title="This task is not linked"'; } else { echo 'title="This task is linked"'; }?>></i>
 
@@ -8183,7 +8185,9 @@ if(Session::has('error')) { ?>
 
 <div class="modal_load"></div>
 
-
+<div class="modal_load_content" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait while we update Scheme status for all the tasks</p>
+</div>
 
 <script>
 
@@ -8596,17 +8600,80 @@ $(".client_search_class_task").autocomplete({
       }
   });
 $(window).click(function(e) {
+  if($(e.target).hasClass('close_schemes'))
+  {
+    $("body").addClass("loading_content");
+    window.location.reload();
+  }
+  if($(e.target).parents(".close_schemes").length > 0)
+  {
+    $("body").addClass("loading_content");
+    window.location.reload();
+  }
+  if($(e.target).hasClass('change_scheme_status'))
+  {
+    var href = $(e.target).attr("data-src");
+    var status = $(e.target).attr("data-element");
+    $.ajax({
+      url:href,
+      type:"get",
+      success:function(result)
+      {
+        if(status == "1")
+        {
+          $(e.target).addClass("fa-check-circle-o");
+          $(e.target).removeClass("fa-times-circle");
+          $(e.target).attr("title","Open");
+          $(e.target).attr("data-element","0");
+          $(e.target).css("color","green");
+          $(e.target).attr("data-src",result);
+        }
+        else{
+          $(e.target).addClass("fa-times-circle");
+          $(e.target).removeClass("fa-check-circle-o");
+          $(e.target).attr("title","Closed");
+          $(e.target).attr("data-element","1");
+          $(e.target).css("color","red");
+          $(e.target).attr("data-src",result);
+        }
+      }
+    })
+  }
   if($(e.target).hasClass('same_as_last'))
   {
     if($(e.target).is(":checked"))
     {
-      
+      var task_id = $(e.target).attr("data-element");
+      var r = confirm("Do you want to carry information forward from a previous period?");
+      if(r)
+      {
+        $.ajax({
+          url:"<?php echo URL::to('user/check_previous_week'); ?>",
+          type:"post",
+          data:{task_id:task_id,week:"<?php echo $weekid->week_id; ?>",status:"1"},
+          success:function(result)
+          {
+            $(e.target).parents(".special_div").find(".files_received_div").html(result);
+            $(e.target).parents(".special_div").find(".same_as_last_label").css({"color":"blue","text-decoration":"underline","font-weight":"600"})
+          }
+        })
+      }
+      else{
+        $(e.target).prop("checked",false);
+      }
     }
-    var task_id = $(e.target).attr("data-element");
-    var r = confirm("Do you want to carry information forward from a previous period?");
-    if(r)
-    {
-
+    else{
+      var task_id = $(e.target).attr("data-element");
+      $.ajax({
+        url:"<?php echo URL::to('user/check_previous_week'); ?>",
+        type:"post",
+        data:{task_id:task_id,week:"<?php echo $weekid->week_id; ?>",status:"0"},
+        success:function(result)
+        {
+          $(e.target).parents(".special_div").find(".files_received_div").html(result);
+          $(e.target).parents(".special_div").find(".same_as_last_label").css({"color":"#fff","text-decoration":"none","font-weight":"700"})
+        }
+      })
     }
   }
   if($(e.target).hasClass('open_schemes'))
@@ -8627,11 +8694,13 @@ $(window).click(function(e) {
         url:"<?php echo URL::to('user/add_scheme'); ?>",
         type:"post",
         data:{scheme_name:scheme_name,status:type},
+        dataType:"json",
         success: function(result)
         {
-          $('#scheme_tbody').html(result);
+          $('#scheme_tbody').html(result['output']);
           $(".scheme_name").val('');
           $("#scheme_type_open").prop("checked",true);
+          $(".select_scheme").append(result['option'])
         }
       })
     }

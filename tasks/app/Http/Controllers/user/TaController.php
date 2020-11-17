@@ -376,13 +376,22 @@ class TaController extends Controller {
                   }
                 }                      
               }
+              if($jobs->comments != "")
+              {
+                $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+         data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+              }
+              else{
+                $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+         data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+              }
               $result_time_job.='               
                       <tr class="'.$allocated_class.'">
                         <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
                         <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                         <td>'.$time_task->task_name.'</td>
                         <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                        <td>'.$jobs->job_time.'</td>
+                        <td>'.$jobs->job_time.' '.$comments.'</td>
                         <td>'.number_format_invoice_without_decimal($cost).'</td>
                         <td>'.$invoice.'</td>
                       </tr>
@@ -565,14 +574,22 @@ class TaController extends Controller {
                   $datausercost['task_'.$jobs->task_id] = $cost;
                 }
 
-
+                if($jobs->comments != "")
+                {
+                  $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+           data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+                }
+                else{
+                  $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+           data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+                }
                 $result_invoice_task.= '
                 <tr>
                   <td><input type="checkbox" name="tasks_job" class="select_task_unallocate" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
                   <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                   <td>'.$time_task->task_name.'</td>
                   <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                  <td  style="text-align:right">'.$jobs->job_time.'</td>
+                  <td  style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
                   <td  style="text-align:right">'.number_format_invoice_without_decimal($cost).'</td>
                   <td  style="text-align:right">'.$invoice.'</td>
                 </tr>';
@@ -697,10 +714,18 @@ class TaController extends Controller {
               if(in_array($jobs->id, $summaryjobs)){  
 
               $task_total = $task_total+ $datausercost['task_'.$jobs->task_id];         
-
+              if($jobs->comments != "")
+              {
+                $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+         data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+              }
+              else{
+                $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+         data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+              }
               $result_summary.='<tr>                  
                       <td>'.$jobs->task_name.'</td>
-                      <td style="text-align:right">'.$hour_calculate.':'.$minutes_calculate.':00</td>
+                      <td style="text-align:right">'.$hour_calculate.':'.$minutes_calculate.':00 '.$comments.'</td>
                       <td style="text-align:right">'.number_format_invoice_without_decimal($datausercost['task_'.$jobs->task_id]).'</td>
                       <td style="text-align:right"><a href="javascript:"><i class="fa fa-download single_summary" data-element="'.$jobs->task_id.'" aria-hidden="true"></i></a></td>
                     </tr>';
@@ -945,7 +970,15 @@ class TaController extends Controller {
           else{
             $datausercost['task_'.$jobs->task_id] = $cost;
           }
-
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
 
           $result_invoice_task.= '
           <tr>
@@ -953,7 +986,7 @@ class TaController extends Controller {
             <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
             <td>'.$time_task->task_name.'</td>
             <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-            <td style="text-align:right;">'.$jobs->job_time.'</td>
+            <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
             <td style="text-align:right;">'.number_format_invoice_without_decimal($cost).'</td>
             <td style="text-align:right;">'.$invoice.'</td>
           </tr>';
@@ -1075,10 +1108,19 @@ class TaController extends Controller {
           if(in_array($jobs->id, $summaryjobs)){  
 
           $task_total = $task_total+ $datausercost['task_'.$jobs->task_id];         
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
 
           $result_summary.='<tr>                  
                   <td>'.$jobs->task_name.'</td>
-                  <td  style="text-align:right;">'.$hour_calculate.':'.$minutes_calculate.':00</td>
+                  <td  style="text-align:right;">'.$hour_calculate.':'.$minutes_calculate.':00 '.$comments.'</td>
                   <td  style="text-align:right;">'.number_format_invoice_without_decimal($datausercost['task_'.$jobs->task_id]).'</td>
                   <td><a href="javascript:"><i class="fa fa-download single_summary" data-element="'.$jobs->task_id.'" aria-hidden="true"></i></a></td>
                 </tr>';
@@ -1202,13 +1244,22 @@ class TaController extends Controller {
               }
             }                      
           }
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
           $result_time_job.='               
                   <tr class="'.$allocated_class.'">
                     <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
                     <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                    <td style="text-align:right;">'.$jobs->job_time.'</td>
+                    <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
                     <td style="text-align:right;">'.number_format_invoice_without_decimal($cost).'</td>
                     <td style="text-align:right;">'.$invoice.'</td>
                   </tr>
@@ -1349,14 +1400,22 @@ class TaController extends Controller {
                 $datausercost['task_'.$jobs->task_id] = $cost;
               }
 
-
+              if($jobs->comments != "")
+              {
+                $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+         data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+              }
+              else{
+                $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+         data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+              }
               $result_invoice_task.= '
               <tr>
                 <td><input type="checkbox" name="tasks_job" class="select_task_unallocate" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
                 <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                 <td>'.$time_task->task_name.'</td>
                 <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                <td style="text-align:right">'.$jobs->job_time.'</td>
+                <td style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
                 <td style="text-align:right">'.number_format_invoice_without_decimal($cost).'</td>
                 <td style="text-align:right">'.$invoice.'</td>
               </tr>';
@@ -1483,10 +1542,18 @@ class TaController extends Controller {
             if(in_array($jobs->id, $summaryjobs)){  
 
             $task_total = $task_total+ $datausercost['task_'.$jobs->task_id];         
-
+            if($jobs->comments != "")
+            {
+              $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+       data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+            }
+            else{
+              $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+       data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+            }
             $result_summary.='<tr>                  
                     <td>'.$jobs->task_name.'</td>
-                    <td style="text-align:right">'.$hour_calculate.':'.$minutes_calculate.':00</td>
+                    <td style="text-align:right">'.$hour_calculate.':'.$minutes_calculate.':00 '.$comments.'</td>
                     <td style="text-align:right">'.number_format_invoice_without_decimal($datausercost['task_'.$jobs->task_id]).'</td>
                     <td><a href="javascript:"><i class="fa fa-download single_summary" data-element="'.$jobs->task_id.'" aria-hidden="true"></i></a></td>
                   </tr>';
@@ -1678,13 +1745,22 @@ class TaController extends Controller {
               }
             }                      
           }
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
           $result_time_job.='               
                   <tr class="'.$allocated_class.'">
                     <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
                     <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                    <td style="text-align:right">'.$jobs->job_time.'</td>
+                    <td style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
                     <td style="text-align:right">'.number_format_invoice_without_decimal($cost).'</td>
                     <td style="text-align:right">'.$invoice.'</td>
                   </tr>
@@ -1848,14 +1924,22 @@ class TaController extends Controller {
           }
 
                  
-                
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
 
           $result_unallocated_time_job.='               
                   <tr>                    
                     <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                    <td>'.$jobs->job_time.'</td>
+                    <td>'.$jobs->job_time.' '.$comments.'</td>
                     <td>'.number_format_invoice_without_decimal($cost).'</td>                    
                   </tr>
           ';
@@ -1889,14 +1973,22 @@ class TaController extends Controller {
           }
 
                  
-                
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }   
 
           $result_unallocated_time_job.='               
                   <tr>                    
                     <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                    <td>'.$jobs->job_time.'</td>
+                    <td>'.$jobs->job_time.' '.$comments.'</td>
                     <td>'.number_format_invoice_without_decimal($cost).'</td>                    
                   </tr>
           ';
@@ -2439,7 +2531,15 @@ class TaController extends Controller {
           else{
             $datausercostval['usercost_'.$jobs->user_id] = $cost;
           }
-
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
           $result_cost_analysis.= '
           <tr>
             
@@ -2447,7 +2547,7 @@ class TaController extends Controller {
             <td>'.$user_details->lastname.' '.$user_details->firstname.'</td>
             <td>'.$rate_result.'</td>
             <td>'.$time_task->task_name.'</td>            
-            <td>'.$jobs->job_time.'</td>
+            <td>'.$jobs->job_time.' '.$comments.'</td>
             <td>'.number_format_invoice_without_decimal($cost).'</td>            
           </tr>';
         }
@@ -3906,11 +4006,20 @@ class TaController extends Controller {
             else{
               $sub_minutes_calculate_unallocated = $sub_minutes_calculate_unallocated;
             }
+            if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
             $result_unallocated_time_job.='<tr>                    
               <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
               <td>'.$time_task->task_name.'</td>
               <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-              <td>'.$jobs->job_time.'</td>
+              <td>'.$jobs->job_time.' '.$comments.'</td>
               <td>'.number_format_invoice_without_decimal($cost).'</td>                    
             </tr>';
           }
@@ -4408,14 +4517,22 @@ class TaController extends Controller {
           }
 
                  
-                
+          if($jobs->comments != "")
+          {
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="'.$jobs->comments.'"></a>';
+          }
+          else{
+            $comments = '<a href="javascript:" class="fa fa-pencil-square" data-trigger="focus"
+     data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
+          }
 
           $result_unallocated_time_job.='               
                   <tr>                    
                     <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
-                    <td>'.$jobs->job_time.'</td>
+                    <td>'.$jobs->job_time.' '.$comments.'</td>
                     <td>'.number_format_invoice_without_decimal($cost).'</td>                    
                   </tr>
           ';
