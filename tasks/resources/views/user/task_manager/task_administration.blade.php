@@ -433,6 +433,11 @@ input:checked + .slider:before {
                   {
                     foreach($taskslist as $task)
                     {
+                      $two_bill_icon = '';
+                      if($task->two_bill == "1")
+                      {
+                        $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
+                      }
                       if($task->client_id == "")
                       {
                         $title_lable = 'Task Name:';
@@ -502,7 +507,7 @@ input:checked + .slider:before {
 
                       $outputtask.='<tr id="tr_task_'.$task->id.'" class="tr_task '.$tr_status.'">
                         <td class="taskid_td" style="'.$color.'">'.$task->taskid.'</td>
-                        <td class="taskid_td task_name_val" style="'.$color.'">'.$title.'</td>
+                        <td class="taskid_td task_name_val" style="'.$color.'">'.$title.' '.$two_bill_icon.'</td>
                         <td class="author_td" style="'.$color.'">'.$author_to.'</td>
                         <td class="allocated_td" style="'.$color.'">'.$allocated_to.'</td>
                         <td class="" style="'.$color.';text-align:center">';

@@ -2052,6 +2052,7 @@ class InfileController extends Controller {
 
 
 		DB::table('in_file_attachment')->where('id',$attach_id)->update($data);
+		DB::table('in_file_attachment')->where('attach_id',$attach_id)->update($data);
 	}
 	public function infile_download_bpso_all_image()
 	{
@@ -2179,32 +2180,32 @@ class InfileController extends Controller {
 			                    </div>
 			                  </td>
 			                  <td class="td_input td_supplier" style="font-weight:600;text-align:center" data-element="'.$file->id.'">Supplier/Customer</td>
-			                  <td class="td_input td_date" style="font-weight:600;text-align:center">Date</td>
+			                  <td class="td_input td_date" style="font-weight:600;text-align:center;width:110px">Date</td>
 			                  <td class="td_input td_percent_one" style="font-weight:600;text-align:center">
 			                  	% <br/><spam class="percent_one_text">'.$file->percent_one.'</spam>
 			                  	<div class="percent_one_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_one" class="change_percent_one form-control" data-element="'.$file->id.'" value="'.$file->percent_one.'" style="width: 80px;float: left;">
+			                  		<input type="number" name="change_percent_one" class="change_percent_one form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
 			                  		<input type="button" name="submit_percent_one" class="common_black_button submit_percent_one" value="Submit" data-element="'.$file->id.'">
 			                  	</div>
 			                  </td>
 			                  <td class="td_input td_percent_two" style="font-weight:600;text-align:center">
 			                  	% <br/><spam class="percent_two_text">'.$file->percent_two.'</spam>
 			                  	<div class="percent_two_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_two" class="change_percent_two form-control" data-element="'.$file->id.'" value="'.$file->percent_two.'" style="width: 80px;float: left;">
+			                  		<input type="number" name="change_percent_two" class="change_percent_two form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
 			                  		<input type="button" name="submit_percent_two" class="common_black_button submit_percent_two" value="Submit" data-element="'.$file->id.'">
 			                  	</div>
 			                  </td>
 			                  <td class="td_input td_percent_three" style="font-weight:600;text-align:center">
 			                  	% <br/><spam class="percent_three_text">'.$file->percent_three.'</spam>
 			                  	<div class="percent_three_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_three" class="change_percent_three form-control" data-element="'.$file->id.'" value="'.$file->percent_three.'" style="width: 80px;float: left;">
+			                  		<input type="number" name="change_percent_three" class="change_percent_three form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
 			                  		<input type="button" name="submit_percent_three" class="common_black_button submit_percent_three" value="Submit" data-element="'.$file->id.'">
 			                  	</div>
 			                  </td>
 			                  <td class="td_input td_percent_four" style="font-weight:600;text-align:center">
 			                  	% <br/><spam class="percent_four_text">'.$file->percent_four.'</spam>
 			                  	<div class="percent_four_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_four" class="change_percent_four form-control" data-element="'.$file->id.'" value="'.$file->percent_four.'" style="width: 80px;float: left;">
+			                  		<input type="number" name="change_percent_four" class="change_percent_four form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
 			                  		<input type="button" name="submit_percent_four" class="common_black_button submit_percent_four" value="Submit" data-element="'.$file->id.'">
 			                  	</div>
 			                  </td>
@@ -2214,6 +2215,7 @@ class InfileController extends Controller {
 			                  <td class="td_input" style="width:20px;font-weight:600;text-align:center"></td>
 			                </tr>';                   
 			                foreach($attachments as $attachment){
+			                	$get_sub_attachments = DB::table('in_file_attachment')->where('attach_id',$attachment->id)->where('secondary',1)->orderBy('id','desc')->get();
 			                	if($attachment->textstatus == 1) { $texticon="display:none"; $hide = 'display:initial'; } else { $texticon="display:initial"; $hide = 'display:none'; }
 								if($attachment->check_file == 1) { $textdisabled ='disabled'; $checked = 'checked'; } else { $textdisabled =''; $checked = ''; }
 								if($attachment->b == 1) {  $bchecked = 'checked'; } else { $bchecked = ''; }
@@ -2224,13 +2226,18 @@ class InfileController extends Controller {
 								if($attachment->p == 1) { $attach_disabled = ''; }
 								elseif($attachment->s == 1) { $attach_disabled = ''; }
 								else { $attach_disabled = 'disabled'; }
+								if($attachment->flag == 0) { $flag = '<i class="fa fa-flag flag_gray fileattachment"></i>'; }
+				                elseif($attachment->flag == 1) { $flag = '<i class="fa fa-flag flag_orange fileattachment"></i>'; }
+				                elseif($attachment->flag == 2) { $flag = '<i class="fa fa-flag flag_red fileattachment"></i>'; }
 
 								$downloadfile.= '<tr class="attachment_tr" data-element="'.$file->id.'">
 									<td style="min-width:300px;max-width:300px;">
 										<div class="file_attachment_div" style="width:100%">
 										  	<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label>
+										  	'.$flag.'
+										  	<a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a>
 											<a href="javascript:" class="fileattachment file_attach_bpso" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'" '.$color.' data-toggle="tooltip" title="'.$attachment->attachment.'">'.substr($attachment->attachment,0,15).'</a>
-											<a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a>
+											
 											<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Text" style="'.$texticon.'"></a>
 											<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$attachment->id.'" value="'.$attachment->textval.'" placeholder="Add Text" '.$textdisabled.' style="'.$hide.'">
 											<a href="javascript:" class="fa fa-minus-square remove_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Remove Text" style="'.$hide.'"></a>
@@ -2258,16 +2265,16 @@ class InfileController extends Controller {
 											<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$attachment->id.'" value="'.$attachment->date_attachment.'" data-value="'.$attachment->date_attachment.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.' percent_one_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_one).'" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.'" value="'.number_format_invoice_empty($attachment->percent_one).'" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.' percent_two_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_two).'" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.'" value="'.number_format_invoice_empty($attachment->percent_two).'" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.' percent_three_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_three).'" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.'" value="'.number_format_invoice_empty($attachment->percent_three).'" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.' percent_four_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->percent_four).'" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.'" value="'.number_format_invoice_empty($attachment->percent_four).'" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input" style="border-left:1px solid #b5b3b3">
 											<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$attachment->id.'" value="'.number_format_invoice_empty($attachment->net).'" data-value="'.number_format_invoice_empty($attachment->net).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
@@ -2287,16 +2294,16 @@ class InfileController extends Controller {
 											<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$attachment->id.'" value="" data-value="'.$attachment->date_attachment.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.' percent_one_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.' percent_two_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.' percent_three_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input">
-											<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.' percent_four_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+											<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
 										</td>
 										<td class="td_input" style="border-left:1px solid #b5b3b3">
 											<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->net).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
@@ -2312,6 +2319,83 @@ class InfileController extends Controller {
 										<i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
 									</td>
 								</tr>';
+								if(count($get_sub_attachments))
+				                {
+				                  foreach($get_sub_attachments as $sub)
+				                  {
+				                    if($sub->p == 1) { $attach_sub_disabled = ''; }
+				                    elseif($sub->s == 1) { $attach_sub_disabled = ''; }
+				                    else { $attach_sub_disabled = 'disabled'; }
+
+				                    $downloadfile.= '<tr class="attachment_tr attachment_tr_'.$attachment->id.'" data-element="'.$file->id.'">
+				                      <td colspan="5">
+				                        
+				                      </td>';
+				                      if($file->show_previous == 1)
+									  {
+				                      $downloadfile.= '<td class="td_input">
+				                        <input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$sub->id.'" value="'.$sub->supplier.'" data-value="'.$sub->supplier.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$sub->id.'" value="'.$sub->date_attachment.'" data-value="'.$sub->date_attachment.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.' percent_one_value_'.$sub->id.'" value="'.number_format_invoice_empty($sub->percent_one).'" data-value="'.number_format_invoice_empty($sub->percent_one).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.' percent_two_value_'.$sub->id.'" value="'.number_format_invoice_empty($sub->percent_two).'" data-value="'.number_format_invoice_empty($sub->percent_two).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.' percent_three_value_'.$sub->id.'" value="'.number_format_invoice_empty($sub->percent_three).'" data-value="'.number_format_invoice_empty($sub->percent_three).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.' percent_four_value_'.$sub->id.'" value="'.number_format_invoice_empty($sub->percent_four).'" data-value="'.number_format_invoice_empty($sub->percent_four).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input" style="border-left:1px solid #b5b3b3">
+				                        <input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$sub->id.'" value="'.number_format_invoice_empty($sub->net).'" data-value="'.number_format_invoice_empty($sub->net).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$sub->id.'" value="'.number_format_invoice_empty($sub->vat).'" data-value="'.number_format_invoice_empty($sub->vat).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$sub->id.'" value="'.number_format_invoice_empty($sub->gross).'" data-value="'.number_format_invoice_empty($sub->gross).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+				                      </td>';
+				                  	  }
+				                  	  else{
+				                  	  	$downloadfile.= '<td class="td_input">
+				                        <input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$sub->id.'" value="" data-value="'.$sub->supplier.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$sub->id.'" value="" data-value="'.$sub->date_attachment.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.' percent_one_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_one).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.' percent_two_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_two).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.' percent_three_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_three).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.' percent_four_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_four).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+				                      </td>
+				                      <td class="td_input" style="border-left:1px solid #b5b3b3">
+				                        <input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->net).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->vat).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+				                      </td>
+				                      <td class="td_input">
+				                        <input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->gross).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+				                      </td>';
+				                  	  }
+				                      $downloadfile.= '<td class="td_input">
+				                        <i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
+				                      </td>
+				                    </tr>';
+				                  }
+				                }
 			                }
 			            $downloadfile.='</table>
 	              	</div>
@@ -2320,8 +2404,8 @@ class InfileController extends Controller {
 	              		<a href="javascript:" class="show_iframe_next common_black_button" style="float:left; margin-top:-36px;margin-left:105px">Next</a> 
 	              		<label class="pdf_multipage">Note: Multipage</label>
 	              		<a href="javascript:" class="show_iframe_download common_black_button" style="float:right; margin-top:-36px" download>Download</a> 
-	              		<div style="width:100%;background:#b0a8a8;height:400px">
-	              			<iframe name="attachment_pdf" class="attachment_pdf" src="" width="100%" height="100%" style="width:100%"></iframe>
+	              		<div style="width:100%;background:#b0a8a8;height:800px">
+	              			<iframe name="attachment_pdf" class="attachment_pdf" src="" style="width:100%;height:800px"></iframe>
 	              		</div>
 	              	</div>';
 		echo json_encode(array('id' => $id, 'table_content' => $downloadfile));
@@ -2743,7 +2827,7 @@ class InfileController extends Controller {
 		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->get();
 		if(count($files))
 		{
-			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', '%', '%', '%', '%', 'Net', 'Vat', 'Gross', 'Filename');
+			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', $details->percent_one.'%', $details->percent_two.'%', $details->percent_three.'%', $details->percent_four.'%', 'Net', 'Vat', 'Gross', 'Filename');
 			$fileopen = fopen('public/Infile_'.$type.'_attachments.csv', 'w');
 		    fputcsv($fileopen, $columns_1);
 
@@ -2766,7 +2850,7 @@ class InfileController extends Controller {
 		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->get();
 		if(count($files))
 		{
-			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', '%', '%', '%', '%', 'Net', 'Vat', 'Gross', 'Filename');
+			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', $details->percent_one.'%', $details->percent_two.'%', $details->percent_three.'%', $details->percent_four.'%', 'Net', 'Vat', 'Gross', 'Filename');
 			$fileopen = fopen('public/Infile_'.$type.'_attachments.csv', 'w');
 		    fputcsv($fileopen, $columns_1);
 
@@ -2816,6 +2900,84 @@ class InfileController extends Controller {
  		$pdf = file_get_contents($path); 
 		$number = preg_match_all("/\/Page\W/", $pdf, $dummy); 
 		echo $number;
+	}
+	public function change_flag_status()
+	{
+		$data['flag'] = Input::get('flag_status');
+		$fileid = Input::get('fileid');
+		DB::table('in_file_attachment')->where('id',$fileid)->update($data);
+	}
+	public function add_new_secondary_line()
+	{
+		$attach_id = Input::get('attach_id');
+		$getattachment = DB::table('in_file_attachment')->where('id',$attach_id)->first();
+		$data['attach_id'] = $attach_id;
+		$data['file_id'] = $getattachment->file_id;
+		$data['secondary'] = 1;
+		$data['check_file'] = 0;
+		$data['attachment'] = "";
+		$data['url'] = "";
+		$data['textval'] = "";
+		$data['b'] = $getattachment->b;
+		$data['p'] = $getattachment->p;
+		$data['s'] = $getattachment->s;
+		$data['o'] = $getattachment->o;
+		$data['supplier'] = "";
+		$data['date_attachment'] = "";
+		$data['percent_one'] = "";
+		$data['percent_two'] = "";
+		$data['percent_three'] = "";
+		$data['percent_four'] = "";
+		$data['net'] = "";
+		$data['vat'] = "";
+		$data['gross'] = "";
+		$data['flag'] = 0;
+		$data['textstatus'] = 0;
+		$data['status'] = 0;
+		$data['notes_type'] = 0;
+		$new_id = DB::table('in_file_attachment')->insertGetId($data);
+
+		if($getattachment->p == 1) { $attach_disabled = ''; }
+		elseif($getattachment->s == 1) { $attach_disabled = ''; }
+		else { $attach_disabled = 'disabled'; }
+
+
+		$output = '<tr class="attachment_tr attachment_tr_'.$getattachment->id.'" data-element="'.$getattachment->file_id.'">
+			<td colspan="5">
+				
+			</td>
+			<td class="td_input">
+				<input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$new_id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" maxlength="50" '.$attach_disabled.'>
+			</td>
+			<td class="td_input">
+				<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$new_id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" maxlength="50" '.$attach_disabled.'>
+			</td>
+			<td class="td_input">
+				<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$getattachment->file_id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" '.$attach_disabled.'>
+			</td>
+			<td class="td_input">
+				<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$getattachment->id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" '.$attach_disabled.'>
+			</td>
+			<td class="td_input">
+				<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$getattachment->id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" '.$attach_disabled.'>
+			</td>
+			<td class="td_input">
+				<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$getattachment->id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" '.$attach_disabled.'>
+			</td>
+			<td class="td_input" style="border-left:1px solid #b5b3b3">
+				<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$new_id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" disabled>
+			</td>
+			<td class="td_input">
+				<input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$new_id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" disabled>
+			</td>
+			<td class="td_input">
+				<input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$new_id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" disabled>
+			</td>
+			<td class="td_input">
+				<i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
+			</td>
+		</tr>';
+		echo $output;
 	}
 }
 

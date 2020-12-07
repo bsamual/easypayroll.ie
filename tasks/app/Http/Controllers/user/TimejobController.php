@@ -286,19 +286,17 @@ class TimejobController extends Controller {
 
 	public function timejobadd(){
 		$add_edit_job = Input::get("add_edit_job");
-
-
 		$type = Input::get("internal_type");
 		$quick_job_stop = Input::get("quick_job");
-		$dateverify = date('Y-m-d', strtotime(Input::get("date")));
+		$bulk_job = Input::get("hidden_job_type");
 
+		$dateverify = date('Y-m-d', strtotime(Input::get("date")));
 		if($type == 0){
 			$data['client_id'] = '';
 		}
 		else{
 			$data['client_id'] = Input::get("clientid");
 		}
-
 		if($quick_job_stop == 0)
 		{
 			$userid = Input::get('userid');
@@ -330,11 +328,11 @@ class TimejobController extends Controller {
 			$data['quick_job'] = Input::get("quick_job");
 			$data['job_created_date'] = date('Y-m-d');
 			$data['job_date'] = $dateverify;
-			$data['active_id'] = $active_id;	
-
+			$data['active_id'] = $active_id;
 		}
 		
 		if($add_edit_job == 0){
+			$data['bulk_job'] = $bulk_job;
 			$data['color'] = 1;
 			$task_new_id = DB::table('task_job')->insertGetid($data);
 			//$task_new_id = mysql_insert_id();
@@ -747,6 +745,206 @@ class TimejobController extends Controller {
 		$stoptime = date('H:i:s', strtotime(Input::get("stoptime")));
 
 		$jobs = DB::table('task_job')->where('id', $id)->first();
+		if($jobs->bulk_job == 1)
+		{
+			$tasks_array = array();
+			$clients = Input::get('client_exclude');
+			$data['round_type'] = Input::get('hidden_round_type');
+			$data['minutes_per_client'] = Input::get('hidden_minutes_per_client');
+			$data['group_type'] = Input::get('select_client_groups');
+			if($data['group_type'] == "1")
+			{
+				if(count($clients))
+				{
+					$quickstarttime = $jobs->start_time;
+					foreach($clients as $client)
+					{
+						$dataquick['client_id'] = $client;
+						$dataquick['user_id'] = Session::get('task_job_user');
+						$dataquick['active_id'] = $id;
+						$dataquick['task_id'] = Input::get('client_task_'.$client.'');
+						$dataquick['color'] = 0;
+						$dataquick['start_time'] = $quickstarttime;
+						$quickstartdatetime = $jobs->job_date.' '.$quickstarttime;
+						$quickstop_time = date('H:i:00', strtotime('+'.round($data['minutes_per_client']).' minutes', strtotime($quickstartdatetime)));
+						$dataquick['stop_time'] = $quickstop_time;
+
+						$hours_quick = floor($data['minutes_per_client'] / 60);
+						$min_quick = $data['minutes_per_client'] - ($hours_quick * 60);
+				        if($hours_quick <= 9)
+				        {
+				          $hours_quick = '0'.$hours_quick;
+				        }
+				        else{
+				          $hours_quick = $hours_quick;
+				        }
+				        if($min_quick <= 9)
+				        {
+				          $min_quick = '0'.$min_quick;
+				        }
+				        else{
+				          $min_quick = $min_quick;
+				        }
+				        
+				        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+				        $dataquick['job_time'] = $jobtime_quick;
+				        $dataquick['job_date'] = $jobs->job_date;
+				        $dataquick['job_type'] = 0;
+				        $dataquick['quick_job'] = 1;
+				       	$dataquick['bulk_job'] = 0; 
+				       	$dataquick['job_created_date'] = $jobs->job_created_date;
+				       	$dataquick['status'] = 1;
+				       	DB::table('task_job')->insert($dataquick);
+				       	$quickstarttime = $quickstop_time;
+					}
+				}
+			}
+			elseif($data['group_type'] == "2")
+			{
+				$data['sub_group_type'] = Input::get('select_presets_clients');
+				if($data['sub_group_type'] == "7")
+				{
+					if(count($clients))
+					{
+						$quickstarttime = $jobs->start_time;
+						foreach($clients as $client)
+						{
+							$dataquick['client_id'] = $client;
+							$dataquick['user_id'] = Session::get('task_job_user');
+							$dataquick['active_id'] = $id;
+							$dataquick['task_id'] = Input::get('paye_client_task_'.$client.'');
+							$dataquick['color'] = 0;
+							$dataquick['start_time'] = $quickstarttime;
+							$quickstartdatetime = $jobs->job_date.' '.$quickstarttime;
+							$quickstop_time = date('H:i:00', strtotime('+'.round($data['minutes_per_client']).' minutes', strtotime($quickstartdatetime)));
+							$dataquick['stop_time'] = $quickstop_time;
+
+							$hours_quick = floor($data['minutes_per_client'] / 60);
+							$min_quick = $data['minutes_per_client'] - ($hours_quick * 60);
+					        if($hours_quick <= 9)
+					        {
+					          $hours_quick = '0'.$hours_quick;
+					        }
+					        else{
+					          $hours_quick = $hours_quick;
+					        }
+					        if($min_quick <= 9)
+					        {
+					          $min_quick = '0'.$min_quick;
+					        }
+					        else{
+					          $min_quick = $min_quick;
+					        }
+					        
+					        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+					        $dataquick['job_time'] = $jobtime_quick;
+					        $dataquick['job_date'] = $jobs->job_date;
+					        $dataquick['job_type'] = 0;
+					        $dataquick['quick_job'] = 1;
+					       	$dataquick['bulk_job'] = 0; 
+					       	$dataquick['job_created_date'] = $jobs->job_created_date;
+					       	$dataquick['status'] = 1;
+					       	DB::table('task_job')->insert($dataquick);
+					       	$quickstarttime = $quickstop_time;
+						}
+					}
+				}
+				else{
+					if(count($clients))
+					{
+						$quickstarttime = $jobs->start_time;
+						foreach($clients as $client)
+						{
+							$dataquick['client_id'] = $client;
+							$dataquick['user_id'] = Session::get('task_job_user');
+							$dataquick['active_id'] = $id;
+							$dataquick['task_id'] = Input::get('client_task_'.$client.'');
+							$dataquick['color'] = 0;
+							$dataquick['start_time'] = $quickstarttime;
+							$quickstartdatetime = $jobs->job_date.' '.$quickstarttime;
+							$quickstop_time = date('H:i:00', strtotime('+'.round($data['minutes_per_client']).' minutes', strtotime($quickstartdatetime)));
+							$dataquick['stop_time'] = $quickstop_time;
+
+							$hours_quick = floor($data['minutes_per_client'] / 60);
+							$min_quick = $data['minutes_per_client'] - ($hours_quick * 60);
+					        if($hours_quick <= 9)
+					        {
+					          $hours_quick = '0'.$hours_quick;
+					        }
+					        else{
+					          $hours_quick = $hours_quick;
+					        }
+					        if($min_quick <= 9)
+					        {
+					          $min_quick = '0'.$min_quick;
+					        }
+					        else{
+					          $min_quick = $min_quick;
+					        }
+					        
+					        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+					        $dataquick['job_time'] = $jobtime_quick;
+					        $dataquick['job_date'] = $jobs->job_date;
+					        $dataquick['job_type'] = 0;
+					        $dataquick['quick_job'] = 1;
+					       	$dataquick['bulk_job'] = 0; 
+					       	$dataquick['job_created_date'] = $jobs->job_created_date;
+					       	$dataquick['status'] = 1;
+					       	DB::table('task_job')->insert($dataquick);
+					       	$quickstarttime = $quickstop_time;
+						}
+					}
+				}
+			}
+			elseif($data['group_type'] == "3")
+			{
+				$data['sub_group_type'] = Input::get('select_group_clients');
+				if(count($clients))
+				{
+					$quickstarttime = $jobs->start_time;
+					foreach($clients as $client)
+					{
+						$dataquick['client_id'] = $client;
+						$dataquick['user_id'] = Session::get('task_job_user');
+						$dataquick['active_id'] = $id;
+						$dataquick['task_id'] = Input::get('client_task_'.$client.'');
+						$dataquick['color'] = 0;
+						$dataquick['start_time'] = $quickstarttime;
+						$quickstartdatetime = $jobs->job_date.' '.$quickstarttime;
+						$quickstop_time = date('H:i:00', strtotime('+'.round($data['minutes_per_client']).' minutes', strtotime($quickstartdatetime)));
+						$dataquick['stop_time'] = $quickstop_time;
+
+						$hours_quick = floor($data['minutes_per_client'] / 60);
+						$min_quick = $data['minutes_per_client'] - ($hours_quick * 60);
+				        if($hours_quick <= 9)
+				        {
+				          $hours_quick = '0'.$hours_quick;
+				        }
+				        else{
+				          $hours_quick = $hours_quick;
+				        }
+				        if($min_quick <= 9)
+				        {
+				          $min_quick = '0'.$min_quick;
+				        }
+				        else{
+				          $min_quick = $min_quick;
+				        }
+				        
+				        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+				        $dataquick['job_time'] = $jobtime_quick;
+				        $dataquick['job_date'] = $jobs->job_date;
+				        $dataquick['job_type'] = 0;
+				        $dataquick['quick_job'] = 1;
+				       	$dataquick['bulk_job'] = 0; 
+				       	$dataquick['job_created_date'] = $jobs->job_created_date;
+				       	$dataquick['status'] = 1;
+				       	DB::table('task_job')->insert($dataquick);
+				       	$quickstarttime = $quickstop_time;
+					}
+				}
+			}
+		}
 		$created_date = $jobs->job_created_date;
 		
 		$jobstart = strtotime($created_date.' '.$jobs->start_time);
@@ -757,16 +955,15 @@ class TimejobController extends Controller {
         	 $todate = date('Y-m-d', strtotime("+1 day", $jobstop));
              $jobstop   = strtotime($todate.' '.$stoptime);
         }
-
         $jobdiff  = $jobstop - $jobstart;
-
-
+        
 		//-----------Job Time Start----------------
 
         $hours = floor($jobdiff / (60 * 60));
         $minutes = $jobdiff - $hours * (60 * 60);
-        $minutes = floor( $minutes / 60 );
+        $minutes = floor($minutes / 60);
         $second = round((((($jobdiff % 604800) % 86400) % 3600) % 60));
+
         if($hours <= 9)
         {
           $hours = '0'.$hours;
@@ -2537,8 +2734,9 @@ class TimejobController extends Controller {
 		if($job->quick_job == 1)
 		{
 			$till_stoptime = explode(':', $job->stop_time);
+			
 			$stop_minutes = ($till_stoptime[0]*60) + ($till_stoptime[1]) + ($till_stoptime[2]/60);
-			$stoptime_till = $stop_minutes + $total_time_minutes;
+			$stoptime_till = $stop_minutes;
 
 			if(floor($stoptime_till / 60) <= 9)
 	          {
@@ -2555,6 +2753,7 @@ class TimejobController extends Controller {
 	            $ms = ($stoptime_till -   floor($stoptime_till / 60) * 60);
 	          }
 	          $stoptime_till_val = $hs.':'.$ms;
+	         
 		}
 		else{
 			$stoptime_till_val = '00:00';
@@ -6428,8 +6627,10 @@ class TimejobController extends Controller {
 	          $alert =0;
 		}
 		$explode_job_minutes = explode(":",$jobtime);
-                    $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
-        echo json_encode(array('jobtime' => $jobtime, 'total_time_minutes_format' => $total_time_minutes_format,'alert' => $alert));
+        $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
+
+        $distribution = $total_time_minutes - $total_quick_jobs_minutes;
+        echo json_encode(array('jobtime' => $jobtime, 'total_time_minutes_format' => $total_time_minutes_format,'alert' => $alert,'total_job_time_in_minutes' => $total_time_minutes, 'deducted_for_quick' => $total_quick_jobs_minutes, 'available_for_distribution' => $distribution));
 	}
 	public function calculate_break_time()
 	{
@@ -6539,7 +6740,9 @@ class TimejobController extends Controller {
 		          $total_time_minutes_format = $h.':'.$m.':00';
 		          $alert = 0;
 			}
-	        echo json_encode(array('alert' => $alert, 'break_hours' => $break_hours,'break_hours_another' => $break_hours_another, 'count' => $count_minues,'total_time_minutes_format' => $total_time_minutes_format));
+
+			$distribution = $total_time_minutes - $total_quick_jobs_minutes;
+	        echo json_encode(array('alert' => $alert, 'break_hours' => $break_hours,'break_hours_another' => $break_hours_another, 'count' => $count_minues,'total_time_minutes_format' => $total_time_minutes_format,'total_job_time_in_minutes' => $total_time_minutes, 'deducted_for_quick' => $total_quick_jobs_minutes, 'available_for_distribution' => $distribution));
 		
 	}
 	public function check_time_me_user_active_job()
@@ -7140,5 +7343,198 @@ class TimejobController extends Controller {
 		$pdf->save('papers/Staff Review Summary for '.$firstname.' from '.$frm.' to '.$too.'.pdf');
 		echo 'Staff Review Summary for '.$firstname.' from '.$frm.' to '.$too.'.pdf';
 	}
-	
+	public function select_presets_group()
+	{
+		$group_id = Input::get('group_id');
+		$current_week = DB::table('week')->orderBy('week_id','desc')->first();
+		$current_month = DB::table('month')->orderBy('month_id','desc')->first();
+		if($group_id == "1")
+		{
+			$clients = DB::table('task')->where('task_week',$current_week->week_id)->where('task_classified',1)->where('client_id','!=','')->groupBy('client_id')->get();
+			$group_name = 'Current Week Standard PMS Clients';
+			$data['group_name'] = $group_name;
+			$client_val = '';
+			if(count($clients))
+			{
+				foreach($clients as $client)
+				{
+					$check_inactive = DB::table('task')->where('task_week',$current_week->week_id)->where('task_classified',1)->where('client_id',$client->client_id)->where('task_complete_period',1)->first();
+					if(count($check_inactive))
+					{
+						$color = 'blue';
+					}
+					else{
+						$color = '#000';
+					}
+					if($client_val == "")
+					{
+						$client_val = $color.'||'.$client->client_id;
+					}
+					else{
+						$client_val = $client_val.','.$color.'||'.$client->client_id;
+					}
+				}
+			}
+		}
+		elseif($group_id == "2")
+		{
+			$clients = DB::table('task')->where('task_week',$current_week->week_id)->where('task_classified',2)->where('client_id','!=','')->groupBy('client_id')->get();
+			$group_name = 'Current Week Enhanced PMS Clients';
+			$data['group_name'] = $group_name;
+			$client_val = '';
+			if(count($clients))
+			{
+				foreach($clients as $client)
+				{
+					$check_inactive = DB::table('task')->where('task_week',$current_week->week_id)->where('task_classified',2)->where('client_id',$client->client_id)->where('task_complete_period',1)->first();
+					if(count($check_inactive))
+					{
+						$color = 'blue';
+					}
+					else{
+						$color = '#000';
+					}
+					if($client_val == "")
+					{
+						$client_val = $color.'||'.$client->client_id;
+					}
+					else{
+						$client_val = $client_val.','.$color.'||'.$client->client_id;
+					}
+				}
+			}
+		}
+		elseif($group_id == "3")
+		{
+			$clients = DB::table('task')->where('task_week',$current_week->week_id)->where('task_classified',3)->where('client_id','!=','')->groupBy('client_id')->get();
+			$group_name = 'Current Week Complex PMS Clients';
+			$data['group_name'] = $group_name;
+			$client_val = '';
+			if(count($clients))
+			{
+				foreach($clients as $client)
+				{
+					$check_inactive = DB::table('task')->where('task_week',$current_week->week_id)->where('task_classified',3)->where('client_id',$client->client_id)->where('task_complete_period',1)->first();
+					if(count($check_inactive))
+					{
+						$color = 'blue';
+					}
+					else{
+						$color = '#000';
+					}
+					if($client_val == "")
+					{
+						$client_val = $color.'||'.$client->client_id;
+					}
+					else{
+						$client_val = $client_val.','.$color.'||'.$client->client_id;
+					}
+				}
+			}
+		}
+		elseif($group_id == "4")
+		{
+			$clients = DB::table('task')->where('task_month',$current_month->month_id)->where('task_classified',1)->where('client_id','!=','')->groupBy('client_id')->get();
+			$group_name = 'Current Month Standard PMS Clients';
+			$data['group_name'] = $group_name;
+			$client_val = '';
+			if(count($clients))
+			{
+				foreach($clients as $client)
+				{
+					$check_inactive = DB::table('task')->where('task_month',$current_month->month_id)->where('task_classified',1)->where('client_id',$client->client_id)->where('task_complete_period',1)->first();
+					if(count($check_inactive))
+					{
+						$color = 'blue';
+					}
+					else{
+						$color = '#000';
+					}
+					if($client_val == "")
+					{
+						$client_val = $color.'||'.$client->client_id;
+					}
+					else{
+						$client_val = $client_val.','.$color.'||'.$client->client_id;
+					}
+				}
+			}
+		}
+		elseif($group_id == "5")
+		{
+			$clients = DB::table('task')->where('task_month',$current_month->month_id)->where('task_classified',2)->where('client_id','!=','')->groupBy('client_id')->get();
+			$group_name = 'Current Month Enhanced PMS Clients';
+			$data['group_name'] = $group_name;
+			$client_val = '';
+			if(count($clients))
+			{
+				foreach($clients as $client)
+				{
+					$check_inactive = DB::table('task')->where('task_month',$current_month->month_id)->where('task_classified',2)->where('client_id',$client->client_id)->where('task_complete_period',1)->first();
+					if(count($check_inactive))
+					{
+						$color = 'blue';
+					}
+					else{
+						$color = '#000';
+					}
+					if($client_val == "")
+					{
+						$client_val = $color.'||'.$client->client_id;
+					}
+					else{
+						$client_val = $client_val.','.$color.'||'.$client->client_id;
+					}
+				}
+			}
+		}
+		elseif($group_id == "6")
+		{
+			$clients = DB::table('task')->where('task_month',$current_month->month_id)->where('task_classified',3)->where('client_id','!=','')->groupBy('client_id')->get();
+			$group_name = 'Current Month Complex PMS Clients';
+			$data['group_name'] = $group_name;
+			$client_val = '';
+			if(count($clients))
+			{
+				foreach($clients as $client)
+				{
+					$check_inactive = DB::table('task')->where('task_month',$current_month->month_id)->where('task_classified',3)->where('client_id',$client->client_id)->where('task_complete_period',1)->first();
+					if(count($check_inactive))
+					{
+						$color = 'blue';
+					}
+					else{
+						$color = '#000';
+					}
+					if($client_val == "")
+					{
+						$client_val = $color.'||'.$client->client_id;
+					}
+					else{
+						$client_val = $client_val.','.$color.'||'.$client->client_id;
+					}
+				}
+			}
+		}
+		elseif($group_id == "7")
+		{
+			$year = DB::table('paye_p30_year')->orderBy('year_id','desc')->first();		
+			$payelist = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->get();
+			$group_name = 'PAYE-MRS Clients';
+			$data['group_name'] = $group_name;
+			$client_val = '';
+			if(count($payelist)){
+			    foreach ($payelist as $keytask => $task) {
+			        if($task->disabled == 1) { $checked = 'checked'; $label_color = 'color:#f00'; $disbledtext = ' (DISABLED)'; } else { $checked = ''; $label_color = 'color:#000'; $disbledtext = ''; }
+			        $client_val.='<tr class="client_tr">
+                            <td class="client_td"><input type="checkbox" name="client_exclude" class="client_exclude" value="'.$task->id.'"><label>&nbsp;</label></td>
+                            <td class="client_td">'.$task->task_name.''.$disbledtext.'</td>
+                          </tr>';
+			    }
+			}
+		}
+        $data['client_ids'] = $client_val;
+        $data['selected_clients'] = '';
+        echo json_encode($data);
+	}
 }

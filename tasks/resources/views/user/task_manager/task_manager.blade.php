@@ -55,7 +55,7 @@ if(Session::has('taskmanager_user'))
             data:{userid:"<?php echo $userid; ?>"},
             success:function(result)
             {
-              
+              $(".taskname_sort_val").find("img").detach();
             }
           })
         }
@@ -881,6 +881,13 @@ input:checked + .slider:before {
                   </div>
                 </div>
             </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px">
+                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                </div>
+            </div>
           </div>
           <div class="modal-footer">     
             <input type="hidden" name="action_type" id="action_type" value="">
@@ -1058,17 +1065,21 @@ input:checked + .slider:before {
 	                  $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	                  $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
                     $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
-
+                    $two_bill_icon = '';
+                    if($task->two_bill == "1")
+                    {
+                      $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
+                    }
 	                  if($task->client_id == "")
 	                  {
 	                    $title_lable = 'Task Name:';
 	                    $task_details = DB::table('time_task')->where('id', $task->task_type)->first();
 	                    if(count($task_details))
 	                    {
-	                      $title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>';
+	                      $title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>'.$two_bill_icon;
 	                    }
 	                    else{
-	                      $title = '<spam class="task_name_'.$task->id.'"></spam>';
+	                      $title = '<spam class="task_name_'.$task->id.'"></spam>'.$two_bill_icon;
 	                    }
 	                  }
 	                  else{
@@ -1076,10 +1087,10 @@ input:checked + .slider:before {
 	                    $client_details = DB::table('cm_clients')->where('client_id', $task->client_id)->first();
 	                    if(count($client_details))
 	                    {
-	                      $title = $client_details->company.' ('.$task->client_id.')';
+	                      $title = $client_details->company.' ('.$task->client_id.')'.$two_bill_icon;
 	                    }
 	                    else{
-	                      $title = '';
+	                      $title = ''.$two_bill_icon;
 	                    }
 	                  }
 	                  $author = DB::table('user')->where('user_id',$task->author)->first();
@@ -1659,7 +1670,10 @@ input:checked + .slider:before {
 		                    		'.$redlight_indication_layout.'
 		                    		</td>
 		                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800;" class="taskname_sort_val">'.$title.'</td>
-		                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800" class="subject_sort_val">'.$subject.'</td>
+                            <td style="width:5%;padding:10px; font-size:14px; font-weight:800;" class="2bill_sort_val">
+                            '.$two_bill_icon.'
+                            </td>
+		                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800" class="subject_sort_val">'.$subject.'</td>
 		                    	</tr>
 		                    </table>
 	                    </td>
@@ -1720,7 +1734,8 @@ input:checked + .slider:before {
 	                    	<tr>
 	                    		<td style="color:#fff;width:5%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686"><i class="fa fa-sort redlight_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    		<td style="color:#fff;width:45%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Client/Task Name<i class="fa fa-sort taskname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Subject<i class="fa fa-sort subject_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+                          <td style="color:#fff;width:5%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686"></td>
+	                    		<td style="color:#fff;width:45%;padding:10px; font-size:14px; font-weight:800">Subject<i class="fa fa-sort subject_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    	</tr>
 	                    </table>
                     </td>
@@ -1925,6 +1940,7 @@ $(function(){
     	$(".open_layout_div").css("overflow-y","unset");
         $(".table_layout").css("margin-top","0px");
     }
+    $(".taskname_sort_val").find("img").detach();
 });
  $(".client_search_class").autocomplete({
       source: function(request, response) {
@@ -2379,7 +2395,6 @@ $(window).click(function(e) {
   if($(e.target).hasClass('make_task_live'))
   {
     e.preventDefault();
-
     if($("#internal_checkbox").is(":checked"))
     {
         var taskvalue = $("#idtask").val();
@@ -2406,14 +2421,38 @@ $(window).click(function(e) {
         return false;
       }
       else{
-        $( "#create_job_form" ).valid();
-        $("#create_job_form").submit();
+        if($(".2_bill_task").is(":checked"))
+        {
+          $( "#create_job_form" ).valid();
+          $("#create_job_form").submit();
+        }
+        else{
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+        }
       }
     }
     else{
-      $("#create_job_form").valid();
-      $("#create_job_form").submit();
+      if($(".2_bill_task").is(":checked"))
+      {
+        $( "#create_job_form" ).valid();
+        $("#create_job_form").submit();
+      }
+      else{
+        $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+      }
     }
+  }
+  if($(e.target).hasClass('yes_make_task_live'))
+  {
+    $(".2_bill_task").prop("checked",true);
+    $( "#create_job_form" ).valid();
+    $("#create_job_form").submit();
+  }
+  if($(e.target).hasClass('no_make_task_live'))
+  {
+    $(".2_bill_task").prop("checked",false);
+    $( "#create_job_form" ).valid();
+    $("#create_job_form").submit();
   }
   if($(e.target).hasClass('avoid_email'))
   {
@@ -2607,9 +2646,10 @@ $(window).click(function(e) {
                 dataType:"json",
                 success: function(result)
                 {
+                  
                   $("#task_body_open").html(result['open_tasks']);
                   $("#task_body_layout").html(result['layout']);
-                  
+                  $(".taskname_sort_val").find("img").detach();
                   var layout = $("#hidden_compressed_layout").val();
                   $(".tasks_tr").hide();
                   $(".tasks_tr").next().hide();
@@ -2829,9 +2869,10 @@ $(window).click(function(e) {
               dataType:"json",
               success: function(result)
               {
+                
                 $("#task_body_open").html(result['open_tasks']);
                 $("#task_body_layout").html(result['layout']);
-                
+                $(".taskname_sort_val").find("img").detach();
                 var layout = $("#hidden_compressed_layout").val();
                 $(".tasks_tr").hide();
                 $(".tasks_tr").next().hide();
@@ -3051,9 +3092,10 @@ $(window).click(function(e) {
               dataType:"json",
               success: function(result)
               {
+                
                 $("#task_body_open").html(result['open_tasks']);
                 $("#task_body_layout").html(result['layout']);
-                
+                $(".taskname_sort_val").find("img").detach();
                 var layout = $("#hidden_compressed_layout").val();
                 $(".tasks_tr").hide();
                 $(".tasks_tr").next().hide();
@@ -3283,9 +3325,10 @@ $(window).click(function(e) {
                   dataType:"json",
                   success: function(result)
                   {
+                    
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-                    
+                    $(".taskname_sort_val").find("img").detach();
                     var layout = $("#hidden_compressed_layout").val();
                     $(".tasks_tr").hide();
                     $(".tasks_tr").next().hide();
@@ -3520,9 +3563,10 @@ $(window).click(function(e) {
                 dataType:"json",
                 success: function(result)
                 {
+                  
                   $("#task_body_open").html(result['open_tasks']);
                   $("#task_body_layout").html(result['layout']);
-                  
+                  $(".taskname_sort_val").find("img").detach();
                   var layout = $("#hidden_compressed_layout").val();
   			          $(".tasks_tr").hide();
           				$(".tasks_tr").next().hide();
@@ -3725,9 +3769,10 @@ $(window).click(function(e) {
           dataType:"json",
           success: function(result)
           {
+            
             $("#task_body_open").html(result['open_tasks']);
             $("#task_body_layout").html(result['layout']);
-
+            $(".taskname_sort_val").find("img").detach();
             var layout = $("#hidden_compressed_layout").val();
 			    $(".tasks_tr").hide();
 				$(".tasks_tr").next().hide();
@@ -4223,9 +4268,10 @@ $(window).click(function(e) {
                               dataType:"json",
                           success: function(result)
                           {
+                            
                             $("#task_body_open").html(result['open_tasks']);
                             $("#task_body_layout").html(result['layout']);
-
+                            $(".taskname_sort_val").find("img").detach();
                             var layout = $("#hidden_compressed_layout").val();
                             var view = $(".select_view").val();
                             $(".tasks_tr").hide();
@@ -4480,9 +4526,10 @@ $(window).click(function(e) {
                           dataType:"json",
                       success: function(result)
                       {
+                        
                         $("#task_body_open").html(result['open_tasks']);
                         $("#task_body_layout").html(result['layout']);
-
+                        $(".taskname_sort_val").find("img").detach();
                         var layout = $("#hidden_compressed_layout").val();
                         var view = $(".select_view").val();
                         $(".tasks_tr").hide();
@@ -4737,9 +4784,10 @@ $(window).click(function(e) {
                           dataType:"json",
                       success: function(result)
                       {
+                        
                         $("#task_body_open").html(result['open_tasks']);
                         $("#task_body_layout").html(result['layout']);
-
+                        $(".taskname_sort_val").find("img").detach();
                         var layout = $("#hidden_compressed_layout").val();
                         var view = $(".select_view").val();
                         $(".tasks_tr").hide();
@@ -5002,9 +5050,10 @@ $(window).click(function(e) {
                               dataType:"json",
                           success: function(result)
                           {
+                            
                             $("#task_body_open").html(result['open_tasks']);
                             $("#task_body_layout").html(result['layout']);
-
+                            $(".taskname_sort_val").find("img").detach();
                             var layout = $("#hidden_compressed_layout").val();
                             var view = $(".select_view").val();
                             $(".tasks_tr").hide();
@@ -5405,9 +5454,10 @@ $(window).click(function(e) {
                       dataType:"json",
                   success: function(result)
                   {
+                    
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-
+                    $(".taskname_sort_val").find("img").detach();
                       var layout = $("#hidden_compressed_layout").val();
                       var view = $(".select_view").val();
                   $(".tasks_tr").hide();
@@ -5659,9 +5709,10 @@ $(window).click(function(e) {
                       dataType:"json",
                   success: function(result)
                   {
+                    
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-
+                    $(".taskname_sort_val").find("img").detach();
                       var layout = $("#hidden_compressed_layout").val();
                       var view = $(".select_view").val();
                   $(".tasks_tr").hide();
@@ -5914,9 +5965,10 @@ $(window).click(function(e) {
                       dataType:"json",
                   success: function(result)
                   {
+
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-
+                    $(".taskname_sort_val").find("img").detach();
                       var layout = $("#hidden_compressed_layout").val();
                       var view = $(".select_view").val();
                   $(".tasks_tr").hide();

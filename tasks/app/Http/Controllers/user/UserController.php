@@ -120,13 +120,9 @@ class UserController extends Controller {
 			$time_job = array();
 
 		}
-
-		
-
 		$tasks = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
-
 		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
-
+		
 		return view('user/dashboad_time_track', array('title' => 'Welcome to Easypayroll', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
 
 	}	
@@ -18979,7 +18975,6 @@ class UserController extends Controller {
 		$check_week = DB::table('week')->where('year',$week_details->year)->get();
 		$yearname = DB::table('year')->where('year_id',$week_details->year)->first();
 		if(count($check_week) <= 52)
-
 		{
 			$count_weeks = $week_details->week + 1;
 			$current = date('Y-m-d H:i:s');
@@ -18987,7 +18982,6 @@ class UserController extends Controller {
 			$check_weeks = DB::table('week')->where('year',$week_details->year)->where('week',$count_weeks)->first();
 			if(!count($check_weeks))
 			{
-
 				$weekid = DB::table('week')->insertGetId(['year' => $week_details->year,'week' => $count_weeks]);
 				$gettasks = DB::table('task')->where('task_year',$week_details->year)->where('task_week',$id)->get();
 				if(count($gettasks))
@@ -23994,6 +23988,15 @@ class UserController extends Controller {
 		$get_curr_tasks = DB::table('task')->where('task_id',$task_id)->first();
 		$task_enumber = $get_curr_tasks->task_enumber;
 		$get_prev_tasks = DB::table('task')->where('task_enumber',$task_enumber)->where('task_week',$prev_week_id)->get();
+		$get_schemes = DB::table('schemes')->get();
+		$arr_scheme = array();
+		if(count($get_schemes))
+		{
+			foreach($get_schemes as $scheme)
+			{
+				array_push($arr_scheme,$scheme->scheme_name);
+			}
+		}
 		if($status == "1")
 		{
 			if(count($get_prev_tasks))
@@ -24005,12 +24008,16 @@ class UserController extends Controller {
 					{
 						foreach($attachments as $attachment)
 						{
-							$data['task_id'] = $task_id;
-							$data['attachment'] = $attachment->attachment;
-							$data['url'] = $attachment->url;
-							$data['network_attach'] = $attachment->network_attach;
-							$data['copied'] = 1;
-							$id = DB::table('task_attached')->insertGetId($data);
+							$get_name = str_replace(".txt", "", $attachment->attachment);
+							if (!in_array($get_name, $arr_scheme))
+							{
+								$data['task_id'] = $task_id;
+								$data['attachment'] = $attachment->attachment;
+								$data['url'] = $attachment->url;
+								$data['network_attach'] = $attachment->network_attach;
+								$data['copied'] = 1;
+								$id = DB::table('task_attached')->insertGetId($data);
+							}
 						}
 					}
 				}
@@ -24032,7 +24039,9 @@ class UserController extends Controller {
 		          $output.='<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
 		      }
 		  $output.='</div>';
-		}
+		  $datastarted['task_started'] = 1;
+		  DB::table('task')->where('task_id',$task_id)->update($datastarted);
+		}	
 		echo $output;
 	}
 	public function check_previous_month()
@@ -24085,6 +24094,8 @@ class UserController extends Controller {
 		          $output.='<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon '.$disabled.'"><i class="fa fa-trash trash_image '.$disabled.'" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
 		      }
 		  $output.='</div>';
+		  $datastarted['task_started'] = 1;
+		  DB::table('task')->where('task_id',$task_id)->update($datastarted);
 		}
 		echo $output;
 	}
@@ -24100,6 +24111,18 @@ class UserController extends Controller {
 		else{
 			echo URL::to('user/change_scheme_status?status=1&id='.$scheme_id.'');
 		}
+	}
+	public function secret_task_button()
+	{
+		$task_id = Input::get('task_id');
+		$get_task_details = DB::table('task')->where('task_id',$task_id)->first();
+		$data['enterhours'] = ($get_task_details->enterhours == "2")?"2":"1";
+		$data['holiday'] = ($get_task_details->holiday == "2")?"2":"1";
+		$data['process'] = ($get_task_details->process == "2")?"2":"1";
+		$data['payslips'] = ($get_task_details->payslips == "2")?"2":"1";
+		$data['email'] = ($get_task_details->email == "2")?"2":"1";
+		$data['upload'] = ($get_task_details->upload == "2")?"2":"1";
+		DB::table('task')->where('task_id',$task_id)->update($data);
 	}
 }
 

@@ -784,7 +784,7 @@ input:checked + .slider:before {
             <div class="form-group date_group">
                 <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
             </div>
-            <div class="form-group date_group" style="margin-left:6%">
+            <div class="form-group date_group">
                 <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
                 <div class="accept_recurring_div">
                   <p>This Task is repeated:</p>
@@ -806,6 +806,9 @@ input:checked + .slider:before {
                     <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
                   </div>
                 </div>
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label></div>
             </div>
           </div>
           <div class="modal-footer">     
@@ -1181,14 +1184,38 @@ $(window).click(function(e) {
             return false;
           }
           else{
-            $( "#create_job_form" ).valid();
-            $("#create_job_form").submit();
+            if($(".2_bill_task").is(":checked"))
+            {
+              $( "#create_job_form" ).valid();
+              $("#create_job_form").submit();
+            }
+            else{
+              $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px",height:"400px"});
+            }
           }
         }
         else{
-          $( "#create_job_form" ).valid();
-          $("#create_job_form").submit();
+          if($(".2_bill_task").is(":checked"))
+          {
+            $( "#create_job_form" ).valid();
+            $("#create_job_form").submit();
+          }
+          else{
+            $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+          }
         }
+      }
+      if($(e.target).hasClass('yes_make_task_live'))
+      {
+        $(".2_bill_task").prop("checked",true);
+        $( "#create_job_form" ).valid();
+        $("#create_job_form").submit();
+      }
+      if($(e.target).hasClass('no_make_task_live'))
+      {
+        $(".2_bill_task").prop("checked",false);
+        $( "#create_job_form" ).valid();
+        $("#create_job_form").submit();
       }
       if($(e.target).hasClass("search_tasks"))
       {

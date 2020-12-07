@@ -14,12 +14,12 @@
 
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js')?>'></script>
 <style>
-
 body{
   background: #f5f5f5 !important;
 }
 .fa-sort{
   cursor:pointer;
+  margin-left: 8px;
 }
 .show_incomplete_label{
   cursor:pointer;
@@ -218,15 +218,16 @@ a:hover{text-decoration: underline;}
 <input type="hidden" name="show_alert" id="show_alert" value="">
 <input type="hidden" name="pagination" id="pagination" value="1">
 
-<input type="hidden" name="sno_sortoptions" id="sno_sortoptions" value="asc">
 <input type="hidden" name="clientid_sortoptions" id="clientid_sortoptions" value="asc">
 <input type="hidden" name="firstname_sortoptions" id="firstname_sortoptions" value="asc">
 <input type="hidden" name="lastname_sortoptions" id="lastname_sortoptions" value="asc">
 <input type="hidden" name="company_sortoptions" id="company_sortoptions" value="asc">
-<input type="hidden" name="status_sortoptions" id="status_sortoptions" value="asc">
-
-<input type="hidden" name="review_clientid_sortoptions" id="review_clientid_sortoptions" value="asc">
-<input type="hidden" name="review_company_sortoptions" id="review_company_sortoptions" value="asc">
+<input type="hidden" name="balance_sortoptions" id="balance_sortoptions" value="asc">
+<input type="hidden" name="liability_sortoptions" id="liability_sortoptions" value="asc">
+<input type="hidden" name="payment_sortoptions" id="payment_sortoptions" value="asc">
+<input type="hidden" name="prelim_sortoptions" id="prelim_sortoptions" value="asc">
+<input type="hidden" name="date_sortoptions" id="date_sortoptions" value="asc">
+<input type="hidden" name="file_sortoptions" id="file_sortoptions" value="asc">
 
 
 <script>
@@ -320,10 +321,240 @@ $(document).ready(function() {
 //   });     
 // })
 </script>
-
-
 <script>
+
 $(window).click(function(e) {
+  var ascending = false;
+  if($(e.target).hasClass('sort_clientid'))
+  {
+    var sort = $("#clientid_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#clientid_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.client_sort_val').html()) <
+        convertToNumber($(b).find('.client_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#clientid_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.client_sort_val').html()) <
+        convertToNumber($(b).find('.client_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_firstname'))
+  {
+    var sort = $("#firstname_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#firstname_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.firstname_sort_val').html()) <
+        convertToNumber($(b).find('.firstname_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#firstname_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.firstname_sort_val').html()) <
+        convertToNumber($(b).find('.firstname_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_lastname'))
+  {
+    var sort = $("#lastname_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#lastname_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.lastname_sort_val').html()) <
+        convertToNumber($(b).find('.lastname_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#lastname_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.lastname_sort_val').html()) <
+        convertToNumber($(b).find('.lastname_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_company'))
+  {
+    var sort = $("#company_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#company_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.company_sort_val').html()) <
+        convertToNumber($(b).find('.company_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#company_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.company_sort_val').html()) <
+        convertToNumber($(b).find('.company_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_balance'))
+  {
+    var sort = $("#balance_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#balance_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.balance_sort_val').html()) <
+        convertToNumeric($(b).find('.balance_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#balance_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.balance_sort_val').html()) <
+        convertToNumeric($(b).find('.balance_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_liability'))
+  {
+    var sort = $("#liability_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#liability_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.liability_sort_val').html()) <
+        convertToNumeric($(b).find('.liability_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#liability_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.liability_sort_val').html()) <
+        convertToNumeric($(b).find('.liability_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_payment'))
+  {
+    var sort = $("#payment_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#payment_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.payment_sort_val').html()) <
+        convertToNumeric($(b).find('.payment_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#payment_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.payment_sort_val').html()) <
+        convertToNumeric($(b).find('.payment_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_prelim'))
+  {
+    var sort = $("#prelim_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#prelim_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.prelim_sort_val').html()) <
+        convertToNumeric($(b).find('.prelim_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#prelim_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.prelim_sort_val').html()) <
+        convertToNumeric($(b).find('.prelim_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_date'))
+  {
+    var sort = $("#date_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#date_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.date_sort_val').html()) <
+        convertToNumeric($(b).find('.date_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#date_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.date_sort_val').html()) <
+        convertToNumeric($(b).find('.date_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
+  if($(e.target).hasClass('sort_file'))
+  {
+    var sort = $("#file_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#file_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.attachment_sort_val').html()) <
+        convertToNumber($(b).find('.attachment_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#file_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.attachment_sort_val').html()) <
+        convertToNumber($(b).find('.attachment_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
   if($(e.target).hasClass('date_selection'))
   {
     if($(e.target).is(":checked"))
@@ -409,6 +640,17 @@ if($(e.target).hasClass('export_button'))
 
 
 })
+var convertToNumber = function(value){
+       return value.toLowerCase();
+}
+var convertToNumeric = function(value){
+      value = value.replace(',','');
+      value = value.replace(',','');
+      value = value.replace(',','');
+      value = value.replace(',','');
+
+       return parseInt(value.toLowerCase());
+}
 function ajaxdatecomplete()
 {
   $(".date_class").datetimepicker({     
@@ -440,15 +682,18 @@ function ajaxdatecomplete()
 <script>
 $(function(){
     $('#liability_expand').DataTable({
+        columnDefs: [
+            { "width": "100px", "targets": [0] },
+            { "width": "80px", "targets": [6] },
+            { "width": "80px", "targets": [7] }
+        ],
         fixedHeader: {
           headerOffset: 75
         },
-        autoWidth: false,
-        scrollX: false,
-        fixedColumns: false,
         searching: false,
         paging: false,
-        info: false
+        info: false,
+        ordering:false
     });
 });
 </script>
@@ -468,15 +713,18 @@ $(".setting_class").change(function(){
         success: function(result) { 
           $(".table_result").html(result['output_result']);
           $('#liability_expand').DataTable({
+              columnDefs: [
+                  { "width": "100px", "targets": [0] },
+                  { "width": "80px", "targets": [6] },
+                  { "width": "80px", "targets": [7] }
+              ],
               fixedHeader: {
                 headerOffset: 75
               },
-              autoWidth: false,
-              scrollX: false,
-              fixedColumns: false,
               searching: false,
               paging: false,
-              info: false
+              info: false,
+              ordering:false
           });
           ajaxdatecomplete();
           $("body").removeClass("loading");
@@ -522,11 +770,7 @@ function doneTyping_payment (payment_value, client_id, year_id, setting_id, that
           },
         success: function(result) { 
           $("#client_"+result['client_id']).find(".balance_class").html(result['balance']);
-          var table = $('#liability_expand').DataTable();
-          $('#liability_expand').find("tbody").find("td").each(function() {
-            this.innerHTML = parseInt( this.innerHTML ) + 1;
-            table.cell( this ).invalidate().draw();
-          });
+          $("#client_"+result['client_id']).find(".balance_sort_val").html(result['balance_spam']);
           payment_value = payment_value.replace(",", "");
           payment_value = payment_value.replace(",", "");
           payment_value = payment_value.replace(",", "");

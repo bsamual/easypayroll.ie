@@ -3,6 +3,8 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 
 <style>
+  .secret_button:focus { background: #7bab15;outline: none; }
+  #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
       display:    none;
       position:   fixed;
@@ -453,7 +455,7 @@ table{
 
 .page_title{
 
-
+  height: 75px !important;
 
   background: #ffa12d !important;
 
@@ -523,7 +525,7 @@ table{
 
 
 
-    left:47%;
+    left:32%;
 
 
 
@@ -563,7 +565,7 @@ table{
 
 
 
-    left:67%;
+    left:39%;
 
 
 
@@ -1153,6 +1155,13 @@ body.loading .modal_load {
                     <label for="recurring_checkbox4">Specific Number of Days</label>
                     <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
                   </div>
+                </div>
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px">
+                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
                 </div>
             </div>
           </div>
@@ -2776,9 +2785,9 @@ body.loading .modal_load {
 
   ?>
 
-    <div class="col-lg-4 padding_00" style="margin-left: 1%;">Task of <?php echo $yearname->year_name ?> &nbsp;&nbsp;&nbsp;&nbsp; Month : Month <?php echo $monthid->month ?> &nbsp;&nbsp;&nbsp;&nbsp; No of days : <?php echo $days; ?></div>
+    <div class="col-lg-3 padding_00" style="margin-left: 1%;">Task of <?php echo $yearname->year_name ?> &nbsp;&nbsp;&nbsp;&nbsp; Month : Month <?php echo $monthid->month ?> &nbsp;&nbsp;&nbsp;&nbsp; No of days : <?php echo $days; ?></div>
 
-    <div class="col-lg-7 padding_00 button_top_right" style="float:left">
+    <div class="col-lg-8 padding_00 button_top_right" style="float:left">
 
       <ul style="margin-right: 13%;float:left">
         <?php
@@ -2859,12 +2868,8 @@ body.loading .modal_load {
         <li><a href="javascript:" class="open_schemes">Schemes</a></li>
 
         <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->month_incomplete == 1) { $inc_checked = 'checked="checked"'; } else { $inc_checked = ''; } ?>
-
-        <br/> <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked; ?>><label for="show_incomplete">Show Incomplete Only</label> 
-        <p style="margin-top:10px;float:right;clear:both">
-          
-         
-         </p>
+        <li>
+        <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked; ?>><label for="show_incomplete">Show Incomplete Only</label> </li>
       </ul>
 
     </div>
@@ -2993,7 +2998,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #ffa12d;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_std_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -3692,7 +3697,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_enh_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -4371,7 +4376,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_cmp_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -5255,6 +5260,24 @@ $(".client_search_class_task").autocomplete({
       }
   });
 $(window).click(function(e) {
+  if($(e.target).hasClass('secret_button'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/secret_task_button'); ?>",
+      type:"post",
+      data:{task_id:task_id},
+      success:function(result)
+      {
+        $(e.target).parents("tr").find(".enterhours_checkbox").prop("checked",true);
+        $(e.target).parents("tr").find(".holiday_checkbox").prop("checked",true);
+        $(e.target).parents("tr").find(".process_checkbox").prop("checked",true);
+        $(e.target).parents("tr").find(".payslips_checkbox").prop("checked",true);
+        $(e.target).parents("tr").find(".email_checkbox").prop("checked",true);
+        $(e.target).parents("tr").find(".upload_checkbox").prop("checked",true);
+      }
+    })
+  }
   if($(e.target).hasClass('close_schemes'))
   {
     $("body").addClass("loading_content");
@@ -5309,7 +5332,18 @@ $(window).click(function(e) {
           success:function(result)
           {
             $(e.target).parents(".special_div").find(".files_received_div").html(result);
-            $(e.target).parents(".special_div").find(".same_as_last_label").css({"color":"blue","text-decoration":"underline","font-weight":"600"})
+            $(e.target).parents(".special_div").find(".same_as_last_label").css({"color":"blue","text-decoration":"underline","font-weight":"600"});
+            if(result == "")
+            {
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">No files found in the previous period for this task</p>',fixed:true,width:"800px"});
+            }
+            else{
+              $("#taskidtr_"+task_id).find(".task_started_checkbox").prop("checked",true);
+              if($("#taskidtr_"+task_id).find(".task_label").not('disabled'))
+              {
+                $("#taskidtr_"+task_id).find(".task_label").css("color",'#89ff00');
+              }
+            }
           }
         })
       }
@@ -5420,14 +5454,38 @@ $(window).click(function(e) {
         return false;
       }
       else{
-        $( "#create_task_form" ).valid();
-        $("#create_task_form").submit();
+        if($(".2_bill_task").is(":checked"))
+        {
+          $("#create_task_form").valid();
+          $("#create_task_form").submit();
+        }
+        else{
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+        }
       }
     }
     else{
-      $("#create_task_form").valid();
+      if($(".2_bill_task").is(":checked"))
+      {
+        $("#create_task_form").valid();
       $("#create_task_form").submit();
+      }
+      else{
+        $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+      }
     }
+  }
+  if($(e.target).hasClass('yes_make_task_live'))
+  {
+    $(".2_bill_task").prop("checked",true);
+    $("#create_task_form").valid();
+      $("#create_task_form").submit();
+  }
+  if($(e.target).hasClass('no_make_task_live'))
+  {
+    $(".2_bill_task").prop("checked",false);
+    $("#create_task_form").valid();
+      $("#create_task_form").submit();
   }
   if($(e.target).hasClass('accept_recurring'))
   {

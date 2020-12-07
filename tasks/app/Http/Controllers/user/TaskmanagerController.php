@@ -930,12 +930,22 @@ class TaskmanagerController extends Controller {
 			$data['task_specifics'] = $task_specifics;
 			$data['due_date'] = $due_date_change;
 			$auto_close = Input::get('auto_close_task');
+			$two_bill = Input::get('2_bill_task');
+
 			if($auto_close == "1")
 			{
 				$data['auto_close'] = 1;
 			}
 			else{
 				$data['auto_close'] = 0;
+			}
+
+			if($two_bill == "1")
+			{
+				$data['two_bill'] = 1;
+			}
+			else{
+				$data['two_bill'] = 0;
 			}
 			
 			if($accept_recurring == "1")
@@ -1222,12 +1232,21 @@ class TaskmanagerController extends Controller {
 			$data['recurring_task'] = $recurring;
 			$data['recurring_days'] = $days;
 			$auto_close = Input::get('auto_close_task');
+			$two_bill = Input::get('2_bill_task');
 			if($auto_close == "1")
 			{
 				$data['auto_close'] = 1;
 			}
 			else{
 				$data['auto_close'] = 0;
+			}
+
+			if($two_bill == "1")
+			{
+				$data['two_bill'] = 1;
+			}
+			else{
+				$data['two_bill'] = 0;
 			}
 
 			$task_id = DB::table('taskmanager')->insertGetid($data);
@@ -1348,7 +1367,6 @@ class TaskmanagerController extends Controller {
 						$datafile['url'] = $detailsval->url;
 						$datafile['filename'] = $detailsval->filename;
 						$datafile['status'] = $detailsval->status;
-
 						DB::table('taskmanager_files')->insert($datafile);
 					}
 				}
@@ -1418,7 +1436,6 @@ class TaskmanagerController extends Controller {
 				$allocated_email = '';
 			}
 
-
 			$data_specifics['task_id'] = $task_id;
 			$data_specifics['message'] = $message;
 			$data_specifics['from_user'] = $author;
@@ -1459,28 +1476,6 @@ class TaskmanagerController extends Controller {
 			$dataemail['subject'] = $subject_cls;
 
 			$subject_email = 'Task Manager: New Task has been created: '.$subject_cls;
-			// $contentmessage = view('emails/task_manager/create_new_task_email_author', $dataemail)->render();
-
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-			// $contentmessage = str_replace("â€“", "-", $contentmessage);
-
-			// $email = new PHPMailer();
-			// $email->SetFrom('info@gbsco.ie');
-			// $email->Subject   = $subject_email;
-			// $email->Body      = $contentmessage;
-			// $email->AddCC('tasks@gbsco.ie');
-			// $email->IsHTML(true);
-			// $email->AddAddress( $author_email );
-			// $email->AddAttachment( $uploads , 'task_specifics.txt' );
-			// $email->Send();		
-
 			if($allocate_user != "")
 			{
 				$contentmessage2 = view('emails/task_manager/create_new_task_email_allocated', $dataemail)->render();
@@ -1503,7 +1498,6 @@ class TaskmanagerController extends Controller {
 				$email->AddAttachment( $uploads , 'task_specifics.txt' );
 				$email->Send();		
 			}
-
 			return redirect::back()->with('message', 'Task Created successfully');
 		}
 	}
@@ -2517,17 +2511,21 @@ class TaskmanagerController extends Controller {
 	          $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	          $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
 	          $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
-
+	          $two_bill_icon = '';
+	            if($task->two_bill == "1")
+	            {
+	              $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
+	            }
 	          if($task->client_id == "")
 	          {
 	            $title_lable = 'Task Name:';
 	            $task_details = DB::table('time_task')->where('id', $task->task_type)->first();
 	            if(count($task_details))
 	            {
-	            	$title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>';
+	            	$title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>'.$two_bill_icon;
 	            }
 	            else{
-	            	$title = '<spam class="task_name_'.$task->id.'"></spam>';
+	            	$title = '<spam class="task_name_'.$task->id.'"></spam>'.$two_bill_icon;
 	            }
 	          }
 	          else{
@@ -2535,10 +2533,10 @@ class TaskmanagerController extends Controller {
 	            $client_details = DB::table('cm_clients')->where('client_id', $task->client_id)->first();
 	            if(count($client_details))
                 {
-                  $title = $client_details->company.' ('.$task->client_id.')';
+                  $title = $client_details->company.' ('.$task->client_id.')'.$two_bill_icon;
                 }
                 else{
-                  $title = '';
+                  $title = ''.$two_bill_icon;
                 }
 	          }
 	          $author = DB::table('user')->where('user_id',$task->author)->first();
@@ -3067,8 +3065,10 @@ class TaskmanagerController extends Controller {
 	                    		'.$redlight_indication_layout.'
 	                    		</td>
 	                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800;" class="taskname_sort_val">'.$title.'</td>
-	                    		
-	                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800" class="subject_sort_val">'.$subject.'</td>
+	                    		<td style="width:5%;padding:10px; font-size:14px; font-weight:800;" class="2bill_sort_val">
+		                            '.$two_bill_icon.'
+		                        </td>
+	                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800" class="subject_sort_val">'.$subject.'</td>
 	                    	</tr>
 	                    </table>
                     </td>
@@ -3153,17 +3153,21 @@ class TaskmanagerController extends Controller {
 	          $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	          $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
 	          $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
-
+	          $two_bill_icon = '';
+                    if($task->two_bill == "1")
+                    {
+                      $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
+                    }
 	          if($task->client_id == "")
 	          {
 	            $title_lable = 'Task Name:';
 	            $task_details = DB::table('time_task')->where('id', $task->task_type)->first();
 	            if(count($task_details))
 	            {
-	            	$title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>';
+	            	$title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>'.$two_bill_icon;
 	            }
 	            else{
-	            	$title = '<spam class="task_name_'.$task->id.'"></spam>';
+	            	$title = '<spam class="task_name_'.$task->id.'"></spam>'.$two_bill_icon;
 	            }
 	          }
 	          else{
@@ -3171,10 +3175,10 @@ class TaskmanagerController extends Controller {
 	            $client_details = DB::table('cm_clients')->where('client_id', $task->client_id)->first();
 	            if(count($client_details))
                 {
-                  $title = $client_details->company.' ('.$task->client_id.')';
+                  $title = $client_details->company.' ('.$task->client_id.')'.$two_bill_icon;
                 }
                 else{
-                  $title = '';
+                  $title = ''.$two_bill_icon;
                 }
 	          }
 	          $author = DB::table('user')->where('user_id',$task->author)->first();
@@ -3691,8 +3695,10 @@ class TaskmanagerController extends Controller {
 	                    		'.$redlight_indication_layout.'
 	                    		</td>
 	                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800;" class="taskname_sort_val">'.$title.'</td>
-	                    		
-	                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800" class="subject_sort_val">'.$subject.'</td>
+	                    		<td style="width:5%;padding:10px; font-size:14px; font-weight:800;" class="2bill_sort_val">
+		                            '.$two_bill_icon.'
+		                        </td>
+	                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800" class="subject_sort_val">'.$subject.'</td>
 	                    	</tr>
 	                    </table>
                     </td>
@@ -4093,17 +4099,21 @@ class TaskmanagerController extends Controller {
 	          $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
 	          $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
 	          $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
-
+	          $two_bill_icon = '';
+                    if($task->two_bill == "1")
+                    {
+                      $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
+                    }
 	          if($task->client_id == "")
 	          {
 	            $title_lable = 'Task Name:';
 	            $task_details = DB::table('time_task')->where('id', $task->task_type)->first();
 	            if(count($task_details))
 	            {
-	            	$title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>';
+	            	$title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>'.$two_bill_icon;
 	            }
 	            else{
-	            	$title = '<spam class="task_name_'.$task->id.'"></spam>';
+	            	$title = '<spam class="task_name_'.$task->id.'"></spam>'.$two_bill_icon;
 	            }
 	          }
 	          else{
@@ -4111,10 +4121,10 @@ class TaskmanagerController extends Controller {
 	            $client_details = DB::table('cm_clients')->where('client_id', $task->client_id)->first();
 	            if(count($client_details))
                 {
-                  $title = $client_details->company.' ('.$task->client_id.')';
+                  $title = $client_details->company.' ('.$task->client_id.')'.$two_bill_icon;
                 }
                 else{
-                  $title = '';
+                  $title = ''.$two_bill_icon;
                 }
 	          }
 
@@ -4682,6 +4692,11 @@ class TaskmanagerController extends Controller {
           {
             foreach($tasks as $task)
             {
+              $two_bill_icon = '';
+	            if($task->two_bill == "1")
+	            {
+	              $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
+	            }
               if($task->client_id == "")
               {
                 $title_lable = 'Task Name:';
@@ -4750,7 +4765,7 @@ class TaskmanagerController extends Controller {
 
               $outputtask.='<tr id="tr_task_'.$task->id.'" class="tr_task '.$tr_status.'">
                 <td class="taskid_td" style="'.$color.'">'.$task->taskid.'</td>
-                <td class="taskid_td task_name_val" style="'.$color.'">'.$title.'</td>
+                <td class="taskid_td task_name_val" style="'.$color.'">'.$title.' '.$two_bill_icon.'</td>
                 <td class="author_td" style="'.$color.'">'.$author_to.'</td>
                 <td class="allocated_td" style="'.$color.'">'.$allocated_to.'</td>
                 <td class="" style="'.$color.';text-align:center">';

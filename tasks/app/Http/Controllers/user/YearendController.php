@@ -2041,19 +2041,19 @@ class YearendController extends Controller {
             
             $prelim_year = $year_id+1;
 
-            $output_result='<table class="display nowrap fullviewtablelist" id="liability_expand" width="100%" style="max-width: 100%;">
+            $output_result='<table class="display fullviewtablelist" id="liability_expand" width="100%" style="max-width: 100%;">
                 <thead>
                   <tr class="background_bg">        
-                    <th width="80px" style="text-align:left"><i class="fa fa-sort sort_clientid"></i>Client Id</th>
-                    <th style="text-align:left">First Name</th>
-                    <th style="text-align:left">Last Name</th>
-                    <th style="text-align:left">Company</th>
-                    <th style="text-align:left">Balance</th>
-                    <th style="text-align:left">Liability</th>
-                    <th style="text-align:left;width:70px">Payments</th>
-                    <th style="text-align:left;width:70px">'.$prelim_year.' Prelim</th>
-                    <th style="text-align:left;width:200px">Date Filled</th>
-                    <th style="text-align:left">File Uploaded</th>
+                    <th width="90px" style="text-align:left">Client Id <i class="fa fa-sort sort_clientid"></i></th>
+                    <th style="text-align:left">First Name <i class="fa fa-sort sort_firstname"></i></th>
+                    <th style="text-align:left">Last Name <i class="fa fa-sort sort_lastname"></i></th>
+                    <th style="text-align:left">Company <i class="fa fa-sort sort_company"></i></th>
+                    <th style="text-align:left">Balance <i class="fa fa-sort sort_balance"></i></th>
+                    <th style="text-align:left">Liability <i class="fa fa-sort sort_liability"></i></th>
+                    <th style="text-align:left;width:45px">Payments <i class="fa fa-sort sort_payment"></i></th>
+                    <th style="text-align:left;width:45px">'.$prelim_year.' Prelim <i class="fa fa-sort sort_prelim"></i></th>
+                    <th style="text-align:left;width:200px">Date Filled <i class="fa fa-sort sort_date"></i></th>
+                    <th style="text-align:left">File Uploaded <i class="fa fa-sort sort_file"></i></th>
                   </tr>   
                 </thead>
                 <tbody id="task_body">';
@@ -2071,20 +2071,24 @@ class YearendController extends Controller {
                               $final_attachement = DB::table('yearend_distribution_attachments')->where('client_id', $attchement_client_id)->where('setting_id',$setting_id)->where('distribution_type', $year_client_attachement_latest->distribution_type)->get();
 
                               $output_attachement='';
+                              $out_attachment = '';
                               if(count($final_attachement)){
                                     foreach ($final_attachement as $single_attachement) {
                                           $output_attachement.='
                                           <a href="javascript:" class="fileattachment" data-element="'.URL::to("".$single_attachement->url.'/'.$single_attachement->attachments).'">'.$single_attachement->attachments.'</a><br/>';
+                                          $out_attachment.=$single_attachement->attachments;
                                     }
                               }
                               else{
                                     $output_attachement='';
+                                    $out_attachment = '';
                               }
 
                         }
                         else{
                               $final_attachement = '';
                               $output_attachement='';
+                              $out_attachment = '';
                         }
 
 
@@ -2224,6 +2228,9 @@ class YearendController extends Controller {
                           if($balance == '0.00'){
                               $color_balance = 'color:#0000fb';
                           }
+                          elseif(($balance < 0 && $balance >= -5) || ($balance > 0 && $balance <= 5)){
+                              $color_balance = 'color:#0000fb';
+                          }
                           elseif($balance < 0){
                               $color_balance = 'color:#0dce00';
                           }
@@ -2234,26 +2241,28 @@ class YearendController extends Controller {
 
                         if($get_checkbox == 0){
                               $output_result.='<tr id="client_'.$client_details->client_id.'" class="client_'.$client_details->active.'"">
-                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->client_id.'</a></td>
-                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->firstname.'</a></td>
-                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->surname.'</a></td>
-                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank">'.$client_details->company.'</a></td>
-                              <td style="'.$color_balance.'"><span class="balance_class">'.number_format_invoice($balance).'</span></td>
-                              <td style="'.$color_liability.'">'.number_format_invoice($liability).'</td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank" class="client_sort_val">'.$client_details->client_id.'</a></td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank" class="firstname_sort_val">'.$client_details->firstname.'</a></td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank" class="lastname_sort_val">'.$client_details->surname.'</a></td>
+                              <td style="'.$color.'"><a href="'.URL::to('user/yearend_individualclient/'.base64_encode($single_client->id).'').'" target="_blank" class="company_sort_val">'.$client_details->company.'</a></td>
+                              <td style="'.$color_balance.'"><span class="balance_sort_val" style="display:none">'.number_format_invoice_without_comma($balance).'</span><span class="balance_class">'.number_format_invoice($balance).'</span></td>
+                              <td style="'.$color_liability.'"><span class="liability_sort_val" style="display:none">'.number_format_invoice_without_comma($liability).'</span>'.number_format_invoice($liability).'</td>
                               <td>
+                                    <span class="payment_sort_val" style="display:none">'.number_format_invoice_without_comma($payments).'</span>
                                     <spam class="payment_spam_class" style="display:none">'.number_format_invoice($payments).'</spam>
                                     <input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.number_format_invoice($payments).'" />
                               </td>
                               <td>
+                                    <span class="prelim_sort_val" style="display:none">'.number_format_invoice_without_comma($prelim).'</span>
                                     <spam class="prelim_spam_class" style="display:none">'.number_format_invoice_without_comma($prelim).'</spam>
                                     <input type="text" class="form-control prelim_class" data-element="'.$client_details->client_id.'"  placeholder="Prelim" value="'.number_format_invoice_without_decimal($prelim).'" />
                               </td>
                               <td>
-                                    <spam class="date_spam_class" style="display:none">'.$formatted_date.'</spam>
+                                    <spam class="date_spam_class date_sort_val" style="display:none">'.$formatted_date.'</spam>
                                     <input type="checkbox" class="date_selection" id="date_selection_'.$client_details->client_id.'" data-element="'.$client_details->client_id.'" style="float: left;" value="1" '.$date_checked.'><label for="date_selection_'.$client_details->client_id.'" style="float:left;margin-top:5px">&nbsp;</label>
                                     <input type="text" class="form-control date_class" data-element="'.$client_details->client_id.'"  placeholder="Date" style="width:70%" value="'.$yearend_date.'" '.$date_disabled.'/>
                               </td>
-                              <td>'.$output_attachement.'</td>
+                              <td><spam class="attachment_sort_val" style="display:none">'.$out_attachment.'</spam>'.$output_attachement.'</td>
                               </tr>';
                         }
 
@@ -2341,18 +2350,26 @@ class YearendController extends Controller {
 
             if($balance == ''){
                   $balance_result = '<span style="color:#0000fb">0.00</span>';
+                  $balance_spam = '0.00';
             }
             elseif($balance == 0){
                   $balance_result = '<span style="color:#0000fb">0.00</span>';
+                  $balance_spam = '0.00';
+            }
+            elseif(($balance < 0 && $balance >= -5) || ($balance > 0 && $balance <= 5)){
+                  $balance_result = '<span style="color:#0000fb">'.number_format_invoice_without_decimal($balance).'</span>';
+                  $balance_spam = number_format_invoice_without_decimal($balance);
             }
             elseif($balance < 0){
                   $balance_result = '<span style="color:#0dce00">'.number_format_invoice_without_decimal($balance).'</span>';
+                  $balance_spam = number_format_invoice_without_decimal($balance);
             }
             else{
                 $balance_result = '<span style="color:#f00">'.number_format_invoice_without_decimal($balance).'</span>';
+                $balance_spam = number_format_invoice_without_decimal($balance);
             }
 
-            echo json_encode(array('balance' => $balance_result, 'client_id' => $client_id));
+            echo json_encode(array('balance' => $balance_result,'balance_spam' => $balance_spam, 'client_id' => $client_id));
       }
 
       public function yearendliabilityprelim(){

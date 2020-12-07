@@ -10,11 +10,29 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-
+.client_inactive td,.selected_inactive td {color:#f00 !important;}
 body{
   background: #2fd9ff !important;
 }
-
+.modal_load {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading {
+    overflow: hidden;   
+}
+body.loading .modal_load {
+    display: block;
+}
 #total_time_minutes_format{
   color:#0f9600;
 }
@@ -460,7 +478,7 @@ body #coupon {
 
             <input type="hidden" value="" class="currentdate" name="" >
             <input type="hidden" value="" class="add_edit_job" name="add_edit_job" >
-
+            <input type="hidden" value="" id="hidden_job_type" class="hidden_job_type" name="hidden_job_type">
 
           </div>
 
@@ -486,307 +504,540 @@ body #coupon {
 
 
 
-
-
-
-
 <div class="modal fade stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
-
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
-
-    <form action="<?php echo URL::to('user/time_job_stop')?>" method="post" class="add_new_form">
-
+    <form action="<?php echo URL::to('user/time_job_stop')?>" method="post" class="add_new_form" id="time_job_stop">
         <div class="modal-content">
-
           <div class="modal-header">
-
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-
             <h4 class="modal-title">Stop Active Job</h4>
+          </div>
+          <div class="modal-body"> 
+            <div class="stop_left_body_class">          
+              <div class="form-group start_group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Date:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date'>                    
+                          <input class="form-control dateclass" name="date" value="" readonly autocomplete="off">
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Started Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date'>
+                          <input type='text' class="form-control stop_start_time" readonly placeholder="Select Start Time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" required autocomplete="off"/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Choose Stop Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date' id='stop_time1'>
+                          <input type='text' class="form-control stop_time1" placeholder="Select Stop Time" name="stoptime" style="font-weight: 500;" required autocomplete="off"/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date stop_jom_time'>
+                          <input type='text' class="form-control calculate_job_time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" disabled/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <textarea class="form-control comments" name="comments" placeholder="Enter Comments"></textarea>
+                  <input type="hidden" class="idclass" name="id">
+              </div>
+              <div class="form-group">
+                <input type="button" class="common_black_button" id="stop_job" value="Stop Job" style="float:right">
+              </div>
+              <div class="form-group breaktime_div" style="display:none">
+                  <div class="row">
+                    <div class="col-lg-4 col-md-2 col-sm-6 col-xs-6">
+                      <div class="form-title" style="margin-top:10px; font-weight:800;">Break Time: </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                      <div class='input-group date'>
+                          <input type='text' class="form-control" id="break_time" name="breaktime" style="font-weight: 500;" readonly/>
+                          <input type="hidden" id="break_time_val" name="break_time_val" value="0">
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                      <a href="javascript:" class="btn btn-sm btn-primary" id="reset_breaktime"> Reset </a>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group breaktime_div" style="display:none">
+                  <div class="row">
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="15"> <i class="fa fa-plus"></i> 15 Minutes</a>
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="30"> <i class="fa fa-plus"></i> 30 Minutes</a>
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="45"> <i class="fa fa-plus"></i> 45 Minutes</a>
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="60"> <i class="fa fa-plus"></i> 60 Minutes</a>
+                  </div>
+                  <div class="form-group" style="margin-top:20px;">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date stop_jom_time'>
+                          <input type='text' class="form-control calculate_job_time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" disabled/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group start_group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Total Quick Jobs:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date'>                    
+                          <input class="form-control" id="total_quick_jobs" value="" autocomplete="off" disabled>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group start_group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Total Breaks:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date'>                    
+                          <input class="form-control" id="total_breaks" value="" autocomplete="off" disabled>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Actual Time on Job:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date'>
+                          <input class="form-control" id="total_time_minutes_format" value="" autocomplete="off" disabled>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              </div>
+              <div class="hide_group_div" style="margin-top:10px;background: #fff;padding:10px">
+                <table class="table" style="margin-top:20px;width:90%; ">
+                  <tr>
+                    <td>Total job time in minutes:</td>
+                    <td class="total_job_time"></td>
+                  </tr>
+                  <tr>
+                    <td>Deducted for Quick Jobs:</td>
+                    <td class="deducted_job_time"></td>
+                  </tr>
+                  <tr>
+                    <td>Available for distribution:</td>
+                    <td class="available_job_time"></td>
+                  </tr>
+                  <tr>
+                    <td>Number of clients selected:</td>
+                    <td class="clients_selected"></td>
+                  </tr>
+                  <tr>
+                    <td>Minutes per client:</td>
+                    <td class="minutes_per_client"></td>
+                  </tr>
+                </table>
+                <input type="hidden" name="hidden_minutes_per_client" id="hidden_minutes_per_client" value="">
+                <input type="hidden" name="hidden_round_type" id="hidden_round_type" value="">
+                <input type="button" name="round_up" class="round_up common_black_button" value="Round Up">
+                <input type="button" name="round_down" class="round_down common_black_button" value="Round Down">
+              </div>
+            </div>
+            <div class="col-md-6 stop_right_body_class">
+              <input type="radio" name="select_client_groups" id="bulk_all_clients" class="select_client_groups" value="1"><label for="bulk_all_clients">All Clients</label> 
+              <input type="radio" name="select_client_groups" id="presets_clients" class="select_client_groups" value="2"><label for="presets_clients">Presets</label>
+              <input type="radio" name="select_client_groups" id="groups_clients" class="select_client_groups" value="3"><label for="groups_clients">Groups</label> 
 
+              <?php
+              $groups = DB::table('messageus_groups')->get();
+              $clients = DB::table('cm_clients')->get();
+              ?>
+              <div class="groups_combo">
+                <label>Select Group:</label>
+                <select name="select_group_clients" id="select_group_clients" class="form-control select_group_clients">
+                  <option value="">Select Group</option>
+                  <?php
+                    if(count($groups))
+                    {
+                      foreach($groups as $group)
+                      {
+                        echo '<option value="'.$group->id.'">'.$group->group_name.'</option>';
+                      }
+                    }
+                  ?>
+                </select>
+              </div>
+              <div class="presets_combo">
+                <label>Select Presets:</label>
+                <select name="select_presets_clients" id="select_presets_clients" class="form-control select_presets_clients">
+                  <option value="">Select Presets</option>
+                  <option value="1">Current Week Standard PMS Clients</option>
+                  <option value="2">Current Week Enhanced PMS Clients</option>
+                  <option value="3">Current Week  Complex PMS Clients</option>
+                  <option value="4">Current Month Standard PMS Clients</option>
+                  <option value="5">Current Month Enhanced PMS Clients</option>
+                  <option value="6">Current Month Complex PMS Clients</option>
+                  <option value="7">Paye MRS Clients</option>
+                </select>
+              </div>
+              
+              <div class="hide_group_div" style="margin-top:10px;background: #fff;padding:10px;min-height:700px;max-height: 700px;overflow-y: scroll;">
+                <p><label style="font-weight:800;font-size:18px;text-decoration: underline" id="selected_grp_name"></label> </p>
+                 <input type="checkbox" name="select_all_clients" id="select_all_clients" class="select_all_clients" value=""><label for="select_all_clients">Select / Deselect All Clients</label> 
+                 <?php
+                  $default_tasks = DB::table('time_task')->orderBy('task_name','asc')->get();
+                  $output_default = '<select name="default_task" class="form-control default_task" style="width: 30%;float: right;">
+                    <option value="">Select Default Tasks</option>';
+                  if(count($default_tasks)){
+                    foreach ($default_tasks as $single_task) {
+                      $output_default.= '<option value="'.$single_task->id.'">'.$single_task->task_name.'</option>';
+                    }
+                  }
+                  else{
+                    $output_default.= '<option value="">No Tasks Found</option>';
+                  }
+                  $output_default.='</select><spam style="float:right;margin-top: 8px;">Select Default TaskType: </spam>';
+                  echo $output_default;
+                 ?>
+                <table class="table" id="client_table" style="border: 1px solid #000;">
+                  <thead>
+                    <th style="text-align: left"></th>
+                    <th style="text-align: left">ClientID</th>
+                    <th style="text-align: left">Company</th>
+                    <th style="text-align: left">Task Type</th>
+                  </thead>
+                  <tbody id="client_tbody">
+                      <?php
+                      if(count($clients))
+                      {
+                        foreach($clients as $client)
+                        {
+                          if($client->active == "2") { $cls= 'client_inactive'; } 
+                          else { $cls = 'client_active'; }
+
+                          echo '<tr class="client_tr '.$cls.'" id="client_tr_'.$client->client_id.'" data-element="'.$client->client_id.'">
+                            <td class="client_td"><input type="checkbox" name="client_exclude[]" class="client_exclude" value="'.$client->client_id.'"><label>&nbsp;</label></td>
+                            <td class="client_td">'.$client->client_id.'</td>
+                            <td class="client_td">'.$client->company.'</td>
+                            <td class="client_td">';
+                              $tasks = DB::table('time_task')->where('clients','like','%'.$client->client_id.'%')->orderBy('task_name','asc')->get();
+                              $output = '<select name="client_task_'.$client->client_id.'" class="form-control client_task">
+                                <option value="">Select Tasks</option>';
+                              if(count($tasks)){
+                                foreach ($tasks as $single_task) {
+                                  $output.= '<option value="'.$single_task->id.'">'.$single_task->task_name.'</option>';
+                                }
+                              }
+                              else{
+                                $output.= '<option value="">No Tasks Found</option>';
+                              }
+                              $output.='</select>';
+                            echo $output.'</td>
+                          </tr>';
+                        }
+                      }
+                      ?>
+                  </tbody>
+                </table>
+                <table class="table" id="payemrs_table" style="border: 1px solid #000;">
+                  <thead>
+                    <th style="text-align: left"></th>
+                    <th style="text-align: left">ClientID</th>
+                    <th style="text-align: left">Company</th>
+                    <th style="text-align: left">Task Type</th>
+                  </thead>
+                  <tbody id="paye_tbody">
+                      <?php
+                      $year = DB::table('paye_p30_year')->orderBy('year_id','desc')->first();   
+                      $payelist = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->get();
+                      $group_name = 'PAYE-MRS Clients';
+                      $client_val = '';
+                      if(count($payelist)){
+                          foreach ($payelist as $keytask => $task) {
+                              $get_clients = DB::table('cm_clients')->where('employer_no',$task->task_enumber)->first();
+                              if(count($get_clients))
+                              {
+                                if($get_clients->active == 2) { 
+                                  if($task->disabled == 1) {
+                                    $label_color = 'color:blue'; $disbledtext = ' (DISABLED)'; 
+                                    $label_cls = 'paye_blue_clients';
+                                  }
+                                  else{
+                                    $label_color = 'color:#f00'; $disbledtext = ''; 
+                                    $label_cls = 'paye_blue_clients';
+                                  }
+                                }
+                                else{
+                                  if($task->disabled == 1) {  $label_color = 'color:blue'; $disbledtext = ' (DISABLED)'; $label_cls = 'paye_blue_clients'; } else { $label_color = 'color:#000'; $disbledtext = ''; $label_cls = ''; }
+                                }
+                                echo '<tr class="client_tr '.$label_cls.'">
+                                        <td class="client_td" style="'.$label_color.'"><input type="checkbox" name="client_exclude[]" class="client_exclude" value="'.$get_clients->client_id.'"><label>&nbsp;</label></td>
+                                        <td class="client_td" style="'.$label_color.'">'.$get_clients->client_id.'</td>
+                                        <td class="client_td" style="'.$label_color.'">'.$get_clients->company.''.$disbledtext.'</td>
+                                        <td class="client_td">';
+                                          $tasks = DB::table('time_task')->where('clients','like','%'.$get_clients->client_id.'%')->orderBy('task_name','asc')->get();
+                                          $output = '<select name="paye_client_task_'.$get_clients->client_id.'" class="form-control client_task">
+                                            <option value="">Select Tasks</option>';
+                                          if(count($tasks)){
+                                            foreach ($tasks as $single_task) {
+                                              $output.= '<option value="'.$single_task->id.'">'.$single_task->task_name.'</option>';
+                                            }
+                                          }
+                                          else{
+                                            $output.= '<option value="">No Tasks Found</option>';
+                                          }
+                                          $output.='</select>';
+                                        echo $output.'</td>
+                                      </tr>';
+                              }
+                          }
+                      }
+                      ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer" style="clear:both">
+            <input type="submit" class="common_black_button" id="stop_active_job" value="Stop Active Job" style="display:none">
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+<!-- <div class="modal fade stop_bulk_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+  <div class="modal-dialog modal-sm" role="document" style="width:70%">
+    <form action="<?php echo URL::to('user/time_job_stop')?>" method="post" class="add_new_form">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Stop Even Bulk Job</h4>
+          </div>
+          <div class="modal-body">    
+            <div class="col-md-6 col-lg-6">       
+              <div class="form-group start_group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Date:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date'>                    
+                          <input class="form-control dateclass" name="date" value="" readonly autocomplete="off">
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Started Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date'>
+                          <input type='text' class="form-control stop_start_time" readonly placeholder="Select Start Time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" required autocomplete="off"/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Choose Stop Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date' id='stop_time1'>
+                          <input type='text' class="form-control stop_time1" placeholder="Select Stop Time" name="stoptime" style="font-weight: 500;" required autocomplete="off"/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date stop_jom_time'>
+                          <input type='text' class="form-control calculate_job_time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" disabled/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <textarea class="form-control comments" name="comments" placeholder="Enter Comments"></textarea>
+                  <input type="hidden" class="idclass" name="id">
+              </div>
+              <div class="form-group breaktime_div" style="display:none">
+                  <div class="row">
+                    <div class="col-lg-4 col-md-2 col-sm-6 col-xs-6">
+                      <div class="form-title" style="margin-top:10px; font-weight:800;">Break Time: </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                      <div class='input-group date'>
+                          <input type='text' class="form-control" id="break_time" name="breaktime" style="font-weight: 500;" readonly/>
+                          <input type="hidden" id="break_time_val" name="break_time_val" value="0">
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                      <a href="javascript:" class="btn btn-sm btn-primary" id="reset_breaktime"> Reset </a>
+                    </div>
+                  </div>
+              </div>
+              <div class="form-group breaktime_div" style="display:none">
+                  <div class="row">
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="15"> <i class="fa fa-plus"></i> 15 Minutes</a>
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="30"> <i class="fa fa-plus"></i> 30 Minutes</a>
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="45"> <i class="fa fa-plus"></i> 45 Minutes</a>
+                    <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="60"> <i class="fa fa-plus"></i> 60 Minutes</a>
+                  </div>
+                  <div class="form-group" style="margin-top:20px;">
+                  <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class="form-title">Job Time:</div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                      <div class='input-group date stop_jom_time'>
+                          <input type='text' class="form-control calculate_job_time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" disabled/>
+                          <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </span>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+              </div>
+
+              <div class="form-group start_group">
+
+                  <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                      <div class="form-title">Total Quick Jobs:</div>
+
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                      <div class='input-group date'>                    
+
+                          <input class="form-control" id="total_quick_jobs" value="" autocomplete="off" disabled>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+              </div>
+
+              <div class="form-group start_group">
+
+                  <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                      <div class="form-title">Total Breaks:</div>
+
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                      <div class='input-group date'>                    
+
+                          <input class="form-control" id="total_breaks" value="" autocomplete="off" disabled>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+              </div>
+
+
+              <div class="form-group">
+
+                  <div class="row">
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                      <div class="form-title">Actual Time on Job:</div>
+
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                      <div class='input-group date'>
+
+                          <input class="form-control" id="total_time_minutes_format" value="" autocomplete="off" disabled>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+              </div>
+
+              </div>
+
+            </div>
+            <div class="col-md-6 col-lg-6">
+            </div>
           </div>
 
-          <div class="modal-body">           
-
-            <div class="form-group start_group">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Job Date:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date'>                    
-
-                        <input class="form-control dateclass" name="date" value="" readonly autocomplete="off">
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="form-group">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Job Started Time:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date'>
-
-                        <input type='text' class="form-control stop_start_time" readonly placeholder="Select Start Time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" required autocomplete="off"/>
-
-                        <span class="input-group-addon">
-
-                            <span class="glyphicon glyphicon-time"></span>
-
-                        </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Choose Stop Time:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date' id='stop_time1'>
-
-                        <input type='text' class="form-control stop_time1" placeholder="Select Stop Time" name="stoptime" style="font-weight: 500;" required autocomplete="off"/>
-
-                        <span class="input-group-addon">
-
-                            <span class="glyphicon glyphicon-time"></span>
-
-                        </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Job Time:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date stop_jom_time'>
-
-                        <input type='text' class="form-control calculate_job_time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" disabled/>
-
-                        <span class="input-group-addon">
-
-                            <span class="glyphicon glyphicon-time"></span>
-
-                        </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group">
-
-                <textarea class="form-control comments" name="comments" placeholder="Enter Comments"></textarea>
-
-                <input type="hidden" class="idclass" name="id">
-
-            </div>
-
-            <div class="form-group breaktime_div" style="display:none">
-
-                <div class="row">
-
-                  <div class="col-lg-4 col-md-2 col-sm-6 col-xs-6">
-
-                    <div class="form-title" style="margin-top:10px; font-weight:800;">Break Time: </div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-
-                    <div class='input-group date'>
-
-                        <input type='text' class="form-control" id="break_time" name="breaktime" style="font-weight: 500;" readonly/>
-
-                        <input type="hidden" id="break_time_val" name="break_time_val" value="0">
-
-                    </div>
-
-                  </div>
-
-                  <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
-
-                    <a href="javascript:" class="btn btn-sm btn-primary" id="reset_breaktime"> Reset </a>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group breaktime_div" style="display:none">
-
-                <div class="row">
-
-                  <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="15"> <i class="fa fa-plus"></i> 15 Minutes</a>
-
-                  <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="30"> <i class="fa fa-plus"></i> 30 Minutes</a>
-
-                  <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="45"> <i class="fa fa-plus"></i> 45 Minutes</a>
-
-                  <a href="javascript:" class="col-lg-3 col-md-3 col-sm-6 col-xs-6 add_minutes_div add_minutes" data-element="60"> <i class="fa fa-plus"></i> 60 Minutes</a>
-
-                </div>
-
-                <div class="form-group" style="margin-top:20px;">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Job Time:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date stop_jom_time'>
-
-                        <input type='text' class="form-control calculate_job_time" name="stoptime" style="font-weight: 500;background-color: #eceaea !important" disabled/>
-
-                        <span class="input-group-addon">
-
-                            <span class="glyphicon glyphicon-time"></span>
-
-                        </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group start_group">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Total Quick Jobs:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date'>                    
-
-                        <input class="form-control" id="total_quick_jobs" value="" autocomplete="off" disabled>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group start_group">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Total Breaks:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date'>                    
-
-                        <input class="form-control" id="total_breaks" value="" autocomplete="off" disabled>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <div class="row">
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class="form-title">Actual Time on Job:</div>
-
-                  </div>
-
-                  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-
-                    <div class='input-group date'>
-
-                        <input class="form-control" id="total_time_minutes_format" value="" autocomplete="off" disabled>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-            </div>
-
-            </div>
-
-            
-          </div>
-
-          <div class="modal-footer">
+          <div class="modal-footer" style="clear:both">
 
             <input type="button" class="common_black_button" id="stop_job" value="Stop Job">
 
@@ -801,7 +1052,7 @@ body #coupon {
   </div>
 
 </div>
-
+ -->
 <div class="modal fade stop_quick_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
@@ -1668,13 +1919,9 @@ body #coupon {
         </div>
 
         <div class="col-lg-2" style="padding: 0px;">
-
         <?php
-
         if(Session::has('task_job_user') && Session::get('task_job_user') != "")
-
         {
-
           $check_date_available = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('quick_job',0)->where('status',0)->first();
 
           if(count($check_date_available))
@@ -1703,7 +1950,8 @@ body #coupon {
 
         ?>
 
-          <a href="javascript:" class="ok_button create_new <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px;">Create an Active Job</a>          
+          <a href="javascript:" class="ok_button create_new <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px;">Create an Active Job</a> 
+          <a href="javascript:" class="ok_button create_bulk_job <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px;">Create an Even Bulk Job</a>           
 
         </div>
 
@@ -1903,10 +2151,10 @@ body #coupon {
                     if($jobs->quick_job == 0){
                       $quick_job = 'No';                      
                       if($jobs->color == '1'){
-                        $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$jobs->id.'" style="'.$redcolor.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$jobs->id.'">Quick Job</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:" class="edit_active_job" data-element="'.$jobs->id.'" style="'.$redcolor.'">Edit Job</a>';
+                        $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$jobs->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$jobs->id.'">Quick Job</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:" class="edit_active_job" data-element="'.$jobs->id.'" style="'.$redcolor.'">Edit Job</a>';
                       }
                       else{
-                        $buttons = '<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$jobs->id.'" style="'.$redcolor.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$jobs->id.'">Quick Job</a>';
+                        $buttons = '<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$jobs->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$jobs->id.'">Quick Job</a>';
                       }
                     }
                     elseif($jobs->stop_time == '00:00:00'){
@@ -2098,10 +2346,10 @@ body #coupon {
                               if($child->quick_job == 0){
                                 $quick_job = 'No';                      
                                 if($child->color == '1'){
-                                  $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$child->id.'" style="'.$redcolor.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$child->id.'">Quick Job</a>';
+                                  $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$child->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$child->id.'">Quick Job</a>';
                                 }
                                 else{
-                                  $buttons = '<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$child->id.'" style="'.$redcolor.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$child->id.'">Quick Job</a>';
+                                  $buttons = '<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$child->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$child->id.'">Quick Job</a>';
                                 }
                               }
                               elseif($child->stop_time == '00:00:00'){
@@ -2553,7 +2801,13 @@ body #coupon {
                                 }                      
                               }
 
-
+                              if($childi < 10)
+                              {
+                                $childi = '0'.$childi;
+                              }
+                              else{
+                                $childi = $childi;
+                              }
 
                               $output.='
 
@@ -2969,7 +3223,7 @@ body #coupon {
     </div>
 
 </div>
-
+<div class="modal_load"></div>
 <script>
 
 $("#user_select").change(function(){
@@ -2994,7 +3248,50 @@ $("#user_select").change(function(){
 <script>
 
 $(function(){
-
+    $("#client_table").DataTable({
+        columns:[
+            {
+                "sortable": false
+            },
+            {
+                "sortable": true
+            },
+            {
+                "sortable": true
+            },
+            {
+                "sortable": false
+            }
+        ],
+        autoWidth: true,
+        scrollX: false,
+        fixedColumns: false,
+        searching: false,
+        paging: false,
+        info: false
+    });
+    $("#payemrs_table").DataTable({
+        columns:[
+            {
+                "sortable": false
+            },
+            {
+                "sortable": true
+            },
+            {
+                "sortable": true
+            },
+            {
+                "sortable": false
+            }
+        ],
+        autoWidth: true,
+        scrollX: false,
+        fixedColumns: false,
+        searching: false,
+        paging: false,
+        info: false
+    });
     $('#active_job').DataTable({
         dom: 'Bfrtip',
         retrieve: true,
@@ -3037,7 +3334,12 @@ $(function(){
 
         paging: false,
 
-        info: false
+        info: false,
+        aaSorting: [],
+        columnDefs: [ {
+          "targets": 0,
+          "orderable": false
+        } ]
 
     });
 
@@ -3048,7 +3350,169 @@ $(function(){
 </script>
 
 <script>
+$(window).change(function(e) {
+  if($(e.target).hasClass('default_task'))
+  {
+    var value = $(e.target).val();
+    $(".client_exclude:checked").parents(".client_tr").find(".client_task").val(value);
+  }
+  if($(e.target).hasClass('select_group_clients'))
+  {
+    var group_id = $(e.target).val();
+    if(group_id != "")
+    {
+      $("body").addClass("loading");
+      $(".client_exclude").prop("checked",false);
+      $(".client_tr").hide();
+      setTimeout(function() {
+        $.ajax({
+          url:"<?php echo URL::to('user/select_messageus_group'); ?>",
+          type:"post",
+          data:{group_id:group_id},
+          dataType:"json",
+          success:function(result)
+          {
+            $("#selected_grp_name").html(result['group_name']);
+            var clientids = result['client_ids'].split(",");
+            $.each(clientids, function(index,value) {
+              $("#client_tr_"+value).show();
+            });
+            $("#client_table").show();
+              $("#payemrs_table").hide();
+            $(".hide_group_div").show();
+            $(".client_active").find(".client_exclude:visible").prop("checked",true);
+            $(".client_tr").removeClass("blue_clients");
 
+            var checked_client = $(".client_exclude:checked").length;
+            $(".clients_selected").html(checked_client);
+            if(checked_client == 0)
+            {
+              $(".minutes_per_client").html("0");
+              $("#hidden_minutes_per_client").val("0");
+            }
+            else
+            {
+              var available_for_distribution = $(".available_job_time").html();
+              var minutes_per_client = parseInt(available_for_distribution) / parseInt(checked_client);
+              if(minutes_per_client < 1)
+              {
+                $(".minutes_per_client").html("1");
+                $("#hidden_minutes_per_client").val("1");
+              }
+              else{
+                $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+                $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+              }
+            }
+            $(".default_task").val("");
+            $(".client_task").val("");
+            $("body").removeClass("loading");
+          }
+        });
+      },1000);
+    }
+  }
+  if($(e.target).hasClass('select_presets_clients'))
+  {
+    var group_id = $(e.target).val();
+    if(group_id != "")
+    {
+      if(group_id == 7)
+      {
+        $(".client_exclude").prop("checked",false);
+        $("#selected_grp_name").html("PAYE MRS Clients");
+        $(".hide_group_div").show();
+        $("#client_table").hide();
+        $("#payemrs_table").show();
+        $("#payemrs_table").find(".client_tr").show();
+        $("#payemrs_table").find(".client_exclude").prop("checked",true);
+        $(".paye_blue_clients").find(".client_exclude").prop("checked",false);
+
+        var checked_client = $(".client_exclude:checked").length;
+        $(".clients_selected").html(checked_client);
+        if(checked_client == 0)
+        {
+          $(".minutes_per_client").html("0");
+          $("#hidden_minutes_per_client").val("0");
+        }
+        else
+        {
+          var available_for_distribution = $(".available_job_time").html();
+          var minutes_per_client = parseInt(available_for_distribution) / parseInt(checked_client);
+          if(minutes_per_client < 1)
+          {
+            $(".minutes_per_client").html("1");
+            $("#hidden_minutes_per_client").val("1");
+          }
+          else{
+            $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+            $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+          }
+        }
+        $(".default_task").val("");
+          $(".client_task").val("");
+      }
+      else{
+        $("body").addClass("loading");
+        $(".client_exclude").prop("checked",false);
+        $(".client_tr").hide();
+        setTimeout(function() {
+          $.ajax({
+            url:"<?php echo URL::to('user/select_presets_group'); ?>",
+            type:"post",
+            data:{group_id:group_id},
+            dataType:"json",
+            success:function(result)
+            {
+              $("#selected_grp_name").html(result['group_name']);
+              var clientids = result['client_ids'].split(",");
+              $.each(clientids, function(index,value) {
+                var splitclient = value.split("||");
+                $("#client_tr_"+splitclient[1]).show();
+                $("#client_tr_"+splitclient[1]).find(".client_td").css("color",splitclient[0]);
+                if(splitclient[0] == "blue")
+                {
+                  $("#client_tr_"+splitclient[1]).addClass("blue_clients");
+                }
+              });
+              $("#client_table").show();
+              $("#payemrs_table").hide();
+              $(".hide_group_div").show();
+              $(".client_active").find(".client_exclude:visible").prop("checked",true);
+              $(".blue_clients").find(".client_exclude").prop("checked",false);
+              $(".client_tr").removeClass("blue_clients");
+
+              var checked_client = $(".client_exclude:checked").length;
+              $(".clients_selected").html(checked_client);
+              if(checked_client == 0)
+              {
+                $(".minutes_per_client").html("0");
+                $("#hidden_minutes_per_client").val("0");
+              }
+              else
+              {
+                var available_for_distribution = $(".available_job_time").html();
+                var minutes_per_client = parseInt(available_for_distribution) / parseInt(checked_client);
+                if(minutes_per_client < 1)
+                {
+                  $(".minutes_per_client").html("1");
+                  $("#hidden_minutes_per_client").val("1");
+                }
+                else{
+                  $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+                  $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+                }
+              }
+              $(".default_task").val("");
+              $(".client_task").val("");
+              $("body").removeClass("loading");
+            }
+          });
+        },1000);
+      } 
+    }
+  }
+});
 $(window).click(function(e) {
 
   var userval = $("#user_select").val();
@@ -3065,6 +3529,216 @@ $(window).click(function(e) {
 
     $(".user_details_div").hide(); 
 
+  }
+  if(e.target.id == "stop_active_job")
+  {
+    e.preventDefault();
+    var visible = $(".stop_right_body_class:visible").length;
+    if(visible > 0)
+    {
+      var lengthclient = $(".select_client_groups:checked").length;
+      if(lengthclient > 0)
+      {
+        var checked_clients = $(".client_exclude:checked").length;
+        if(checked_clients > 0)
+        {
+          var ival = 0;
+          $(".client_exclude:checked").each(function() {
+            var value = $(this).parents(".client_tr").find(".client_task").val();
+            if(value == "" || value == null || typeof value == null || typeof value === "undefined")
+            {
+              ival++;
+            }
+          });
+          if(ival > 0)
+          {
+            alert("Please select the Tasktype for all the selected clients");
+            return false;
+          }
+          else{
+            $("#time_job_stop").submit();
+          }
+        }
+        else{
+          alert("Please select atleast one client to stop the job");
+        }
+      }
+      else{
+        alert("Please select atleast one client to stop the job");
+      }
+    }
+    else{
+     $("#time_job_stop").submit();
+    }
+  }
+  if($(e.target).hasClass('round_up'))
+  {
+    var value = $(".minutes_per_client").html();
+    if(Number.isInteger(parseFloat(value)) !== true)
+    {
+      var minutes = parseInt(value) + 1;
+      $(".minutes_per_client").html(minutes);
+      $("#hidden_minutes_per_client").val(minutes);
+      $("#hidden_round_type").val("1");
+    }
+    else{
+      alert("ALready the Minutes per Client is Rounded");
+    }
+  }
+  if($(e.target).hasClass('round_down'))
+  {
+    var value = $(".minutes_per_client").html();
+    if(Number.isInteger(parseFloat(value)) !== true)
+    {
+      var minutes = parseInt(value);
+      $(".minutes_per_client").html(minutes);
+      $("#hidden_minutes_per_client").val(minutes);
+      $("#hidden_round_type").val("2");
+    }
+    else{
+      alert("ALready the Minutes per Client is Rounded");
+    }
+  }
+  if($(e.target).hasClass('select_all_clients'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".client_exclude:visible").prop("checked",true);
+    }
+    else{
+      $(".client_exclude").prop("checked",false);
+    }
+
+    var checked_client = $(".client_exclude:checked").length;
+    $(".clients_selected").html(checked_client);
+    if(checked_client == 0)
+    {
+      $(".minutes_per_client").html("0");
+      $("#hidden_minutes_per_client").val("0");
+    }
+    else
+    {
+      var available_for_distribution = $(".available_job_time").html();
+      var minutes_per_client = parseInt(available_for_distribution) / parseInt(checked_client);
+      if(minutes_per_client < 1)
+      {
+        $(".minutes_per_client").html("1");
+        $("#hidden_minutes_per_client").val("1");
+      }
+      else{
+        $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+        $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+      }
+    }
+  }
+  if($(e.target).hasClass('client_exclude'))
+  {
+    var checked_client = $(".client_exclude:checked").length;
+    $(".clients_selected").html(checked_client);
+    if(checked_client == 0)
+    {
+      $(".minutes_per_client").html("0");
+      $("#hidden_minutes_per_client").val("0");
+    }
+    else
+    {
+      var available_for_distribution = $(".available_job_time").html();
+      var minutes_per_client = parseInt(available_for_distribution) / parseInt(checked_client);
+      if(minutes_per_client < 1)
+      {
+        $(".minutes_per_client").html("1");
+        $("#hidden_minutes_per_client").val("1");
+      }
+      else{
+        $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+        $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+      }
+    }
+  }
+  if(e.target.id == "bulk_all_clients")
+  {
+    var stoptime = $(".stop_time1").val();
+    if(stoptime =="")
+    {
+      alert("Please Enter the StopTime");
+      $(".select_client_groups").prop("checked",false);
+    }
+    else{
+      $("#selected_grp_name").html("All Clients");
+      $(".hide_group_div").show();
+      $(".presets_combo").hide();
+      $(".groups_combo").hide();
+      $("#client_table").show();
+      $("#payemrs_table").hide();
+      $("#client_tbody").find(".client_tr").show();
+      $(".client_exclude").prop("checked",false);
+      $("#select_all_clients").prop("checked",false);
+
+      $(".client_active").find(".client_exclude").prop("checked",true);
+
+      var checked_client = $(".client_exclude:checked").length;
+      $(".clients_selected").html(checked_client);
+      if(checked_client == 0)
+      {
+        $(".minutes_per_client").html("0");
+        $("#hidden_minutes_per_client").val("0");
+      }
+      else
+      {
+        var available_for_distribution = $(".available_job_time").html();
+        var minutes_per_client = parseInt(available_for_distribution) / parseInt(checked_client);
+        if(minutes_per_client < 1)
+        {
+          $(".minutes_per_client").html("1");
+          $("#hidden_minutes_per_client").val("1");
+        }
+        else{
+          $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+          $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+        }
+      }
+
+      $(".default_task").val("");
+      $(".client_task").val("");
+    }
+  }
+  if(e.target.id == "presets_clients")
+  {
+    var stoptime = $(".stop_time1").val();
+    if(stoptime =="")
+    {
+      alert("Please Enter the StopTime");
+      $(".select_client_groups").prop("checked",false);
+    }
+    else{
+      $(".hide_group_div").hide();
+      $(".presets_combo").show();
+      $(".groups_combo").hide();
+      $(".client_exclude").prop("checked",false);
+      $("#select_all_clients").prop("checked",false);
+
+      $("select_group_clients").val("");
+      $("select_presets_clients").val("");
+    }
+  }
+  if(e.target.id == "groups_clients")
+  {
+    var stoptime = $(".stop_time1").val();
+    if(stoptime =="")
+    {
+      alert("Please Enter the StopTime");
+      $(".select_client_groups").prop("checked",false);
+    }
+    else{
+      $(".hide_group_div").hide();
+      $(".presets_combo").hide();
+      $(".groups_combo").show();
+      $(".client_exclude").prop("checked",false);
+      $("#select_all_clients").prop("checked",false);
+
+      $("select_group_clients").val("");
+          $("select_presets_clients").val("");
+    }
   }
   if($(e.target).hasClass('create_new')) {
 
@@ -3091,7 +3765,8 @@ $(window).click(function(e) {
         }
         else{
           $(".mark_internal").prop("checked",false);
-
+          $(".mark_internal").prop("disabled",false);
+          $("#hidden_job_type").val("0");
           $(".client_search_class").val("");
 
           $(".client_group").show();
@@ -3130,6 +3805,65 @@ $(window).click(function(e) {
 
           $(".tasks_group").hide();
 
+          $(".acive_id").val('');
+          $(".taskjob_id").val('');
+          $(".add_edit_job").val(0);
+        }
+      }
+    });
+  }
+  if($(e.target).hasClass('create_bulk_job')) {
+
+    var userid = $("#user_select").val();
+
+    if(userid == "" || typeof userid === "undefined")
+
+    {
+
+      alert("Please select the Users");
+
+      return false;
+
+    }
+    $.ajax({
+      url:"<?php echo URL::to('user/check_time_me_user_active_job'); ?>",
+      type:"post",
+      data:{userid:userid},
+      success: function(result)
+      {
+        if(result > 0)
+        {
+          alert('You can only have 1 active job! You must stop the current active job before you create a New Active Job') ? "" : location.reload();
+        }
+        else{
+          $(".mark_internal").prop("checked",true);
+          $(".mark_internal").prop("disabled",true);
+          $("#hidden_job_type").val("1");
+          $(".internal_type").val('0');
+          $(".client_group").hide();
+          $(".internal_tasks_group").show();
+          $(".tasks_group").hide();
+          $(".client_search_class").val('');
+          $(".client_search_class").prop("required",false);
+          $("#client_search").val('');
+          $(".task_details").html('');
+          $("#idtask").val('');
+          var child_value = $(".tasks_li_internal:first").text();
+          $(".task-choose_internal:first-child").text(child_value);
+          $(".client_search_class").val("");
+          $(".user_id").val(userid);
+          $(".create_new_model").modal("show");
+          $("#quickjob").val('0');
+          $(".job_title").html('Create an Even Bulk Job');
+          $(".job_button_name").val('Create an Even Bulk Job');
+          $(".stop_group").hide();
+          $(".stop_time").prop("required",false);
+          $(".stop_time").val('');
+          $(".start_button").show();
+          $(".start_button_quick").hide();
+          $(".job_button_name").hide();
+          $(".date_group").hide();
+          $(".start_group").hide();
           $(".acive_id").val('');
           $(".taskjob_id").val('');
           $(".add_edit_job").val(0);
@@ -3354,6 +4088,33 @@ $(window).click(function(e) {
           $("#total_breaks").val(result['break_hours_another']);
           $("#break_time_val").val(result['count']);
           $("#total_time_minutes_format").val(result['total_time_minutes_format']);
+
+          $(".total_job_time").html(result['total_job_time_in_minutes']);
+          $(".deducted_job_time").html(result['deducted_for_quick']);
+          $(".available_job_time").html(result['available_for_distribution']);
+
+          var checked_client = $(".client_exclude:checked").length;
+          $(".clients_selected").html(checked_client);
+          if(checked_client == 0)
+          {
+            $(".minutes_per_client").html("0");
+            $("#hidden_minutes_per_client").val("0");
+          }
+          else
+          {
+            var minutes_per_client = parseInt(result['available_for_distribution']) / parseInt(checked_client);
+            if(minutes_per_client < 1)
+            {
+              $(".minutes_per_client").html("1");
+              $("#hidden_minutes_per_client").val("1");
+            }
+            else{
+              $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+              $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+            }
+          }
+
+          $("body").removeClass("loading");
       }
 
     })
@@ -3446,6 +4207,32 @@ $(window).click(function(e) {
           $("#total_breaks").val('');
           $("#break_time_val").val(0);
           $("#total_time_minutes_format").val(result['total_time_minutes_format']);
+
+          $(".total_job_time").html(result['total_job_time_in_minutes']);
+          $(".deducted_job_time").html(result['deducted_for_quick']);
+          $(".available_job_time").html(result['available_for_distribution']);
+
+          var checked_client = $(".client_exclude:checked").length;
+          $(".clients_selected").html(checked_client);
+          if(checked_client == 0)
+          {
+            $(".minutes_per_client").html("0");
+            $("#hidden_minutes_per_client").val("0");
+          }
+          else
+          {
+            var minutes_per_client = parseInt(result['available_for_distribution']) / parseInt(checked_client);
+            if(minutes_per_client < 1)
+            {
+              $(".minutes_per_client").html("1");
+              $("#hidden_minutes_per_client").val("1");
+            }
+            else{
+              $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+              $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+            }
+          }
+          
       }
 
     })
@@ -3493,82 +4280,109 @@ $(window).click(function(e) {
 
     })
   }
-
   if($(e.target).hasClass('stop_class')) {
-
     var id = $(e.target).attr("data-element");
-
     $.ajax({
-
       url:"<?php echo URL::to('user/stop_job_details')?>",
-
       dataType: "json",
-
       data:{jobid:id},
-
       success:function(result){
-
-        $(".stop_title").html('Stop Active Job');
-        $("#stop_job").val('Stop Active Job');
-
-        $(".idclass").val(result['id']);
-
-        $(".dateclass").val(result['date']);
-        $("#total_quick_jobs").val(result['quick_job_times']);
-        $(".stop_start_time").val(result['start_time']);
-
-
-        $(".stop_model").modal("show");
-
-        $(".comments").val('');
-
-
-
-        $('#stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
-
-        $('#stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
-
-        $('.stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
-
-        $('.stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
-
-        $(".stop_time1").val("");
-
-        if(result['alert'] == 1)
+        var bulk_job = $(e.target).attr("data-bulk");
+        if(bulk_job == "1")
         {
-          $("#total_time_minutes_format").css({"color":"#f00"});
-          $("#stop_active_job").prop("disabled",true);
+          $(".stop_title").html('Stop Even Bulk Job');
+          $("#stop_job").val('Set Stop Time');
+          $(".idclass").val(result['id']);
+          $(".dateclass").val(result['date']);
+          $("#total_quick_jobs").val(result['quick_job_times']);
+          $(".stop_start_time").val(result['start_time']);
+          $(".stop_model").find(".modal-dialog").css("width","70%");
+          $(".stop_model").find(".modal-title").html("Stop Even Bulk Job");
+          $(".stop_model").find(".stop_left_body_class").removeClass("col-md-12");
+          $(".stop_model").find(".stop_left_body_class").addClass("col-md-6");
+          $(".stop_model").find(".stop_right_body_class").show();
+          $(".hide_group_div").hide();
+          $(".groups_combo").hide();
+          $(".presets_combo").hide();
+
+          $(".select_client_groups").prop("checked",false);
+          $("select_group_clients").val("");
+          $("select_presets_clients").val("");
+
+          $(".default_task").val("");
+          $(".client_task").val("");
+
+          $(".stop_model").modal("show");
+          $(".comments").val('');
+          $('#stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
+          $('#stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
+          $('.stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
+          $('.stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
+          $(".stop_time1").val("");
+          if(result['alert'] == 1)
+          {
+            $("#total_time_minutes_format").css({"color":"#f00"});
+            $("#stop_active_job").prop("disabled",true);
+          }
+          else{
+            $("#total_time_minutes_format").css({"color":"#0f9600"});
+            $("#stop_active_job").prop("disabled",false);
+          }
+          $(".calculate_job_time").val(result['jobtime']);
+          $("#total_time_minutes_format").val(result['total_time_minutes_format']);
+          $("#break_time").val('');
+          $("#total_breaks").val('');
+          $("#break_time_val").val(0);
+          $(".breaktime_div").hide();
+          $("#stop_job").show();
+          $("#stop_active_job").hide();
+          $(".stop_class").val('Stop Active Job');
         }
         else{
-          $("#total_time_minutes_format").css({"color":"#0f9600"});
-          $("#stop_active_job").prop("disabled",false);
+          $(".stop_title").html('Stop Active Job');
+          $("#stop_job").val('Stop Active Job');
+          $(".idclass").val(result['id']);
+          $(".dateclass").val(result['date']);
+          $("#total_quick_jobs").val(result['quick_job_times']);
+          $(".stop_start_time").val(result['start_time']);
+
+          $(".stop_model").find(".modal-dialog").css("width","30%");
+          $(".stop_model").find(".modal-title").html("Stop Active Job");
+          $(".stop_model").find(".stop_left_body_class").removeClass("col-md-6");
+          $(".stop_model").find(".stop_left_body_class").addClass("col-md-12");
+          $(".stop_model").find(".stop_right_body_class").hide();
+
+          $(".hide_group_div").hide();
+          $(".groups_combo").hide();
+          $(".presets_combo").hide();
+
+          $(".stop_model").modal("show");
+          $(".comments").val('');
+          $('#stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
+          $('#stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
+          $('.stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
+          $('.stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
+          $(".stop_time1").val("");
+          if(result['alert'] == 1)
+          {
+            $("#total_time_minutes_format").css({"color":"#f00"});
+            $("#stop_active_job").prop("disabled",true);
+          }
+          else{
+            $("#total_time_minutes_format").css({"color":"#0f9600"});
+            $("#stop_active_job").prop("disabled",false);
+          }
+          $(".calculate_job_time").val(result['jobtime']);
+          $("#total_time_minutes_format").val(result['total_time_minutes_format']);
+          $("#break_time").val('');
+          $("#total_breaks").val('');
+          $("#break_time_val").val(0);
+          $(".breaktime_div").hide();
+          $("#stop_job").show();
+          $("#stop_active_job").hide();
+          $(".stop_class").val('Stop Active Job');
         }
-        $(".calculate_job_time").val(result['jobtime']);
-        $("#total_time_minutes_format").val(result['total_time_minutes_format']);
-
-
-
-        $("#break_time").val('');
-
-        $("#total_breaks").val('');
-
-        $("#break_time_val").val(0);
-
-
-
-        $(".breaktime_div").hide();
-
-        $("#stop_job").show();
-
-        $("#stop_active_job").hide();
-
-        $(".stop_class").val('Stop Active Job')
-
-
-
-
       }
-
     })
 
   }
@@ -4706,7 +5520,30 @@ if($(e.target).hasClass('edit_close_job')){
                     }
                     $(".calculate_job_time").val(result['jobtime']);
                     $("#total_time_minutes_format").val(result['total_time_minutes_format']);
+                    $(".total_job_time").html(result['total_job_time_in_minutes']);
+                    $(".deducted_job_time").html(result['deducted_for_quick']);
+                    $(".available_job_time").html(result['available_for_distribution']);
 
+                    var checked_client = $(".client_exclude:checked").length;
+                    $(".clients_selected").html(checked_client);
+                    if(checked_client == 0)
+                    {
+                      $(".minutes_per_client").html("0");
+                      $("#hidden_minutes_per_client").val("0");
+                    }
+                    else
+                    {
+                      var minutes_per_client = parseInt(result['available_for_distribution']) / parseInt(checked_client);
+                      if(minutes_per_client < 1)
+                      {
+                        $(".minutes_per_client").html("1");
+                        $("#hidden_minutes_per_client").val("1");
+                      }
+                      else{
+                        $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+                        $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+                      }
+                    }
                   }
                 });
             }
@@ -4742,7 +5579,10 @@ if($(e.target).hasClass('edit_close_job')){
                     }
                     $(".edit_calculate_job_time").val(result['jobtime']);
                     $("#edit_total_time_minutes_format").val(result['total_time_minutes_format']);
-
+                    $("#total_time_minutes_format").val(result['total_time_minutes_format']);
+                    $(".total_job_time").html(result['total_job_time_in_minutes']);
+                    $(".deducted_job_time").html(result['deducted_for_quick']);
+                    $(".available_job_time").html(result['available_for_distribution']);
                   }
                 });
             }
@@ -4768,7 +5608,7 @@ if($(e.target).hasClass('edit_close_job')){
                   data:{start_time:start_time,stop_time:stop_time,total_quick_jobs:total_quick_jobs,total_breaks:total_breaks},
                   success: function(result)
                   {
-                    $("#calculate_job_time_quick").val(result['jobtime'])
+                    $("#calculate_job_time_quick").val(result['jobtime']);
                   }
                 });
             }

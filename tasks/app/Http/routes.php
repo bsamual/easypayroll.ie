@@ -1714,3 +1714,7 @@ Route::post('/user/check_previous_month', 'user\UserController@check_previous_mo
 Route::get('/user/change_scheme_status', 'user\UserController@change_scheme_status');
 Route::post('/user/change_taskmanager_park_status', 'user\TaskmanagerController@change_taskmanager_park_status');
 Route::post('/user/check_pdf_pages', 'user\InfileController@check_pdf_pages');
+Route::post('/user/select_presets_group', 'user\TimejobController@select_presets_group');
+Route::post('/user/secret_task_button', 'user\UserController@secret_task_button');
+Route::post('/user/change_flag_status', 'user\InfileController@change_flag_status');
+Route::post('/user/add_new_secondary_line', 'user\InfileController@add_new_secondary_line');

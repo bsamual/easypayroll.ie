@@ -291,7 +291,7 @@
 <body class="body_bg">
 
 <div class="top_row" style="z-index: 99999">
-  <div class="col-lg-12 padding_00">
+  <div class="col-lg-12 padding_00" style="height:84px">
     <nav class="navbar navbar-default">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
