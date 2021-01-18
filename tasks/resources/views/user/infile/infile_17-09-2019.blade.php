@@ -484,7 +484,7 @@ elseif(Session::has('countupdated'))
               <br/><br>
             </div>
               <?php
-              $userlist_notify = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+              $userlist_notify = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
               if(count($userlist_notify)){
                 foreach ($userlist_notify as $user) {
               ?>

@@ -48,8 +48,12 @@ Route::get('/admin', 'admin\AdminauthenticateController@login');
 
 Route::post('/admin/login', 'admin\AdminauthenticateController@postLogin');
 Route::get('/admin/adminlogin', 'admin\AdminauthenticateController@adminpostLogin');
+Route::get('/admin/manage_users', 'admin\AdminController@manage_users');
 
+Route::post('/admin/add_user_login', 'admin\AdminController@add_user_login');
+Route::post('/admin/edit_user_login', 'admin\AdminController@edit_user_login');
 
+Route::get('/admin/edit_user_login_page/{id?}', 'admin\AdminController@edit_user_login_page');
 
 Route::get('/admin/logout', 'admin\AdminController@logout');
 
@@ -1718,3 +1722,16 @@ Route::post('/user/select_presets_group', 'user\TimejobController@select_presets
 Route::post('/user/secret_task_button', 'user\UserController@secret_task_button');
 Route::post('/user/change_flag_status', 'user\InfileController@change_flag_status');
 Route::post('/user/add_new_secondary_line', 'user\InfileController@add_new_secondary_line');
+
+Route::post('/user/get_pms_file_attachments', 'user\UserController@get_pms_file_attachments');
+Route::post('/user/check_integrity_files', 'user\InfileController@check_integrity_files');
+Route::post('/user/check_files_in_files', 'user\InfileController@check_files_in_files');
+Route::post('/user/check_integrity_files_client_id', 'user\InfileController@check_integrity_files_client_id');
+Route::post('/user/show_attachments_infile', 'user\InfileController@show_attachments_infile');
+Route::post('/user/update_pms_vat_module', 'user\CmController@update_pms_vat_module');
+
+
+Route::get('/user/two_bill_manager', 'user\TwobillController@two_bill_manager');
+Route::post('/user/get_tasks_invoices', 'user\TwobillController@get_tasks_invoices');
+Route::post('/user/update_invoice_for_task', 'user\TwobillController@update_invoice_for_task');
+Route::post('/user/remove_2bill_status', 'user\TwobillController@remove_2bill_status');

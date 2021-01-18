@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('userid'); ?>
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
@@ -198,7 +199,7 @@ function popitup(url) {
 a:hover{text-decoration: underline;}
 </style>
 <?php 
-$admin_details = Db::table('admin')->first();
+$admin_details = DB::table('admin')->first();
 $admin_cc = $admin_details->task_cc_email;
 if(!empty($_GET['import_type_new']))
 {
@@ -268,7 +269,7 @@ if(!empty($_GET['import_type_existing']))
               <select name="from_user" id="from_user" class="form-control input-sm" value="" required>
                   <option value="">Select User</option>
                   <?php
-                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
                     if(count($users))
                     {
                       foreach($users as $user)
@@ -773,7 +774,7 @@ if(!empty($_GET['import_type_existing']))
             </div>
           <div class="col-lg-2" style="padding-top: 7px">
             
-            <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->aml_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
+            <?php $check_incomplete = Db::table('user_login')->where('userid',$user_login_id)->first(); if($check_incomplete->aml_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
                 <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked?> style="margin-right:10px"><label for="show_incomplete">Hide Deactivated Accounts</label>
               </div>
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
@@ -827,14 +828,14 @@ if(!empty($_GET['import_type_existing']))
                                     {
                                       $disabled='disabled';
                                     }
-                                    $check_color = DB::table('cm_class')->where('id',$client->active)->first();
+                                    $check_color = DB::table('cm_class')->where('user_login_id',$user_login_id)->where('id',$client->active)->first();
                                     $style="color:#".$check_color->classcolor."";
                                   }
                                   else{
                                     $style="color:#000";
                                   }
 
-                                  $aml_system = DB::table('aml_system')->where('client_id', $client->client_id)->first();
+                                  $aml_system = DB::table('aml_system')->where('user_login_id',$user_login_id)->where('client_id', $client->client_id)->first();
 
                                   if(count($aml_system)){
                                     $risk_select = $aml_system->risk_category;                                    
@@ -843,7 +844,7 @@ if(!empty($_GET['import_type_existing']))
                                     $risk_select = '';
                                   }   
 
-                                  $aml_attachement = DB::table('aml_attachment')->where('client_id', $client->client_id)->get();
+                                  $aml_attachement = DB::table('aml_attachment')->where('user_login_id',$user_login_id)->where('client_id', $client->client_id)->get();
 
                                   $output_attached='';
                                   if(count($aml_attachement)){
@@ -896,7 +897,7 @@ if(!empty($_GET['import_type_existing']))
 
                                   if(count($aml_system)){
                                     if($aml_system->client_source == 1){
-                                      $client_details = DB::table('cm_clients')->where('client_id', $aml_system->client_source_detail)->first();
+                                      $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $aml_system->client_source_detail)->first();
                                       $client_source ='<a href="javascript:" data-text="Other Client - '.$client_details->company.' - '.$client_details->firstname.' '.$client_details->surname.'" class="download_client_source"> Other Client - '.$client_details->company.' - '.$client_details->firstname.' '.$client_details->surname.'.txt</a>
 
                                       <a href="javascript:" class="refresh_icon" data-toggle="tooltip" data-original-title="Edit Client Source"><i class="fa fa-edit refresh_client_source" data-element='.$aml_system->client_id.'></i></a>
@@ -904,7 +905,7 @@ if(!empty($_GET['import_type_existing']))
                                       <a href="javascript:" class="refresh_icon" data-toggle="tooltip" data-original-title="Delete Client Source"><i class="fa fa-trash refresh_client_source" data-element='.$aml_system->client_id.'></i></a>';
                                     }
                                     elseif($aml_system->client_source == 2){
-                                      $user_details = DB::table('user')->where('user_id', $aml_system->client_source_detail)->first();                                      
+                                      $user_details = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id', $aml_system->client_source_detail)->first();                                      
                                       $client_source ='<a href="javascript:" data-text="Partner - '.$user_details->lastname.' '.$user_details->firstname.'" class="download_client_source">Partner - '.$user_details->lastname.' '.$user_details->firstname.'.txt</a>
 
 
@@ -936,8 +937,8 @@ if(!empty($_GET['import_type_existing']))
                                   }
 
 
-                                  $aml_bank = DB::table('aml_bank')->where('client_id', $client->client_id)->first();
-                                  $aml_count = DB::table('aml_bank')->where('client_id', $client->client_id)->count();
+                                  $aml_bank = DB::table('aml_bank')->where('user_login_id',$user_login_id)->where('client_id', $client->client_id)->first();
+                                  $aml_count = DB::table('aml_bank')->where('user_login_id',$user_login_id)->where('client_id', $client->client_id)->count();
 
                                   if(count($aml_bank)){
                                     $bank_output='<a href="javascript:" class="bank_detail_class" data-element="'.$client->client_id.'">'.$aml_count.'</a>
@@ -950,7 +951,7 @@ if(!empty($_GET['import_type_existing']))
                                     ';
                                   }
 
-                                  $cli_det = DB::table('cm_clients')->where('client_id', $client->client_id)->first();
+                                  $cli_det = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $client->client_id)->first();
                                   if(count($cli_det))
                                   {
                                     if($cli_det->client_added == "")

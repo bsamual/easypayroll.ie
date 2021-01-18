@@ -318,7 +318,7 @@ class UserController extends Controller {
 
 		$classified = DB::table('classified')->get();
 
-		$userlist = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 
 
 
@@ -414,7 +414,7 @@ class UserController extends Controller {
 
 		$classified = DB::table('classified')->get();
 
-		$userlist = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 
 
 

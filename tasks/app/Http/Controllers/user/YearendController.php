@@ -2237,6 +2237,46 @@ class YearendController extends Controller {
                           else{
                               $color_balance = 'color:#f00';
                           }
+                          $balance = str_replace(",","",$balance);
+                          $balance = str_replace(",","",$balance);
+                          $balance = str_replace(",","",$balance);
+                          $balance = str_replace(",","",$balance);
+
+                          $liability = str_replace(",","",$liability);
+                          $liability = str_replace(",","",$liability);
+                          $liability = str_replace(",","",$liability);
+                          $liability = str_replace(",","",$liability);
+
+                          $payments = str_replace(",","",$payments);
+                          $payments = str_replace(",","",$payments);
+                          $payments = str_replace(",","",$payments);
+                          $payments = str_replace(",","",$payments);
+
+                          if(is_numeric($payments) == 1)
+                          {
+	                          $payments_without_comma = number_format_invoice_without_comma($payments);
+	                          $payments_with_comma = number_format_invoice($payments);
+                          }
+                          else{
+                          	  $payments_without_comma = $payments;
+	                          $payments_with_comma = $payments;
+                          }
+                          
+
+                          $prelim = str_replace(",","",$prelim);
+                          $prelim = str_replace(",","",$prelim);
+                          $prelim = str_replace(",","",$prelim);
+                          $prelim = str_replace(",","",$prelim);
+
+                          if(is_numeric($prelim) == 1)
+                          {
+	                          $prelim_without_comma = number_format_invoice_without_comma($prelim);
+	                          $prelim_with_comma = number_format_invoice($prelim);
+                          }
+                          else{
+                          	  $prelim_without_comma = $prelim;
+	                          $prelim_with_comma = $prelim;
+                          }
 
 
                         if($get_checkbox == 0){
@@ -2248,14 +2288,14 @@ class YearendController extends Controller {
                               <td style="'.$color_balance.'"><span class="balance_sort_val" style="display:none">'.number_format_invoice_without_comma($balance).'</span><span class="balance_class">'.number_format_invoice($balance).'</span></td>
                               <td style="'.$color_liability.'"><span class="liability_sort_val" style="display:none">'.number_format_invoice_without_comma($liability).'</span>'.number_format_invoice($liability).'</td>
                               <td>
-                                    <span class="payment_sort_val" style="display:none">'.number_format_invoice_without_comma($payments).'</span>
-                                    <spam class="payment_spam_class" style="display:none">'.number_format_invoice($payments).'</spam>
-                                    <input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.number_format_invoice($payments).'" />
+                                    <span class="payment_sort_val" style="display:none">'.$payments_without_comma.'</span>
+                                    <spam class="payment_spam_class" style="display:none">'.$payments_with_comma.'</spam>
+                                    <input type="text" class="form-control payment_class" data-element="'.$client_details->client_id.'" placeholder="Payments" value="'.$payments_with_comma.'" pattern="[0-9.,-]*" onkeypress="preventNonNumericalInput(event)"/>
                               </td>
                               <td>
-                                    <span class="prelim_sort_val" style="display:none">'.number_format_invoice_without_comma($prelim).'</span>
-                                    <spam class="prelim_spam_class" style="display:none">'.number_format_invoice_without_comma($prelim).'</spam>
-                                    <input type="text" class="form-control prelim_class" data-element="'.$client_details->client_id.'"  placeholder="Prelim" value="'.number_format_invoice_without_decimal($prelim).'" />
+                                    <span class="prelim_sort_val" style="display:none">'.$prelim_without_comma.'</span>
+                                    <spam class="prelim_spam_class" style="display:none">'.$prelim_with_comma.'</spam>
+                                    <input type="text" class="form-control prelim_class" data-element="'.$client_details->client_id.'"  placeholder="Prelim" value="'.$prelim_with_comma.'" pattern="[0-9.,-]*" onkeypress="preventNonNumericalInput(event)"/>
                               </td>
                               <td>
                                     <spam class="date_spam_class date_sort_val" style="display:none">'.$formatted_date.'</spam>

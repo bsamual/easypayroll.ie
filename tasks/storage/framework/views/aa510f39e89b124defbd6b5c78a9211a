@@ -1,4 +1,6 @@
 <?php $__env->startSection('content'); ?>
+
+<?php $user_login_id = Session::get('userid'); ?>
 <style>
 .link_div{ cursor: pointer;margin-top:10px; }
 .highlight_group td{ background: green !important;color:#fff !important; }

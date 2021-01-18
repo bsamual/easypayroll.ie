@@ -289,7 +289,7 @@ a:hover{text-decoration: underline;}
                <select name="from_user" id="from_user" class="form-control input-sm" value="" required>
                   <option value="">Select User</option>
                   <?php
-                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
                     if(count($users))
                     {
                       foreach($users as $user)
@@ -311,7 +311,7 @@ a:hover{text-decoration: underline;}
               <select name="to_user" id="to_user" class="form-control input-sm" value="" required>
                   <option value="">Select User</option>
                   <?php
-                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
                     if(count($users))
                     {
                       foreach($users as $user)
@@ -381,7 +381,7 @@ a:hover{text-decoration: underline;}
                <select name="from_user_to_client" id="from_user_to_client" class="form-control input-sm" value="" required>
                   <option value="">Select User</option>
                   <?php
-                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
                     if(count($users))
                     {
                       foreach($users as $user)

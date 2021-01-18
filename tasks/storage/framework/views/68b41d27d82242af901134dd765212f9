@@ -1,11 +1,12 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('userid'); ?>
 <?php
 $date = date("Y-m-d");
 $reactivate = 0;
 if(Session::has('taskmanager_user'))
 {
   $userid = Session::get('taskmanager_user');
-  $check_db = DB::table('user')->where('user_id',$userid)->first();
+  $check_db = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',$userid)->first();
 
   if(count($check_db))
   {
@@ -23,7 +24,7 @@ if(Session::has('taskmanager_user'))
       $dataval['park_date'] = $date;
       $dataval['park_status'] = 0;
 
-      DB::table('user')->where('user_id',$userid)->update($dataval);
+      DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',$userid)->update($dataval);
       $reactivate = 1;
     }
   }
@@ -1060,10 +1061,10 @@ input:checked + .slider:before {
 	                  if($task->status == 1){ $disabled = 'disabled'; $disabled_icon = 'disabled_icon'; }
 	                  else{ $disabled = ''; $disabled_icon = ''; }
 
-	                  $taskfiles = DB::table('taskmanager_files')->where('task_id',$task->id)->get();
-	                  $tasknotepad = DB::table('taskmanager_notepad')->where('task_id',$task->id)->get();
-	                  $taskinfiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
-                    $taskyearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
+	                  $taskfiles = DB::table('taskmanager_files')->where('user_login_id',$user_login_id)->where('task_id',$task->id)->get();
+	                  $tasknotepad = DB::table('taskmanager_notepad')->where('user_login_id',$user_login_id)->where('task_id',$task->id)->get();
+	                  $taskinfiles = DB::table('taskmanager_infiles')->where('user_login_id',$user_login_id)->where('task_id',$task->id)->get();
+                    $taskyearend = DB::table('taskmanager_yearend')->where('user_login_id',$user_login_id)->where('task_id',$task->id)->get();
                     $two_bill_icon = '';
                     if($task->two_bill == "1")
                     {
@@ -1072,7 +1073,7 @@ input:checked + .slider:before {
 	                  if($task->client_id == "")
 	                  {
 	                    $title_lable = 'Task Name:';
-	                    $task_details = DB::table('time_task')->where('id', $task->task_type)->first();
+	                    $task_details = DB::table('time_task')->where('user_login_id',$user_login_id)->where('id', $task->task_type)->first();
 	                    if(count($task_details))
 	                    {
 	                      $title = '<spam class="task_name_'.$task->id.'">'.$task_details->task_name.'</spam>'.$two_bill_icon;
@@ -1083,7 +1084,7 @@ input:checked + .slider:before {
 	                  }
 	                  else{
 	                    $title_lable = 'Client:';
-	                    $client_details = DB::table('cm_clients')->where('client_id', $task->client_id)->first();
+	                    $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $task->client_id)->first();
 	                    if(count($client_details))
 	                    {
 	                      $title = $client_details->company.' ('.$task->client_id.')'.$two_bill_icon;
@@ -1092,7 +1093,7 @@ input:checked + .slider:before {
 	                      $title = ''.$two_bill_icon;
 	                    }
 	                  }
-	                  $author = DB::table('user')->where('user_id',$task->author)->first();
+	                  $author = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',$task->author)->first();
 	                  
 	                  $task_specifics_val = strip_tags($task->task_specifics);
 
@@ -1100,7 +1101,7 @@ input:checked + .slider:before {
 	                  else{ $subject = $task->subject; }
 
 	                  if($task->allocated_to == 0) { $allocated_to = 'Open Task'; }
-	                  else{ $allocated = DB::table('user')->where('user_id',$task->allocated_to)->first(); $allocated_to = $allocated->lastname.' '.$allocated->firstname; }
+	                  else{ $allocated = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',$task->allocated_to)->first(); $allocated_to = $allocated->lastname.' '.$allocated->firstname; }
 
 	                  if(Session::has('taskmanager_user'))
 	                  {
@@ -1236,7 +1237,7 @@ input:checked + .slider:before {
 	                                if($infile->status == 0)
 	                                {
 	                                  if($i == 1) { $fileoutput.='Linked Infiles:<br/>'; }
-	                                  $file = DB::table('in_file')->where('id',$infile->infile_id)->first();
+	                                  $file = DB::table('in_file')->where('user_login_id',$user_login_id)->where('id',$infile->infile_id)->first();
 	                                  $ele = URL::to('user/infile_search?client_id='.$task->client_id.'&fileid='.$file->id.'');
 	                                  $fileoutput.='<p class="link_infile_p"><a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$i.'</a>
 	                                  <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.date('d-M-Y', strtotime($file->data_received)).'</a>
@@ -1293,15 +1294,15 @@ input:checked + .slider:before {
 	                        <tr>
 	                          <td colspan="2" id="allocation_history_div_<?php echo $task->id; ?>" class="<?php echo $disabled_icon; ?>">
 	                            <?php
-	                            $allocations = DB::table('taskmanager_specifics')->where('task_id',$task->id)->where('to_user','!=','')->where('status','<',3)->limit(5)->orderBy('id','desc')->get();
+	                            $allocations = DB::table('taskmanager_specifics')->where('user_login_id',$user_login_id)->where('task_id',$task->id)->where('to_user','!=','')->where('status','<',3)->limit(5)->orderBy('id','desc')->get();
 	                            $output = '';
 	                            if(count($allocations))
 	                            {
 	                              foreach($allocations as $allocate)
 	                              {
 	                                $output.='<p data-element="'.$task->id.'" data-subject="'.$subject.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'"  class="edit_allocate_user edit_allocate_user_'.$task->id.' '.$disabled.' '.$close_task.'" title="Allocate User">';
-	                                  $fromuser = DB::table('user')->where('user_id',$allocate->from_user)->first();
-	                                  $touser = DB::table('user')->where('user_id',$allocate->to_user)->first();
+	                                  $fromuser = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',$allocate->from_user)->first();
+	                                  $touser = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',$allocate->to_user)->first();
 	                                  $output.=$fromuser->lastname.' '.$fromuser->firstname.' -> '.$touser->lastname.' '.$touser->firstname.' ('.date('d-M-Y H:i', strtotime($allocate->allocated_date)).')';
 	                                $output.='</p>';
 	                              }
@@ -1378,7 +1379,7 @@ input:checked + .slider:before {
 	                                  if($infile->status == 1)
 	                                  {
 	                                    if($i == 1) { $fileoutput.='Linked Infiles:<br/>'; }
-	                                    $file = DB::table('in_file')->where('id',$infile->infile_id)->first();
+	                                    $file = DB::table('in_file')->where('user_login_id',$user_login_id)->where('id',$infile->infile_id)->first();
 	                                    $ele = URL::to('user/infile_search?client_id='.$task->client_id.'&fileid='.$file->id.'');
 	                                    $fileoutput.='<p class="link_infile_p"><a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$i.'</a>
 	                                    <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.date('d-M-Y', strtotime($file->data_received)).'</a>
@@ -1498,8 +1499,8 @@ input:checked + .slider:before {
                                 <a href="javascript:" class="yearend_link_completion <?php echo $disabled; ?>" data-element="<?php echo $task->id; ?>">Yearend</a>
                                 <?php
                               }
-                              $get_infiles = DB::table('taskmanager_infiles')->where('task_id',$task->id)->get();
-                              $get_yearend = DB::table('taskmanager_yearend')->where('task_id',$task->id)->get();
+                              $get_infiles = DB::table('taskmanager_infiles')->where('user_login_id',$user_login_id)->where('task_id',$task->id)->get();
+                              $get_yearend = DB::table('taskmanager_yearend')->where('user_login_id',$user_login_id)->where('task_id',$task->id)->get();
                               $idsval = '';
                               $idsval_yearend = '';
                               if(count($get_infiles))
@@ -1577,7 +1578,7 @@ input:checked + .slider:before {
                                     if($infile->status == 2)
                                     {
                                       if($i == 1) { $fileoutput.='Linked Infiles:<br/>'; }
-                                      $file = DB::table('in_file')->where('id',$infile->infile_id)->first();
+                                      $file = DB::table('in_file')->where('user_login_id',$user_login_id)->where('id',$infile->infile_id)->first();
                                       $ele = URL::to('user/infile_search?client_id='.$task->client_id.'&fileid='.$file->id.'');
                                       $fileoutput.='<p class="link_infile_p"><a href="javascript:" class="link_infile" data-element="'.$ele.'">'.$i.'</a>
                                       <a href="javascript:" class="link_infile" data-element="'.$ele.'">'.date('d-M-Y', strtotime($file->data_received)).'</a>
@@ -1600,10 +1601,10 @@ input:checked + .slider:before {
                                     if($yearend->status == 2)
                                     {
                                       if($i == 1) { $fileoutput.='Linked Yearend:<br/>'; }
-                                      $file = DB::table('year_setting')->where('id',$yearend->setting_id)->first();
-                                      $get_client_id = DB::table('taskmanager')->where('id',$task->id)->first();
+                                      $file = DB::table('year_setting')->where('user_login_id',$user_login_id)->where('id',$yearend->setting_id)->first();
+                                      $get_client_id = DB::table('taskmanager')->where('user_login_id',$user_login_id)->where('id',$task->id)->first();
                                       $year_client_id = $get_client_id->client_id;
-                                      $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
+                                      $yearend_id = DB::table('year_client')->where('user_login_id',$user_login_id)->where('client_id',$year_client_id)->orderBy('id','desc')->first();
 
                                       $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
                                       $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>

@@ -266,7 +266,7 @@ body.loading_apply .modal_load_apply {
               <select name="from_user" id="from_user" class="form-control input-sm" value="" required>
                   <option value="">Select User</option>
                   <?php
-                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
                     if(count($users))
                     {
                       foreach($users as $user)

@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('login_user_id'); ?>
 <style>
 .sub_title{
     font-size: 18px;
@@ -54,7 +55,7 @@ textarea{
               </div>
                 <div class="form-group">
                     <label>Client Management System</label>
-                    <textarea placeholder="Enter Client Management System" class="form-control edit_central_class" name="client_management" <?php echo $disabled; ?>><?php echo $selectval->client_management; ?></textarea>                          
+                    <textarea placeholder="Enter Client Management System" class="form-control edit_central_class" name="client_management" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->client_management; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -63,7 +64,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>Invoice Management</label>
-                    <textarea placeholder="Enter Invoice Management" class="form-control edit_central_class" name="invoice_management" <?php echo $disabled; ?>><?php echo $selectval->invoice_management; ?></textarea>                          
+                    <textarea placeholder="Enter Invoice Management" class="form-control edit_central_class" name="invoice_management" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->invoice_management; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -72,7 +73,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>Client Statements</label>
-                    <textarea placeholder="Enter Client Statements" class="form-control edit_central_class" name="client_statements" <?php echo $disabled; ?>><?php echo $selectval->client_statements; ?></textarea>                          
+                    <textarea placeholder="Enter Client Statements" class="form-control edit_central_class" name="client_statements" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->client_statements; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -81,7 +82,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>Weekly / Monthly Tasks</label>
-                    <textarea placeholder="Enter Weekly / Monthly Tasks" class="form-control edit_central_class" name="weekly_monthly" <?php echo $disabled; ?>><?php echo $selectval->weekly_monthly; ?></textarea>                          
+                    <textarea placeholder="Enter Weekly / Monthly Tasks" class="form-control edit_central_class" name="weekly_monthly" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->weekly_monthly; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -90,7 +91,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>P30 Output</label>
-                    <textarea placeholder="Enter P30 Output" class="form-control edit_central_class" name="p30" <?php echo $disabled; ?>><?php echo $selectval->p30; ?></textarea>                          
+                    <textarea placeholder="Enter P30 Output" class="form-control edit_central_class" name="p30" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->p30; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -99,7 +100,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>VAT System</label>
-                    <textarea placeholder="Enter VAT System" class="form-control edit_central_class" name="vat" <?php echo $disabled; ?>><?php echo $selectval->vat; ?></textarea>                          
+                    <textarea placeholder="Enter VAT System" class="form-control edit_central_class" name="vat" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->vat; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -108,7 +109,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>RCT System</label>
-                    <textarea placeholder="Enter RCT System" class="form-control edit_central_class" name="rct" <?php echo $disabled; ?>><?php echo $selectval->rct; ?></textarea>                          
+                    <textarea placeholder="Enter RCT System" class="form-control edit_central_class" name="rct" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->rct; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -117,7 +118,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>Year End Data</label>
-                    <textarea placeholder="Enter Year End Data" class="form-control edit_central_class" name="year_end" <?php echo $disabled; ?>><?php echo $selectval->year_end; ?></textarea>                          
+                    <textarea placeholder="Enter Year End Data" class="form-control edit_central_class" name="year_end" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->year_end; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>
@@ -126,7 +127,7 @@ textarea{
             <div class="col-lg-12" style="padding: 25px;">
                 <div class="form-group">
                     <label>Time Location</label>
-                    <textarea placeholder="Enter Time Location" class="form-control edit_central_class" name="time_location" <?php echo $disabled; ?>><?php echo $selectval->time_location; ?></textarea>                          
+                    <textarea placeholder="Enter Time Location" class="form-control edit_central_class" name="time_location" <?php echo $disabled; ?>><?php if(count($selectval)) { echo $selectval->time_location; } else { echo ''; } ?></textarea>                          
                 </div> 
             </div>
         </div>

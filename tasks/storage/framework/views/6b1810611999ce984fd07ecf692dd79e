@@ -456,6 +456,13 @@ $(document).ready(function() {
        widgetPositioning: { horizontal: 'left', vertical: 'top'}
     });
 })
+$(document).ajaxComplete(function (event, request, settings) {
+    var str = request.responseText.toLocaleLowerCase();
+    console.log(str);
+    if (str.includes("user login") === true) {
+       window.location.replace("<?php echo URL::to('/'); ?>");
+    }
+});
 $(window).click(function(e) {
 	if($(e.target).hasClass('set_global_opening_bal_date_now'))
 	{

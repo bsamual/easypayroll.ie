@@ -149,6 +149,8 @@ class TaskyearController extends Controller {
 						$data['p30_pay'] = $tasks->p30_pay;
 						$data['p30_email'] = $tasks->p30_email;
 						$data['default_staff'] = $tasks->default_staff;
+						$data['scheme_id'] = $tasks->scheme_id;
+						$data['disclose_liability'] = $tasks->disclose_liability;
 
 						if($tasks->task_complete_period_type == 2){							
 							$data['task_complete_period'] = 1;
@@ -159,7 +161,34 @@ class TaskyearController extends Controller {
 							$data['task_complete_period_type'] = 0;							
 						}
 
-						DB::table('task')->insert($data);
+						$taskidnew = DB::table('task')->insertGetId($data);
+
+						if($tasks->scheme_id > 0)
+						{
+							$scheme_det = DB::table('schemes')->where('id',$tasks->scheme_id)->first();
+							if(count($scheme_det))
+							{
+								$upload_dir = 'uploads/task_image';
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$upload_dir = $upload_dir.'/'.base64_encode($taskidnew);
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$myfile = fopen($upload_dir.'/'.$scheme_det->scheme_name.".txt", "w") or die("Unable to open file!");
+								$txt = "This Payroll is to be run under the Scheme: ".$scheme_det->scheme_name."";
+								fwrite($myfile, $txt);
+								fclose($myfile);
+
+								$datareceived['task_id'] = $taskidnew;
+								$datareceived['attachment'] = $scheme_det->scheme_name.".txt";
+								$datareceived['url'] = $upload_dir;
+								$datareceived['network_attach'] = 1;
+								$datareceived['copied'] = 0;
+								DB::table('task_attached')->insert($datareceived);
+							}
+						}
 					}
 				}
 				$monthid = DB::table('month')->insertGetId(['year' => $yid,'month' => 1]);
@@ -193,6 +222,8 @@ class TaskyearController extends Controller {
 						$datamonth['p30_pay'] = $monthtasks->p30_pay;
 						$datamonth['p30_email'] = $monthtasks->p30_email;
 						$datamonth['default_staff'] = $monthtasks->default_staff;	
+						$datamonth['scheme_id'] = $monthtasks->scheme_id;
+						$datamonth['disclose_liability'] = $monthtasks->disclose_liability;
 
 						if($monthtasks->task_complete_period_type == 2){							
 							$datamonth['task_complete_period'] = 1;
@@ -203,7 +234,34 @@ class TaskyearController extends Controller {
 							$datamonth['task_complete_period_type'] = 0;							
 						}					
 
-						DB::table('task')->insert($datamonth);
+						$tasknewmonthid = DB::table('task')->insert($datamonth);
+
+						if($monthtasks->scheme_id > 0)
+						{
+							$scheme_det = DB::table('schemes')->where('id',$monthtasks->scheme_id)->first();
+							if(count($scheme_det))
+							{
+								$upload_dir = 'uploads/task_image';
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$upload_dir = $upload_dir.'/'.base64_encode($tasknewmonthid);
+								if (!file_exists($upload_dir)) {
+									mkdir($upload_dir);
+								}
+								$myfile = fopen($upload_dir.'/'.$scheme_det->scheme_name.".txt", "w") or die("Unable to open file!");
+								$txt = "This Payroll is to be run under the Scheme: ".$scheme_det->scheme_name."";
+								fwrite($myfile, $txt);
+								fclose($myfile);
+
+								$datareceivedmonth['task_id'] = $tasknewmonthid;
+								$datareceivedmonth['attachment'] = $scheme_det->scheme_name.".txt";
+								$datareceivedmonth['url'] = $upload_dir;
+								$datareceivedmonth['network_attach'] = 1;
+								$datareceivedmonth['copied'] = 0;
+								DB::table('task_attached')->insert($datareceivedmonth);
+							}
+						}
 					}
 				}	
 

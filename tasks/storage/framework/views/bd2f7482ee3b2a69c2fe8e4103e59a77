@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('userid'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 
@@ -607,7 +608,7 @@ a:hover{text-decoration: underline;}
             <select name="select_template" class="select_template form-control input-sm">
               <option value="">Select Template</option>
               <?php
-                $templates = DB::table('supplementary_formula')->get();
+                $templates = DB::table('supplementary_formula')->where('user_login_id',$user_login_id)->get();
                 if(count($templates))
                 {
                   foreach($templates as $template)
@@ -760,7 +761,7 @@ a:hover{text-decoration: underline;}
     <div class="col-lg-12">
       <div style="width: 100%; height:auto; margin: 0px auto; margin-top: 20px;">
         <?php 
-        $year_setting_details = DB::table('year_setting')->count();
+        $year_setting_details = DB::table('year_setting')->where('user_login_id',$user_login_id)->count();
         if($year_setting_details != 0 ){
         if($year_details->setting_id != ''){ ?> 
 
@@ -794,7 +795,7 @@ a:hover{text-decoration: underline;}
             <td colspan="3" rowspan="2" style="border-top: 0px solid;">
             	<h4 style="font-weight:700;margin-top:0px;margin-bottom:4px"><?php echo $year_details->year; ?> AML Review Document</h4>
             	<?php
-            		$aml_attachments = DB::table('yearend_aml_attachments')->where('client_id',$year_details->id)->get();
+            		$aml_attachments = DB::table('yearend_aml_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->get();
                 	if(count($aml_attachments))
 	                {
 	                      foreach($aml_attachments as $attachment)
@@ -999,8 +1000,8 @@ a:hover{text-decoration: underline;}
 
           if(count($setting_detail)){
             foreach ($setting_detail as $single) {
-              $settingname = DB::table('year_setting')->where('id', $single)->first();
-              $liability_single = DB::table('year_client_liability')->where('row_id', $year_details->id)->where('setting_id', $single)->first();  
+              $settingname = DB::table('year_setting')->where('user_login_id',$user_login_id)->where('id', $single)->first();
+              $liability_single = DB::table('year_client_liability')->where('user_login_id',$user_login_id)->where('row_id', $year_details->id)->where('setting_id', $single)->first();  
 
 
 
@@ -1025,7 +1026,7 @@ a:hover{text-decoration: underline;}
               <td style="background:#e2efd9">
               	<?php if($active_merge[$single] == 1) { $disabled ='disabled_hidden'; } else { $disabled ='notdisabled_hidden'; }  
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',$single)->where('attach_type',0)
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',$single)->where('attach_type',0)
                   ->where('distribution_type',0)->get();
                   if(count($attachments))
                   {
@@ -1048,7 +1049,7 @@ a:hover{text-decoration: underline;}
               	if($distribution1_merge[$single] == 1) { $hide ='dist1_hiddentd'; } else { $hide = 'dist1_showtd'; } 
               	if($active_merge[$single] == 1) { $disabled ='disabled_hidden'; } else { $disabled ='notdisabled_hidden'; } 
               	echo '<div class="'.$hide.'">';
-	                $attachments = DB::table('yearend_distribution_attachments')->where('client_id',$year_details->id)->where('setting_id',$single)->where('distribution_type',1)->where('attach_type',0)->get();
+	                $attachments = DB::table('yearend_distribution_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',$single)->where('distribution_type',1)->where('attach_type',0)->get();
 	                if(count($attachments))
 	                {
 	                      foreach($attachments as $attachment)
@@ -1091,7 +1092,7 @@ a:hover{text-decoration: underline;}
               	if($distribution2_merge[$single] == 1) { $hide ='dist2_hiddentd'; } else { $hide = 'dist2_showtd'; } 
               	if($active_merge[$single] == 1) { $disabled ='disabled_hidden'; } else { $disabled ='notdisabled_hidden'; } 
                 echo '<div class="'.$hide.'">';
-	                $attachments = DB::table('yearend_distribution_attachments')->where('client_id',$year_details->id)->where('setting_id',$single)->where('distribution_type',2)->where('attach_type',0)->get();
+	                $attachments = DB::table('yearend_distribution_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',$single)->where('distribution_type',2)->where('attach_type',0)->get();
 	                if(count($attachments))
 	                {
 	                      foreach($attachments as $attachment)
@@ -1133,7 +1134,7 @@ a:hover{text-decoration: underline;}
               	if($distribution3_merge[$single] == 1) { $hide ='dist3_hiddentd'; } else { $hide = 'dist3_showtd'; } 
               	if($active_merge[$single] == 1) { $disabled ='disabled_hidden'; } else { $disabled ='notdisabled_hidden'; } 
                 echo '<div class="'.$hide.'">';
-	                $attachments = DB::table('yearend_distribution_attachments')->where('client_id',$year_details->id)->where('setting_id',$single)->where('distribution_type',3)->where('attach_type',0)->get();
+	                $attachments = DB::table('yearend_distribution_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',$single)->where('distribution_type',3)->where('attach_type',0)->get();
 	                if(count($attachments))
 	                {
 	                      foreach($attachments as $attachment)
@@ -1195,7 +1196,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#e2efd9">
               <?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',0)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',0)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1213,7 +1214,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#deebf6">
               <?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',1)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',1)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1233,7 +1234,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#fff3cb">
               <?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',2)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',2)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1253,7 +1254,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#ededed">
               <?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',3)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',1)->where('distribution_type',3)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1277,7 +1278,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#e2efd9">
               <?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',0)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',0)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1295,7 +1296,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#deebf6">
             	<?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',1)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',1)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1315,7 +1316,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#fff3cb">
             	<?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',2)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',2)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1335,7 +1336,7 @@ a:hover{text-decoration: underline;}
             <td style="background:#ededed">
             	<?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',3)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',2)->where('distribution_type',3)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1359,7 +1360,7 @@ a:hover{text-decoration: underline;}
             <td>
               <?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',0)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',0)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1377,7 +1378,7 @@ a:hover{text-decoration: underline;}
             <td>
             	<?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',1)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',1)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1397,7 +1398,7 @@ a:hover{text-decoration: underline;}
             <td>
             	<?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',2)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',2)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1417,7 +1418,7 @@ a:hover{text-decoration: underline;}
             <td>
             	<?php 
                 echo '<div>';
-                  $attachments = DB::table('yearend_notes_attachments')->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',3)->get();
+                  $attachments = DB::table('yearend_notes_attachments')->where('user_login_id',$user_login_id)->where('client_id',$year_details->id)->where('setting_id',0)->where('attach_type',3)->where('distribution_type',3)->get();
                   if(count($attachments))
                   {
                         foreach($attachments as $attachment)
@@ -1443,7 +1444,7 @@ a:hover{text-decoration: underline;}
             <td colspan="3" align="center">
               <a href="javascript:" class="report_ok_button_100 email_unsent_dist1">Email Distribution</a>
               <?php 
-              $check_last_email_sent = DB::table('year_client')->where('id',$year_end_id)->first();
+              $check_last_email_sent = DB::table('year_client')->where('user_login_id',$user_login_id)->where('id',$year_end_id)->first();
               if($check_last_email_sent->dist1_email_sent_date != "0000-00-00 00:00:00")
               {
                 $disabled_resent = '';
@@ -1472,7 +1473,7 @@ a:hover{text-decoration: underline;}
             <td colspan="3" align="center">
               <a href="javascript:" class="report_ok_button_100 email_unsent_dist2">Email Distribution</a>
               <?php 
-              $check_last_email_sent = DB::table('year_client')->where('id',$year_end_id)->first();
+              $check_last_email_sent = DB::table('year_client')->where('user_login_id',$user_login_id)->where('id',$year_end_id)->first();
               if($check_last_email_sent->dist2_email_sent_date != "0000-00-00 00:00:00")
               {
                 $disabled_resent = '';
@@ -1501,7 +1502,7 @@ a:hover{text-decoration: underline;}
             <td colspan="3" align="center">
               <a href="javascript:" class="report_ok_button_100 email_unsent_dist3">Email Distribution</a>
               <?php 
-              $check_last_email_sent = DB::table('year_client')->where('id',$year_end_id)->first();
+              $check_last_email_sent = DB::table('year_client')->where('user_login_id',$user_login_id)->where('id',$year_end_id)->first();
               if($check_last_email_sent->dist3_email_sent_date != "0000-00-00 00:00:00")
               {
                 $disabled_resent = '';

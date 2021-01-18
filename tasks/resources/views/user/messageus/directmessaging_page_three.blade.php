@@ -208,7 +208,7 @@ input:checked + .slider:before {
               <select name="select_from" class="form-control select_from">
                 <option value="">Select User</option>        
                   <?php
-                  $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+                  $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
                   if(count($userlist)){
                     foreach ($userlist as $user) {
                   ?>

@@ -3,14 +3,15 @@
 @section('content')
 
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
-
+<script src="http://malsup.github.com/jquery.form.js"></script>
 <style>
-  .secret_button:focus { background: #7bab15;outline: none; }
+  .error{ color:#f00; }
+  .secret_button:focus { background: #ffa12d;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
       display:    none;
       position:   fixed;
-      z-index:    999999;
+      z-index:    999999999999999999;
       top:        0;
       left:       0;
       height:     100%;
@@ -38,7 +39,7 @@
 {
   min-height: 700px !important;
   max-height: 700px !important;
-  height: 315px !important;
+  height: 340px !important;
 }
 .scroll_attachment_div { 
     max-height: 100px;
@@ -843,7 +844,7 @@ table{
 
 
 
-    z-index:    1000;
+    z-index:    999999999999999999;
 
 
 
@@ -965,7 +966,7 @@ body.loading .modal_load {
                   <select name="select_user" class="form-control select_user_author" required>
                     <option value="">Select User</option>        
                       <?php
-                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
                       $selected = '';
                       if(count($userlist)){
                         foreach ($userlist as $user) {
@@ -2238,279 +2239,549 @@ body.loading .modal_load {
 
 <div class="modal fade emailunsent" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 
+
+
   <div class="modal-dialog" role="document">
 
-    <form action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
+    <form id="email_unsent_form" action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
 
     <div class="modal-content">
 
+
+
       <div class="modal-header">
+
+
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 
+
+
         <h4 class="modal-title" id="myModalLabel">Email Unsent Files</h4>
 
+
+
       </div>
+
+
 
       <div class="modal-body">
 
+
+
           <div class="row">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>From</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <select name="select_user" id="select_user" class="form-control input-sm" required>
 
+
+
                 <?php echo $unamelist; ?>
+
+
 
               </select>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>To</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="to_user" id="to_user" class="form-control input-sm" value="" required>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>CC</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="cc_unsent" class="form-control input-sm" value="<?php echo $admin_cc; ?>" readonly>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
+
+
 
             <div class="col-md-3">
 
+
+
               <label>Subject</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-9">
 
+
+
               <input type="text" name="subject_unsent" class="form-control input-sm subject_unsent" value="" required>
+
+
 
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Message</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-12">
+
+
 
               <textarea name="message_editor" id="editor">
 
+
+
                   
+
+
 
               </textarea>
 
+
+
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Attachment</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-12" id="email_attachments">
 
+
+
                 
+
+
 
             </div>
 
+
+
           </div>
 
+
+
       </div>
+
+
 
       <div class="modal-footer">
 
         <input type="hidden" name="email_sent_option" id="email_sent_option" value="0">
 
-        <input type="submit" class="btn btn-primary common_black_button" value="Email Unsent Files">
+        <input type="button" class="btn btn-primary common_black_button email_unsent_files_btn" value="Email Unsent Files">
+
+
 
       </div>
 
+
+
     </div>
+
+
 
     </form>
 
+
+
   </div>
+
+
 
 </div>
 
 <div class="modal fade resendemailunsent" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 
+
+
   <div class="modal-dialog" role="document">
 
-    <form action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
+    <form id="resend_email_unsent_form" action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
 
     <div class="modal-content">
 
+
+
       <div class="modal-header">
+
+
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 
+
+
         <h4 class="modal-title" id="myModalLabel">Resend Email</h4>
 
+
+
       </div>
+
+
 
       <div class="modal-body">
 
+
+
           <div class="row">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>From</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <select name="select_user" id="select_userresend" class="form-control input-sm" required>
 
+
+
                 <?php echo $unamelist; ?>
+
+
 
               </select>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>To</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="to_user" id="to_userresend" class="form-control input-sm" value="" required>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>CC</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="cc_unsent" class="form-control input-sm" value="<?php echo $admin_cc; ?>" readonly>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
+
+
 
             <div class="col-md-3">
 
+
+
               <label>Subject</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-9">
 
+
+
               <input type="text" name="subject_unsent" class="form-control input-sm subject_resend" value="" required>
+
+
 
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Message</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-12">
+
+
 
               <textarea name="message_editor" id="editor_9">
 
+
+
                   
+
+
 
               </textarea>
 
+
+
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Attachment</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-12" id="email_attachmentsresend">
 
+
+
                 
+
+
 
             </div>
 
+
+
           </div>
 
+
+
       </div>
+
+
 
       <div class="modal-footer">
 
-        <input type="submit" class="btn btn-primary common_black_button" value="Send">
+
+
+        <input type="submit" class="btn btn-primary common_black_button resend_email_unsent_files_btn" value="Send">
+
+
 
       </div>
 
+
+
     </div>
+
+
 
     </form>
 
+
+
   </div>
+
+
 
 </div>
 
@@ -3000,7 +3271,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #ffa12d;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #ffa12d !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_std_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -3100,8 +3371,8 @@ if(Session::has('error')) { ?>
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -3113,43 +3384,20 @@ if(Session::has('error')) { ?>
                       </div> 
 
                           <div class="img_div">
-
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload?type=2'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=2'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
-                                 
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
                               </div>
-
-                          </div>
-                          <div class="notepad_div">
-
+                            </div>
+                            <div class="notepad_div">
                               <form name="notepad_form" id="notepad_form" action="<?php echo URL::to('user/task_notepad_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                                
                                 <textarea name="notepad_contents" class="form-control notepad_contents" placeholder="Enter Contents"></textarea>
-
-                                <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                                <input type="submit" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
+                                <input type="hidden" name="hidden_id" class="notepad_hidden_task_id" value="<?php echo $result->task_id ?>">
+                                <input type="button" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
                                 <spam class="error_files_notepad"></spam>
-
                               </form>
-
                             </div>
                     </div>
                   </td>
@@ -3418,7 +3666,7 @@ if(Session::has('error')) { ?>
                       <input type="text" class="form-control common_input network_input" name="" value="<?php echo $result->network ?>" disabled><br/>
 
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" ></i>
-
+                      <div class="file_received_div_right">
                       <?php
 
                       $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
@@ -3426,7 +3674,7 @@ if(Session::has('error')) { ?>
                       if(count($attachments))
 
                       {
-                          echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                          echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                           echo '<h5 style="color:#000; font-weight:600">Attachments :</h5>';
                           echo '<div class="scroll_attachment_div">';
 
@@ -3442,7 +3690,7 @@ if(Session::has('error')) { ?>
                       }
 
                       ?>
-
+                      </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
                               <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
@@ -3451,28 +3699,23 @@ if(Session::has('error')) { ?>
                           <?php } ?>
 
                           <div class="img_div">
-
                             <label class="copy_label">Network location has been copied. Just paste the URL in the "File name" path to go to that folder.</label>
 
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
+
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=1'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
+
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
+
                                  
+
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone_attach" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
                               </div>
+
+
 
                           </div>
                           <?php
@@ -3489,10 +3732,10 @@ if(Session::has('error')) { ?>
 
                   <td align="center">
 
-                    <a href="javascript:" class="fa fa-envelope <?php echo $disabled; ?> email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
+                    <a href="javascript:" class="fa fa-envelope email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
 
                     <a href="javascript:" class="<?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> resendemail_unsent" data-element="<?php echo $result->task_id; ?>">
-                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent <?php echo $disabled; ?>" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
+                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
                       
                     </a>
 
@@ -3699,7 +3942,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #ffa12d !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_enh_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -3799,8 +4042,8 @@ if(Session::has('error')) { ?>
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -3812,40 +4055,20 @@ if(Session::has('error')) { ?>
                       </div> 
 
                           <div class="img_div">
-
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload?type=2'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=2'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
-                                 
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
                               </div>
-                          </div>
-                          <div class="notepad_div">
-
+                            </div>
+                            <div class="notepad_div">
                               <form name="notepad_form" id="notepad_form" action="<?php echo URL::to('user/task_notepad_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
                                 <textarea name="notepad_contents" class="form-control notepad_contents" placeholder="Enter Contents"></textarea>
-
-                                <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                                <input type="submit" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
+                                <input type="hidden" name="hidden_id" class="notepad_hidden_task_id" value="<?php echo $result->task_id ?>">
+                                <input type="button" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
                                 <spam class="error_files_notepad"></spam>
-
                               </form>
-
                             </div>
                     </div>
                   </td>
@@ -4112,6 +4335,7 @@ if(Session::has('error')) { ?>
 
                       <input type="text" class="form-control common_input network_input" name="" value="<?php echo $result->network ?>" disabled><br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" ></i>
+                      <div class="file_received_div_right">
                       <?php
 
                       $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
@@ -4119,7 +4343,7 @@ if(Session::has('error')) { ?>
                       if(count($attachments))
 
                       {
-                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                         echo '<h5 style="color:#000; font-weight:600">Attachments :</h5>';
                           echo '<div class="scroll_attachment_div">';
 
@@ -4135,7 +4359,7 @@ if(Session::has('error')) { ?>
                       }
 
                       ?>
-
+                      </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
                               <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
@@ -4144,28 +4368,24 @@ if(Session::has('error')) { ?>
                           <?php } ?>
 
                           <div class="img_div">
-
                             <label class="copy_label">Network location has been copied. Just paste the URL in the "File name" path to go to that folder.</label>
 
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
+
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=1'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
+
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
+
                                  
+
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone_attach" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
                               </div>
+
+
+
                           </div>
                           <?php
                           if($result->disclose_liability == 1) { $check_lia = 'checked'; } else { $check_lia = ''; } ?>
@@ -4174,10 +4394,10 @@ if(Session::has('error')) { ?>
 
                   <td align="center">
 
-                    <a href="javascript:" class="fa fa-envelope <?php echo $disabled; ?> email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
+                    <a href="javascript:" class="fa fa-envelope email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
 
                     <a href="javascript:" class="<?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> resendemail_unsent" data-element="<?php echo $result->task_id; ?>">
-                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent <?php echo $disabled; ?>" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
+                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
                       
                     </a>
                      <a href="javascript:" class="fa fa-file-text <?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> report_email_unsent" data-toggle="tooltip" title="Download Report as Pdf" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
@@ -4378,7 +4598,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #ffa12d !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_cmp_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -4481,8 +4701,8 @@ if(Session::has('error')) { ?>
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -4494,42 +4714,20 @@ if(Session::has('error')) { ?>
                       </div> 
 
                           <div class="img_div">
-
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload?type=2'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=2'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
-                                 
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
                               </div>
-                          </div>
-                          <div class="notepad_div">
-
+                            </div>
+                            <div class="notepad_div">
                               <form name="notepad_form" id="notepad_form" action="<?php echo URL::to('user/task_notepad_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                                
                                 <textarea name="notepad_contents" class="form-control notepad_contents" placeholder="Enter Contents"></textarea>
-
-                                <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                                <input type="submit" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
+                                <input type="hidden" name="hidden_id" class="notepad_hidden_task_id" value="<?php echo $result->task_id ?>">
+                                <input type="button" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
                                 <spam class="error_files_notepad"></spam>
-
                               </form>
-
                             </div>
                     </div>
                   </td>
@@ -4780,6 +4978,7 @@ if(Session::has('error')) { ?>
 
                       <input type="text" class="form-control common_input network_input" name="" value="<?php echo $result->network ?>" disabled><br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" ></i>
+                      <div class="file_received_div_right">
                       <?php
 
                       $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
@@ -4787,7 +4986,7 @@ if(Session::has('error')) { ?>
                       if(count($attachments))
 
                       {
-                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                         echo '<h5 style="color:#000; font-weight:600">Attachments :</h5>';
                           echo '<div class="scroll_attachment_div">';
 
@@ -4803,7 +5002,7 @@ if(Session::has('error')) { ?>
                       }
 
                       ?>
-
+                      </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
                               <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
@@ -4812,28 +5011,24 @@ if(Session::has('error')) { ?>
                           <?php } ?>
 
                           <div class="img_div">
-
                             <label class="copy_label">Network location has been copied. Just paste the URL in the "File name" path to go to that folder.</label>
 
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
+
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=1'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
+
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
+
                                  
+
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone_attach" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
                               </div>
+
+
+
                           </div>
                           <?php
                           if($result->disclose_liability == 1) { $check_lia = 'checked'; } else { $check_lia = ''; } ?>
@@ -4842,10 +5037,10 @@ if(Session::has('error')) { ?>
 
                   <td align="center">
 
-                    <a href="javascript:" class="fa fa-envelope <?php echo $disabled; ?> email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
+                    <a href="javascript:" class="fa fa-envelope email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
 
                     <a href="javascript:" class="<?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> resendemail_unsent" data-element="<?php echo $result->task_id; ?>">
-                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent <?php echo $disabled; ?>" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
+                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
                       
                     </a>
                     <a href="javascript:" class="fa fa-file-text <?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> report_email_unsent" data-toggle="tooltip" title="Download Report as Pdf" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
@@ -5262,6 +5457,101 @@ $(".client_search_class_task").autocomplete({
       }
   });
 $(window).click(function(e) {
+  if($(e.target).hasClass('email_unsent_files_btn'))
+  { 
+    for (instance in CKEDITOR.instances) 
+    {
+        CKEDITOR.instances['editor'].updateElement();
+    }
+    if($("#email_unsent_form").valid())
+    {
+      $("body").addClass("loading");
+      $('#email_unsent_form').ajaxForm({
+          success:function(result){
+              if(result == "1")
+              {
+                $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
+                $("body").removeClass("loading");
+              }
+              else if(result == "2")
+              {
+                $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
+                $("body").removeClass("loading");
+              }
+              else{
+                var date = result.split("||");
+                $("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
+                $("body").removeClass("loading");
+                $(".emailunsent").modal("hide");
+              }
+          }
+      }).submit();
+    }
+  }
+  if($(e.target).hasClass('resend_email_unsent_files_btn'))
+  { 
+    for (instance in CKEDITOR.instances) 
+    {
+        CKEDITOR.instances['editor_9'].updateElement();
+    }
+    if($("#resend_email_unsent_form").valid())
+    {
+      $("body").addClass("loading");
+      $('#resend_email_unsent_form').ajaxForm({
+        success:function(result){
+            if(result == "1")
+            {
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
+              $("body").removeClass("loading");
+            }
+            else if(result == "2")
+            {
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
+              $("body").removeClass("loading");
+            }
+            else{
+              var date = result.split("||");
+              $("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
+              $("body").removeClass("loading");
+              $(".resendemailunsent").modal("hide");
+            }
+        }
+      }).submit();
+    }
+  }
+  if($(e.target).hasClass('submit_dropzone'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_pms_file_attachments'); ?>",
+      type:"post",
+      data:{task_id:task_id,type:"2"},
+      success:function(result)
+      {
+        $(e.target).parents("td:first").find(".files_received_div").html(result);
+        $(e.target).parents("tr:first").find(".task_label").css("color","#89ff00");
+        $(e.target).parents("tr:first").find(".task_started_checkbox").prop("checked",true);
+        $(".dz-preview").detach();
+      $(".dz-message").parents(".dropzone").removeClass("dz-started");
+      }
+    })
+  }
+  if($(e.target).hasClass('submit_dropzone_attach'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_pms_file_attachments'); ?>",
+      type:"post",
+      data:{task_id:task_id,type:"1"},
+      success:function(result)
+      {
+        $(e.target).parents("td:first").find(".file_received_div_right").html(result);
+        $(".dz-preview").detach();
+        $(".dz-message").parents(".dropzone").removeClass("dz-started");
+        $(e.target).parents("td:first").find(".liability_input").prop("disabled",false);
+      }
+    })
+  }
   if($(e.target).hasClass('secret_button'))
   {
     var task_id = $(e.target).attr("data-element");
@@ -5430,63 +5720,62 @@ $(window).click(function(e) {
   if($(e.target).hasClass('make_task_live'))
   {
     e.preventDefault();
-    if($("#internal_checkbox").is(":checked"))
+    if($("#create_task_form").valid())
     {
-        var taskvalue = $("#idtask").val();
-        if(taskvalue == "")
+      if($("#internal_checkbox").is(":checked"))
+      {
+          var taskvalue = $("#idtask").val();
+          if(taskvalue == "")
+          {
+            alert("Please select the Task Name and then make the task as live");
+            return false;
+          }
+      }
+      else{
+        var clientid = $("#client_search_task").val();
+        if(clientid == "")
         {
-          alert("Please select the Task Name and then make the task as live");
+          alert("Please select the Client and then make the task as live");
           return false;
         }
-    }
-    else{
-      var clientid = $("#client_search_task").val();
-      if(clientid == "")
-      {
-        alert("Please select the Client and then make the task as live");
-        return false;
       }
-    }
-    if (CKEDITOR.instances.editor_2)
-    {
-      var comments = CKEDITOR.instances['editor_2'].getData();
-      if(comments == "")
+      if (CKEDITOR.instances.editor_2)
       {
-        alert("Please Enter Task Specifics and then make the task as Live.");
-        return false;
+        var comments = CKEDITOR.instances['editor_2'].getData();
+        if(comments == "")
+        {
+          alert("Please Enter Task Specifics and then make the task as Live.");
+          return false;
+        }
+        else{
+          if($(".2_bill_task").is(":checked"))
+          {
+            $("#create_task_form").submit();
+          }
+          else{
+            $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+          }
+        }
       }
       else{
         if($(".2_bill_task").is(":checked"))
         {
-          $("#create_task_form").valid();
-          $("#create_task_form").submit();
+        $("#create_task_form").submit();
         }
         else{
           $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
         }
       }
     }
-    else{
-      if($(".2_bill_task").is(":checked"))
-      {
-        $("#create_task_form").valid();
-      $("#create_task_form").submit();
-      }
-      else{
-        $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
-      }
-    }
   }
   if($(e.target).hasClass('yes_make_task_live'))
   {
     $(".2_bill_task").prop("checked",true);
-    $("#create_task_form").valid();
       $("#create_task_form").submit();
   }
   if($(e.target).hasClass('no_make_task_live'))
   {
     $(".2_bill_task").prop("checked",false);
-    $("#create_task_form").valid();
       $("#create_task_form").submit();
   }
   if($(e.target).hasClass('accept_recurring'))
@@ -5857,32 +6146,34 @@ $(window).click(function(e) {
     });
 
   }
-
-  if($(e.target).hasClass('notepad_submit'))
-
+  if($(e.target).parents(".dropzone").length > 0)
   {
-
-    
-    var contents = $(e.target).parent().find('.notepad_contents').val();
-
-    if(contents == '' || typeof contents === 'undefined')
-
-    {
-
-      $(e.target).parent().find(".error_files_notepad").text("Please Enter the contents for the notepad to save.");
-
-      return false;
-
-    }
-
-    else{
-
-      $(e.target).parents('td').find('.notepad_div').toggle();
-
-    }
-
+    $(e.target).parents('.img_div').show();
+    $(e.target).parents(".dropzone").trigger("click");
   }
-
+  if($(e.target).hasClass('notepad_submit'))
+  {
+    var contents = $(e.target).parent().find('.notepad_contents').val();
+   if(contents == '' || typeof contents === 'undefined')
+    {
+      $(e.target).parent().find(".error_files_notepad").text("Please Enter the contents for the notepad to save.");
+      return false;
+    }
+    else{
+      var contents = $(e.target).parents("td").find(".notepad_contents").val();
+      var task_id = $(e.target).parents("td").find(".notepad_div").find(".notepad_hidden_task_id").val();
+      $.ajax({
+        url:"<?php echo URL::to('user/task_notepad_upload'); ?>",
+        type:"post",
+        data:{notepad_contents:contents,hidden_id:task_id},
+        success:function(result)
+        {
+          $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+        }
+      });
+      $(e.target).parents('td').find('.notepad_div').toggle();
+    }
+  }
   else{
 
     $(".notepad_div").each(function() {
@@ -7952,123 +8243,120 @@ $(window).click(function(e) {
                   data:{status:1,id:id},
 
                   success: function(result) {
+                      window.location.replace("<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid='); ?>"+id);
+              //       $(e.target).parents('tr').find(".date_input").val(result['date']);
 
-                    $(e.target).parents('tr').find(".date_input").val(result['date']);
+              //       $(e.target).parents('tr').find(".time_input").val(result['time']);
 
-                    $(e.target).parents('tr').find(".time_input").val(result['time']);
+              //       $(e.target).parents('tr').find("select").each(function(){
 
-                    $(e.target).parents('tr').find("select").each(function(){
+              //         $(this).prop('disabled',true);
 
-                      $(this).prop('disabled',true);
+              //       });
 
-                    });
+              //       $(e.target).parents('tr').find("textarea").each(function(){
 
-                    $(e.target).parents('tr').find("textarea").each(function(){
+              //         $(this).prop('disabled',true);
 
-                      $(this).prop('disabled',true);
+              //       });
 
-                    });
+              //       $(e.target).parents('tr').find(".liability_input").prop("disabled",true);
 
-                    $(e.target).parents('tr').find(".liability_input").prop("disabled",true);
+              //       $(e.target).parents('tr').find('.fa-trash').each(function() {
 
-                    $(e.target).parents('tr').find('.fa-trash').each(function() {
+              //         $(this).addClass('disabled');
 
-                      $(this).addClass('disabled');
+              //       });
 
-                    });
-
-                    $(e.target).parents('tr').find('.fa-trash').addClass('disabled');
-                    $(e.target).parents('tr').find('.fa-trash').parent().addClass('disabled');
-
-
-
-                    $(e.target).parents('tr').find(".task_started_checkbox").addClass('disabled');
-
-                    $(e.target).parents('tr').find(".enterhours_checkbox").addClass('disabled');
-
-                    $(e.target).parents('tr').find(".holiday_checkbox").addClass('disabled');
-
-                    $(e.target).parents('tr').find(".process_checkbox").addClass('disabled');
-
-                    $(e.target).parents('tr').find(".payslips_checkbox").addClass('disabled');
-
-                    $(e.target).parents('tr').find(".email_checkbox").addClass('disabled');
-
-                    $(e.target).parents('tr').find(".upload_checkbox").addClass('disabled');
+              //       $(e.target).parents('tr').find('.fa-trash').addClass('disabled');
+              //       $(e.target).parents('tr').find('.fa-trash').parent().addClass('disabled');
 
 
 
-                    $(e.target).parents('tr').find('.fa-plus').addClass('disabled');
-                    $(e.target).parents('tr').find('.fa-pencil-square').addClass('disabled');
+              //       $(e.target).parents('tr').find(".task_started_checkbox").addClass('disabled');
 
-                    $(e.target).parents('tr').find('.fa-minus-square').addClass('disabled');
+              //       $(e.target).parents('tr').find(".enterhours_checkbox").addClass('disabled');
 
-                    $(e.target).parents('tr').find('.task_label').addClass('disabled');
+              //       $(e.target).parents('tr').find(".holiday_checkbox").addClass('disabled');
 
-                    $(e.target).parents('tr').find('.edit_task').addClass('disabled');
+              //       $(e.target).parents('tr').find(".process_checkbox").addClass('disabled');
 
-                    $(e.target).parents('tr').find('.fa-files-o').addClass('disabled');
+              //       $(e.target).parents('tr').find(".payslips_checkbox").addClass('disabled');
 
-                    $(e.target).parents('tr').find('.task_delete').addClass('disabled');
+              //       $(e.target).parents('tr').find(".email_checkbox").addClass('disabled');
 
-                    $(e.target).parents('tr').find('.single_notify').addClass('disabled');
-              $(e.target).parents('tr').find('.all_notify').addClass('disabled');
-              $(e.target).parents('tr').find('.email_unsent').addClass('disabled');
-              $(e.target).parents('tr').find('.resendemail_unsent').addClass('disabled');
-              $(e.target).parents('tr').find('.report_email_unsent').addClass('disabled');
+              //       $(e.target).parents('tr').find(".upload_checkbox").addClass('disabled');
+
+
+
+              //       $(e.target).parents('tr').find('.fa-plus').addClass('disabled');
+              //       $(e.target).parents('tr').find('.fa-pencil-square').addClass('disabled');
+
+              //       $(e.target).parents('tr').find('.fa-minus-square').addClass('disabled');
+
+              //       $(e.target).parents('tr').find('.task_label').addClass('disabled');
+
+              //       $(e.target).parents('tr').find('.edit_task').addClass('disabled');
+
+              //       $(e.target).parents('tr').find('.fa-files-o').addClass('disabled');
+
+              //       $(e.target).parents('tr').find('.task_delete').addClass('disabled');
+
+              //       $(e.target).parents('tr').find('.single_notify').addClass('disabled');
+              // $(e.target).parents('tr').find('.all_notify').addClass('disabled');
 
 
               
 
-              $(e.target).parents('tr').find('.donot_complete').addClass('disabled');
-              $(e.target).parents('tr').find('.do_complete').addClass('disabled');
+              // $(e.target).parents('tr').find('.donot_complete').addClass('disabled');
+              // $(e.target).parents('tr').find('.do_complete').addClass('disabled');
 
-              $(e.target).parents('tr').find('.donot_complete').parent().addClass('disabled');
-              $(e.target).parents('tr').find('.do_complete').parent().addClass('disabled');
+              // $(e.target).parents('tr').find('.donot_complete').parent().addClass('disabled');
+              // $(e.target).parents('tr').find('.do_complete').parent().addClass('disabled');
 
-                    $(e.target).parents('tr').find('.task_label').css({'color':'#f00','font-weight':'800'});
+              //       $(e.target).parents('tr').find('.task_label').css({'color':'#f00','font-weight':'800'});
 
-                    $(e.target).removeClass('fa-check');
+              //       $(e.target).removeClass('fa-check');
 
-                    $(e.target).addClass('fa-times');
+              //       $(e.target).addClass('fa-times');
 
-                    $(e.target).attr("data-original-title","Mark as Incomplete");
+              //       $(e.target).attr("data-original-title","Mark as Incomplete");
 
 
 
-                    if($("#show_incomplete").is(':checked'))
+              //       if($("#show_incomplete").is(':checked'))
 
-                    {
+              //       {
 
-                      $(".edit_task").each(function() {
+              //         $(".edit_task").each(function() {
 
-                          if($(this).hasClass('disabled'))
+              //             if($(this).hasClass('disabled'))
 
-                          {
+              //             {
 
-                            $(this).parents('tr').hide();
+              //               $(this).parents('tr').hide();
 
-                          }
+              //             }
 
-                      });
+              //         });
 
-                    }
+              //       }
 
-                    else{
+              //       else{
 
-                      $(".edit_task").each(function() {
+              //         $(".edit_task").each(function() {
 
-                          if($(this).hasClass('disabled'))
+              //             if($(this).hasClass('disabled'))
 
-                          {
+              //             {
 
-                            $(this).parents('tr').show();
+              //               $(this).parents('tr').show();
 
-                          }
+              //             }
 
-                      });
+              //         });
 
-                    }
+              //       }
 
                   }
 
@@ -8103,135 +8391,125 @@ $(window).click(function(e) {
           data:{status:0,id:id},
 
           success: function(result) {
+              window.location.replace("<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid='); ?>"+id);
+            // $(e.target).parents('tr').find(".date_input").val('MM-DD-YYYY');
 
-            $(e.target).parents('tr').find(".date_input").val('MM-DD-YYYY');
+            // $(e.target).parents('tr').find(".time_input").val('HH:MM');
 
-            $(e.target).parents('tr').find(".time_input").val('HH:MM');
+            // $(e.target).parents('tr').find("select").each(function(){
 
-            $(e.target).parents('tr').find("select").each(function(){
+            //   $(this).prop('disabled',false);
 
-              $(this).prop('disabled',false);
+            // });
 
-            });
+            // $(e.target).parents('tr').find("textarea").each(function(){
 
-            $(e.target).parents('tr').find("textarea").each(function(){
+            //   $(this).prop('disabled',false);
 
-              $(this).prop('disabled',false);
+            // });
 
-            });
+            // $(e.target).parents('tr').find(".liability_input").prop("disabled",false);
 
-            $(e.target).parents('tr').find(".liability_input").prop("disabled",false);
+            // $(e.target).parents('tr').find('.fa-trash').each(function() {
 
-            $(e.target).parents('tr').find('.fa-trash').each(function() {
+            //   $(this).removeClass('disabled');
 
-              $(this).removeClass('disabled');
+            // });
 
-            });
-
-            $(e.target).parents('tr').find('.fa-trash').removeClass('disabled');
-                    $(e.target).parents('tr').find('.fa-trash').parent().removeClass('disabled');
-
-
-            $(e.target).parents('tr').find(".task_started_checkbox").removeClass('disabled');
-
-            $(e.target).parents('tr').find(".enterhours_checkbox").removeClass('disabled');
-
-            $(e.target).parents('tr').find(".holiday_checkbox").removeClass('disabled');
-
-            $(e.target).parents('tr').find(".process_checkbox").removeClass('disabled');
-
-            $(e.target).parents('tr').find(".payslips_checkbox").removeClass('disabled');
-
-            $(e.target).parents('tr').find(".email_checkbox").removeClass('disabled');
-
-            $(e.target).parents('tr').find(".upload_checkbox").removeClass('disabled');
+            // $(e.target).parents('tr').find('.fa-trash').removeClass('disabled');
+            //         $(e.target).parents('tr').find('.fa-trash').parent().removeClass('disabled');
 
 
+            // $(e.target).parents('tr').find(".task_started_checkbox").removeClass('disabled');
 
-            $(e.target).parents('tr').find('.fa-plus').removeClass('disabled');
-            $(e.target).parents('tr').find('.fa-pencil-square').removeClass('disabled');
+            // $(e.target).parents('tr').find(".enterhours_checkbox").removeClass('disabled');
 
-            $(e.target).parents('tr').find('.fa-minus-square').removeClass('disabled');
+            // $(e.target).parents('tr').find(".holiday_checkbox").removeClass('disabled');
+
+            // $(e.target).parents('tr').find(".process_checkbox").removeClass('disabled');
+
+            // $(e.target).parents('tr').find(".payslips_checkbox").removeClass('disabled');
+
+            // $(e.target).parents('tr').find(".email_checkbox").removeClass('disabled');
+
+            // $(e.target).parents('tr').find(".upload_checkbox").removeClass('disabled');
 
 
 
-            $(e.target).parents('tr').find('.task_label').removeClass('disabled');
+            // $(e.target).parents('tr').find('.fa-plus').removeClass('disabled');
+            // $(e.target).parents('tr').find('.fa-pencil-square').removeClass('disabled');
 
-            $(e.target).parents('tr').find('.edit_task').removeClass('disabled');
-
-            $(e.target).parents('tr').find('.fa-files-o').removeClass('disabled');
-
-            $(e.target).parents('tr').find('.task_delete').removeClass('disabled');
-
-            $(e.target).parents('tr').find('.single_notify').removeClass('disabled');
-              $(e.target).parents('tr').find('.all_notify').removeClass('disabled');
-              $(e.target).parents('tr').find('.email_unsent').removeClass('disabled');
-
-              if($(e.target).parents('tr').find('.email_unsent_label').html() == "")
-              {
-                
-              }
-              else{
-                $(e.target).parents('tr').find('.resendemail_unsent').removeClass('disabled');
-                $(e.target).parents('tr').find('.report_email_unsent').removeClass('disabled');
-              }
-
-
-              $(e.target).parents('tr').find('.donot_complete').removeClass('disabled');
-              $(e.target).parents('tr').find('.do_complete').removeClass('disabled');
-
-              $(e.target).parents('tr').find('.donot_complete').parent().removeClass('disabled');
-              $(e.target).parents('tr').find('.do_complete').parent().removeClass('disabled');
-
-            if($(e.target).parents('tr').find(".task_started_checkbox").is(":checked"))
-            {
-              $(e.target).parents('tr').find('.task_label').css({'color':'#89ff00','font-weight':'800'});
-            }
-            else{
-              $(e.target).parents('tr').find('.task_label').css({'color':'#fff','font-weight':'600'});
-            }
-
-            $(e.target).removeClass('fa-times');
-
-            $(e.target).addClass('fa-check');
-
-            $(e.target).attr("data-original-title","Mark as Completed");
+            // $(e.target).parents('tr').find('.fa-minus-square').removeClass('disabled');
 
 
 
-            if($("#show_incomplete").is(':checked'))
+            // $(e.target).parents('tr').find('.task_label').removeClass('disabled');
 
-            {
+            // $(e.target).parents('tr').find('.edit_task').removeClass('disabled');
 
-              $(".edit_task").each(function() {
+            // $(e.target).parents('tr').find('.fa-files-o').removeClass('disabled');
 
-                  if($(this).hasClass('disabled'))
+            // $(e.target).parents('tr').find('.task_delete').removeClass('disabled');
 
-                  {
+            // $(e.target).parents('tr').find('.single_notify').removeClass('disabled');
+            //   $(e.target).parents('tr').find('.all_notify').removeClass('disabled');
 
-                    $(this).parents('tr').hide();
 
-                  }
+            //   $(e.target).parents('tr').find('.donot_complete').removeClass('disabled');
+            //   $(e.target).parents('tr').find('.do_complete').removeClass('disabled');
 
-              });
+            //   $(e.target).parents('tr').find('.donot_complete').parent().removeClass('disabled');
+            //   $(e.target).parents('tr').find('.do_complete').parent().removeClass('disabled');
 
-            }
+            // if($(e.target).parents('tr').find(".task_started_checkbox").is(":checked"))
+            // {
+            //   $(e.target).parents('tr').find('.task_label').css({'color':'#89ff00','font-weight':'800'});
+            // }
+            // else{
+            //   $(e.target).parents('tr').find('.task_label').css({'color':'#fff','font-weight':'600'});
+            // }
 
-            else{
+            // $(e.target).removeClass('fa-times');
 
-              $(".edit_task").each(function() {
+            // $(e.target).addClass('fa-check');
 
-                  if($(this).hasClass('disabled'))
+            // $(e.target).attr("data-original-title","Mark as Completed");
 
-                  {
 
-                    $(this).parents('tr').show();
 
-                  }
+            // if($("#show_incomplete").is(':checked'))
 
-              });
+            // {
 
-            }
+            //   $(".edit_task").each(function() {
+
+            //       if($(this).hasClass('disabled'))
+
+            //       {
+
+            //         $(this).parents('tr').hide();
+
+            //       }
+
+            //   });
+
+            // }
+
+            // else{
+
+            //   $(".edit_task").each(function() {
+
+            //       if($(this).hasClass('disabled'))
+
+            //       {
+
+            //         $(this).parents('tr').show();
+
+            //       }
+
+            //   });
+
+            // }
 
           }
 
@@ -8242,124 +8520,82 @@ $(window).click(function(e) {
   }
 
   if($(e.target).hasClass('trash_image'))
-
   {
-
-    if($(e.target).hasClass('sample_trash'))
-    {
-      var attach_count = $(e.target).parents('.file_received_div').find(".fileattachment").length;
-      if(attach_count == 1)
+      if($(e.target).hasClass('sample_trash'))
       {
-          var r = confirm("Are You sure you want to delete this image and Do you want to Remove the Liability Recorded and update it later?");
+        var attach_count = $(e.target).parents('.file_received_div').find(".fileattachment").length;
+        if(attach_count == 1)
+        {
+            var r = confirm("Are You sure you want to delete this image and Do you want to Remove the Liability Recorded and update it later?");
+        }
+        else{
+              var r = confirm("Are You sure you want to delete this image");
+        }
       }
       else{
-            var r = confirm("Are You sure you want to delete this image");
+        var r = confirm("Are You sure you want to delete this image");
       }
-    }
-    else{
-      var r = confirm("Are You sure you want to delete this image");
-    }
-
     if (r == true) {
-
       var imgid = $(e.target).attr('data-element');
-
-
-
       $.ajax({
-
           url:"<?php echo URL::to('user/task_delete_image'); ?>",
-
           type:"get",
-
           data:{imgid:imgid},
-
           success: function(result) {
-
-            window.location.reload();
-
+            $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+            $(e.target).parents("td:first").find(".submit_dropzone_attach").trigger("click");
           }
-
       });
-
     }
-
   }
 
   if($(e.target).hasClass('fadeleteall'))
-
   {
-
     var r = confirm("Are You sure you want to delete all the attachments and Do you want to Remove the Liability Recorded and update it later?");
-
     if (r == true) {
-
       var taskid = $(e.target).attr('data-element');
-
-
-
       $.ajax({
-
           url:"<?php echo URL::to('user/task_delete_all_image'); ?>",
-
           type:"get",
-
           data:{taskid:taskid},
-
           success: function(result) {
-
-            window.location.reload();
-
+            $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+            $(e.target).parents("td:first").find(".submit_dropzone_attach").trigger("click");
           }
-
       });
-
     }
-
   }
-
   if($(e.target).hasClass('fadeleteall_attachments'))
-
   {
-
     var r = confirm("Are You sure you want to delete all the attachments?");
-
     if (r == true) {
-
       var taskid = $(e.target).attr('data-element');
-
-
-
       $.ajax({
-
           url:"<?php echo URL::to('user/task_delete_all_image_attachments'); ?>",
-
           type:"get",
-
           data:{taskid:taskid},
-
           success: function(result) {
-
-            window.location.reload();
-
+            $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+            $(e.target).parents("td:first").find(".submit_dropzone_attach").trigger("click");
           }
-
       });
-
     }
-
   }
 
   if($(e.target).hasClass('fa-plus'))
-
   {
-
     var pos = $(e.target).position();
-
     var leftposi = parseInt(pos.left) - 200;
-
     $(e.target).parent().find('.img_div').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
-
+    var length = (e.target).parents(".special_div").find('.dz-preview').length;
+    if(length > 0)
+    {
+      $(".dz-message").parents(".dropzone").addClass("dz-started");
+    }
+    else{
+      $(".dz-preview").detach();
+      $(".dz-message").parents(".dropzone").removeClass("dz-started");
+    }
   }
   else if($(e.target).hasClass('fa-plus-task'))
   {
@@ -8941,8 +9177,7 @@ if($(e.target).hasClass('donot_submit_new'))
                 $('#taskidtr_'+taskid).find('.fa-files-o').addClass('disabled');
                 $('#taskidtr_'+taskid).find('.task_delete').addClass('disabled');
                 $('#taskidtr_'+taskid).find('.single_notify').addClass('disabled');
-                $('#taskidtr_'+taskid).find('.all_notify').addClass('disabled');            
-                $('#taskidtr_'+taskid).find('.email_unsent').addClass('disabled');
+                $('#taskidtr_'+taskid).find('.all_notify').addClass('disabled');     
                 $('#taskidtr_'+taskid).find('.fa-files-o').parent().addClass('disabled');
                 $('#taskidtr_'+taskid).find('.fa-check').parent().addClass('disabled');
                 $('#taskidtr_'+taskid).find('.fa-times').parent().addClass('disabled');
@@ -9009,7 +9244,6 @@ if($(e.target).hasClass('donot_submit_new'))
               $(e.target).parents('tr').find('.all_notify').removeClass('disabled');
               
 
-              $(e.target).parents('tr').find('.email_unsent').removeClass('disabled');
               $(e.target).parents('tr').find('.fa-files-o').parent().removeClass('disabled');
               $(e.target).parents('tr').find('.fa-check').parent().removeClass('disabled');
               $(e.target).parents('tr').find('.fa-times').parent().removeClass('disabled');

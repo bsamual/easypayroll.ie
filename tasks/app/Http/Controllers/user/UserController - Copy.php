@@ -139,7 +139,7 @@ class UserController extends Controller {
 			$initial = '<option value="">Select Initial</option>';
 		}
 		$classified = DB::table('classified')->get();
-		$userlist = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 
 		return view('user/select_week', array('title' => 'Week Task', 'yearname' => $year_id, 'weekid' => $year, 'classifiedlist' => $classified, 'unamelist' => $uname,'emaillist' => $email,'initiallist' => $initial,'resultlist_standard' => $result_task_standard,'resultlist_enhanced' => $result_task_enhanced,'resultlist_complex' => $result_task_complex,'year_user' => $year_user, 'userlist' => $userlist));
 	}
@@ -187,7 +187,7 @@ class UserController extends Controller {
 			$initial = '<option value="">Select Initial</option>';
 		}
 		$classified = DB::table('classified')->get();
-		$userlist = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 
 		return view('user/select_month', array('title' => 'Month Task', 'yearname' => $year_id, 'monthid' => $year, 'classifiedlist' => $classified, 'unamelist' => $uname, 'emaillist' => $email,'initiallist' => $initial,'resultlist_standard' => $result_task_standard,'resultlist_enhanced' => $result_task_enhanced,'resultlist_complex' => $result_task_complex,'year_user' => $year_user,'userlist' => $userlist));
 	}

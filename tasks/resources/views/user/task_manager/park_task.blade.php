@@ -2542,35 +2542,46 @@ $(window).click(function(e) {
   if($(e.target).hasClass('make_task_live'))
   {
     e.preventDefault();
-    if($("#internal_checkbox").is(":checked"))
+    if($( "#create_job_form" ).valid())
     {
-        var taskvalue = $("#idtask").val();
-        if(taskvalue == "")
+      if($("#internal_checkbox").is(":checked"))
+      {
+          var taskvalue = $("#idtask").val();
+          if(taskvalue == "")
+          {
+            alert("Please select the Task Name and then make the task as live");
+            return false;
+          }
+      }
+      else{
+        var clientid = $("#client_search").val();
+        if(clientid == "")
         {
-          alert("Please select the Task Name and then make the task as live");
+          alert("Please select the Client and then make the task as live");
           return false;
         }
-    }
-    else{
-      var clientid = $("#client_search").val();
-      if(clientid == "")
-      {
-        alert("Please select the Client and then make the task as live");
-        return false;
       }
-    }
-    if (CKEDITOR.instances.editor_2)
-    {
-      var comments = CKEDITOR.instances['editor_2'].getData();
-      if(comments == "")
+      if (CKEDITOR.instances.editor_2)
       {
-        alert("Please Enter Task Specifics and then make the task as Live.");
-        return false;
+        var comments = CKEDITOR.instances['editor_2'].getData();
+        if(comments == "")
+        {
+          alert("Please Enter Task Specifics and then make the task as Live.");
+          return false;
+        }
+        else{
+          if($(".2_bill_task").is(":checked"))
+          {
+            $("#create_job_form").submit();
+          }
+          else{
+            $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+          }
+        }
       }
       else{
         if($(".2_bill_task").is(":checked"))
         {
-          $( "#create_job_form" ).valid();
           $("#create_job_form").submit();
         }
         else{
@@ -2578,27 +2589,15 @@ $(window).click(function(e) {
         }
       }
     }
-    else{
-      if($(".2_bill_task").is(":checked"))
-      {
-        $( "#create_job_form" ).valid();
-        $("#create_job_form").submit();
-      }
-      else{
-        $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
-      }
-    }
   }
   if($(e.target).hasClass('yes_make_task_live'))
   {
     $(".2_bill_task").prop("checked",true);
-    $( "#create_job_form" ).valid();
     $("#create_job_form").submit();
   }
   if($(e.target).hasClass('no_make_task_live'))
   {
     $(".2_bill_task").prop("checked",false);
-    $( "#create_job_form" ).valid();
     $("#create_job_form").submit();
   }
   if($(e.target).hasClass('avoid_email'))

@@ -2611,7 +2611,7 @@ body #coupon {
                       else{
                         $m = ($job_time_min -   floor($job_time_min / 60) * 60);
                       }
-                      $job_time = $h.':'.$m.':00';
+                      $job_time = floor($h).':'.floor($m).':00';
                     }
                     else{
                       $quick_job = 'Yes'; 
@@ -3052,10 +3052,10 @@ body #coupon {
 
             if($spendquickminutes < 60)
             {
-              $summary_quick_jobs_time = $m.' Minutes';
+              $summary_quick_jobs_time = floor($m).' Minutes';
             }
             else{
-              $summary_quick_jobs_time = $h.':'.$m.' Hours';
+              $summary_quick_jobs_time = floor($h).':'.floor($m).' Hours';
             }
 
             echo '<div class="col-lg-12 user_details_div" style="margin-top: 30px;">        
@@ -3582,7 +3582,7 @@ $(window).click(function(e) {
       $("#hidden_round_type").val("1");
     }
     else{
-      alert("ALready the Minutes per Client is Rounded");
+      alert("Rounding has been set to Round Up to the nearest Minute per client selected");
     }
   }
   if($(e.target).hasClass('round_down'))
@@ -3596,7 +3596,7 @@ $(window).click(function(e) {
       $("#hidden_round_type").val("2");
     }
     else{
-      alert("ALready the Minutes per Client is Rounded");
+      alert("Rounding has been set to Round Down to the nearest Minute per client selected");
     }
   }
   if($(e.target).hasClass('select_all_clients'))
@@ -4328,7 +4328,7 @@ $(window).click(function(e) {
             $("#total_time_minutes_format").css({"color":"#0f9600"});
             $("#stop_active_job").prop("disabled",false);
           }
-          $(".calculate_job_time").val(result['jobtime']);
+          $(".calculate_job_time").val('');
           $("#total_time_minutes_format").val(result['total_time_minutes_format']);
           $("#break_time").val('');
           $("#total_breaks").val('');
@@ -4372,7 +4372,7 @@ $(window).click(function(e) {
             $("#total_time_minutes_format").css({"color":"#0f9600"});
             $("#stop_active_job").prop("disabled",false);
           }
-          $(".calculate_job_time").val(result['jobtime']);
+          $(".calculate_job_time").val('');
           $("#total_time_minutes_format").val(result['total_time_minutes_format']);
           $("#break_time").val('');
           $("#total_breaks").val('');
@@ -4424,7 +4424,7 @@ $(window).click(function(e) {
 
         $(".stop_time2").val("");
 
-        $("#calculate_job_time_quick").val(result['jobtime']);
+        $("#calculate_job_time_quick").val('');
 
         
 

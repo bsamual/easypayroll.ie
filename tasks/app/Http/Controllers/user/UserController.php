@@ -1434,13 +1434,13 @@ class UserController extends Controller {
 
 		{
 
-			return redirect('user/select_week/'.base64_encode($data_img->task_week).'?divid=taskidtr_'.$id);
+			//return redirect('user/select_week/'.base64_encode($data_img->task_week).'?divid=taskidtr_'.$id);
 
 		}
 
 		else{
 
-			return redirect('user/select_month/'.base64_encode($data_img->task_month).'?divid=taskidtr_'.$id);
+			//return redirect('user/select_month/'.base64_encode($data_img->task_month).'?divid=taskidtr_'.$id);
 
 		}
 
@@ -2307,141 +2307,42 @@ class UserController extends Controller {
 
 
 	public function email_unsent_files()
-
-
-
 	{
-
-
-
 		$from_input = Input::get('select_user');
-
-
-
 		$details = DB::table('user')->where('user_id',$from_input)->first();
-
-
-
 		$from = $details->email;
-
-
-
 		$user_name = $details->lastname.' '.$details->firstname;
-
-
-
 		$toemails = Input::get('to_user').','.Input::get('cc_unsent');
-
-
-
 		$sentmails = Input::get('to_user').', '.Input::get('cc_unsent');
-
-
-
 		$subject = Input::get('subject_unsent'); 
-
-
-
 		$message = Input::get('message_editor');
-
-
-
 		$attachments = Input::get('check_attachment');
-
-
-
 		$explode = explode(',',$toemails);
-
-
-
 		$data['sentmails'] = $sentmails;
-
-
-
 		if(count($attachments))
-
-
-
 		{
-
-
-
 			if(count($explode))
-
-
-
 			{
-
-
-
 				foreach($explode as $exp)
-
-
-
 				{
-
-
-
 					$to = trim($exp);
-
-
-
 					$data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
-
-
-
 					$data['message'] = $message;
-
-
-
 					$contentmessage = view('user/email_share_paper', $data);
-
-
-
-
-
 					$email = new PHPMailer();
-
 					$email->SetFrom($from, $user_name); //Name is optional
-
 					$email->Subject   = $subject;
-
 					$email->Body      = $contentmessage;
-
 					$email->IsHTML(true);
-
 					$email->AddAddress( $to );
-
-
-
 					$attach = '';
-
 					foreach($attachments as $attachment)
-
-
-
 					{
-
-
-
 						$attachment_details = DB::table('task_attached')->where('id',$attachment)->first();
-
-
-
 						$path = $attachment_details->url.'/'.$attachment_details->attachment;
-
-
-
 						$email->AddAttachment( $path , $attachment_details->attachment );
-
-
-
 						DB::table('task_attached')->where('id',$attachment)->update(['status' => 1]);
-
-
-
 						$task_id = $attachment_details->task_id;
-
 						if($attach == "")
 						{
 							$attach = $path;
@@ -2449,23 +2350,10 @@ class UserController extends Controller {
 						else{
 							$attach = $attach.'||'.$path;
 						}
-
-
-
 					}
-
-
-
-					$email->Send();			
-
-
-
+					$email->Send();
 				}
-
-
-
 				$date = date('Y-m-d H:i:s');
-
 				$task_details = DB::table('task')->where('task_id',$task_id)->first();
 				if(count($task_details))
 				{
@@ -2488,60 +2376,72 @@ class UserController extends Controller {
 						DB::table('messageus')->insert($datamessage);
 					}
 				}
-
 				DB::table('task')->where('task_id',$task_id)->update(['last_email_sent' => $date]);
-
 				$task_details = DB::table('task')->where('task_id',$task_id)->first();
-
 				$last_email_date['task_id'] = $task_id;
 				$last_email_date['task_created_id'] = $task_details->task_created_id;
 				$last_email_date['email_sent'] = $date;
 				$last_email_date['options'] = (Input::get('email_sent_option')!= "")?Input::get('email_sent_option'):'0';
 				$last_email_date['task_week'] = $task_details->task_week;
 				$last_email_date['task_month'] = $task_details->task_month;
-
 				DB::table('task_email_sent')->insert($last_email_date);
 
-				return Redirect::back()->with('message', 'Email Sent Successfully');
-
-
-
+				$result = DB::table('task')->where('task_id',$task_id)->first();
+				if(count($result))
+				{
+					if($result->last_email_sent != '0000-00-00 00:00:00')
+	                {
+	                  $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
+	                  $last_date = '';
+	                  if(count($get_dates))
+	                  {
+	                    foreach($get_dates as $dateval)
+	                    {
+	                      $date = date('d F Y', strtotime($dateval->email_sent));
+	                      $time = date('H : i', strtotime($dateval->email_sent));
+	                      if($dateval->options != '0')
+	                      {
+	                        if($dateval->options == 'a') { $text = 'Fix an Error Created In House'; }
+	                        elseif($dateval->options == 'b') { $text = 'Fix an Error by Client or Implement a client Requested Change'; }
+	                        elseif($dateval->options == 'c') { $text = 'Combined In House and Client Prompted adjustments'; }
+	                        else{ $text= ''; }
+	                        $itag = '<span class="" title="'.$text.'" style="font-weight:800;"> ('.strtoupper($dateval->options).') </span>';
+	                      }
+	                      else{
+	                        $itag = '';
+	                      }
+	                      if($last_date == "")
+	                      {
+	                        $last_date = '<p>'.$date.' @ '.$time.' '.$itag.'</p>';
+	                      }
+	                      else{
+	                        $last_date = $last_date.'<p>'.$date.' @ '.$time.' '.$itag.'</p>';
+	                      }
+	                    }
+	                  }
+	                  else{
+	                    $date = date('d F Y', strtotime($result->last_email_sent));
+	                    $time = date('H : i', strtotime($result->last_email_sent));
+	                    $last_date = '<p>'.$date.' @ '.$time.'</p>';
+	                  }
+	                }
+	                else{
+	                  $last_date = '';
+	                }
+				}
+				else{
+					$last_date = '';
+				}
+				echo $last_date.'||'.$task_id;
 			}
-
-
-
 			else{
-
-
-
-				return Redirect::back()->with('error', 'Email Field is empty so email is not sent');
-
-
-
+				echo "1";
 			}
-
-
-
 		}
-
-
-
 		else{
-
-
-
-			return Redirect::back()->with('error', 'Attachments are empty so Email is not sent');
-
-
-
+			echo "2";
 		}
-
-
-
 	}
-
-
-
 	public function email_report_send($id='')
 
 
@@ -24123,6 +24023,48 @@ class UserController extends Controller {
 		$data['email'] = ($get_task_details->email == "2")?"2":"1";
 		$data['upload'] = ($get_task_details->upload == "2")?"2":"1";
 		DB::table('task')->where('task_id',$task_id)->update($data);
+	}
+	public function get_pms_file_attachments()
+	{
+		$task_id = Input::get('task_id');
+		$type = Input::get('type');
+		if($type == "2")
+		{
+			$attachments = DB::table('task_attached')->where('task_id',$task_id)->where('network_attach',1)->get();
+			$files_received = '';
+	        if(count($attachments))
+	        {
+	          $files_received.='<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments" data-element="'.$task_id.'" style="margin-top:10px;color:#fff" aria-hidden="true" title="Delete All Attachments"></i></h5>';
+	          $files_received.='<div class="scroll_attachment_div">';
+	              foreach($attachments as $attachment)
+	              {
+	                  $files_received.='<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+	              }
+	          $files_received.='</div>';
+
+	          	$data['network_attach'] = 1;          	
+				$dataval['task_started'] = 1;
+				$dataval['task_notify'] = 1;
+				DB::table('task')->where('task_id',$task_id)->update($dataval);
+	        }
+	        echo $files_received;
+		}
+		else{
+			$attachments = DB::table('task_attached')->where('task_id',$task_id)->where('network_attach',0)->get();
+			$files_attached = '';
+	          if(count($attachments))
+	          {
+	              $files_attached.= '<i class="fa fa-minus-square fadeleteall" data-element="'.$task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
+	              $files_attached.= '<h5 style="color:#000; font-weight:600">Attachments :</h5>';
+	              $files_attached.= '<div class="scroll_attachment_div">';
+	                foreach($attachments as $attachment)
+	                {
+	                    $files_attached.= '<a href="javascript:" class="fileattachment" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'">'.$attachment->attachment.'</a><a href="javascript:" class="trash_icon"><i class="fa fa-trash trash_image sample_trash" data-element="'.$attachment->id.'" aria-hidden="true"></i></a><br/>';
+	                }
+	              $files_attached.= '</div>';
+	          }
+	         echo $files_attached;
+		}
 	}
 }
 

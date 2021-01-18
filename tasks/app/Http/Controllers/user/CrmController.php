@@ -176,7 +176,7 @@ class CrmController extends Controller {
 		$id = base64_decode($id);
 		$request = DB::table('request_client')->where('request_id', $id)->first();
 		$category = DB::table('request_category')->get();
-		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 
 		$bank_statement = DB::table('request_bank_statement')->where('request_id', $request->request_id)->get();
 

@@ -1368,10 +1368,12 @@ elseif(Session::has('countupdated'))
                     if($sub->p == 1) { $attach_sub_disabled = ''; }
                     elseif($sub->s == 1) { $attach_sub_disabled = ''; }
                     else { $attach_sub_disabled = 'disabled'; }
-
+                    if($sub->textstatus == 1) { $texticonsub="display:none"; $hidesub = 'display:initial'; } else { $texticonsub="display:initial"; $hidesub = 'display:none'; }
                     $downloadfile.= '<tr class="attachment_tr attachment_tr_'.$attachment->id.'" data-element="'.$file->id.'">
                       <td colspan="5">
-                        
+                        	<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$sub->id.'" title="Add Text" style="'.$texticonsub.'"></a>
+                        	<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$sub->id.'" value="'.$sub->textval.'" placeholder="Add Text" style="'.$hidesub.'">
+                        	<a href="javascript:" class="fa fa-minus-square remove_text_image '.$disable_class.'" data-element="'.$sub->id.'" title="Remove Text" style="'.$hidesub.'"></a>
                       </td>
                       <td class="td_input">
                         <input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$sub->id.'" value="" data-value="'.$sub->supplier.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
@@ -2164,6 +2166,21 @@ $(".percent_four_value").blur(function() {
 
 function add_secondary_function()
 {
+  $('.date_attachment').datetimepicker({
+        widgetPositioning: {
+            horizontal: 'left'
+        },
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-arrow-up",
+            down: "fa fa-arrow-down"
+        },
+        format: 'L',
+        format: 'DD/MM/YYYY',
+        defaultDate:'',   
+    });
+  
   //on keyup, start the countdown
   var typingTimer;                //timer identifier
   var doneTypingInterval = 1000;  //time in ms, 5 second for example
@@ -2414,6 +2431,23 @@ function add_secondary_function()
           }
         });
      }
+  });
+  $(".date_attachment").on("dp.hide", function (e) {
+    var attachment_id = $(this).attr("data-element");
+    var file_id = $(this).attr("data-file");
+    if($(".infile_tr_body_"+file_id).find(".show_previous").hasClass('disabled_prev_btn'))
+    {
+      var dateval = $(this).val();
+      $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_date_filled'); ?>",
+        type:"post",
+        data:{id:attachment_id,dateval:dateval},
+        success: function(result)
+        {
+
+        }
+      })
+    }
   });
 }
 // Basic example
@@ -5194,7 +5228,7 @@ if($(e.target).hasClass('bpso_all_check')){
           $(e.target).parents(".infile_inner_table_row").html(result['table_content']);
           $("body").removeClass("loading");
           $('[data-toggle="tooltip"]').tooltip();
-                         
+          add_secondary_function();         
     }
   });
 

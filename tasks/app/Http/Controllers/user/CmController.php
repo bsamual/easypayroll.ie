@@ -107,6 +107,7 @@ class CmController extends Controller {
 			$data['phone'] = Input::get('phone');
 			$data['linkcode'] = Input::get('linkcode');
 			$data['cro'] = Input::get('cro');
+			$data['ard'] = Input::get('ard');
 			$data['trade_status'] = Input::get('trade_status');
 			$data['directory'] = Input::get('directory');
 
@@ -219,7 +220,7 @@ class CmController extends Controller {
               }
               $output.='</tr>';
             }
-		echo json_encode(array('clientid' => $result->client_id, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro, 'trade_status' => $result->trade_status, 'directory' => $result->directory, 'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output,'employer_no' => $result->employer_no,'salutation' => $result->salutation));
+		echo json_encode(array('clientid' => $result->client_id, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro,'ard' => $result->ard, 'trade_status' => $result->trade_status, 'directory' => $result->directory, 'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output,'employer_no' => $result->employer_no,'salutation' => $result->salutation));
 	}
 	public function copycmclient($id=""){
 		$id = base64_decode($id);
@@ -240,7 +241,7 @@ class CmController extends Controller {
 				$data2[$fieldname] = $result->$fieldname;
 			}
 		}
-		$data1 = array('clientid' => $clientid, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro, 'trade_status' => $result->trade_status, 'directory' => $result->directory,    'id' => $result->id);
+		$data1 = array('clientid' => $clientid, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro,'ard' => $result->ard, 'trade_status' => $result->trade_status, 'directory' => $result->directory,    'id' => $result->id);
 
 		$data3 = array_merge($data1,$data2);
 
@@ -275,6 +276,7 @@ class CmController extends Controller {
 			$data['phone'] = Input::get('phone');
 			$data['linkcode'] = Input::get('linkcode');
 			$data['cro'] = Input::get('cro');
+			$data['ard'] = Input::get('ard');
 			$data['trade_status'] = Input::get('trade_status');
 			$data['directory'] = Input::get('directory');
 			$check_client = DB::table('cm_clients')->where('id', $id)->first();
@@ -579,6 +581,10 @@ class CmController extends Controller {
 						<td style="text-align: left;border:1px solid #000;">'.$client->cro.'</td>
 					</tr>
 					<tr>
+						<td style="text-align: left;border:1px solid #000;">Ard</td>
+						<td style="text-align: left;border:1px solid #000;">'.$client->ard.'</td>
+					</tr>
+					<tr>
 						<td style="text-align: left;border:1px solid #000;">Trade Status</td>
 						<td style="text-align: left;border:1px solid #000;">'.$client->trade_status.'</td>
 					</tr>
@@ -685,7 +691,7 @@ class CmController extends Controller {
       		}
       	}
       	
-		$columns_1 = array('#', 'Client ID', 'First Name', 'Surname', 'Company', 'Address 1', 'Address 2', 'Address 3', 'Address 4', 'Address 5', 'Primary Email', 'Type', 'Class Name', 'Tax Reg1', 'Tax Reg2', 'Tax Reg3', 'Secondary Email', 'Phone', 'Link code', 'cro', 'Trade Status', 'Directory');
+		$columns_1 = array('#', 'Client ID', 'First Name', 'Surname', 'Company', 'Address 1', 'Address 2', 'Address 3', 'Address 4', 'Address 5', 'Primary Email', 'Type', 'Class Name', 'Tax Reg1', 'Tax Reg2', 'Tax Reg3', 'Secondary Email', 'Phone', 'Link code', 'cro','ard', 'Trade Status', 'Directory');
 		$columns = array_merge($columns_1,$fieldname);
 
 		$callback = function() use ($clients, $columns)
@@ -713,7 +719,7 @@ class CmController extends Controller {
 		      			
 		      		}
 		      	}
-		      	$columns_2 = array($i, $single->client_id, $single->firstname, $single->surname, $single->company, $single->address1, $single->address2, $single->address3, $single->address4, $single->address5, $single->email, $single->tye, $class_details->classname, $single->tax_reg1,$single->tax_reg2,$single->tax_reg3, $single->email2, $single->phone, $single->linkcode, $single->cro,$single->trade_status,$single->directory);
+		      	$columns_2 = array($i, $single->client_id, $single->firstname, $single->surname, $single->company, $single->address1, $single->address2, $single->address3, $single->address4, $single->address5, $single->email, $single->tye, $class_details->classname, $single->tax_reg1,$single->tax_reg2,$single->tax_reg3, $single->email2, $single->phone, $single->linkcode, $single->cro,$single->ard,$single->trade_status,$single->directory);
 
 		      	$columns_3 = array_merge($columns_2,$fieldval);
 				fputcsv($file, $columns_3);
@@ -791,6 +797,7 @@ class CmController extends Controller {
 					if($exp == "phone") { $name = 'Phone'; }
 					if($exp == "linkcode") { $name = 'Link Code'; }
 					if($exp == "cro") { $name = 'Cro'; }
+					if($exp == "ard") { $name = 'Ard'; }
 					if($exp == "trade_status") { $name = 'Trade Status'; }
 					if($exp == "directory") { $name = 'Directory'; }
 
@@ -1177,6 +1184,7 @@ class CmController extends Controller {
 									$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 									$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 									$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
+									$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
 
 									$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 									$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
@@ -1314,6 +1322,7 @@ class CmController extends Controller {
 						$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 						$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 						$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
+						$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
 
 						$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 						$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
@@ -1449,6 +1458,7 @@ class CmController extends Controller {
 								$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 								$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 								$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
+								$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
 
 								$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 								$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
@@ -1603,6 +1613,7 @@ class CmController extends Controller {
 					$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 					$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 					$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
+					$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
 
 					$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 					$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
@@ -1809,11 +1820,7 @@ class CmController extends Controller {
 				$i++;
 			}						
 		}
-
-		if($i == 1)
-        {
-          $output_payroll.='<tr><td></td><td></td><td>Empty</td><td></td><td></td><td></td></tr>';
-        }
+		if($i == 1){ $output_payroll.='<tr><td></td><td></td><td>Empty</td><td></td><td></td><td></td></tr>'; }
 
         $output_payroll.='                
                 </tbody>
@@ -1852,11 +1859,77 @@ class CmController extends Controller {
 				<td></td>
 			</tr>';
 		}
-
-		$outputbank.='                
-                </tbody>
+		$outputbank.='</tbody>
             </table>';
-	echo json_encode(array('clientid' => $result->client_id, 'client_added' => $result->client_added, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro, 'trade_status' => $result->trade_status, 'directory' => $result->directory,'employer_no' => $result->employer_no,'salutation' => $result->salutation,'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output, 'payrolloutput' => $output_payroll, 'timetaskoutput' => $outputtimetask, 'client_note' => $result->notes, 'outputbank' => $outputbank, 'bank_client_id' => $result->client_id));
+
+        $current_week = DB::table('week')->orderBy('week_id','desc')->first();
+		$current_month = DB::table('month')->orderBy('month_id','desc')->first();
+
+		$outputmodule = '<table class="display nowrap fullviewtablelist" id="module_expand">
+	            <thead>
+					<th style="text-align:left">#</th>
+					<th style="text-align:left">Module</th>
+					<th style="text-align:left">Salute</th>
+					<th style="text-align:left">Primary Email</th>
+					<th style="text-align:left">Secondary Email</th>
+					<th style="text-align:left">Action</th>
+	            </thead>
+            <tbody>';
+		$week_tasks = DB::table('task')->where('client_id',$result->client_id)->where('task_week',$current_week->week_id)->get();
+		$month_tasks = DB::table('task')->where('client_id',$result->client_id)->where('task_month',$current_month->month_id)->get();
+
+		$vats = DB::table('vat_clients')->where('cm_client_id',$result->client_id)->get();
+		$i = 1;
+		if(count($week_tasks))
+		{
+			foreach($week_tasks as $task)
+			{
+				$outputmodule.='<tr class="pms_module_'.$task->task_id.'">
+					<td>'.$i.'</td>
+					<td>PMS - Weekly</td>
+					<td class="salutation_mod">'.$task->salutation.'</td>
+					<td class="primary_mod">'.$task->task_email.'</td>
+					<td class="secondary_mod">'.$task->secondary_email.'</td>
+					<td><a href="javascript:" class="edit_task_module" data-element="'.$task->task_id.'" data-type="1" data-salutation="'.$task->salutation.'" data-primary="'.$task->task_email.'" data-secondary="'.$task->secondary_email.'">Edit</a></td>
+				</tr>';
+				$i++;
+			}
+		}
+		if(count($month_tasks))
+		{
+			foreach($month_tasks as $task)
+			{
+				$outputmodule.='<tr class="pms_module_'.$task->task_id.'">
+					<td>'.$i.'</td>
+					<td>PMS - Monthly</td>
+					<td class="salutation_mod">'.$task->salutation.'</td>
+					<td class="primary_mod">'.$task->task_email.'</td>
+					<td class="secondary_mod">'.$task->secondary_email.'</td>
+					<td><a href="javascript:" class="edit_task_module" data-element="'.$task->task_id.'" data-type="1" data-salutation="'.$task->salutation.'" data-primary="'.$task->task_email.'" data-secondary="'.$task->secondary_email.'">Edit</a></td>
+				</tr>';
+				$i++;
+			}
+		}
+		if(count($vats))
+		{
+			foreach($vats as $vat)
+			{
+				$outputmodule.='<tr class="vat_module_'.$vat->client_id.'">
+					<td>'.$i.'</td>
+					<td>Vat System</td>
+					<td class="salutation_mod">'.$vat->salutation.'</td>
+					<td class="primary_mod">'.$vat->pemail.'</td>
+					<td class="secondary_mod">'.$vat->semail.'</td>
+					<td><a href="javascript:" class="edit_task_module" data-element="'.$vat->client_id.'" data-type="2" data-salutation="'.$vat->salutation.'" data-primary="'.$vat->pemail.'" data-secondary="'.$vat->semail.'">Edit</a></td>
+				</tr>';
+				$i++;
+			}
+		}
+		$outputmodule.='</tbody>
+		</table>';
+
+
+	echo json_encode(array('clientid' => $result->client_id, 'client_added' => $result->client_added, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro,'ard' => $result->ard, 'trade_status' => $result->trade_status, 'directory' => $result->directory,'employer_no' => $result->employer_no,'salutation' => $result->salutation,'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output, 'payrolloutput' => $output_payroll, 'timetaskoutput' => $outputtimetask, 'client_note' => $result->notes, 'outputbank' => $outputbank, 'bank_client_id' => $result->client_id,'outputmodule' => $outputmodule));
 
 		
 	}
@@ -2726,6 +2799,28 @@ class CmController extends Controller {
 	            $zip->close();
 	        }
 	        echo json_encode(array("time" => $time.'.zip', 'company' => $client_details->company.'.zip'));
+		}
+	}
+	public function update_pms_vat_module()
+	{
+		$type = Input::get('type');
+		$taskid = Input::get('taskid');
+		$salutation = Input::get('salutation');
+		$primary = Input::get('primary');
+		$secondary = Input::get('secondary');
+
+		if($type == "2")
+		{
+			$data['salutation'] = $salutation;
+			$data['pemail'] = $primary;
+			$data['semail'] = $secondary;
+			DB::table('vat_clients')->where('client_id',$taskid)->update($data);
+		}
+		else{
+			$data['salutation'] = $salutation;
+			$data['task_email'] = $primary;
+			$data['secondary_email'] = $secondary;
+			DB::table('task')->where('task_id',$taskid)->update($data);
 		}
 	}
 	

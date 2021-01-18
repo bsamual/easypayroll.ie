@@ -1,4 +1,6 @@
 <?php $__env->startSection('content'); ?>
+
+<?php $user_login_id = Session::get('userid'); ?>
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 
@@ -693,7 +695,7 @@ if(!empty($_GET['import_type_new']))
 
                                   {
 
-                                    $client_details = DB::table('cm_clients')->where('client_id', $invoice->client_id)->first();
+                                    $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $invoice->client_id)->first();
 
                                     if(count($client_details))
 

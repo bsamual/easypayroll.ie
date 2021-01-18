@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('userid'); ?>
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
@@ -569,7 +570,7 @@ if(!empty($_GET['import_type_existing']))
               </tr>
               
               <?php
-                $getfields = DB::table('cm_fields')->where('status',0)->get();
+                $getfields = DB::table('cm_fields')->where('user_login_id',$user_login_id)->where('status',0)->get();
                 if(count($getfields))
                 {
                   $i = 1;
@@ -1240,7 +1241,7 @@ if(!empty($_GET['import_type_existing']))
               </ul>
             </div>
             <br/>
-            <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->cm_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
+            <?php $check_incomplete = Db::table('user_login')->where('userid',$user_login_id)->first(); if($check_incomplete->cm_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
                 <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked;?> style="margin-right:10px"><label for="show_incomplete">Hide Deactivated Accounts</label>
   </div>
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
@@ -1258,7 +1259,7 @@ if(!empty($_GET['import_type_existing']))
         </script>
     <?php } 
     
-    if(isset($_GET['email_sent'])) { DB::table('cm_email_attachment')->delete(); ?>
+    if(isset($_GET['email_sent'])) { DB::table('cm_email_attachment')->where('user_login_id',$user_login_id)->delete(); ?>
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Email Sent successfully. </p>
         <script>
             window.history.replaceState(null, null, "<?php echo URL::to('user/client_management'); ?>");
@@ -1294,7 +1295,7 @@ if(!empty($_GET['import_type_existing']))
                                     {
                                       $disabled='disabled';
                                     }
-                                    $check_color = DB::table('cm_class')->where('id',$client->active)->first();
+                                    $check_color = DB::table('cm_class')->where('user_login_id',$user_login_id)->where('id',$client->active)->first();
                                     $style="color:#".$check_color->classcolor."";
                                   }
                                   else{
@@ -2354,7 +2355,7 @@ $(window).click(function(e) {
            $(".client_id_add").val(result['clientid']);
 
            <?php
-           $fields = DB::table('cm_fields')->where('status',0)->get();
+           $fields = DB::table('cm_fields')->where('user_login_id',$user_login_id)->where('status',0)->get();
            if(count($fields))
            {
             foreach($fields as $fld)

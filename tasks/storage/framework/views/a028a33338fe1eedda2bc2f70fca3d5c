@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('userid'); ?>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_infile.js'); ?>'></script>
 <style>
 .file_attachment_div{width:100%;}
@@ -434,7 +435,7 @@ else{
               <div class="select_button" style=" margin-left: 10px;">
                 <ul style="float: left;">
                 <?php 
-                  $user = DB::table('user_login')->where('id',1)->first();
+                  $user = DB::table('user_login')->where('id',$user_login_id)->first();
                 ?>
                   <li><input type="checkbox" name="hide_inactive" class="hide_inactive" id="hide_inactive" value="1"><label for="hide_inactive" title="Hides the Inactive Clients">Hide Inactive</label></li>
                   
@@ -493,7 +494,7 @@ else{
                 </thead>
                 <tbody>
               <?php
-              $userlist_notify = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+              $userlist_notify = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
               $i = 1;
               if(count($userlist_notify)){
                 foreach ($userlist_notify as $user) {
@@ -536,7 +537,7 @@ else{
                   <select name="select_user" class="form-control select_user_author" required>
                     <option value="">Select User</option>        
                       <?php
-                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+                      $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
                       $selected = '';
                       if(count($userlist)){
                         foreach ($userlist as $user) {
@@ -596,7 +597,7 @@ else{
                 if($client_session_id != "")
                 {
                   $client_id = $client_session_id;
-                  $client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+                  $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id',$client_id)->first();
                   $company = $client_details->company.'-'.$client_id;
                 }
                 else{
@@ -620,7 +621,7 @@ else{
                     <ul class="dropdown-menu internal_task_details" role="menu"  aria-labelledby="dropdownMenu" style="width: 100%">
                       <li><a tabindex="-1" href="javascript:" class="tasks_li_internal">Select Task</a></li>
                         <?php
-                        $taskslist = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
+                        $taskslist = DB::table('time_task')->where('user_login_id',$user_login_id)->where('task_type', 0)->orderBy('task_name', 'asc')->get();
                         if(count($taskslist)){
                           foreach ($taskslist as $single_task) {
                             if($single_task->task_type == 0){
@@ -950,9 +951,9 @@ else{
                 $i = '0'.$i;
               }
               
-              $received = DB::table('in_file')->where('client_id',$client->client_id)->count();
-              $complete = DB::table('in_file')->where('client_id',$client->client_id)->where('status',1)->count();
-              $incomplete = DB::table('in_file')->where('client_id',$client->client_id)->where('status',0)->count();
+              $received = DB::table('in_file')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->count();
+              $complete = DB::table('in_file')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->where('status',1)->count();
+              $incomplete = DB::table('in_file')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->where('status',0)->count();
 
               if($incomplete > 0) { $incomplete_cls = 'incomplete_cls'; } else { $incomplete_cls = 'complete_cls'; }
               if($client->active == 2) { $inactive_cls = 'inactive_cls'; } else { $inactive_cls = 'active_cls'; }

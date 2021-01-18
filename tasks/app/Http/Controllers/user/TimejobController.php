@@ -106,7 +106,7 @@ class TimejobController extends Controller {
 		$id = Input::get('value');
 
 
-		$tasks = DB::table('time_task')->where('clients','like','%'.$id.'%')->get();
+		$tasks = DB::table('time_task')->where('clients','like','%'.$id.'%')->orderBy('task_name', 'asc')->get();
 		
 		$output = '';
 		if(count($tasks)){
@@ -786,7 +786,7 @@ class TimejobController extends Controller {
 				          $min_quick = $min_quick;
 				        }
 				        
-				        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+				        $jobtime_quick = floor($hours_quick).':'.floor($min_quick).':00';
 				        $dataquick['job_time'] = $jobtime_quick;
 				        $dataquick['job_date'] = $jobs->job_date;
 				        $dataquick['job_type'] = 0;
@@ -836,7 +836,7 @@ class TimejobController extends Controller {
 					          $min_quick = $min_quick;
 					        }
 					        
-					        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+					        $jobtime_quick = floor($hours_quick).':'.floor($min_quick).':00';
 					        $dataquick['job_time'] = $jobtime_quick;
 					        $dataquick['job_date'] = $jobs->job_date;
 					        $dataquick['job_type'] = 0;
@@ -882,7 +882,7 @@ class TimejobController extends Controller {
 					          $min_quick = $min_quick;
 					        }
 					        
-					        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+					        $jobtime_quick = floor($hours_quick).':'.floor($min_quick).':00';
 					        $dataquick['job_time'] = $jobtime_quick;
 					        $dataquick['job_date'] = $jobs->job_date;
 					        $dataquick['job_type'] = 0;
@@ -931,7 +931,7 @@ class TimejobController extends Controller {
 				          $min_quick = $min_quick;
 				        }
 				        
-				        $jobtime_quick =   $hours_quick.':'.$min_quick.':00';
+				        $jobtime_quick = floor($hours_quick).':'.floor($min_quick).':00';
 				        $dataquick['job_time'] = $jobtime_quick;
 				        $dataquick['job_date'] = $jobs->job_date;
 				        $dataquick['job_type'] = 0;
@@ -985,7 +985,7 @@ class TimejobController extends Controller {
         else{
           $second = $second;
         }
-        $jobtime =   $hours.':'.$minutes.':'.$second;
+        $jobtime =   floor($hours).':'.floor($minutes).':'.floor($second);
 
         //-----------Job Time End----------------
 
@@ -1343,7 +1343,7 @@ class TimejobController extends Controller {
 		$id = Input::get('userid');
 		$sessn=array('task_job_user' => $id);
 		Session::put($sessn); 
-		$userdetails = DB::table('user')->where('user_id',$id)->orderBy('firstname','asc')->first();
+		$userdetails = DB::table('user')->where('user_id',$id)->orderBy('lastname','asc')->first();
 		$currentdate = date('Y-m-d');
 		$currentdatetime = date('Y-m-d H:i:s');
 		
@@ -2337,7 +2337,7 @@ class TimejobController extends Controller {
 
 		$time_job = DB::table('task_job')->where('stop_time','00:00:00')->get();
 		$tasks = DB::table('time_task')->where('task_type', 0)->get();
-		$user = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 		return view('user/time_system/active_job', array('title' => 'Active Job', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
 
 	}
@@ -2346,7 +2346,7 @@ class TimejobController extends Controller {
 
 		$time_job = DB::table('task_job')->where('active_id',0)->get();
 		$tasks = DB::table('time_task')->where('task_type', 0)->get();
-		$user = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 		return view('user/time_system/job_of_the_day', array('title' => 'Job of the day', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
 
 	}
@@ -2355,7 +2355,7 @@ class TimejobController extends Controller {
 
 		$time_job = DB::table('task_job')->get();
 		$tasks = DB::table('time_task')->where('task_type', 0)->get();
-		$user = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 		return view('user/time_system/client_review', array('title' => 'Client Review', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
 
 	}
@@ -2364,7 +2364,7 @@ class TimejobController extends Controller {
 
 		$time_job = DB::table('task_job')->where('active_id',0)->get();
 		$tasks = DB::table('time_task')->where('task_type', 0)->get();
-		$user = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 		return view('user/time_system/all_job', array('title' => 'Client Review', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
 
 	}
@@ -2373,7 +2373,7 @@ class TimejobController extends Controller {
 
 		$time_job = DB::table('task_job')->where('active_id',0)->get();
 		$tasks = DB::table('time_task')->where('task_type', 0)->get();
-		$user = DB::table('user')->where('user_status', 0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->orderBy('lastname','asc')->get();
 		return view('user/time_system/staff_review', array('title' => 'Staff Review', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
 
 	}
@@ -2387,7 +2387,7 @@ class TimejobController extends Controller {
 			$client_name = $client_details->company.'-'.$client_details->client_id;
 
 
-			$tasks = DB::table('time_task')->where('clients','like','%'.$job->client_id.'%')->get();
+			$tasks = DB::table('time_task')->where('clients','like','%'.$job->client_id.'%')->orderBy('task_name', 'asc')->get();
 		
 			$output = '';
 			if(count($tasks)){
@@ -2583,7 +2583,7 @@ class TimejobController extends Controller {
 			$client_details = DB::table('cm_clients')->where('client_id',$job->client_id)->first();
 			$client_name = $client_details->company.'-'.$client_details->client_id;
 
-			$tasks = DB::table('time_task')->where('clients','like','%'.$job->client_id.'%')->get();
+			$tasks = DB::table('time_task')->where('clients','like','%'.$job->client_id.'%')->orderBy('task_name', 'asc')->get();
 		
 			$output = ' <li><a tabindex="-1" href="javascript:" class="tasks_li">Select Task</a></li>';
 			if(count($tasks)){
@@ -2804,7 +2804,7 @@ class TimejobController extends Controller {
 			$client_details = DB::table('cm_clients')->where('client_id',$job->client_id)->first();
 			$client_name = $client_details->company.'-'.$client_details->client_id;
 
-			$tasks = DB::table('time_task')->where('clients','like','%'.$job->client_id.'%')->get();
+			$tasks = DB::table('time_task')->where('clients','like','%'.$job->client_id.'%')->orderBy('task_name','asc')->get();
 		
 			$output = ' <li><a tabindex="-1" href="javascript:" class="tasks_li">Select Task</a></li>';
 			if(count($tasks)){
@@ -4187,7 +4187,7 @@ class TimejobController extends Controller {
                   $second = $second;
                 }
 
-                $jobtime =   $hours.':'.$minutes.':'.$second;
+                $jobtime =   floor($hours).':'.floor($minutes).':'.floor($second);
 
                 //-----------Job Time End----------------
 
@@ -4244,7 +4244,7 @@ class TimejobController extends Controller {
 	                  }
 	                  $explode_job_minutes = explode(":",$h.':'.$m.':00');
     					$total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
-	                  $job_time_checked = $h.':'.$m.':00 ('.$total_minutes.')';
+	                  $job_time_checked = floor($h).':'.floor($m).':00 ('.floor($total_minutes).')';
                 }
                 else{
                 	$job_time_checked = $jobs->job_time;
@@ -4391,14 +4391,14 @@ class TimejobController extends Controller {
                   $second = $second;
                 }
 
-                $jobtime =   $hours.':'.$minutes.':'.$second;
+                $jobtime =   floor($hours).':'.floor($minutes).':'.floor($second);
                 $explode_job_minutes = explode(":",$jobtime);
                     $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
                 //-----------Job Time End----------------
 
 
                 if($child->quick_job == 0 && $child->status == 0){
-                  $job_time_checked = '<span id="job_time_refresh_'.$child->id.'">'.$jobtime.' ('.$total_minutes.')</span></span> &nbsp;&nbsp;<a href="javascript:"><i class="fa fa-refresh job_time_refresh" aria-hidden="true" data-element="'.$child->id.'"></i></a>';
+                  $job_time_checked = '<span id="job_time_refresh_'.$child->id.'">'.$jobtime.' ('.floor($total_minutes).')</span></span> &nbsp;&nbsp;<a href="javascript:"><i class="fa fa-refresh job_time_refresh" aria-hidden="true" data-element="'.$child->id.'"></i></a>';
                 }
                 else if($child->quick_job == 1 && $child->status == 0){
                   $job_time_checked = $child->job_time;

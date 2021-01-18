@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('userid'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 
@@ -216,8 +217,8 @@ a:hover{text-decoration: underline;}
                   <li><a href="<?php echo URL::to('user/year_end_manager'); ?>" style="font-size: 13px; font-weight: 500;">Back to Select Year Screen</a></li>
                   <li><a href="javascript:" class="export_to_csv common_black_button" style="font-size: 13px; font-weight: 500;">Export to CSV</a></li>
                   <?php
-                  $count_setting = DB::table('year_setting')->count();
-                  $year = DB::table('year_end_year')->where('year', $yearid)->first();
+                  $count_setting = DB::table('year_setting')->where('user_login_id',$user_login_id)->count();
+                  $year = DB::table('year_end_year')->where('user_login_id',$user_login_id)->where('year', $yearid)->first();
 
                   $count_year_setting = count(explode(',',$year->setting_id));
                   if($count_setting != $count_year_setting){
@@ -289,7 +290,7 @@ a:hover{text-decoration: underline;}
           $i=1;
           if(count($clientslist)){
             foreach ($clientslist as $client) {
-              $client_details = DB::table('cm_clients')->where('client_id', $client->client_id)->first();
+              $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $client->client_id)->first();
               if(count($client_details)){
                 $clientid = $client_details->client_id;
                 $firstname = $client_details->firstname;

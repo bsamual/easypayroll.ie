@@ -1,14 +1,14 @@
 <?php $__env->startSection('content'); ?>
 
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
-
+<script src="http://malsup.github.com/jquery.form.js"></script>
 <style>
-  .secret_button:focus { background: #7bab15;outline: none; }
+  .secret_button:focus { background: #ffa12d;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
       display:    none;
       position:   fixed;
-      z-index:    999999;
+      z-index:    999999999999999999;
       top:        0;
       left:       0;
       height:     100%;
@@ -36,7 +36,7 @@
 {
   min-height: 700px !important;
   max-height: 700px !important;
-  height: 315px !important;
+  height: 340px !important;
 }
 .scroll_attachment_div { 
     max-height: 100px;
@@ -841,7 +841,7 @@ table{
 
 
 
-    z-index:    1000;
+    z-index:    999999999999999999;
 
 
 
@@ -2236,279 +2236,549 @@ body.loading .modal_load {
 
 <div class="modal fade emailunsent" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 
+
+
   <div class="modal-dialog" role="document">
 
-    <form action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
+    <form id="email_unsent_form" action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
 
     <div class="modal-content">
 
+
+
       <div class="modal-header">
+
+
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 
+
+
         <h4 class="modal-title" id="myModalLabel">Email Unsent Files</h4>
 
+
+
       </div>
+
+
 
       <div class="modal-body">
 
+
+
           <div class="row">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>From</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <select name="select_user" id="select_user" class="form-control input-sm" required>
 
+
+
                 <?php echo $unamelist; ?>
+
+
 
               </select>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>To</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="to_user" id="to_user" class="form-control input-sm" value="" required>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>CC</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="cc_unsent" class="form-control input-sm" value="<?php echo $admin_cc; ?>" readonly>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
+
+
 
             <div class="col-md-3">
 
+
+
               <label>Subject</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-9">
 
+
+
               <input type="text" name="subject_unsent" class="form-control input-sm subject_unsent" value="" required>
+
+
 
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Message</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-12">
+
+
 
               <textarea name="message_editor" id="editor">
 
+
+
                   
+
+
 
               </textarea>
 
+
+
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Attachment</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-12" id="email_attachments">
 
+
+
                 
+
+
 
             </div>
 
+
+
           </div>
 
+
+
       </div>
+
+
 
       <div class="modal-footer">
 
         <input type="hidden" name="email_sent_option" id="email_sent_option" value="0">
 
-        <input type="submit" class="btn btn-primary common_black_button" value="Email Unsent Files">
+        <input type="button" class="btn btn-primary common_black_button email_unsent_files_btn" value="Email Unsent Files">
+
+
 
       </div>
 
+
+
     </div>
+
+
 
     </form>
 
+
+
   </div>
+
+
 
 </div>
 
 <div class="modal fade resendemailunsent" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 
+
+
   <div class="modal-dialog" role="document">
 
-    <form action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
+    <form id="resend_email_unsent_form" action="<?php echo URL::to('user/email_unsent_files'); ?>" method="post" >
+
+
 
     <div class="modal-content">
 
+
+
       <div class="modal-header">
+
+
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 
+
+
         <h4 class="modal-title" id="myModalLabel">Resend Email</h4>
 
+
+
       </div>
+
+
 
       <div class="modal-body">
 
+
+
           <div class="row">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>From</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <select name="select_user" id="select_userresend" class="form-control input-sm" required>
 
+
+
                 <?php echo $unamelist; ?>
+
+
 
               </select>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>To</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="to_user" id="to_userresend" class="form-control input-sm" value="" required>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-3">
+
+
 
               <label>CC</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-9">
+
+
 
               <input type="text" name="cc_unsent" class="form-control input-sm" value="<?php echo $admin_cc; ?>" readonly>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           <div class="row" style="margin-top:10px">
+
+
 
             <div class="col-md-3">
 
+
+
               <label>Subject</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-9">
 
+
+
               <input type="text" name="subject_unsent" class="form-control input-sm subject_resend" value="" required>
+
+
 
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Message</label>
 
+
+
             </div>
 
+
+
             <div class="col-md-12">
+
+
 
               <textarea name="message_editor" id="editor_9">
 
+
+
                   
+
+
 
               </textarea>
 
+
+
             </div>
 
+
+
           </div>
+
+
 
           <div class="row" style="margin-top:10px">
 
+
+
             <div class="col-md-12">
+
+
 
               <label>Attachment</label>
 
+
+
             </div>
+
+
 
             <div class="col-md-12" id="email_attachmentsresend">
 
+
+
                 
+
+
 
             </div>
 
+
+
           </div>
 
+
+
       </div>
+
+
 
       <div class="modal-footer">
 
-        <input type="submit" class="btn btn-primary common_black_button" value="Send">
+
+
+        <input type="submit" class="btn btn-primary common_black_button resend_email_unsent_files_btn" value="Send">
+
+
 
       </div>
 
+
+
     </div>
+
+
 
     </form>
 
+
+
   </div>
+
+
 
 </div>
 
@@ -3098,7 +3368,7 @@ if(Session::has('error')) { ?>
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                           echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
@@ -3111,43 +3381,20 @@ if(Session::has('error')) { ?>
                       </div> 
 
                           <div class="img_div">
-
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload?type=2'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=2'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
-                                 
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
                               </div>
-
-                          </div>
-                          <div class="notepad_div">
-
+                            </div>
+                            <div class="notepad_div">
                               <form name="notepad_form" id="notepad_form" action="<?php echo URL::to('user/task_notepad_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                                
                                 <textarea name="notepad_contents" class="form-control notepad_contents" placeholder="Enter Contents"></textarea>
-
-                                <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                                <input type="submit" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
+                                <input type="hidden" name="hidden_id" class="notepad_hidden_task_id" value="<?php echo $result->task_id ?>">
+                                <input type="button" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
                                 <spam class="error_files_notepad"></spam>
-
                               </form>
-
                             </div>
                     </div>
                   </td>
@@ -3416,7 +3663,7 @@ if(Session::has('error')) { ?>
                       <input type="text" class="form-control common_input network_input" name="" value="<?php echo $result->network ?>" disabled><br/>
 
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" ></i>
-
+                      <div class="file_received_div_right">
                       <?php
 
                       $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
@@ -3424,7 +3671,7 @@ if(Session::has('error')) { ?>
                       if(count($attachments))
 
                       {
-                          echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                          echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                           echo '<h5 style="color:#000; font-weight:600">Attachments :</h5>';
                           echo '<div class="scroll_attachment_div">';
 
@@ -3440,7 +3687,7 @@ if(Session::has('error')) { ?>
                       }
 
                       ?>
-
+                      </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
                               <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
@@ -3449,28 +3696,23 @@ if(Session::has('error')) { ?>
                           <?php } ?>
 
                           <div class="img_div">
-
                             <label class="copy_label">Network location has been copied. Just paste the URL in the "File name" path to go to that folder.</label>
 
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
+
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=1'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
+
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
+
                                  
+
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone_attach" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
                               </div>
+
+
 
                           </div>
                           <?php
@@ -3697,7 +3939,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #ffa12d;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_enh_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -3797,7 +4039,7 @@ if(Session::has('error')) { ?>
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                           echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
@@ -3810,40 +4052,20 @@ if(Session::has('error')) { ?>
                       </div> 
 
                           <div class="img_div">
-
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload?type=2'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=2'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
-                                 
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
                               </div>
-                          </div>
-                          <div class="notepad_div">
-
+                            </div>
+                            <div class="notepad_div">
                               <form name="notepad_form" id="notepad_form" action="<?php echo URL::to('user/task_notepad_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
                                 <textarea name="notepad_contents" class="form-control notepad_contents" placeholder="Enter Contents"></textarea>
-
-                                <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                                <input type="submit" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
+                                <input type="hidden" name="hidden_id" class="notepad_hidden_task_id" value="<?php echo $result->task_id ?>">
+                                <input type="button" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
                                 <spam class="error_files_notepad"></spam>
-
                               </form>
-
                             </div>
                     </div>
                   </td>
@@ -4110,6 +4332,7 @@ if(Session::has('error')) { ?>
 
                       <input type="text" class="form-control common_input network_input" name="" value="<?php echo $result->network ?>" disabled><br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" ></i>
+                      <div class="file_received_div_right">
                       <?php
 
                       $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
@@ -4117,7 +4340,7 @@ if(Session::has('error')) { ?>
                       if(count($attachments))
 
                       {
-                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                         echo '<h5 style="color:#000; font-weight:600">Attachments :</h5>';
                           echo '<div class="scroll_attachment_div">';
 
@@ -4133,7 +4356,7 @@ if(Session::has('error')) { ?>
                       }
 
                       ?>
-
+                      </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
                               <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
@@ -4142,28 +4365,24 @@ if(Session::has('error')) { ?>
                           <?php } ?>
 
                           <div class="img_div">
-
                             <label class="copy_label">Network location has been copied. Just paste the URL in the "File name" path to go to that folder.</label>
 
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
+
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=1'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
+
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
+
                                  
+
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone_attach" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
                               </div>
+
+
+
                           </div>
                           <?php
                           if($result->disclose_liability == 1) { $check_lia = 'checked'; } else { $check_lia = ''; } ?>
@@ -4376,7 +4595,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #ffa12d;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_cmp_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -4479,7 +4698,7 @@ if(Session::has('error')) { ?>
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                           echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
@@ -4492,42 +4711,20 @@ if(Session::has('error')) { ?>
                       </div> 
 
                           <div class="img_div">
-
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload?type=2'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=2'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
-                                 
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
                               </div>
-                          </div>
-                          <div class="notepad_div">
-
+                            </div>
+                            <div class="notepad_div">
                               <form name="notepad_form" id="notepad_form" action="<?php echo URL::to('user/task_notepad_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                                
                                 <textarea name="notepad_contents" class="form-control notepad_contents" placeholder="Enter Contents"></textarea>
-
-                                <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                                <input type="submit" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
+                                <input type="hidden" name="hidden_id" class="notepad_hidden_task_id" value="<?php echo $result->task_id ?>">
+                                <input type="button" name="notepad_submit" class="btn btn-sm btn-primary notepad_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
                                 <spam class="error_files_notepad"></spam>
-
                               </form>
-
                             </div>
                     </div>
                   </td>
@@ -4778,6 +4975,7 @@ if(Session::has('error')) { ?>
 
                       <input type="text" class="form-control common_input network_input" name="" value="<?php echo $result->network ?>" disabled><br/>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" ></i>
+                      <div class="file_received_div_right">
                       <?php
 
                       $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
@@ -4785,7 +4983,7 @@ if(Session::has('error')) { ?>
                       if(count($attachments))
 
                       {
-                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px" aria-hidden="true" title="Delete All Attachments"></i>';
+                        echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
                         echo '<h5 style="color:#000; font-weight:600">Attachments :</h5>';
                           echo '<div class="scroll_attachment_div">';
 
@@ -4801,7 +4999,7 @@ if(Session::has('error')) { ?>
                       }
 
                       ?>
-
+                      </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
                               <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
@@ -4810,28 +5008,24 @@ if(Session::has('error')) { ?>
                           <?php } ?>
 
                           <div class="img_div">
-
                             <label class="copy_label">Network location has been copied. Just paste the URL in the "File name" path to go to that folder.</label>
 
-                            <form name="image_form" id="image_form" action="<?php echo URL::to('user/task_image_upload'); ?>" method="post" enctype="multipart/form-data" style="text-align: left;">
-
-                              <input type="file" name="image_file[]" class="form-control image_file" value="" multiple>
-
-                              <input type="hidden" name="hidden_id" value="<?php echo $result->task_id ?>">
-
-                              <input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-
-                              <spam class="error_files"></spam>
-
-                            </form>
-                            <div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
                               <div class="image_div_attachments">
+
                                 <form action="<?php echo URL::to('user/taskmanager_upload_images?task_id='.$result->task_id.'&type=1'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="image-upload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid;">
+
                                 <input name="_token" type="hidden" value="iceYGYrd7HqKzNlyAzFhbLh4Tu2FMEuijqGj5V3Q">
+
                                  
+
                                 </form>
-                                <a href="<?php echo URL::to('user/select_month/'.base64_encode($monthid->month_id).'?divid=taskidtr_'.$result->task_id); ?>" class="btn btn-sm btn-primary" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
+                                <a href="javascript:" class="btn btn-sm btn-primary submit_dropzone_attach" data-element="<?php echo $result->task_id; ?>" align="left" style="margin-left:7px;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+
                               </div>
+
+
+
                           </div>
                           <?php
                           if($result->disclose_liability == 1) { $check_lia = 'checked'; } else { $check_lia = ''; } ?>
@@ -5260,6 +5454,85 @@ $(".client_search_class_task").autocomplete({
       }
   });
 $(window).click(function(e) {
+  if($(e.target).hasClass('email_unsent_files_btn'))
+  { 
+    $("body").addClass("loading");
+    $('#email_unsent_form').ajaxForm({
+        success:function(result){
+            if(result == "1")
+            {
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
+              $("body").removeClass("loading");
+            }
+            else if(result == "2")
+            {
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
+              $("body").removeClass("loading");
+            }
+            else{
+              var date = result.split("||");
+              $("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
+              $("body").removeClass("loading");
+              $(".emailunsent").modal("hide");
+            }
+        }
+  }).submit();
+  }
+  if($(e.target).hasClass('resend_email_unsent_files_btn'))
+  { 
+    $("body").addClass("loading");
+    $('#resend_email_unsent_form').ajaxForm({
+        success:function(result){
+            if(result == "1")
+            {
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
+              $("body").removeClass("loading");
+            }
+            else if(result == "2")
+            {
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
+              $("body").removeClass("loading");
+            }
+            else{
+              var date = result.split("||");
+              $("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
+              $("body").removeClass("loading");
+              $(".resendemailunsent").modal("hide");
+            }
+        }
+  }).submit();
+  }
+  if($(e.target).hasClass('submit_dropzone'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_pms_file_attachments'); ?>",
+      type:"post",
+      data:{task_id:task_id,type:"2"},
+      success:function(result)
+      {
+        $(e.target).parents("td:first").find(".files_received_div").html(result);
+        $(".dz-preview").detach();
+      $(".dz-message").parents(".dropzone").removeClass("dz-started");
+      }
+    })
+  }
+  if($(e.target).hasClass('submit_dropzone_attach'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_pms_file_attachments'); ?>",
+      type:"post",
+      data:{task_id:task_id,type:"1"},
+      success:function(result)
+      {
+        $(e.target).parents("td:first").find(".file_received_div_right").html(result);
+        $(".dz-preview").detach();
+        $(".dz-message").parents(".dropzone").removeClass("dz-started");
+        $(e.target).parents("td:first").find(".liability_input").prop("disabled",false);
+      }
+    })
+  }
   if($(e.target).hasClass('secret_button'))
   {
     var task_id = $(e.target).attr("data-element");
@@ -5855,32 +6128,34 @@ $(window).click(function(e) {
     });
 
   }
-
-  if($(e.target).hasClass('notepad_submit'))
-
+  if($(e.target).parents(".dropzone").length > 0)
   {
-
-    
-    var contents = $(e.target).parent().find('.notepad_contents').val();
-
-    if(contents == '' || typeof contents === 'undefined')
-
-    {
-
-      $(e.target).parent().find(".error_files_notepad").text("Please Enter the contents for the notepad to save.");
-
-      return false;
-
-    }
-
-    else{
-
-      $(e.target).parents('td').find('.notepad_div').toggle();
-
-    }
-
+    $(e.target).parents('.img_div').show();
+    $(e.target).parents(".dropzone").trigger("click");
   }
-
+  if($(e.target).hasClass('notepad_submit'))
+  {
+    var contents = $(e.target).parent().find('.notepad_contents').val();
+   if(contents == '' || typeof contents === 'undefined')
+    {
+      $(e.target).parent().find(".error_files_notepad").text("Please Enter the contents for the notepad to save.");
+      return false;
+    }
+    else{
+      var contents = $(e.target).parents("td").find(".notepad_contents").val();
+      var task_id = $(e.target).parents("td").find(".notepad_div").find(".notepad_hidden_task_id").val();
+      $.ajax({
+        url:"<?php echo URL::to('user/task_notepad_upload'); ?>",
+        type:"post",
+        data:{notepad_contents:contents,hidden_id:task_id},
+        success:function(result)
+        {
+          $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+        }
+      });
+      $(e.target).parents('td').find('.notepad_div').toggle();
+    }
+  }
   else{
 
     $(".notepad_div").each(function() {
@@ -8240,124 +8515,82 @@ $(window).click(function(e) {
   }
 
   if($(e.target).hasClass('trash_image'))
-
   {
-
-    if($(e.target).hasClass('sample_trash'))
-    {
-      var attach_count = $(e.target).parents('.file_received_div').find(".fileattachment").length;
-      if(attach_count == 1)
+      if($(e.target).hasClass('sample_trash'))
       {
-          var r = confirm("Are You sure you want to delete this image and Do you want to Remove the Liability Recorded and update it later?");
+        var attach_count = $(e.target).parents('.file_received_div').find(".fileattachment").length;
+        if(attach_count == 1)
+        {
+            var r = confirm("Are You sure you want to delete this image and Do you want to Remove the Liability Recorded and update it later?");
+        }
+        else{
+              var r = confirm("Are You sure you want to delete this image");
+        }
       }
       else{
-            var r = confirm("Are You sure you want to delete this image");
+        var r = confirm("Are You sure you want to delete this image");
       }
-    }
-    else{
-      var r = confirm("Are You sure you want to delete this image");
-    }
-
     if (r == true) {
-
       var imgid = $(e.target).attr('data-element');
-
-
-
       $.ajax({
-
           url:"<?php echo URL::to('user/task_delete_image'); ?>",
-
           type:"get",
-
           data:{imgid:imgid},
-
           success: function(result) {
-
-            window.location.reload();
-
+            $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+            $(e.target).parents("td:first").find(".submit_dropzone_attach").trigger("click");
           }
-
       });
-
     }
-
   }
 
   if($(e.target).hasClass('fadeleteall'))
-
   {
-
     var r = confirm("Are You sure you want to delete all the attachments and Do you want to Remove the Liability Recorded and update it later?");
-
     if (r == true) {
-
       var taskid = $(e.target).attr('data-element');
-
-
-
       $.ajax({
-
           url:"<?php echo URL::to('user/task_delete_all_image'); ?>",
-
           type:"get",
-
           data:{taskid:taskid},
-
           success: function(result) {
-
-            window.location.reload();
-
+            $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+            $(e.target).parents("td:first").find(".submit_dropzone_attach").trigger("click");
           }
-
       });
-
     }
-
   }
-
   if($(e.target).hasClass('fadeleteall_attachments'))
-
   {
-
     var r = confirm("Are You sure you want to delete all the attachments?");
-
     if (r == true) {
-
       var taskid = $(e.target).attr('data-element');
-
-
-
       $.ajax({
-
           url:"<?php echo URL::to('user/task_delete_all_image_attachments'); ?>",
-
           type:"get",
-
           data:{taskid:taskid},
-
           success: function(result) {
-
-            window.location.reload();
-
+            $(e.target).parents("td:first").find(".submit_dropzone").trigger("click");
+            $(e.target).parents("td:first").find(".submit_dropzone_attach").trigger("click");
           }
-
       });
-
     }
-
   }
 
   if($(e.target).hasClass('fa-plus'))
-
   {
-
     var pos = $(e.target).position();
-
     var leftposi = parseInt(pos.left) - 200;
-
     $(e.target).parent().find('.img_div').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
-
+    var length = (e.target).parents(".special_div").find('.dz-preview').length;
+    if(length > 0)
+    {
+      $(".dz-message").parents(".dropzone").addClass("dz-started");
+    }
+    else{
+      $(".dz-preview").detach();
+      $(".dz-message").parents(".dropzone").removeClass("dz-started");
+    }
   }
   else if($(e.target).hasClass('fa-plus-task'))
   {

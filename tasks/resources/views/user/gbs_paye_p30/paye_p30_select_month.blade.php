@@ -944,7 +944,7 @@ if(Session::has('error')) { ?>
 
                   <?php
 
-                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
 
                     if(count($users))
 

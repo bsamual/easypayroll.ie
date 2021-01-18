@@ -90,7 +90,7 @@ class InfileController extends Controller {
 	    }
 
 		$infiles = DB::table('in_file')->get();
-		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		$internal = 0;
 		return view('user/infile/infile', array('title' => 'InFile', 'infiles' => $infiles, 'userlist' => $userlist, 'internal_search_check' => $internal));
 	}
@@ -119,7 +119,7 @@ class InfileController extends Controller {
 	    }
 
 		$clients = DB::table('cm_clients')->get();
-		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		$internal = 0;
 		return view('user/infile/infile_advance', array('title' => 'InFile', 'clientslist' => $clients, 'userlist' => $userlist, 'internal_search_check' => $internal));
 	}
@@ -173,7 +173,7 @@ class InfileController extends Controller {
 			$infiles = DB::table('in_file')->where('status', 0)->get();
 		}
 
-		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		$i=1;
       	$output='';
       	if(count($infiles)){
@@ -817,7 +817,7 @@ class InfileController extends Controller {
 		$infiles = DB::table('in_file')->where('client_id', $id)->get();
 		
 
-		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		$i=1;
 	    $output='';
 	    if(count($infiles)){
@@ -1301,7 +1301,7 @@ class InfileController extends Controller {
 	    }
 
 		$infiles = DB::table('in_file')->where('client_id', $clientid)->get();
-		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		$internal = 1;
 		return view('user/infile/infile', array('title' => 'InFile', 'infiles' => $infiles, 'userlist' => $userlist, 'internal_search_check' => $internal));
 	}
@@ -2125,8 +2125,6 @@ class InfileController extends Controller {
 
 
 		}
-
-
 		$attachments = DB::table('in_file_attachment')->where('file_id', $id)->where('notes_type',0)->get();
 		$file = DB::table('in_file')->where('id', $id)->first();
 		if($file->status == 0){
@@ -2326,10 +2324,12 @@ class InfileController extends Controller {
 				                    if($sub->p == 1) { $attach_sub_disabled = ''; }
 				                    elseif($sub->s == 1) { $attach_sub_disabled = ''; }
 				                    else { $attach_sub_disabled = 'disabled'; }
-
+				                    if($sub->textstatus == 1) { $texticonsub="display:none"; $hidesub = 'display:initial'; } else { $texticonsub="display:initial"; $hidesub = 'display:none'; }
 				                    $downloadfile.= '<tr class="attachment_tr attachment_tr_'.$attachment->id.'" data-element="'.$file->id.'">
 				                      <td colspan="5">
-				                        
+				                        <a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$sub->id.'" title="Add Text" style="'.$texticonsub.'"></a>
+			                        	<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$sub->id.'" value="'.$sub->textval.'" placeholder="Add Text" style="'.$hidesub.'">
+			                        	<a href="javascript:" class="fa fa-minus-square remove_text_image '.$disable_class.'" data-element="'.$sub->id.'" title="Remove Text" style="'.$hidesub.'"></a>
 				                      </td>';
 				                      if($file->show_previous == 1)
 									  {
@@ -2408,8 +2408,9 @@ class InfileController extends Controller {
 	              			<iframe name="attachment_pdf" class="attachment_pdf" src="" style="width:100%;height:800px"></iframe>
 	              		</div>
 	              	</div>';
-		echo json_encode(array('id' => $id, 'table_content' => $downloadfile));
+	    echo $downloadfile;
 
+		//echo json_encode(array('id' => $id, 'table_content' => $downloadfile));
 	}
 	public function infile_incomplete_status()
 	{
@@ -2539,6 +2540,14 @@ class InfileController extends Controller {
 	{
 		$fileid = Input::get('fileid');
 		$value = Input::get('input');
+
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+
 		$attachmentid = Input::get('attachmentid');
 		if($value != "")
 		{
@@ -2548,7 +2557,6 @@ class InfileController extends Controller {
 			$data['percent_one'] = '';
 		}
 		DB::table('in_file_attachment')->where('id',$attachmentid)->update($data);
-
 		$infile_attachment = DB::table('in_file_attachment')->where('id',$attachmentid)->first();
 		if(count($infile_attachment))
 		{
@@ -2608,6 +2616,12 @@ class InfileController extends Controller {
 	{
 		$fileid = Input::get('fileid');
 		$value = Input::get('input');
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
 		$attachmentid = Input::get('attachmentid');
 		if($value != "")
 		{
@@ -2677,6 +2691,12 @@ class InfileController extends Controller {
 	{
 		$fileid = Input::get('fileid');
 		$value = Input::get('input');
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
 		$attachmentid = Input::get('attachmentid');
 		if($value != "")
 		{
@@ -2746,6 +2766,12 @@ class InfileController extends Controller {
 	{
 		$fileid = Input::get('fileid');
 		$value = Input::get('input');
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
 		$attachmentid = Input::get('attachmentid');
 		if($value != "")
 		{
@@ -2824,7 +2850,7 @@ class InfileController extends Controller {
 		$id = Input::get('id');
 		$details = DB::table('in_file')->where('id',$id)->first();
 		$client_details = DB::table('cm_clients')->where('client_id',$details->client_id)->first();
-		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->get();
+		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->where('secondary',0)->get();
 		if(count($files))
 		{
 			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', $details->percent_one.'%', $details->percent_two.'%', $details->percent_three.'%', $details->percent_four.'%', 'Net', 'Vat', 'Gross', 'Filename');
@@ -2835,8 +2861,16 @@ class InfileController extends Controller {
 			{
 				$columns_2 = array($file->textval, $file->date_attachment, $file->supplier, $file->percent_one, $file->percent_two, $file->percent_three, $file->percent_four, $file->net, $file->vat, $file->gross, $file->attachment);
 				fputcsv($fileopen, $columns_2);
+				$get_subfiles = DB::table('in_file_attachment')->where('attach_id',$file->id)->where('secondary',1)->orderBy('id','desc')->get();
+				if(count($get_subfiles))
+				{
+					foreach($get_subfiles as $subfile)
+					{
+						$columns_3 = array($subfile->textval, $subfile->date_attachment, $subfile->supplier, $subfile->percent_one, $subfile->percent_two, $subfile->percent_three, $subfile->percent_four, $subfile->net, $subfile->vat, $subfile->gross, $file->attachment);
+						fputcsv($fileopen, $columns_3);
+					}
+				}
 			}
-
 			fclose($fileopen);
 			echo 'Infile_'.$type.'_attachments.csv';
 		}
@@ -2847,7 +2881,7 @@ class InfileController extends Controller {
 		$id = Input::get('id');
 		$details = DB::table('in_file')->where('id',$id)->first();
 		$client_details = DB::table('cm_clients')->where('client_id',$details->client_id)->first();
-		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->get();
+		$files = DB::table('in_file_attachment')->where('file_id',$id)->where('status', 0)->where($type, 1)->where('notes_type', 0)->where('secondary',0)->get();
 		if(count($files))
 		{
 			$columns_1 = array('Attachment Text', 'P/S Date', 'Supplier/Customer', $details->percent_one.'%', $details->percent_two.'%', $details->percent_three.'%', $details->percent_four.'%', 'Net', 'Vat', 'Gross', 'Filename');
@@ -2858,6 +2892,15 @@ class InfileController extends Controller {
 			{
 				$columns_2 = array($file->textval, $file->date_attachment, $file->supplier, $file->percent_one, $file->percent_two, $file->percent_three, $file->percent_four, $file->net, $file->vat, $file->gross, $file->attachment);
 				fputcsv($fileopen, $columns_2);
+				$get_subfiles = DB::table('in_file_attachment')->where('attach_id',$file->id)->where('secondary',1)->orderBy('id','desc')->get();
+				if(count($get_subfiles))
+				{
+					foreach($get_subfiles as $subfile)
+					{
+						$columns_3 = array($subfile->textval, $subfile->date_attachment, $subfile->supplier, $subfile->percent_one, $subfile->percent_two, $subfile->percent_three, $subfile->percent_four, $subfile->net, $subfile->vat, $subfile->gross, $file->attachment);
+						fputcsv($fileopen, $columns_3);
+					}
+				}
 			}
 
 			fclose($fileopen);
@@ -2941,10 +2984,11 @@ class InfileController extends Controller {
 		elseif($getattachment->s == 1) { $attach_disabled = ''; }
 		else { $attach_disabled = 'disabled'; }
 
-
 		$output = '<tr class="attachment_tr attachment_tr_'.$getattachment->id.'" data-element="'.$getattachment->file_id.'">
 			<td colspan="5">
-				
+				<a href="javascript:" class="fa fa-text-width add_text_image" data-element="'.$new_id.'" title="Add Text" style="display:initial"></a>
+            	<input type="text" name="add_text" class="add_text" data-element="'.$new_id.'" value="" placeholder="Add Text" style="display:none">
+            	<a href="javascript:" class="fa fa-minus-square remove_text_image" data-element="'.$new_id.'" title="Remove Text" style="display:none"></a>
 			</td>
 			<td class="td_input">
 				<input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$new_id.'" value="" data-value="" data-element="'.$new_id.'" data-file="'.$getattachment->file_id.'" maxlength="50" '.$attach_disabled.'>
@@ -2978,6 +3022,449 @@ class InfileController extends Controller {
 			</td>
 		</tr>';
 		echo $output;
+	}
+	public function check_integrity_files()
+	{
+		$fileid = Input::get('fileid');
+		$infile_details = DB::table('in_file')->where('id',$fileid)->first();
+		$infile_attacments = DB::table('in_file_attachment')->where('file_id',$fileid)->where('secondary',0)->where('notes_type',0)->get();
+		$output = '<table class="table">
+			<tr>
+				<td>Description</td>
+				<td>'.$infile_details->description.'</td>
+			</tr>
+			<tr>
+				<td>Date Added</td>
+				<td>'.date("d-M-Y", strtotime($infile_details->date_added)).'</td>
+			</tr>
+			<tr>
+				<td>No of Files Listed</td>
+				<td>'.count($infile_attacments).'</td>
+			</tr>
+		</table>
+		<div class="row" style="max-height:500px;overflow-y:scroll">
+		<table class="table">
+			<thead>
+				<th style="text-align:left;width:70%">Filename</th>
+				<th style="text-align:left;width:30%">Status</th>
+			</thead>
+			<tbody>';
+				if(count($infile_attacments))
+				{
+					foreach($infile_attacments as $key => $attachment)
+					{
+						$key = $key + 1;
+						$output.='<tr>
+							<td class="integrity_attachment overflow-wrap-hack" data-element="'.$attachment->id.'" data-file="'.$attachment->file_id.'" data-key="'.$key.'"><div class="content_check">'.$attachment->attachment.'</div></td>
+							<td class="integrity_status integrity_status_'.$attachment->id.'"> - </td>
+						</tr>';
+					}
+				}
+			$output.='</tbody>
+		</table>
+		</div>';
+		echo $output;
+	}
+	public function check_integrity_files_client_id()
+	{
+		$client_id = Input::get('client_id');
+		$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+		$infile_details = DB::table('in_file')->where('client_id',$client_id)->get();
+		$output = '<h5 style="text-align:center;border-top:1px solid #dfdfdf">'.$client_details->company.' ('.$client_id.')</h5>';
+		if(count($infile_details))
+		{
+			foreach($infile_details as $infile)
+			{
+				$fileid = $infile->id;
+				$infile_attacments = DB::table('in_file_attachment')->where('file_id',$fileid)->where('secondary',0)->where('notes_type',0)->get();
+				$output.= '<table class="table">
+					<tr>
+						<td>Description</td>
+						<td>'.$infile->description.'</td>
+					</tr>
+					<tr>
+						<td>Date Added</td>
+						<td>'.date("d-M-Y", strtotime($infile->date_added)).'</td>
+					</tr>
+					<tr>
+						<td>No of Files Listed</td>
+						<td>'.count($infile_attacments).'</td>
+					</tr>
+				</table>
+				<div class="row" style="max-height:500px;overflow-y:scroll">
+					<table class="table">
+						<thead>
+							<th style="text-align:left;width:70%">Filename</th>
+							<th style="text-align:left;width:30%">Status</th>
+						</thead>
+						<tbody>';
+							if(count($infile_attacments))
+							{
+								foreach($infile_attacments as $key => $attachment)
+								{
+									if(!file_exists($attachment->url.'/'.$attachment->attachment))
+									{
+										$status = '<spam style="color:#f00;font-weight:600">Missing</spam>';
+									}
+									else{
+										$status = '<spam style="color:green;font-weight:600">Ok</spam>';
+									}
+									$key = $key + 1;
+									$output.='<tr>
+										<td class="overflow-wrap-hack"><div class="content_check">'.$attachment->attachment.'</div></td>
+										<td class="integrity_status_'.$attachment->id.'">'.$status.'</td>
+									</tr>';
+								}
+							}
+						$output.='</tbody>
+					</table>
+				</div>';
+			}
+		}
+		else{
+			$output.='<p>No Infile Items Found</p>';
+		}
+		echo $output;
+	}
+	public function check_files_in_files()
+	{
+		$fileid = Input::get('fileid');
+		$type = Input::get('type');
+
+		$check_file = DB::table('in_file_attachment')->where('id',$fileid)->first();
+		if(count($check_file))
+		{
+			if(!file_exists($check_file->url.'/'.$check_file->attachment))
+			{
+				echo '<spam style="color:#f00;font-weight:600">Missing</spam>';
+				$status = 'Missing';
+			}
+			else{
+				echo '<spam style="color:green;font-weight:600">Ok</spam>';
+				$status = 'Ok';
+			}
+			if($type == "0")
+			{
+				$item_details = DB::table('in_file')->where('id',$check_file->file_id)->first();
+				$list = array (
+				  array("Integrity Check" ,"", "",""),
+				  array("Description:", $item_details->description, "",""),
+				  array("Date Added:", date('d-M-Y', strtotime($item_details->date_added)), "",""),
+				  array("","","",""),
+				  array("Filename","Status","",""),
+				  array($check_file->attachment,$status,"","",""),
+				);
+				$file = fopen("papers/IntegrityCheckReport.csv","w");
+				foreach ($list as $line) {
+				  fputcsv($file, $line);
+				}
+				fclose($file);
+			}
+			elseif($type == "1")
+			{
+				$item_details = DB::table('in_file')->where('id',$check_file->file_id)->first();
+				$list = array (
+				  array("" ,"", "", ""),
+				  array("" ,"", "", ""),
+				  array("Description:", $item_details->description, "", ""),
+				  array("Date Added:", date('d-M-Y', strtotime($item_details->date_added)), "", ""),
+				  array("","","",""),
+				  array("Filename","Status","",""),
+				  array($check_file->attachment,$status,"","",""),
+				);
+				$file = fopen("papers/IntegrityCheckReport.csv","a");
+				foreach ($list as $line) {
+				  fputcsv($file, $line);
+				}
+				fclose($file);
+			}
+			else{
+				$file = fopen("papers/IntegrityCheckReport.csv","a");
+				//fwrite($fp, $row1.",".$row2); //Append row,row to file
+				fputcsv($file, array($check_file->attachment,$status,"","")); //@Optimist
+				fclose($file); //Close the file to free memory.
+			}
+		}
+
+	}
+	public function show_attachments_infile()
+	{
+		$fileid = Input::get('fileid');
+		$file = DB::table('in_file')->where('id',$fileid)->first();
+		$attachments = DB::table('in_file_attachment')->where('file_id',$fileid)->where('status',0)->where('notes_type', 0)->where('secondary',0)->get();
+		if($file->status == 0){
+	        $staus = 'fa-check edit_status'; 
+	        $statustooltip = 'Complete Infile';
+	        $disable = '';
+	        $disable_class = '';
+	        $color='';
+	        $color_last='style="border-top:0px solid;border-bottom:1px solid #6a6a6a"';
+	    }
+	    else{
+	        $staus = 'fa-times edit_status incomplete_status';
+	        $statustooltip = 'InComplete Infile';
+	        $disable = 'disabled';
+	        $disable_class = 'disable_class';
+	        $color = 'style="color:#f00;"';
+	        $color_last = 'style="color:#f00;border-top:0px solid;border-bottom:1px solid #6a6a6a"';
+	    }
+        $ips_data = 0;
+        $downloadfile='';
+        if(count($attachments)){  
+          $downloadfile.='
+          <style>
+            .bpso_all_check{font-size:20px; font-weight:700; margin-left:10px;}
+            .bpso_all_check:hover{text-decoration:none}
+           	.table_bspo .td_input { padding:3px !important; }
+          </style>
+          <div class="row infile_inner_table_row">
+          	<div class="col-md-8">
+          		<table class="table_bspo" id="bspo_id_'.$file->id.'" style="width:100%;">
+	                <tr>
+	                  <td style="min-width:300px;max-width:300px;"></td>
+	                  <td>
+	                    <div style="width:100%; text-align:center">
+	                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in B Category" id="'.$file->id.'" data-element="1">@</a>
+	                    </div>
+	                    <div style="width:100%; text-align:center">
+	                    <i class="fa fa-cloud-download download_b_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in B Category"></i>
+	                    </div>
+	                  </td>
+	                  <td>
+	                    <div style="width:100%; text-align:center">
+	                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in P Category" id="'.$file->id.'" data-element="2">@</a>
+	                    </div>
+	                    <div style="width:100%; text-align:center">
+	                    <i class="fa fa-cloud-download download_p_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in P Category"></i>
+	                    </div>
+	                  </td>
+	                  <td>
+	                    <div style="width:100%; text-align:center">
+	                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in S Category" id="'.$file->id.'" data-element="3">@</a>
+	                    </div>
+	                    <div style="width:100%; text-align:center">
+	                    <i class="fa fa-cloud-download download_s_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in S Category"></i>
+	                    </div>
+	                  </td>
+	                  <td>
+	                    <div style="width:100%; text-align:center">
+	                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in O Category" id="'.$file->id.'" data-element="4">@</a>
+	                    </div>
+	                    <div style="width:100%; text-align:center">
+	                    <i class="fa fa-cloud-download download_o_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in O Category"></i>
+	                    </div>
+	                  </td>
+	                  <td class="td_input td_supplier" style="font-weight:600;text-align:center" data-element="'.$file->id.'">Supplier/Customer</td>
+	                  <td class="td_input td_date" style="font-weight:600;text-align:center;width:110px">Date</td>
+	                  <td class="td_input td_percent_one" style="font-weight:600;text-align:center">
+	                  	% <br/><spam class="percent_one_text">'.$file->percent_one.'</spam>
+	                  	<div class="percent_one_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
+	                  		<input type="number" name="change_percent_one" class="change_percent_one form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
+	                  		<input type="button" name="submit_percent_one" class="common_black_button submit_percent_one" value="Submit" data-element="'.$file->id.'">
+	                  	</div>
+	                  </td>
+	                  <td class="td_input td_percent_two" style="font-weight:600;text-align:center">
+	                  	% <br/><spam class="percent_two_text">'.$file->percent_two.'</spam>
+	                  	<div class="percent_two_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
+	                  		<input type="number" name="change_percent_two" class="change_percent_two form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
+	                  		<input type="button" name="submit_percent_two" class="common_black_button submit_percent_two" value="Submit" data-element="'.$file->id.'">
+	                  	</div>
+	                  </td>
+	                  <td class="td_input td_percent_three" style="font-weight:600;text-align:center">
+	                  	% <br/><spam class="percent_three_text">'.$file->percent_three.'</spam>
+	                  	<div class="percent_three_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
+	                  		<input type="number" name="change_percent_three" class="change_percent_three form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
+	                  		<input type="button" name="submit_percent_three" class="common_black_button submit_percent_three" value="Submit" data-element="'.$file->id.'">
+	                  	</div>
+	                  </td>
+	                  <td class="td_input td_percent_four" style="font-weight:600;text-align:center">
+	                  	% <br/><spam class="percent_four_text">'.$file->percent_four.'</spam>
+	                  	<div class="percent_four_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
+	                  		<input type="number" name="change_percent_four" class="change_percent_four form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
+	                  		<input type="button" name="submit_percent_four" class="common_black_button submit_percent_four" value="Submit" data-element="'.$file->id.'">
+	                  	</div>
+	                  </td>
+	                  <td class="td_input" style="font-weight:600;text-align:center;border-left:1px solid #b5b3b3">Net</td>
+	                  <td class="td_input" style="font-weight:600;text-align:center">VAT</td>
+	                  <td class="td_input" style="font-weight:600;text-align:center">Gross</td>
+	                  <td class="td_input" style="width:20px;font-weight:600;text-align:center"></td>
+	                </tr>';     
+              		$ips_data = 0;              
+	                foreach($attachments as $attachment){
+                		$get_sub_attachments = DB::table('in_file_attachment')->where('attach_id',$attachment->id)->where('secondary',1)->orderBy('id','desc')->get();
+	                	if($attachment->textstatus == 1) { $texticon="display:none"; $hide = 'display:initial'; } else { $texticon="display:initial"; $hide = 'display:none'; }
+						if($attachment->check_file == 1) { $textdisabled ='disabled'; $checked = 'checked'; } else { $textdisabled =''; $checked = ''; }
+						if($attachment->b == 1) {  $bchecked = 'checked'; } else { $bchecked = ''; }
+						if($attachment->p == 1) {  $pchecked = 'checked'; } else { $pchecked = ''; }
+						if($attachment->s == 1) {  $schecked = 'checked'; } else { $schecked = ''; }
+						if($attachment->o == 1) {  $ochecked = 'checked'; } else { $ochecked = ''; }
+
+						if($attachment->p == 1) { $attach_disabled = ''; }
+						elseif($attachment->s == 1) { $attach_disabled = ''; }
+						else { $attach_disabled = 'disabled'; }
+        				if($attachment->supplier != "" || $attachment->date_attachment != "" || $attachment->percent_one != "" || $attachment->percent_two != "" || $attachment->percent_three != "" || $attachment->percent_four != "")
+		                {
+		                  $ips_data++;
+		                }
+		                if($attachment->flag == 0) { $flag = '<i class="fa fa-flag flag_gray fileattachment"></i>'; }
+		                elseif($attachment->flag == 1) { $flag = '<i class="fa fa-flag flag_orange fileattachment"></i>'; }
+		                elseif($attachment->flag == 2) { $flag = '<i class="fa fa-flag flag_red fileattachment"></i>'; }
+
+						$downloadfile.= '<tr class="attachment_tr" data-element="'.$file->id.'">
+							<td style="min-width:300px;max-width:300px;">
+								<div class="file_attachment_div" style="width:100%">
+								  	<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'>
+								  	<label for="fileattach_'.$attachment->id.'">&nbsp;</label>
+                					'.$flag.'
+                					<a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a>
+									<a href="javascript:" class="fileattachment file_attach_bpso" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" '.$color.' data-toggle="tooltip" title="'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.substr($attachment->attachment,0,15).'</a>
+									
+									<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Text" style="'.$texticon.'"></a>
+              						<a href="javascript:" class="fa fa-plus-circle add_secondary '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Seconday Line" style="'.$texticon.'"></a>
+									<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$attachment->id.'" value="'.$attachment->textval.'" placeholder="Add Text" '.$textdisabled.' style="'.$hide.'">
+									<a href="javascript:" class="fa fa-minus-square remove_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Remove Text" style="'.$hide.'"></a>
+									<a href="javascript:" class="fa fa-download download_rename" data-src="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-element="'.$attachment->id.'" title="Download & Rename" style="'.$hide.'"></a>
+								</div>
+							</td>
+							<td>
+								<input type="radio" name="check_'.$attachment->id.'" class="b_check" id="b_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$bchecked.' title="Bank"><label for="b_check_'.$attachment->id.'" title="Bank">B</label> 
+							</td>
+							<td>
+								<input type="radio" name="check_'.$attachment->id.'" class="p_check" id="p_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$pchecked.' title="Purchases"><label for="p_check_'.$attachment->id.'" title="Purchases">P</label> 
+							</td>
+							<td>
+								<input type="radio" name="check_'.$attachment->id.'" class="s_check" id="s_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$schecked.' title="Sales"><label for="s_check_'.$attachment->id.'" title="Sales">S</label> 
+							</td>
+							<td>
+								<input type="radio" name="check_'.$attachment->id.'" class="o_check" id="o_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$ochecked.' title="Other Sundry"><label for="o_check_'.$attachment->id.'" title="Other Sundry">O</label> 
+							</td>';
+							$downloadfile.='<td class="td_input">
+								<input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$attachment->id.'" value="" data-value="'.$attachment->supplier.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
+							</td>
+							<td class="td_input">
+								<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$attachment->id.'" value="" data-value="'.$attachment->date_attachment.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
+							</td>
+							<td class="td_input">
+								<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+							</td>
+							<td class="td_input">
+								<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+							</td>
+							<td class="td_input">
+								<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+							</td>
+							<td class="td_input">
+								<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
+							</td>
+							<td class="td_input" style="border-left:1px solid #b5b3b3">
+								<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->net).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
+							</td>
+							<td class="td_input">
+								<input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->vat).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
+							</td>
+							<td class="td_input">
+								<input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->gross).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
+							</td>';
+							$downloadfile.='<td class="td_input">
+								<i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
+							</td>
+						</tr>';
+		                if(count($get_sub_attachments))
+		                {
+		                  foreach($get_sub_attachments as $sub)
+		                  {
+		                    if($sub->p == 1) { $attach_sub_disabled = ''; }
+		                    elseif($sub->s == 1) { $attach_sub_disabled = ''; }
+		                    else { $attach_sub_disabled = 'disabled'; }
+		                    if($sub->textstatus == 1) { $texticonsub="display:none"; $hidesub = 'display:initial'; } else { $texticonsub="display:initial"; $hidesub = 'display:none'; }
+		                    $downloadfile.= '<tr class="attachment_tr attachment_tr_'.$attachment->id.'" data-element="'.$file->id.'">
+		                      <td colspan="5">
+		                        	<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$sub->id.'" title="Add Text" style="'.$texticonsub.'"></a>
+		                        	<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$sub->id.'" value="'.$sub->textval.'" placeholder="Add Text" style="'.$hidesub.'">
+		                        	<a href="javascript:" class="fa fa-minus-square remove_text_image '.$disable_class.'" data-element="'.$sub->id.'" title="Remove Text" style="'.$hidesub.'"></a>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$sub->id.'" value="" data-value="'.$sub->supplier.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$sub->id.'" value="" data-value="'.$sub->date_attachment.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_one).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_two).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_three).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_four).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
+		                      </td>
+		                      <td class="td_input" style="border-left:1px solid #b5b3b3">
+		                        <input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->net).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->vat).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+		                      </td>
+		                      <td class="td_input">
+		                        <input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->gross).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
+		                      </td>
+		                      <td class="td_input">
+		                        <i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
+		                      </td>
+		                    </tr>';
+		                  }
+		                }
+	                }
+			    $downloadfile.='</table>
+	        </div>
+          	<div class="col-md-4 show_iframe" style="display:none;z-index: 99999999999;">
+          		<a href="javascript:" class="show_iframe_prev common_black_button" style="float:left; margin-top:-36px" >Previous</a> 
+          		<a href="javascript:" class="show_iframe_next common_black_button" style="float:left; margin-top:-36px;margin-left:105px">Next</a> 
+          		<label class="pdf_multipage">Note: Multipage</label>
+          		<a href="javascript:" class="show_iframe_download common_black_button" style="float:right; margin-top:-36px" download>Download</a> 
+          		<div style="width:100%;background:#b0a8a8;height:800px">
+          			<iframe name="attachment_pdf" class="attachment_pdf" src="" style="width:100%;height: 800px;"></iframe>
+          		</div>
+          	</div>
+	      </div>';
+	    }
+	    else{
+	        $downloadfile ='';
+	    }
+		if(count($attachments)){
+			$deleteall = '<i class="fa fa-minus-square delete_all_image '.$disable_class.'" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Delete All Attachments"></i>
+
+			<i class="fa fa-cloud-download download_rename_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download & Rename All Attachments"></i>';
+		}
+		else{
+			$deleteall = '';
+		}
+
+		if(count($attachments))
+		{
+			$span = '<span style="color:#000">There are '.count($attachments).' file(s)</span>';
+		}
+		else{
+			$span = '';
+		}
+		if($ips_data > 0)
+		{
+			$ps_data_btn = '<i class="fa fa-dot-circle-o" style="color:green;font-size: 20px;"></i>';
+		}
+		else{
+			$ps_data_btn = '';
+		}
+
+		$output = $downloadfile.'
+			<i class="fa fa-plus faplus '.$disable_class.'" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>              
+				'.$deleteall.'<br/><br/>
+			<div style="width:100%; height:auto; float:left; padding-bottom:10px; color: #0300c1;">Notes:
+				  <br/> '.$span.'
+			</div>
+			<div class="clearfix"></div>';
+      	echo json_encode(array("output" => $output,"ps_data_btn" => $ps_data_btn));
 	}
 }
 

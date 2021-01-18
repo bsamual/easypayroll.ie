@@ -977,9 +977,22 @@ input:checked + .slider:before {
               <input type="radio" name="open_task_search" class="open_task_search" id="open_task_search_2" value="2"><label for="open_task_search_2">All</label>
               <input type="hidden" id="hidden_open_task" value="1">
             </div>
-            <div class="col-md-2">
-              <label>Search By Client:</label>
+            <div class="col-md-2" style="padding:0px">
+              <label>Search By Client/Internal:</label> &nbsp; &nbsp; <input type="checkbox" name="make_internal" class="make_internal" id="make_internal" value="1"><label for="make_internal" style="float:right">Internal</label>
               <input type="text" class="form-control copy_client_search_class" placeholder="Search By Client" value="">
+              <input type="hidden" id="hidden_make_internal" class="hidden_make_internal" value="0">
+              <select class="form-control select_internal_tasks" id="select_internal_tasks" style="display:none;">
+                <option value="">Select Tasks</option>
+                <?php
+                if(count($taskslist)){
+                  foreach ($taskslist as $single_task) {
+                ?>
+                  <option value="<?php echo $single_task->id; ?>"><?php echo $single_task->task_name; ?></option>
+                <?php
+                  }
+                }
+                ?>
+              </select>
               <input type="hidden" id="copy_client_search" name="copy_client_search" value="">
             </div>
             <div class="col-md-2">
@@ -1156,66 +1169,79 @@ $(window).click(function(e) {
           $(e.target).parents(".recurring_task_div").find("#hidden_recurring_task").val("0");
         }
       }
+      if($(e.target).hasClass('make_internal'))
+      {
+        if($(e.target).is(":checked"))
+        {
+          $("#hidden_make_internal").val("1");
+          $(".select_internal_tasks").show();
+          $(".copy_client_search_class").hide();
+        }
+        else{
+          $("#hidden_make_internal").val("0");
+          $(".select_internal_tasks").hide();
+          $(".copy_client_search_class").show();
+        }
+      }
       if($(e.target).hasClass('make_task_live'))
       {
         e.preventDefault();
-        if($("#internal_checkbox").is(":checked"))
+        if($( "#create_job_form" ).valid())
         {
-            var taskvalue = $("#idtask").val();
-            if(taskvalue == "")
+          if($("#internal_checkbox").is(":checked"))
+          {
+              var taskvalue = $("#idtask").val();
+              if(taskvalue == "")
+              {
+                alert("Please select the Task Name and then make the task as live");
+                return false;
+              }
+          }
+          else{
+            var clientid = $("#client_search").val();
+            if(clientid == "")
             {
-              alert("Please select the Task Name and then make the task as live");
+              alert("Please select the Client and then make the task as live");
               return false;
             }
-        }
-        else{
-          var clientid = $("#client_search").val();
-          if(clientid == "")
-          {
-            alert("Please select the Client and then make the task as live");
-            return false;
           }
-        }
-        if (CKEDITOR.instances.editor_2)
-        {
-          var comments = CKEDITOR.instances['editor_2'].getData();
-          if(comments == "")
+          if (CKEDITOR.instances.editor_2)
           {
-            alert("Please Enter Task Specifics and then make the task as Live.");
-            return false;
+            var comments = CKEDITOR.instances['editor_2'].getData();
+            if(comments == "")
+            {
+              alert("Please Enter Task Specifics and then make the task as Live.");
+              return false;
+            }
+            else{
+              if($(".2_bill_task").is(":checked"))
+              {
+                $("#create_job_form").submit();
+              }
+              else{
+                $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px",height:"400px"});
+              }
+            }
           }
           else{
             if($(".2_bill_task").is(":checked"))
             {
-              $( "#create_job_form" ).valid();
               $("#create_job_form").submit();
             }
             else{
-              $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px",height:"400px"});
+              $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
             }
-          }
-        }
-        else{
-          if($(".2_bill_task").is(":checked"))
-          {
-            $( "#create_job_form" ).valid();
-            $("#create_job_form").submit();
-          }
-          else{
-            $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
           }
         }
       }
       if($(e.target).hasClass('yes_make_task_live'))
       {
         $(".2_bill_task").prop("checked",true);
-        $( "#create_job_form" ).valid();
         $("#create_job_form").submit();
       }
       if($(e.target).hasClass('no_make_task_live'))
       {
         $(".2_bill_task").prop("checked",false);
-        $( "#create_job_form" ).valid();
         $("#create_job_form").submit();
       }
       if($(e.target).hasClass("search_tasks"))
@@ -1230,7 +1256,8 @@ $(window).click(function(e) {
           var recurring = $("#hidden_recurring_task").val();
           var due_date = $(".due_date_search_class").val();
           var creation_date = $(".creation_date_search_class").val();
-
+          var make_internal = $("#hidden_make_internal").val();
+          var select_tasks = $(".select_internal_tasks").val();
           if(client_id_search == "")
           {
             $("#copy_client_search").val("");
@@ -1240,7 +1267,7 @@ $(window).click(function(e) {
           $.ajax({
             url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
             type:"post",
-            data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date},
+            data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
             success:function(result)
             {
               $("#task_body_search").html(result);

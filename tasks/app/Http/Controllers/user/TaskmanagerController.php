@@ -88,7 +88,7 @@ class TaskmanagerController extends Controller {
 
 
 		$tasks = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
-		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		return view('user/task_manager/task_manager', array('title' => 'Easypayroll - Task Manager', 'userlist' => $user, 'taskslist' => $tasks,'user_tasks' => $user_tasks,'open_task_count' => $open_task_count,'authored_task_count' => $authored_task_count,'park_task_count' =>$park_task_count));
 	}
 	public function park_task()
@@ -119,7 +119,7 @@ class TaskmanagerController extends Controller {
 
 
 		$tasks = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
-		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		return view('user/task_manager/park_task', array('title' => 'Easypayroll - Task Manager', 'userlist' => $user, 'taskslist' => $tasks,'user_tasks' => $user_tasks,'open_task_count' => $open_task_count,'authored_task_count' => $authored_task_count,'park_task_count' =>$park_task_count));
 	}
 	public function taskmanager_search()
@@ -149,7 +149,7 @@ class TaskmanagerController extends Controller {
 		}
 
 		$tasks = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
-		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		return view('user/task_manager/task_search', array('title' => 'Easypayroll - Task Manager', 'userlist' => $user, 'taskslist' => $tasks,'user_tasks' => $user_tasks,'open_task_count' => $open_task_count,'authored_task_count' => $authored_task_count,'park_task_count' => $park_task_count));
 	}
 	public function task_administration()
@@ -179,7 +179,7 @@ class TaskmanagerController extends Controller {
 		}
 		$tasks = DB::table('taskmanager')->orderBy('id','desc')->offset(0)->limit(500)->get();
 
-		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		return view('user/task_manager/task_administration', array('title' => 'Easypayroll - Task Manager', 'taskslist' => $tasks,'userlist' => $user,'user_tasks' => $user_tasks,'open_task_count' => $open_task_count,'authored_task_count' => $authored_task_count,'park_task_count' => $park_task_count));
 	}
 	
@@ -4042,6 +4042,8 @@ class TaskmanagerController extends Controller {
 		$recurring = Input::get('recurring');
 		$due_date = Input::get('due_date');
 		$creation_date = Input::get('creation_date');
+		$make_internal = Input::get('make_internal');
+		$select_tasks = Input::get('select_tasks');
 
 		$allocated_to_val = Session::get('taskmanager_user');
 
@@ -4059,7 +4061,14 @@ class TaskmanagerController extends Controller {
 			
 		}
 
-		if($client_id != ""){ if($query == "") { $query.= "`client_id` = '".$client_id."'"; } else { $query.= " AND `client_id` = '".$client_id."'"; } }
+		if($make_internal == "0")
+		{
+			if($client_id != ""){ if($query == "") { $query.= "`client_id` = '".$client_id."'"; } else { $query.= " AND `client_id` = '".$client_id."'"; } }
+		}
+		else{
+			if($select_tasks != ""){ if($query == "") { $query.= "`task_type` = '".$select_tasks."'"; } else { $query.= " AND `task_type` = '".$select_tasks."'"; } }
+		}
+		
 		if($recurring != "0"){ if($query == "") { $query.= "`recurring_task` > '0'"; } else { $query.= " AND `recurring_task` > '0'"; } }
 		else{ if($query == "") { $query.= "`recurring_task` = '0'"; } else { $query.= " AND `recurring_task` = '0'"; } }
 

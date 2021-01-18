@@ -9,6 +9,32 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
+.content_check{
+  word-wrap:break-word; /*old browsers*/
+  overflow-wrap:break-word;
+}
+.overflow-wrap-hack{
+  max-width:1px;
+}
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
 .flag_gray{ color:gray; cursor: pointer }
 .flag_orange{ color:orange; cursor: pointer }
 .flag_red{ color:red; cursor: pointer }
@@ -484,6 +510,26 @@ elseif(Session::has('countupdated'))
         </div>
   </div>
 </div>
+<div class="modal fade integrity_check_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">Integrity Check</h4>
+            <input type="button" class="check_now common_black_button" value="Check Now" style="margin-top:-32px;margin-right:28px;float:right">
+          </div>
+          <div class="modal-body" id="integrity_check_body">  
+
+          </div>
+          <div class="modal-footer" style="text-align:left">
+             <div class="export_integrity_filename" id="export_integrity_filename">
+                <h5>Download</h5>
+                <a href="<?php echo URL::to('papers/IntegrityCheckReport.csv'); ?>" download>IntegrityCheckReport.csv</a>
+             </div>
+          </div>
+        </div>
+  </div>
+</div>
 <div class="modal fade download_option_p_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
@@ -555,7 +601,7 @@ elseif(Session::has('countupdated'))
                 	<select name="select_user" class="form-control select_user_author" required>
 	                  <option value="">Select User</option>        
 	                    <?php
-	                    $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+	                    $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 	                    $selected = '';
 	                    if(count($userlist)){
 	                      foreach ($userlist as $user) {
@@ -791,7 +837,7 @@ elseif(Session::has('countupdated'))
                 </thead>
                 <tbody>
               <?php
-              $userlist_notify = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+              $userlist_notify = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
               $i = 1;
               if(count($userlist_notify)){
                 foreach ($userlist_notify as $user) {
@@ -1066,8 +1112,6 @@ elseif(Session::has('countupdated'))
 
             </h4>
 
-            <div class="col-lg-1 text-right"></div>
-
             <div class="col-lg-3 text-right" style="padding-right: 0px;">
 
                 <form action="<?php echo URL::to('user/infile_search')?>" method="get">
@@ -1118,7 +1162,7 @@ elseif(Session::has('countupdated'))
 
             </div>
 
-            <div class="col-lg-4" style="padding:5px 0px 0px 0px; ">
+            <div class="col-lg-5" style="padding:5px 0px 0px 0px; ">
 
               <div style="float: left;">
 
@@ -1130,13 +1174,14 @@ elseif(Session::has('countupdated'))
 
               </div>
 
-              <div class="select_button" style=" margin-left: 10px; width: 400px;">
+              <div class="select_button" style=" margin-left: 10px; width: 500px;">
 
                 <ul>
 
                 <li><a href="javascript:" class="create_new" style="font-size: 13px; font-weight: 500;">Add New File Batch</a></li>
                 <li><a href="javascript:" class="reportclassdiv" style="font-size: 13px; font-weight: 500;">Report</a></li>
                 <li><a href="<?php echo URL::to('user/in_file_advance'); ?>" style="font-size: 13px; font-weight: 500;">Advance View</a></li>
+                <li><a href="javascript:" class="integrity_check_for_all" style="font-size: 13px; font-weight: 500;">Integrity Check</a></li>
                 <div class="report_div" style="display: none">
                     <label>Please select following report type</label><br>
                     <input type="radio" name="report_infile" id="singleclient" class="class_invoice" value="1"><label for="singleclient">Individual Client</label>
@@ -1201,263 +1246,8 @@ elseif(Session::has('countupdated'))
               else{
                 $companyname = 'N/A';
               }
-              $attachments = DB::table('in_file_attachment')->where('file_id',$file->id)->where('status',0)->where('notes_type', 0)->where('secondary',0)->get();
-              $ips_data = 0;
-              $downloadfile='';
-              if(count($attachments)){  
-	              $downloadfile.='
-	              <style>
-	                .bpso_all_check{font-size:20px; font-weight:700; margin-left:10px;}
-	                .bpso_all_check:hover{text-decoration:none}
-	               	.table_bspo .td_input { padding:3px !important; }
-	              </style>
-	              <div class="row infile_inner_table_row">
-	              	<div class="col-md-8">
-	              		<table class="table_bspo" id="bspo_id_'.$file->id.'" style="width:100%;">
-			                <tr>
-			                  <td style="min-width:300px;max-width:300px;"></td>
-			                  <td>
-			                    <div style="width:100%; text-align:center">
-			                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in B Category" id="'.$file->id.'" data-element="1">@</a>
-			                    </div>
-			                    <div style="width:100%; text-align:center">
-			                    <i class="fa fa-cloud-download download_b_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in B Category"></i>
-			                    </div>
-			                  </td>
-			                  <td>
-			                    <div style="width:100%; text-align:center">
-			                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in P Category" id="'.$file->id.'" data-element="2">@</a>
-			                    </div>
-			                    <div style="width:100%; text-align:center">
-			                    <i class="fa fa-cloud-download download_p_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in P Category"></i>
-			                    </div>
-			                  </td>
-			                  <td>
-			                    <div style="width:100%; text-align:center">
-			                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in S Category" id="'.$file->id.'" data-element="3">@</a>
-			                    </div>
-			                    <div style="width:100%; text-align:center">
-			                    <i class="fa fa-cloud-download download_s_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in S Category"></i>
-			                    </div>
-			                  </td>
-			                  <td>
-			                    <div style="width:100%; text-align:center">
-			                      <a href="javascript:" class="bpso_all_check" data-toggle="tooltip" title="Select Missed Items in O Category" id="'.$file->id.'" data-element="4">@</a>
-			                    </div>
-			                    <div style="width:100%; text-align:center">
-			                    <i class="fa fa-cloud-download download_o_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments in O Category"></i>
-			                    </div>
-			                  </td>
-			                  <td class="td_input td_supplier" style="font-weight:600;text-align:center" data-element="'.$file->id.'">Supplier/Customer</td>
-			                  <td class="td_input td_date" style="font-weight:600;text-align:center;width:110px">Date</td>
-			                  <td class="td_input td_percent_one" style="font-weight:600;text-align:center">
-			                  	% <br/><spam class="percent_one_text">'.$file->percent_one.'</spam>
-			                  	<div class="percent_one_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_one" class="change_percent_one form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
-			                  		<input type="button" name="submit_percent_one" class="common_black_button submit_percent_one" value="Submit" data-element="'.$file->id.'">
-			                  	</div>
-			                  </td>
-			                  <td class="td_input td_percent_two" style="font-weight:600;text-align:center">
-			                  	% <br/><spam class="percent_two_text">'.$file->percent_two.'</spam>
-			                  	<div class="percent_two_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_two" class="change_percent_two form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
-			                  		<input type="button" name="submit_percent_two" class="common_black_button submit_percent_two" value="Submit" data-element="'.$file->id.'">
-			                  	</div>
-			                  </td>
-			                  <td class="td_input td_percent_three" style="font-weight:600;text-align:center">
-			                  	% <br/><spam class="percent_three_text">'.$file->percent_three.'</spam>
-			                  	<div class="percent_three_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_three" class="change_percent_three form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
-			                  		<input type="button" name="submit_percent_three" class="common_black_button submit_percent_three" value="Submit" data-element="'.$file->id.'">
-			                  	</div>
-			                  </td>
-			                  <td class="td_input td_percent_four" style="font-weight:600;text-align:center">
-			                  	% <br/><spam class="percent_four_text">'.$file->percent_four.'</spam>
-			                  	<div class="percent_four_div" style="position: absolute;width: 200px;background: #bfbfbf;padding: 10px;display:none">
-			                  		<input type="number" name="change_percent_four" class="change_percent_four form-control" data-element="'.$file->id.'" value="" style="width: 80px;float: left;">
-			                  		<input type="button" name="submit_percent_four" class="common_black_button submit_percent_four" value="Submit" data-element="'.$file->id.'">
-			                  	</div>
-			                  </td>
-			                  <td class="td_input" style="font-weight:600;text-align:center;border-left:1px solid #b5b3b3">Net</td>
-			                  <td class="td_input" style="font-weight:600;text-align:center">VAT</td>
-			                  <td class="td_input" style="font-weight:600;text-align:center">Gross</td>
-			                  <td class="td_input" style="width:20px;font-weight:600;text-align:center"></td>
-			                </tr>';     
-                      $ips_data = 0;              
-			                foreach($attachments as $attachment){
-                        $get_sub_attachments = DB::table('in_file_attachment')->where('attach_id',$attachment->id)->where('secondary',1)->orderBy('id','desc')->get();
-			                	if($attachment->textstatus == 1) { $texticon="display:none"; $hide = 'display:initial'; } else { $texticon="display:initial"; $hide = 'display:none'; }
-								if($attachment->check_file == 1) { $textdisabled ='disabled'; $checked = 'checked'; } else { $textdisabled =''; $checked = ''; }
-								if($attachment->b == 1) {  $bchecked = 'checked'; } else { $bchecked = ''; }
-								if($attachment->p == 1) {  $pchecked = 'checked'; } else { $pchecked = ''; }
-								if($attachment->s == 1) {  $schecked = 'checked'; } else { $schecked = ''; }
-								if($attachment->o == 1) {  $ochecked = 'checked'; } else { $ochecked = ''; }
-
-								if($attachment->p == 1) { $attach_disabled = ''; }
-								elseif($attachment->s == 1) { $attach_disabled = ''; }
-								else { $attach_disabled = 'disabled'; }
-                if($attachment->supplier != "" || $attachment->date_attachment != "" || $attachment->percent_one != "" || $attachment->percent_two != "" || $attachment->percent_three != "" || $attachment->percent_four != "")
-                {
-                  $ips_data++;
-                }
-                if($attachment->flag == 0) { $flag = '<i class="fa fa-flag flag_gray fileattachment"></i>'; }
-                elseif($attachment->flag == 1) { $flag = '<i class="fa fa-flag flag_orange fileattachment"></i>'; }
-                elseif($attachment->flag == 2) { $flag = '<i class="fa fa-flag flag_red fileattachment"></i>'; }
-
-								$downloadfile.= '<tr class="attachment_tr" data-element="'.$file->id.'">
-									<td style="min-width:300px;max-width:300px;">
-										<div class="file_attachment_div" style="width:100%">
-										  	<input type="checkbox" name="fileattachment_checkbox" class="fileattachment_checkbox '.$disable_class.'" id="fileattach_'.$attachment->id.'" value="'.$attachment->id.'" '.$checked.' '.$disable.'><label for="fileattach_'.$attachment->id.'">&nbsp;</label>
-                        '.$flag.'
-                        <a href="javascript:" class="trash_icon '.$disable_class.'"><i class="fa fa-trash trash_image" data-element="'.$attachment->id.'" aria-hidden="true"></i></a>
-											<a href="javascript:" class="fileattachment file_attach_bpso" data-element="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" '.$color.' data-toggle="tooltip" title="'.$attachment->attachment.'" data-src="'.$attachment->url.'/'.$attachment->attachment.'">'.substr($attachment->attachment,0,15).'</a>
-											
-											<a href="javascript:" class="fa fa-text-width add_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Text" style="'.$texticon.'"></a>
-                      <a href="javascript:" class="fa fa-plus-circle add_secondary '.$disable_class.'" data-element="'.$attachment->id.'" title="Add Seconday Line" style="'.$texticon.'"></a>
-											<input type="text" name="add_text" class="add_text '.$disable_class.'" data-element="'.$attachment->id.'" value="'.$attachment->textval.'" placeholder="Add Text" '.$textdisabled.' style="'.$hide.'">
-											<a href="javascript:" class="fa fa-minus-square remove_text_image '.$disable_class.'" data-element="'.$attachment->id.'" title="Remove Text" style="'.$hide.'"></a>
-											<a href="javascript:" class="fa fa-download download_rename" data-src="'.URL::to('/').'/'.$attachment->url.'/'.$attachment->attachment.'" data-element="'.$attachment->id.'" title="Download & Rename" style="'.$hide.'"></a>
-										</div>
-									</td>
-									<td>
-										<input type="radio" name="check_'.$attachment->id.'" class="b_check" id="b_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$bchecked.' title="Bank"><label for="b_check_'.$attachment->id.'" title="Bank">B</label> 
-									</td>
-									<td>
-										<input type="radio" name="check_'.$attachment->id.'" class="p_check" id="p_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$pchecked.' title="Purchases"><label for="p_check_'.$attachment->id.'" title="Purchases">P</label> 
-									</td>
-									<td>
-										<input type="radio" name="check_'.$attachment->id.'" class="s_check" id="s_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$schecked.' title="Sales"><label for="s_check_'.$attachment->id.'" title="Sales">S</label> 
-									</td>
-									<td>
-										<input type="radio" name="check_'.$attachment->id.'" class="o_check" id="o_check_'.$attachment->id.'" value="'.$attachment->id.'" '.$ochecked.' title="Other Sundry"><label for="o_check_'.$attachment->id.'" title="Other Sundry">O</label> 
-									</td>';
-									$downloadfile.='<td class="td_input">
-										<input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$attachment->id.'" value="" data-value="'.$attachment->supplier.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
-									</td>
-									<td class="td_input">
-										<input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$attachment->id.'" value="" data-value="'.$attachment->date_attachment.'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_disabled.'>
-									</td>
-									<td class="td_input">
-										<input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_one).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-									</td>
-									<td class="td_input">
-										<input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_two).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-									</td>
-									<td class="td_input">
-										<input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_three).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-									</td>
-									<td class="td_input">
-										<input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($attachment->percent_four).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" '.$attach_disabled.'>
-									</td>
-									<td class="td_input" style="border-left:1px solid #b5b3b3">
-										<input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->net).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-									</td>
-									<td class="td_input">
-										<input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->vat).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-									</td>
-									<td class="td_input">
-										<input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$attachment->id.'" value="" data-value="'.number_format_invoice_empty($attachment->gross).'" data-element="'.$attachment->id.'" data-file="'.$file->id.'" disabled>
-									</td>';
-									$downloadfile.='<td class="td_input">
-										<i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
-									</td>
-								</tr>';
-                if(count($get_sub_attachments))
-                {
-                  foreach($get_sub_attachments as $sub)
-                  {
-                    if($sub->p == 1) { $attach_sub_disabled = ''; }
-                    elseif($sub->s == 1) { $attach_sub_disabled = ''; }
-                    else { $attach_sub_disabled = 'disabled'; }
-
-                    $downloadfile.= '<tr class="attachment_tr attachment_tr_'.$attachment->id.'" data-element="'.$file->id.'">
-                      <td colspan="5">
-                        
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="supplier" class="form-control ps_data supplier supplier_'.$sub->id.'" value="" data-value="'.$sub->supplier.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="date_attachment" class="form-control ps_data date_attachment date_attachment_'.$sub->id.'" value="" data-value="'.$sub->date_attachment.'" data-element="'.$sub->id.'" data-file="'.$file->id.'" maxlength="50" '.$attach_sub_disabled.'>
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="percent_one_value" class="form-control ps_data percent_one_value percent_one_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_one).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="percent_two_value" class="form-control ps_data percent_two_value percent_two_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_two).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="percent_three_value" class="form-control ps_data percent_three_value percent_three_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_three).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="percent_four_value" class="form-control ps_data percent_four_value percent_four_value_'.$file->id.'" value="" data-value="'.number_format_invoice_empty($sub->percent_four).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" '.$attach_sub_disabled.'>
-                      </td>
-                      <td class="td_input" style="border-left:1px solid #b5b3b3">
-                        <input type="text" name="net_value" class="form-control ps_data net_value net_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->net).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="vat_value" class="form-control ps_data vat_value vat_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->vat).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
-                      </td>
-                      <td class="td_input">
-                        <input type="text" name="gross_value" class="form-control ps_data gross_value gross_value_'.$sub->id.'" value="" data-value="'.number_format_invoice_empty($sub->gross).'" data-element="'.$sub->id.'" data-file="'.$file->id.'" disabled>
-                      </td>
-                      <td class="td_input">
-                        <i class="fa fa-circle" aria-hidden="true" style="display:none"></i>
-                      </td>
-                    </tr>';
-                  }
-                }
-			                }
-			            $downloadfile.='</table>
-	              	</div>
-	              	<div class="col-md-4 show_iframe" style="display:none;z-index: 99999999999;">
-	              		<a href="javascript:" class="show_iframe_prev common_black_button" style="float:left; margin-top:-36px" >Previous</a> 
-	              		<a href="javascript:" class="show_iframe_next common_black_button" style="float:left; margin-top:-36px;margin-left:105px">Next</a> 
-	              		<label class="pdf_multipage">Note: Multipage</label>
-	              		<a href="javascript:" class="show_iframe_download common_black_button" style="float:right; margin-top:-36px" download>Download</a> 
-	              		<div style="width:100%;background:#b0a8a8;height:800px">
-	              			<iframe name="attachment_pdf" class="attachment_pdf" src="" style="width:100%;height: 800px;"></iframe>
-	              		</div>
-	              	</div>
-	              </div>';
-              }
-              else{
-                $downloadfile ='';
-              }
-              /*<i class="fa fa-download download_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download All Attachments"></i>*/
-              if(count($attachments)){
-                $deleteall = '<i class="fa fa-minus-square delete_all_image '.$disable_class.'" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Delete All Attachments"></i>
-                
-                <i class="fa fa-cloud-download download_rename_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download & Rename All Attachments"></i>';
-              }
-
-              else{
-
-                $deleteall = '';
-
-              }
-              if(count($attachments))
-              {
-                $span = '<span style="color:#000">There are '.count($attachments).' file(s)</span>';
-              }
-              else{
-                $span = '';
-              }
-
-
-
-
-
-
-
               $notes_attachments = DB::table('in_file_attachment')->where('file_id',$file->id)->where('status',0)->where('notes_type', 1)->get();
-
-
-
               $download_notes='';
-
-
-
               if(count($notes_attachments)){                        
 
                 foreach($notes_attachments as $attachment){
@@ -1589,13 +1379,7 @@ elseif(Session::has('countupdated'))
               else{
                 $url_upload = URL::to('user/in_file?infile_item='.$file->id);
               }
-              if($ips_data > 0)
-              {
-                $ps_data_btn = '<i class="fa fa-dot-circle-o" style="color:green;font-size: 20px;"></i>';
-              }
-              else{
-                $ps_data_btn = '';
-              }
+              
 
           $output.='<tr class="infile_tr_body infile_tr_body_'.$file->id.'" id="infile_'.$file->id.'" data-element="'.$file->id.'">
 				<td '.$color.' valign="top" >'.$i.'</td>
@@ -1606,19 +1390,17 @@ elseif(Session::has('countupdated'))
 					<span style="color: #0300c1;">'.$file->description.'</span>
 					<div style="clear:both"></div>
               	</td>
-              	<td '.$color.' colspan="5">';
-              		$output.='<input type="button" class="common_black_button show_previous" value="Load Previously Entered P/S" data-element="'.$file->id.'"> '.$ps_data_btn.'
+              	<td '.$color.' colspan="2">';
+              		$output.='<input type="button" class="common_black_button show_previous show_previous_'.$file->id.'" value="Load Previously Entered P/S" data-element="'.$file->id.'" style="display:none"> 
               	</td>
+                <td '.$color.' colspan="3">';
+                  $output.='<input type="button" class="common_black_button integrity_check" value="Integrity Check" data-element="'.$file->id.'">
+                  <input type="button" class="common_black_button show_attachments" value="Show Attachments" data-element="'.$file->id.'">
+                </td>
             </tr>
             <tr class="infile_tr_body infile_tr_body_'.$file->id.'" data-element="'.$file->id.'">
-            	<td colspan="9">
-            		'.$downloadfile.'
-					<i class="fa fa-plus faplus '.$disable_class.'" style="margin-top:10px" aria-hidden="true" title="Add Attachment"></i>              
-					'.$deleteall.'<br/><br/>
-					<div style="width:100%; height:auto; float:left; padding-bottom:10px; color: #0300c1;">Notes:
-					  <br/> '.$span.'
-					</div>
-					<div class="clearfix"></div>
+            	<td colspan="9" class="show_attachments_td" id="show_attachments_td_'.$file->id.'">
+            		
             	</td>
             </tr>
             <tr class="infile_tr_body infile_tr_body_'.$file->id.' infile_tr_body_last_'.$file->id.'" data-element="'.$file->id.'">
@@ -1802,6 +1584,10 @@ elseif(Session::has('countupdated'))
 
 
 <div class="modal_load"></div>
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Infile Items are loaded.</p>
+  <p style="font-size:18px;font-weight: 600;">Loading: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
 <input type="hidden" name="show_alert" id="show_alert" value="">
 <input type="hidden" name="pagination" id="pagination" value="1">
@@ -2165,6 +1951,21 @@ $(".percent_four_value").blur(function() {
 
 function add_secondary_function()
 {
+  $('.date_attachment').datetimepicker({
+        widgetPositioning: {
+            horizontal: 'left'
+        },
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-arrow-up",
+            down: "fa fa-arrow-down"
+        },
+        format: 'L',
+        format: 'DD/MM/YYYY',
+        defaultDate:'',   
+    });
+  
   //on keyup, start the countdown
   var typingTimer;                //timer identifier
   var doneTypingInterval = 1000;  //time in ms, 5 second for example
@@ -2415,6 +2216,23 @@ function add_secondary_function()
           }
         });
      }
+  });
+  $(".date_attachment").on("dp.hide", function (e) {
+    var attachment_id = $(this).attr("data-element");
+    var file_id = $(this).attr("data-file");
+    if($(".infile_tr_body_"+file_id).find(".show_previous").hasClass('disabled_prev_btn'))
+    {
+      var dateval = $(this).val();
+      $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_date_filled'); ?>",
+        type:"post",
+        data:{id:attachment_id,dateval:dateval},
+        success: function(result)
+        {
+
+        }
+      })
+    }
   });
 }
 // Basic example
@@ -2801,7 +2619,167 @@ $(window).dblclick(function(e) {
     }
 	}
 });
+function next_integrity_check(count)
+{
+  var fileid = $(".integrity_attachment:eq("+count+")").attr("data-element");
+  var keyval = $(".integrity_attachment:eq("+count+")").attr("data-key");
+  $.ajax({
+    url:"<?php echo URL::to('user/check_files_in_files'); ?>",
+    type:"post",
+    data:{fileid:fileid,type:keyval},
+    success:function(result)
+    {
+    	setTimeout( function() {
+	      $(".integrity_status_"+fileid).html(result);
+	      var countval = count + 1;
+	      if($(".integrity_attachment:eq("+countval+")").length > 0)
+	      {
+	        next_integrity_check(countval);
+	        $("#apply_first").html(countval);
+	      }
+	      else{
+	        $("body").removeClass("loading_apply");
+	        $("#export_integrity_filename").show();
+	      }
+	  	},200);
+    }
+  });
+}
+function next_integrity_check_div(count)
+{
+    var fileid = $(".integrity_check:eq("+count+")").attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/check_integrity_files'); ?>",
+      type:"post",
+      data:{fileid:fileid},
+      success:function(result)
+      {
+      	setTimeout( function() {
+	        $("#integrity_check_body").append(result);
+	        var countval = count + 1;
+	        if($(".integrity_check:eq("+countval+")").length > 0)
+	        {
+	          next_integrity_check_div(countval);
+	          $("#apply_first").html(countval);
+	        }
+	        else{
+	          $(".integrity_check_modal").modal("show");
+	          $("#export_integrity_filename").hide();
+	          $("body").removeClass("loading_apply");
+	        }
+	    },200);
+      }
+    });
+}
 $(window).click(function(e) {
+  if($(e.target).hasClass('show_attachments'))
+  {
+    if($(e.target).hasClass('remove_attachments'))
+    {
+      var fileid = $(e.target).attr("data-element");
+      $("#show_attachments_td_"+fileid).html("");
+      $(".show_previous_"+fileid).parents("td:first").find(".fa-dot-circle-o").detach();
+      $(e.target).removeClass("remove_attachments");
+      $(e.target).val("Show Attachments");
+      $(".show_previous_"+fileid).hide();
+    }
+    else{
+      $("body").addClass("loading");
+      setTimeout(function() {
+        var fileid = $(e.target).attr("data-element");
+        $.ajax({
+          url:"<?php echo URL::to('user/show_attachments_infile'); ?>",
+          type:"post",
+          dataType:"json",
+          data:{fileid:fileid},
+          success:function(result)
+          {
+            $(e.target).addClass("remove_attachments");
+            $("#show_attachments_td_"+fileid).html(result['output']);
+            $(".show_previous_"+fileid).show();
+            $(".show_previous_"+fileid).parents("td:first").append(result['ps_data_btn']);
+            $(e.target).val("Hide Attachments");
+            $('[data-toggle="tooltip"]').tooltip();
+            add_secondary_function();
+            $("body").removeClass("loading");
+          }
+        });
+      },1000);
+    }
+  }
+  if($(e.target).hasClass('integrity_check_for_all'))
+  {
+    $("body").addClass("loading_apply");
+    $("#integrity_check_body").html("");
+    var countintegrity = $(".integrity_check").length;
+    $("#apply_last").html(countintegrity);
+    var fileid = $(".integrity_check:eq(0)").attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/check_integrity_files'); ?>",
+      type:"post",
+      data:{fileid:fileid},
+      success:function(result)
+      {
+        setTimeout( function() {
+        	$("#integrity_check_body").append(result);
+	        if($(".integrity_check:eq(1)").length > 0)
+	        {
+	          next_integrity_check_div(1);
+	          $("#apply_first").html(1);
+	        }
+	        else{
+	          $(".integrity_check_modal").modal("show");
+	          $("#export_integrity_filename").hide();
+	          $("body").removeClass("loading_apply");
+	        }
+        },200);
+      }
+    });
+  }
+  if($(e.target).hasClass('integrity_check'))
+  {
+    $("body").addClass("loading");
+    var fileid = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/check_integrity_files'); ?>",
+      type:"post",
+      data:{fileid:fileid},
+      success:function(result)
+      {
+        $("#integrity_check_body").html(result);
+        $(".integrity_check_modal").modal("show");
+        $("#export_integrity_filename").hide();
+        $("body").removeClass("loading");
+      }
+    });
+  }
+  if($(e.target).hasClass("check_now"))
+  {
+    $("body").addClass("loading_apply");
+    var countintegrity = $(".integrity_attachment").length;
+    $("#apply_last").html(countintegrity);
+    var fileid = $(".integrity_attachment:eq(0)").attr("data-element");
+    var keyval = $(".integrity_attachment:eq(0)").attr("data-key");
+    $.ajax({
+      url:"<?php echo URL::to('user/check_files_in_files'); ?>",
+      type:"post",
+      data:{fileid:fileid,type:"0"},
+      success:function(result)
+      {
+      	setTimeout( function() {
+	        $(".integrity_status_"+fileid).html(result);
+	        if($(".integrity_attachment:eq(1)").length > 0)
+	        {
+	          next_integrity_check(1);
+	          $("#apply_first").html(1);
+	        }
+	        else{
+	          $("body").removeClass("loading_apply");
+	        }
+	    },200);
+      }
+    });
+  }
   if($(e.target).hasClass('add_secondary'))
   {
     var attach_id = $(e.target).attr("data-element");
@@ -3094,63 +3072,62 @@ $(window).click(function(e) {
   if($(e.target).hasClass('make_task_live'))
   {
     e.preventDefault();
-    if($("#internal_checkbox").is(":checked"))
+    if($("#create_task_form").valid())
     {
-        var taskvalue = $("#idtask").val();
-        if(taskvalue == "")
+      if($("#internal_checkbox").is(":checked"))
+      {
+          var taskvalue = $("#idtask").val();
+          if(taskvalue == "")
+          {
+            alert("Please select the Task Name and then make the task as live");
+            return false;
+          }
+      }
+      else{
+        var clientid = $("#client_search_task").val();
+        if(clientid == "")
         {
-          alert("Please select the Task Name and then make the task as live");
+          alert("Please select the Client and then make the task as live");
           return false;
         }
-    }
-    else{
-      var clientid = $("#client_search_task").val();
-      if(clientid == "")
-      {
-        alert("Please select the Client and then make the task as live");
-        return false;
       }
-    }
-    if (CKEDITOR.instances.editor_2)
-    {
-      var comments = CKEDITOR.instances['editor_2'].getData();
-      if(comments == "")
+      if (CKEDITOR.instances.editor_2)
       {
-        alert("Please Enter Task Specifics and then make the task as Live.");
-        return false;
+        var comments = CKEDITOR.instances['editor_2'].getData();
+        if(comments == "")
+        {
+          alert("Please Enter Task Specifics and then make the task as Live.");
+          return false;
+        }
+        else{
+          if($(".2_bill_task").is(":checked"))
+          {
+            $("#create_task_form").submit();
+          }
+          else{
+            $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+          }
+        }
       }
       else{
         if($(".2_bill_task").is(":checked"))
         {
-          $("#create_task_form").valid();
-      $("#create_task_form").submit();
+          $("#create_task_form").submit();
         }
         else{
           $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
         }
       }
     }
-    else{
-      if($(".2_bill_task").is(":checked"))
-      {
-        $("#create_task_form").valid();
-      $("#create_task_form").submit();
-      }
-      else{
-        $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
-      }
-    }
   }
   if($(e.target).hasClass('yes_make_task_live'))
   {
     $(".2_bill_task").prop("checked",true);
-    $("#create_task_form").valid();
       $("#create_task_form").submit();
   }
   if($(e.target).hasClass('no_make_task_live'))
   {
     $(".2_bill_task").prop("checked",false);
-    $("#create_task_form").valid();
       $("#create_task_form").submit();
   }
   if($(e.target).hasClass('accept_recurring'))
@@ -5189,13 +5166,12 @@ if($(e.target).hasClass('bpso_all_check')){
   $.ajax({
         url: "<?php echo URL::to('user/bpso_all_check') ?>",
         type:"post",        
-        data:{id:id, type:type},
-        dataType: "json",       
+        data:{id:id, type:type},   
         success:function(result){
-          $(e.target).parents(".infile_inner_table_row").html(result['table_content']);
+          $(e.target).parents(".infile_inner_table_row").html(result);
           $("body").removeClass("loading");
           $('[data-toggle="tooltip"]').tooltip();
-                         
+          add_secondary_function();         
     }
   });
 

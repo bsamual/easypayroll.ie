@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('login_user_id'); ?>
 <style>
 .sub_title{
     font-size: 18px;

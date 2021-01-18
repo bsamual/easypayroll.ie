@@ -1,4 +1,5 @@
 <?php $__env->startSection('content'); ?>
+<?php $user_login_id = Session::get('userid'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 
@@ -195,7 +196,7 @@ a:hover{text-decoration: underline;}
             $i=1;            
             if(count($joblist)){              
               foreach ($joblist as $jobs) {
-                    $client_details = DB::table('cm_clients')->where('client_id', $jobs->client_id)->first();
+                    $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $jobs->client_id)->first();
                     if(count($client_details) != ''){
                       $client_name = $client_details->company.' ('.$jobs->client_id.')';
                     }
@@ -203,7 +204,7 @@ a:hover{text-decoration: underline;}
                       $client_name = 'N/A';
                     }
 
-                    $task_details = DB::table('time_task')->where('id', $jobs->task_id)->first();
+                    $task_details = DB::table('time_task')->where('user_login_id',$user_login_id)->where('id', $jobs->task_id)->first();
 
                     if(count($task_details) != ''){
                       $task_name = $task_details->task_name;
@@ -224,7 +225,7 @@ a:hover{text-decoration: underline;}
                       $task_type = 'N/A';
                     }
 
-                    $user_details = DB::table('user')->where('user_id', $jobs->user_id)->first();
+                    $user_details = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id', $jobs->user_id)->first();
 
                     //-----------Job Time Start----------------
 
@@ -277,7 +278,7 @@ a:hover{text-decoration: underline;}
                     //-----------Job Time End----------------
                     if($jobs->quick_job == 0){ $quick_job = 'NO'; } else { $quick_job = 'YES'; }
 
-                    $ratelist = DB::table('user_cost')->where('user_id', $jobs->user_id)->get();
+                    $ratelist = DB::table('user_cost')->where('user_login_id',$user_login_id)->where('user_id', $jobs->user_id)->get();
 
                     /*$rate = DB::select('SELECT * from `user_cost` WHERE user_id IN ('.$jobs->user_id.') AND UNIX_TIMESTAMP(`from_date`) >= "'.$jobs->job_date.'" AND UNIX_TIMESTAMP(`to_date`) <= "'.$jobs->job_date.'"');*/
 

@@ -1,4 +1,6 @@
 <?php $__env->startSection('content'); ?>
+
+<?php $user_login_id = Session::get('userid'); ?>
 <style>
 .fa-trash, .fa-text-width, .fa-ellipsis-h { margin-left:10px; }
 .add_attachment_comment{
@@ -245,7 +247,7 @@ input:checked + .slider:before {
                 $fileoutput = '';
                 if(isset($_GET['message_id']))
                 {
-                  $files = DB::table('messageus_files')->where('message_id',$_GET['message_id'])->get();
+                  $files = DB::table('messageus_files')->where('user_login_id',$user_login_id)->where('message_id',$_GET['message_id'])->get();
                   if(count($files))
                   {
                     foreach($files as $file)

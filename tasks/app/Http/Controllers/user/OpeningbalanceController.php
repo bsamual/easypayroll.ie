@@ -58,7 +58,7 @@ class OpeningbalanceController extends Controller {
 		$client = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();
 		
 		$class = DB::table('cm_class')->where('status', 0)->get();	
-		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		return view('user/opening_balance/opening_balance_manager', array('title' => 'Opening Balance Manager', 'clientlist' => $client, 'classlist' => $class, 'userlist' => $user));
 	}
 	public function client_opening_balance_manager()
@@ -235,7 +235,7 @@ class OpeningbalanceController extends Controller {
                 <td>'.$invoice->invoice_number.'</td>
                 <td>'.date("d-M-Y", strtotime($invoice->invoice_date)).'</td>
                 <td style="text-align: right">'.number_format_invoice($invoice->gross).'</td>
-                <td style="text-align: right">'.($invoice->import_balance == "")?'-':number_format_invoice($invoice->import_balance).'</td>
+                <td style="text-align: right">'.number_format_invoice($invoice->import_balance).'</td>
                 <td style="text-align: right">'.$balance_remaining.'</td>
                 
               </tr>';
