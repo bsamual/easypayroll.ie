@@ -713,7 +713,7 @@ body.loading_apply .modal_load_apply {
                             {
                               ${'periodweek'.$wk} = '<div class="payp30_dash week'.$wk.'_class week'.$wk.'_class_'.$task->id.'-'.$i.' '; if($year->show_active == 1) { if($year->week_from <=$wk && $year->week_to >=$wk) { ${'periodweek'.$wk}.='hide_column_inner'; } else { ${'periodweek'.$wk}.='show_column_inner'; } } ${'periodweek'.$wk}.='">-</div>';
                             }
-                            elseif(${'period'.$i}['week'.$wk] == 0){ 
+                            elseif((${'period'.$i}['week'.$wk] == 0) && (${'period'.$i}['week'.$wk] != '0.00')){ 
                               ${'periodweek'.$wk} = '<div class="payp30_dash week'.$wk.'_class week'.$wk.'_class_'.$task->id.'-'.$i.' '; if($year->show_active == 1) { if($year->week_from <=$wk && $year->week_to >=$wk) { ${'periodweek'.$wk}.='hide_column_inner'; } else { ${'periodweek'.$wk}.='show_column_inner'; } } ${'periodweek'.$wk}.='">-</div>';
                             }
                             else{

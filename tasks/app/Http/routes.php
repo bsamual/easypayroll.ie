@@ -1735,3 +1735,6 @@ Route::get('/user/two_bill_manager', 'user\TwobillController@two_bill_manager');
 Route::post('/user/get_tasks_invoices', 'user\TwobillController@get_tasks_invoices');
 Route::post('/user/update_invoice_for_task', 'user\TwobillController@update_invoice_for_task');
 Route::post('/user/remove_2bill_status', 'user\TwobillController@remove_2bill_status');
+
+Route::post('/user/change_billing_status', 'user\TwobillController@change_billing_status');
+

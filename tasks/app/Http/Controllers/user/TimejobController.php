@@ -7027,9 +7027,6 @@ class TimejobController extends Controller {
 		        }
 		        
 		        $jobtime =   $hours.':'.$minutes.':00';
-
-		        $hour_total = $hours+$hour_total;
-		        $minute_total = $minutes+$minute_total;
 		        $minutes_sub_total = $tot_mins+$minutes_sub_total;
 
 				$task_details = DB::table('time_task')->where('id',$task->task_id)->first();
@@ -7058,6 +7055,23 @@ class TimejobController extends Controller {
 					$minute_total = $minute_total;
 				}
 			}
+
+			$hour_total = floor($minutes_sub_total / 60);
+			$minute_total = ($minutes_sub_total -   floor($minutes_sub_total / 60) * 60);
+	        if($hour_total <= 9)
+	        {
+	          $hour_total = '0'.$hour_total;
+	        }
+	        else{
+	          $hour_total = $hour_total;
+	        }
+	        if($minute_total <= 9)
+	        {
+	          $minute_total = '0'.$minute_total;
+	        }
+	        else{
+	          $minute_total = $minute_total;
+	        }
 			$output.='
 				<div class="col-md-2 table_padding"></div>
 				<div class="col-md-4 table_padding text-right"><b>Total</b></div>

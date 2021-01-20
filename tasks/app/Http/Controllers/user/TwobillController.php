@@ -114,5 +114,11 @@ class TwobillController extends Controller {
 		$data['two_bill'] = 0;
 		DB::table('taskmanager')->where('id',$taskid)->update($data);
 	}
+	public function change_billing_status()
+	{
+		$taskid = Input::get('taskid');
+		$data['billing_status'] = Input::get('status');
+		DB::table('taskmanager')->where('id',$taskid)->update($data);
+	}
 }
 

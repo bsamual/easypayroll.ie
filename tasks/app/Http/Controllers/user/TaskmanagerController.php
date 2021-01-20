@@ -4193,12 +4193,24 @@ class TaskmanagerController extends Controller {
                     if($task->status == 1)
                     {
                     	$task_spec_closed = DB::table('taskmanager_specifics')->where('task_id',$task->id)->orderBy('id','desc')->first();
-                    	$open_tasks.='<tr>
-	                        <td style="background: #2fd9ff;font-weight:700;text-decoration: underline;">Date Closed:</td>
-	                        <td style="background: #2fd9ff">
-	                          <spam>'.date('d-M-Y', strtotime($task_spec_closed->allocated_date)).'</spam>
-	                        </td>
-	                    </tr>';
+                    	if(count($task_spec_closed))
+                    	{
+                    		$open_tasks.='<tr>
+		                        <td style="background: #2fd9ff;font-weight:700;text-decoration: underline;">Date Closed:</td>
+		                        <td style="background: #2fd9ff">
+		                          <spam>'.date('d-M-Y', strtotime($task_spec_closed->allocated_date)).'</spam>
+		                        </td>
+		                    </tr>';
+                    	}
+                    	else{
+                    		$open_tasks.='<tr>
+		                        <td style="background: #2fd9ff;font-weight:700;text-decoration: underline;">Date Closed:</td>
+		                        <td style="background: #2fd9ff">
+		                          <spam></spam>
+		                        </td>
+		                    </tr>';
+                    	}
+                    	
                     }
 	                $open_tasks.='<tr>
 	                  <td style="background:#2fd9ff;font-weight:700;text-decoration: underline;">Task Specifics:</td>

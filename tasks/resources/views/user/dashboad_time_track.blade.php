@@ -269,7 +269,7 @@ body #coupon {
 
 </style>
 
-<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document" style="width:35%">
 
@@ -504,7 +504,7 @@ body #coupon {
 
 
 
-<div class="modal fade stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
     <form action="<?php echo URL::to('user/time_job_stop')?>" method="post" class="add_new_form" id="time_job_stop">
         <div class="modal-content">
@@ -1053,7 +1053,7 @@ body #coupon {
 
 </div>
  -->
-<div class="modal fade stop_quick_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade stop_quick_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
 
@@ -1261,7 +1261,7 @@ body #coupon {
 
 
 
-<div class="modal fade edit_stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade edit_stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
 
@@ -1682,7 +1682,7 @@ body #coupon {
 
 
 
-<div class="modal fade take_break_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade take_break_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document">
 
@@ -1750,7 +1750,7 @@ body #coupon {
 
 
 
-<div class="modal fade break_time_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade break_time_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document">
 
@@ -2682,7 +2682,7 @@ body #coupon {
                       &nbsp;&nbsp;|&nbsp;&nbsp;
                       <a href="javascript:" class="edit_close_job" data-element="'.$jobs->id.'">Edit Job</a>
 
-                        <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
+                        <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
 
                             <div class="modal-dialog" style="width:20%">
 
@@ -2842,7 +2842,7 @@ body #coupon {
 
                                 <a href="javascript:" class="edit_close_job" data-element="'.$child->id.'">Edit Job</a>
 
-                                  <div id="comments_'.$child->id.'" class="modal fade" role="dialog" >
+                                  <div id="comments_'.$child->id.'" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
 
                                       <div class="modal-dialog" style="width:20%">
 

@@ -1,2 +1,13 @@
-SDSDSDSD
----TASK CREATED - 31-Dec-2020 BY Bob Samual AND ALLOCATED TO Guilfoyle Ciaran DUE BY 31-Dec-2020---
+---TASK CREATED - 20-Sep-2020 BY Guilfoyle Ciaran AND ALLOCATED TO Bob Samual DUE BY 20-Sep-2020---
+Sam
+one of the help buttons is out of line on teh new payemrs layout screen....
+&nbsp;
+####Bob Samual has added the following comment to this Task on 21 Sep 2020#### Hi Ciaran, we have fixed the help button design issue you have mentioned. Please check and advise.
+++++Bob Samual has allocated this task to Guilfoyle Ciaran on 21-Sep-2020++++
+####Guilfoyle Ciaran has added the following comment to this Task on 21 Sep 2020#### looks the same to me!
+&nbsp;
+++++Guilfoyle Ciaran has allocated this task to Bob Samual on 21-Sep-2020++++
+####Bob Samual has added the following comment to this Task on 22 Sep 2020#### Hi Ciaran, Please send us a screenshot of the design issue you are referring to so we can troubleshoot it accordingly.
+++++Bob Samual has allocated this task to Guilfoyle Ciaran on 22-Sep-2020++++
+++++Guilfoyle Ciaran has allocated this task to Bob Samual on 22-Sep-2020++++
+++++Bob Samual has allocated this task to User Sample on 20-Jan-2021++++

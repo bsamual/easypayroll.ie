@@ -3752,10 +3752,10 @@ class CrmController extends Controller {
 						$path1 = $explode[0];
 						if($attach == "")
 						{
-							$attach = $path;
+							$attach = $path1;
 						}
 						else{
-							$attach = $attach.'||'.$path;
+							$attach = $attach.'||'.$path1;
 						}
 						$email->AddAttachment( $path1 , $explode[1]);
 					}

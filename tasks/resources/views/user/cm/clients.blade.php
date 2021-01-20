@@ -533,7 +533,7 @@ if(!empty($_GET['import_type_existing']))
                               <input class="form-control cro_add" name="cro" placeholder="Enter CRO" type="text" readonly onfocus="this.removeAttribute('readonly');">
                           </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" style="margin-top: -7px;">
                           <spam style="margin-bottom: 5px;font-weight: 700;">ARD : <input type="checkbox" name="disable_ard" class="disable_ard_add" id="disable_ard_add" value="1"><label for="disable_ard_add">Disable<label></spam>
                           <div class="form-group">                
                               <input class="form-control ard_add" name="ard" placeholder="Enter ARD" type="text" readonly onfocus="this.removeAttribute('readonly');">
@@ -1012,7 +1012,7 @@ if(!empty($_GET['import_type_existing']))
                                   <input class="form-control cro_class" name="cro" placeholder="Enter CRO" type="text" readonly onfocus="this.removeAttribute('readonly');">
                               </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6" style="margin-top: -7px;">
                               <spam style="margin-bottom: 5px;font-weight: 700;">ARD : <input type="checkbox" name="disable_ard" class="disable_ard_class" id="disable_ard_class" value="1"><label for="disable_ard_class" style="float:right">Disable<label></spam>
                               <div class="form-group">                
                                   <input class="form-control ard_class" name="ard" placeholder="Enter ARD" type="text" readonly onfocus="this.removeAttribute('readonly');">
