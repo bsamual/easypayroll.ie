@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <style>
 .select_button table tbody tr td a{
     background: #000;
@@ -42,15 +41,9 @@ body{background:url('<?php echo URL::to('assets/images/bg_weekly.jpg')?>') no-re
   <div class="page_title">
     SELECT WEEK
     <?php
-    $current_week = DB::table('week')->where('user_login_id',$user_login_id)->orderBy('week_id','desc')->first();
-    if(count($current_week))
-    {
-        ?>
-    <a href="<?php echo URL::to('user/select_week/'.base64_encode($current_week->week_id)); ?>" class="common_black_button" style="float:right">Open Current Week</a>
-    <?php
-    }
+    $current_week = DB::table('week')->orderBy('week_id','desc')->first();
     ?>
-    
+    <a href="<?php echo URL::to('user/select_week/'.base64_encode($current_week->week_id)); ?>" class="common_black_button" style="float:right">Open Current Week</a>
   </div>
     <div class="select_button">
         <table class="table table_bg table_style">
@@ -80,10 +73,10 @@ body{background:url('<?php echo URL::to('assets/images/bg_weekly.jpg')?>') no-re
             if(count($weeklist)){
                 $count = count($arraydate) - 1;
               foreach($weeklist as $key => $week){
-                $task_count = DB::table('task')->where('user_login_id',$user_login_id)->where('task_week',$week->week_id)->count();
-                $task_completed = DB::table('task')->where('user_login_id',$user_login_id)->where('task_week',$week->week_id)->where('task_status',1)->count();
-                $task_donot_completed = DB::table('task')->where('user_login_id',$user_login_id)->where('task_week',$week->week_id)->where('task_status',0)->where('task_complete_period',1)->count();
-                $task_incomplete = DB::table('task')->where('user_login_id',$user_login_id)->where('task_week',$week->week_id)->where('task_status',0)->where('task_complete_period',0)->count();
+                $task_count = DB::table('task')->where('task_week',$week->week_id)->count();
+                $task_completed = DB::table('task')->where('task_week',$week->week_id)->where('task_status',1)->count();
+                $task_donot_completed = DB::table('task')->where('task_week',$week->week_id)->where('task_status',0)->where('task_complete_period',1)->count();
+                $task_incomplete = DB::table('task')->where('task_week',$week->week_id)->where('task_status',0)->where('task_complete_period',0)->count();
             ?>
             <tr>
                 <td><a href="<?php echo URL::to('user/select_week/'.base64_encode($week->week_id))?>" class="btn">Week <?php echo $week->week?></a></td>

@@ -1,8 +1,17 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="http://malsup.github.com/jquery.form.js"></script>
 <style>
+  .fa-star-o { color:#000; }
+  .fa-star { color:#ff0; }
+  .start_rating { cursor:pointer; }
+  .start_yellow { color:yellow; font-weight:800; }
+  .start_brown { color:brown; font-weight:800; }
+  .start_orange { color:orange; font-weight:800; }
+  .start_lred { color:#f04444; font-weight:800; }
+  .start_red { color:red; font-weight:800; }
+  .disabled_star { color:grey !important; }
+  .error{ color:#f00; }
   .secret_button:focus { background: #7bab15;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
@@ -965,7 +974,7 @@ body.loading .modal_load {
                   <select name="select_user" class="form-control select_user_author" required>
                     <option value="">Select User</option>        
                       <?php
-                      $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
                       $selected = '';
                       if(count($userlist)){
                         foreach ($userlist as $user) {
@@ -1025,7 +1034,7 @@ body.loading .modal_load {
                 if(isset($_GET['client_id']))
                 {
                   $client_id = $_GET['client_id'];
-                  $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id',$client_id)->first();
+                  $client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
                   $company = $client_details->company.'-'.$client_id;
                 }
                 else{
@@ -1049,7 +1058,7 @@ body.loading .modal_load {
                     <ul class="dropdown-menu internal_task_details" role="menu"  aria-labelledby="dropdownMenu" style="width: 100%">
                       <li><a tabindex="-1" href="javascript:" class="tasks_li_internal">Select Task</a></li>
                         <?php
-                        $taskslist = DB::table('time_task')->where('user_login_id',$user_login_id)->where('task_type', 0)->orderBy('task_name', 'asc')->get();
+                        $taskslist = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
                         if(count($taskslist)){
                           foreach ($taskslist as $single_task) {
                             if($single_task->task_type == 0){
@@ -2105,7 +2114,7 @@ body.loading .modal_load {
 
 
 
-                <?php $levels = DB::table('p30_tasklevel')->where('user_login_id',$user_login_id)->where('status',0)->orderBy('name','desc')->get(); ?>
+                <?php $levels = DB::table('p30_tasklevel')->where('status',0)->orderBy('name','desc')->get(); ?>
 
 
 
@@ -2289,7 +2298,7 @@ body.loading .modal_load {
             </thead>
             <tbody id="scheme_tbody">
               <?php
-              $schemes = DB::table('schemes')->where('user_login_id',$user_login_id)->get();
+              $schemes = DB::table('schemes')->get();
               if(count($schemes))
               {
                 $i = 1;
@@ -2388,7 +2397,7 @@ body.loading .modal_load {
 
 
 
-            $years = DB::table('year')->where('user_login_id',$user_login_id)->where('delete_status',0)->where('year_status', 0)->orderBy('year_name','dec')->get();
+            $years = DB::table('year')->where('delete_status',0)->where('year_status', 0)->orderBy('year_name','dec')->get();
 
 
 
@@ -2412,7 +2421,7 @@ body.loading .modal_load {
 
 
 
-                $current_year = DB::table('year')->where('user_login_id',$user_login_id)->orderBy('year_name', 'desc')->first();
+                $current_year = DB::table('year')->orderBy('year_name', 'desc')->first();
 
 
 
@@ -3008,7 +3017,7 @@ body.loading .modal_load {
 
 
 
-                <?php $levels = DB::table('p30_tasklevel')->where('user_login_id',$user_login_id)->where('status',0)->orderBy('name','desc')->get(); ?>
+                <?php $levels = DB::table('p30_tasklevel')->where('status',0)->orderBy('name','desc')->get(); ?>
 
 
 
@@ -3169,17 +3178,8 @@ body.loading .modal_load {
 
 
     </form>
-
-
-
   </div>
-
-
-
 </div>
-
-
-
 <div class="modal fade emailunsent" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 
 
@@ -4253,9 +4253,9 @@ body.loading .modal_load {
       <ul style="margin-right: 13%;float:left">
         <?php
           $this_week = $weekid->week_id;
-          $prev_week = DB::table('week')->where('user_login_id',$user_login_id)->where('week_id','<',$this_week)->where('year',$weekid->year)->orderBy('week_id','desc')->first();
-          $next_week = DB::table('week')->where('user_login_id',$user_login_id)->where('week_id','>',$this_week)->where('year',$weekid->year)->orderBy('week_id','asc')->first();
-          $current_week = DB::table('week')->where('user_login_id',$user_login_id)->orderBy('week_id','desc')->first();
+          $prev_week = DB::table('week')->where('week_id','<',$this_week)->where('year',$weekid->year)->orderBy('week_id','desc')->first();
+          $next_week = DB::table('week')->where('week_id','>',$this_week)->where('year',$weekid->year)->orderBy('week_id','asc')->first();
+          $current_week = DB::table('week')->orderBy('week_id','desc')->first();
           
           if(count($prev_week))
           {
@@ -4371,7 +4371,7 @@ body.loading .modal_load {
 
 
 
-        <?php $check_incomplete = Db::table('user_login')->where('userid',$user_login_id)->first(); if($check_incomplete->week_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
+        <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->week_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
 
         <li>
 
@@ -4634,7 +4634,7 @@ if(Session::has('error')) { ?>
 
                     ?>
 
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -4649,7 +4649,7 @@ if(Session::has('error')) { ?>
 
                   <select class="form-control default_staff" data-element="<?php echo $result->task_id; ?>" <?php echo $disabled; ?>>                    
                     <?php
-                    $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                    $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
                     $uname = '<option value="">Select Username</option>';
                       if(count($userlist)){
                         foreach ($userlist as $singleuser) {
@@ -4695,6 +4695,11 @@ if(Session::has('error')) { ?>
                   }
 
                   ?>
+                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
 
                   </td>
 
@@ -4791,11 +4796,10 @@ if(Session::has('error')) { ?>
                       <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>" <?php echo $prev_checked; ?>><label class="same_as_last_label" for="same_as_last_<?php echo $result->task_id; ?>" style="<?php echo $prev_text; ?>">Same as last week</label>
                       <div class="files_received_div">
                         <?php
-                        $attachments = DB::table('task_attached')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->where('network_attach',1)->get();
+                        $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -5205,7 +5209,7 @@ if(Session::has('error')) { ?>
 
 
 
-                            $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                            $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 
 
 
@@ -5325,7 +5329,7 @@ if(Session::has('error')) { ?>
                       <i class="fa fa-plus faplus <?php echo $disabled; ?>" style="margin-top:10px" aria-hidden="true" ></i>
                       <div class="file_received_div_right">
                       <?php
-                      $attachments = DB::table('task_attached')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->where('network_attach',0)->get();
+                      $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
                       if(count($attachments))
                       {
                           echo '<i class="fa fa-minus-square fadeleteall '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
@@ -5377,12 +5381,12 @@ if(Session::has('error')) { ?>
 
 
 
-                    <a href="javascript:" class="fa fa-envelope <?php echo $disabled; ?> email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
+                    <a href="javascript:" class="fa fa-envelope email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
 
 
 
                     <a href="javascript:" class="<?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> resendemail_unsent" data-element="<?php echo $result->task_id; ?>">
-                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent <?php echo $disabled; ?>" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">
+                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">
                     </a>
 
                     <a href="javascript:" class="fa fa-file-text <?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> report_email_unsent" data-toggle="tooltip" title="Download Report as Pdf" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
@@ -5390,7 +5394,7 @@ if(Session::has('error')) { ?>
                     <?php
                     if($result->last_email_sent != '0000-00-00 00:00:00')
                     {
-                      $get_dates = DB::table('task_email_sent')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->get();
+                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
                       $last_date = '';
                       if(count($get_dates))
                       {
@@ -5688,7 +5692,7 @@ if(Session::has('error')) { ?>
 
                     ?>
 
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -5704,7 +5708,7 @@ if(Session::has('error')) { ?>
 
                   <select class="form-control default_staff" data-element="<?php echo $result->task_id; ?>" <?php echo $disabled; ?>>                    
                     <?php
-                    $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                    $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
                     $uname = '<option value="">Select Username</option>';
                       if(count($userlist)){
                         foreach ($userlist as $singleuser) {
@@ -5751,7 +5755,11 @@ if(Session::has('error')) { ?>
                   }
 
                   ?>
-
+                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
                   </td>
 
 
@@ -5844,11 +5852,11 @@ if(Session::has('error')) { ?>
 
                       <div class="files_received_div">
                         <?php
-                        $attachments = DB::table('task_attached')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->where('network_attach',1)->get();
+                        $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -6250,7 +6258,7 @@ if(Session::has('error')) { ?>
 
 
 
-                            $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                            $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 
 
 
@@ -6375,7 +6383,7 @@ if(Session::has('error')) { ?>
                       <div class="file_received_div_right">
                       <?php
 
-                      $attachments = DB::table('task_attached')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->where('network_attach',0)->get();
+                      $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
 
 
 
@@ -6456,13 +6464,13 @@ if(Session::has('error')) { ?>
 
 
 
-                    <a href="javascript:" class="fa fa-envelope <?php echo $disabled; ?> email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
+                    <a href="javascript:" class="fa fa-envelope email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
 
 
 
                     <a href="javascript:" class="<?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> resendemail_unsent" data-element="<?php echo $result->task_id; ?>">
 
-                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent <?php echo $disabled; ?>" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
+                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
 
                       
 
@@ -6473,7 +6481,7 @@ if(Session::has('error')) { ?>
                     <?php
                     if($result->last_email_sent != '0000-00-00 00:00:00')
                     {
-                      $get_dates = DB::table('task_email_sent')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->get();
+                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
                       $last_date = '';
                       if(count($get_dates))
                       {
@@ -6814,7 +6822,7 @@ if(Session::has('error')) { ?>
 
                     ?>
                     
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -6830,7 +6838,7 @@ if(Session::has('error')) { ?>
 
                   <select class="form-control default_staff" data-element="<?php echo $result->task_id; ?>" <?php echo $disabled; ?>>                    
                     <?php
-                    $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                    $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
                     $uname = '<option value="">Select Username</option>';
                       if(count($userlist)){
                         foreach ($userlist as $singleuser) {
@@ -6876,7 +6884,11 @@ if(Session::has('error')) { ?>
                   }
 
                   ?>
-
+                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
                   </td>
 
 
@@ -6968,11 +6980,11 @@ if(Session::has('error')) { ?>
                       <input type="checkbox" name="same_as_last" class="same_as_last" data-element="<?php echo $result->task_id; ?>" id="same_as_last_<?php echo $result->task_id; ?>" <?php echo $prev_checked; ?>><label class="same_as_last_label" for="same_as_last_<?php echo $result->task_id; ?>" style="<?php echo $prev_text; ?>">Same as last week</label>
                       <div class="files_received_div">
                         <?php
-                        $attachments = DB::table('task_attached')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->where('network_attach',1)->get();
+                        $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:-18px;margin-left: 21px;" aria-hidden="true" title="Delete All Attachments"></i>';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received :</h5>';
+                          echo '';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -7377,7 +7389,7 @@ if(Session::has('error')) { ?>
 
 
 
-                            $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                            $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 
 
 
@@ -7503,7 +7515,7 @@ if(Session::has('error')) { ?>
 
 
 
-                      $attachments = DB::table('task_attached')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->where('network_attach',0)->get();
+                      $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',0)->get();
 
 
 
@@ -7581,13 +7593,13 @@ if(Session::has('error')) { ?>
 
 
 
-                    <a href="javascript:" class="fa fa-envelope <?php echo $disabled; ?> email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
+                    <a href="javascript:" class="fa fa-envelope email_unsent <?php if($result->last_email_sent != '0000-00-00 00:00:00') { echo 'show_popup'; } ?>" data-toggle="tooltip" title="Email Unsent FIles" aria-hidden="true" data-element="<?php echo $result->task_id; ?>"></a>
 
 
 
                     <a href="javascript:" class="<?php if($result->last_email_sent == '0000-00-00 00:00:00') { echo 'disabled'; } ?> resendemail_unsent" data-element="<?php echo $result->task_id; ?>">
 
-                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent <?php echo $disabled; ?>" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
+                      <img src="<?php echo URL::to('assets/email_resend_icon.png')?>" class="resendemail_unsent" data-toggle="tooltip" title="Resend Email" aria-hidden="true" data-element="<?php echo $result->task_id; ?>" style="margin-top: -3px; height: 12px; width: auto;">  
 
                       
 
@@ -7598,7 +7610,7 @@ if(Session::has('error')) { ?>
                     <?php
                     if($result->last_email_sent != '0000-00-00 00:00:00')
                     {
-                      $get_dates = DB::table('task_email_sent')->where('user_login_id',$user_login_id)->where('task_id',$result->task_id)->get();
+                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
                       $last_date = '';
                       if(count($get_dates))
                       {
@@ -8254,53 +8266,122 @@ $(".client_search_class_task").autocomplete({
       }
   });
 $(window).click(function(e) {
+  if($(e.target).hasClass('start_rating'))
+  {
+    var taskid = $(e.target).attr("data-task");
+    var value = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/start_rating'); ?>",
+      type:"post",
+      data:{taskid:taskid,value:value},
+      success:function(result)
+      {
+        $(e.target).parents("td").find(".start_rating").removeClass("disabled_star");
+        $(e.target).addClass("disabled_star");
+        if(value == "4")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "3")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "2")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "1")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "0")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+      }
+    });
+  }
   if($(e.target).hasClass('email_unsent_files_btn'))
-  { 
-  	$("body").addClass("loading");
-    $('#email_unsent_form').ajaxForm({
-	      success:function(result){
-	          if(result == "1")
-	          {
-	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
-	          	$("body").removeClass("loading");
-	          }
-	          else if(result == "2")
-	          {
-	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
-	          	$("body").removeClass("loading");
-	          }
-	          else{
-	          	var date = result.split("||");
-	          	$("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
-	          	$("body").removeClass("loading");
-	          	$(".emailunsent").modal("hide");
-	          }
-	      }
-	}).submit();
+  {
+    for (instance in CKEDITOR.instances) 
+    {
+        CKEDITOR.instances['editor'].updateElement();
+    }
+    if($("#email_unsent_form").valid())
+    {
+      $("body").addClass("loading");
+      $('#email_unsent_form').ajaxForm({
+  	      success:function(result){
+  	          if(result == "1")
+  	          {
+  	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
+  	          	$("body").removeClass("loading");
+  	          }
+  	          else if(result == "2")
+  	          {
+  	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
+  	          	$("body").removeClass("loading");
+  	          }
+  	          else{
+  	          	var date = result.split("||");
+  	          	$("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
+  	          	$("body").removeClass("loading");
+  	          	$(".emailunsent").modal("hide");
+  	          }
+  	      }
+  	  }).submit();
+    }
   }
   if($(e.target).hasClass('resend_email_unsent_files_btn'))
   { 
-  	$("body").addClass("loading");
-    $('#resend_email_unsent_form').ajaxForm({
-	      success:function(result){
-	          if(result == "1")
-	          {
-	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
-	          	$("body").removeClass("loading");
-	          }
-	          else if(result == "2")
-	          {
-	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
-	          	$("body").removeClass("loading");
-	          }
-	          else{
-	          	var date = result.split("||");
-	          	$("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
-	          	$("body").removeClass("loading");
-	          	$(".resendemailunsent").modal("hide");
-	          }
-	      }
-	}).submit();
+    for (instance in CKEDITOR.instances) 
+    {
+        CKEDITOR.instances['editor_9'].updateElement();
+    }
+    if($("#resend_email_unsent_form").valid())
+    {
+    	$("body").addClass("loading");
+      $('#resend_email_unsent_form').ajaxForm({
+  	      success:function(result){
+  	          if(result == "1")
+  	          {
+  	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Email Field is empty. So Email is not sent</p>',fixed:true,width:"800px"});
+  	          	$("body").removeClass("loading");
+  	          }
+  	          else if(result == "2")
+  	          {
+  	          	$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Attachments are empty. Please attach the files before you sent an email.</p>',fixed:true,width:"800px"});
+  	          	$("body").removeClass("loading");
+  	          }
+  	          else{
+  	          	var date = result.split("||");
+  	          	$("#taskidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
+  	          	$("body").removeClass("loading");
+  	          	$(".resendemailunsent").modal("hide");
+  	          }
+  	      }
+  	   }).submit();
+    }
   }
   if($(e.target).hasClass('submit_dropzone'))
   {
@@ -8312,6 +8393,8 @@ $(window).click(function(e) {
       success:function(result)
       {
         $(e.target).parents("td:first").find(".files_received_div").html(result);
+        $(e.target).parents("tr:first").find(".task_label").css("color","#89ff00");
+        $(e.target).parents("tr:first").find(".task_started_checkbox").prop("checked",true);
         $(".dz-preview").detach();
     	$(".dz-message").parents(".dropzone").removeClass("dz-started");
       }
@@ -8501,35 +8584,46 @@ $(window).click(function(e) {
   if($(e.target).hasClass('make_task_live'))
   {
     e.preventDefault();
-    if($("#internal_checkbox").is(":checked"))
+    if($("#create_task_form").valid())
     {
-        var taskvalue = $("#idtask").val();
-        if(taskvalue == "")
+      if($("#internal_checkbox").is(":checked"))
+      {
+          var taskvalue = $("#idtask").val();
+          if(taskvalue == "")
+          {
+            alert("Please select the Task Name and then make the task as live");
+            return false;
+          }
+      }
+      else{
+        var clientid = $("#client_search_task").val();
+        if(clientid == "")
         {
-          alert("Please select the Task Name and then make the task as live");
+          alert("Please select the Client and then make the task as live");
           return false;
         }
-    }
-    else{
-      var clientid = $("#client_search_task").val();
-      if(clientid == "")
-      {
-        alert("Please select the Client and then make the task as live");
-        return false;
       }
-    }
-    if (CKEDITOR.instances.editor_2)
-    {
-      var comments = CKEDITOR.instances['editor_2'].getData();
-      if(comments == "")
+      if (CKEDITOR.instances.editor_2)
       {
-        alert("Please Enter Task Specifics and then make the task as Live.");
-        return false;
+        var comments = CKEDITOR.instances['editor_2'].getData();
+        if(comments == "")
+        {
+          alert("Please Enter Task Specifics and then make the task as Live.");
+          return false;
+        }
+        else{
+          if($(".2_bill_task").is(":checked"))
+          {
+            $("#create_task_form").submit();
+          }
+          else{
+            $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+          }
+        }
       }
       else{
         if($(".2_bill_task").is(":checked"))
         {
-          $("#create_task_form").valid();
           $("#create_task_form").submit();
         }
         else{
@@ -8537,27 +8631,15 @@ $(window).click(function(e) {
         }
       }
     }
-    else{
-      if($(".2_bill_task").is(":checked"))
-      {
-        $("#create_task_form").valid();
-      $("#create_task_form").submit();
-      }
-      else{
-        $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
-      }
-    }
   }
   if($(e.target).hasClass('yes_make_task_live'))
   {
     $(".2_bill_task").prop("checked",true);
-    $("#create_task_form").valid();
       $("#create_task_form").submit();
   }
   if($(e.target).hasClass('no_make_task_live'))
   {
     $(".2_bill_task").prop("checked",false);
-    $("#create_task_form").valid();
       $("#create_task_form").submit();
   }
   if($(e.target).hasClass('accept_recurring'))
@@ -12836,7 +12918,7 @@ $(window).click(function(e) {
 
                   success: function(result) {
 
-                      window.location.replace("<?php echo URL::to('user/select_week/'.base64_encode($weekid->week_id).'?divid='); ?>"+id);
+                    window.location.replace("<?php echo URL::to('user/select_week/'.base64_encode($weekid->week_id).'?divid='); ?>"+id);
 
               //       $(e.target).parents('tr').find(".date_input").val(result['date']);
 
@@ -12951,10 +13033,6 @@ $(window).click(function(e) {
               //         $(e.target).parents('tr').find('.single_notify').addClass('disabled');
 
               // $(e.target).parents('tr').find('.all_notify').addClass('disabled');
-
-              // $(e.target).parents('tr').find('.email_unsent').addClass('disabled');
-              // $(e.target).parents('tr').find('.resendemail_unsent').addClass('disabled');
-              // $(e.target).parents('tr').find('.report_email_unsent').addClass('disabled');
               
               // $(e.target).parents('tr').find('.donot_complete').addClass('disabled');
 
@@ -13116,14 +13194,13 @@ $(window).click(function(e) {
    //          $(e.target).parents('tr').find('.task_delete').removeClass('disabled');
    //          $(e.target).parents('tr').find('.single_notify').removeClass('disabled');
 			// $(e.target).parents('tr').find('.all_notify').removeClass('disabled');
-			// $(e.target).parents('tr').find('.email_unsent').removeClass('disabled');
+			
 			// if($(e.target).parents('tr').find('.email_unsent_label').html() == "")
 			// {
 
 			// }
 			// else{
-			// 	$(e.target).parents('tr').find('.resendemail_unsent').removeClass('disabled');
-			// 	$(e.target).parents('tr').find('.report_email_unsent').removeClass('disabled');
+				
 			// }
 			// $(e.target).parents('tr').find('.donot_complete').removeClass('disabled');
 			// $(e.target).parents('tr').find('.do_complete').removeClass('disabled');
@@ -14277,8 +14354,7 @@ if($(e.target).hasClass('donot_submit_new'))
                 $('#taskidtr_'+taskid).find('.fa-files-o').addClass('disabled');
                 $('#taskidtr_'+taskid).find('.task_delete').addClass('disabled');
                 $('#taskidtr_'+taskid).find('.single_notify').addClass('disabled');
-                $('#taskidtr_'+taskid).find('.all_notify').addClass('disabled');            
-                $('#taskidtr_'+taskid).find('.email_unsent').addClass('disabled');
+                $('#taskidtr_'+taskid).find('.all_notify').addClass('disabled');      
                 $('#taskidtr_'+taskid).find('.fa-files-o').parent().addClass('disabled');
                 $('#taskidtr_'+taskid).find('.fa-check').parent().addClass('disabled');
                 $('#taskidtr_'+taskid).find('.fa-times').parent().addClass('disabled');
@@ -14388,7 +14464,6 @@ if($(e.target).hasClass('do_complete')){
 
 
 
-              $(e.target).parents('tr').find('.email_unsent').removeClass('disabled');
 
               $(e.target).parents('tr').find('.fa-files-o').parent().removeClass('disabled');
 

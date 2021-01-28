@@ -5,6 +5,15 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="http://malsup.github.com/jquery.form.js"></script>
 <style>
+  .fa-star-o { color:#000; }
+  .fa-star { color:#ff0; }
+  .start_rating { cursor:pointer; }
+  .start_yellow { color:yellow; font-weight:800; }
+  .start_brown { color:brown; font-weight:800; }
+  .start_orange { color:#956103; font-weight:800; }
+  .start_lred { color:#f04444; font-weight:800; }
+  .start_red { color:red; font-weight:800; }
+  .disabled_star { color:grey !important; }
   .error{ color:#f00; }
   .secret_button:focus { background: #ffa12d;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
@@ -3316,6 +3325,12 @@ if(Session::has('error')) { ?>
                   }
                   }
                   ?>
+                  <br/>
+                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
                   </td>
 
                   <td align="center" class="special_td" style="width:90px;">
@@ -3988,6 +4003,12 @@ if(Session::has('error')) { ?>
                   }
                   }
                   ?>
+                  <br/>
+                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
                   </td>
 
                   <td align="center" class="special_td" style="width:90px;">
@@ -4645,6 +4666,12 @@ if(Session::has('error')) { ?>
                   }
                   }
                   ?>
+                  <br/>
+                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
+                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
                   </td>
 
                   <td align="center" class="special_td" style="width:90px;">
@@ -5457,6 +5484,61 @@ $(".client_search_class_task").autocomplete({
       }
   });
 $(window).click(function(e) {
+  if($(e.target).hasClass('start_rating'))
+  {
+    var taskid = $(e.target).attr("data-task");
+    var value = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/start_rating'); ?>",
+      type:"post",
+      data:{taskid:taskid,value:value},
+      success:function(result)
+      {
+        $(e.target).parents("td").find(".start_rating").removeClass("disabled_star");
+        $(e.target).addClass("disabled_star");
+        if(value == "4")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "3")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "2")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "1")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+        else if(value == "0")
+        {
+          $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starthree").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".startwo").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starone").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star-o');
+          $(e.target).parents("td").find(".starzero").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');
+        }
+      }
+    });
+  }
   if($(e.target).hasClass('email_unsent_files_btn'))
   { 
     for (instance in CKEDITOR.instances) 

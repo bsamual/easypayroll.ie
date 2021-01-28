@@ -1994,14 +1994,14 @@ class TimejobController extends Controller {
 			      <a href="javascript:" class="edit_close_job" data-element="'.$jobs->id.'">Edit Job</a>
 			     	'.$inv_no.'
                         <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
-                            <div class="modal-dialog" style="width:20%">
+                            <div class="modal-dialog" style="width:40%">
                               <div class="modal-content">
                                 <div class="modal-header">
                                   <button type="button" class="close" data-dismiss="modal">&times;</button>
                                   <h4 class="modal-title">Comments</h4>
                                 </div>
                                 <div class="modal-body">
-                                  '.$comments.'
+                                  <p style="white-space:initial">'.$comments.'</p>
                                 </div>
                                 <div class="modal-footer">
                                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -2132,14 +2132,14 @@ class TimejobController extends Controller {
 			      				<a href="javascript:" class="edit_close_job" data-element="'.$child->id.'">Edit Job</a>
 			      				'.$inv_no.'
 			                        <div id="comments_'.$child->id.'" class="modal fade" role="dialog" >
-			                            <div class="modal-dialog" style="width:20%">
+			                            <div class="modal-dialog" style="width:40%">
 			                              <div class="modal-content">
 			                                <div class="modal-header">
 			                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
 			                                  <h4 class="modal-title">Comments</h4>
 			                                </div>
 			                                <div class="modal-body">
-			                                  '.$comments.'
+			                                  <p style="white-space:initial">'.$comments.'</p>
 			                                </div>
 			                                <div class="modal-footer">
 			                                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -4301,14 +4301,14 @@ class TimejobController extends Controller {
           <a href="javascript:"><i class="fa fa-pencil edit_task" data-element="'.$jobs->id.'" data-toggle="tooltip" title="Edit Job" aria-hidden="true"></i></a>
           <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$jobs->id.'" title="View Comments"></a>
             <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
-                <div class="modal-dialog" style="width:20%">
+                <div class="modal-dialog" style="width:40%">
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                       <h4 class="modal-title">Comments</h4>
                     </div>
                     <div class="modal-body">
-                      '.$comments.'
+                      <p style="white-space:initial">'.$comments.'</p>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -4465,14 +4465,14 @@ class TimejobController extends Controller {
           <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$child->id.'" title="View Comments"></a>
 
             <div id="comments_'.$child->id.'" class="modal fade" role="dialog" >
-                <div class="modal-dialog" style="width:20%">
+                <div class="modal-dialog" style="width:40%">
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                       <h4 class="modal-title">Comments</h4>
                     </div>
                     <div class="modal-body">
-                      '.$comments.'
+                      <p style="white-space:initial">'.$comments.'</p>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -4717,14 +4717,14 @@ class TimejobController extends Controller {
 		          <td align="center">
 		          <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$jobs->id.'" title="View Comments"></a>
 			        <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
-			            <div class="modal-dialog" style="width:20%">
+			            <div class="modal-dialog" style="width:40%">
 			              <div class="modal-content">
 			                <div class="modal-header">
 			                  <button type="button" class="close" data-dismiss="modal">&times;</button>
 			                  <h4 class="modal-title">Comments</h4>
 			                </div>
 			                <div class="modal-body">
-			                  '.$comments.'
+			                  <p style="white-space:initial">'.$comments.'</p>
 			                </div>
 			                <div class="modal-footer">
 			                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -4949,14 +4949,14 @@ class TimejobController extends Controller {
 		          <td align="center">
 		          <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$jobs->id.'" title="View Comments"></a>
 			        <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
-			            <div class="modal-dialog" style="width:20%">
+			            <div class="modal-dialog" style="width:40%">
 			              <div class="modal-content">
 			                <div class="modal-header">
 			                  <button type="button" class="close" data-dismiss="modal">&times;</button>
 			                  <h4 class="modal-title">Comments</h4>
 			                </div>
 			                <div class="modal-body">
-			                  '.$comments.'
+			                  <p style="white-space:initial">'.$comments.'</p>
 			                </div>
 			                <div class="modal-footer">
 			                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -5182,14 +5182,14 @@ class TimejobController extends Controller {
 		          <td align="center">
 		          <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$jobs->id.'" title="View Comments"></a>
 			        <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
-			            <div class="modal-dialog" style="width:20%">
+			            <div class="modal-dialog" style="width:40%">
 			              <div class="modal-content">
 			                <div class="modal-header">
 			                  <button type="button" class="close" data-dismiss="modal">&times;</button>
 			                  <h4 class="modal-title">Comments</h4>
 			                </div>
 			                <div class="modal-body">
-			                  '.$comments.'
+			                  <p style="white-space:initial">'.$comments.'</p>
 			                </div>
 			                <div class="modal-footer">
 			                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -6987,14 +6987,14 @@ class TimejobController extends Controller {
 				          <td>
 				          <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$count->id.'" title="View Comments"></a>
 				            <div id="comments_'.$count->id.'" class="modal fade" role="dialog" >
-				                <div class="modal-dialog" style="width:20%">
+				                <div class="modal-dialog" style="width:40%">
 				                  <div class="modal-content">
 				                    <div class="modal-header">
 				                      <button type="button" class="close" data-dismiss="modal">&times;</button>
 				                      <h4 class="modal-title">Comments</h4>
 				                    </div>
 				                    <div class="modal-body">
-				                      '.$comments.'
+				                      <p style="white-space:initial">'.$comments.'</p>
 				                    </div>
 				                    <div class="modal-footer">
 				                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

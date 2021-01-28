@@ -24066,6 +24066,36 @@ class UserController extends Controller {
 	         echo $files_attached;
 		}
 	}
+	public function current_payroll_list()
+	{
+		$current_week = DB::table('week')->orderBy('week_id','desc')->first();
+		$current_month = DB::table('month')->orderBy('month_id','desc')->first();
+		$columns = array('Task Name','Period','Network Location','Primary Email','Secondary Email', 'Number of times Email sent','PayePRSI liability');
+		$file = fopen('papers/current_payroll_lists.csv', 'w');
+		fputcsv($file, $columns);
+		$tasks = DB::table('task')->where('task_week',$current_week->week_id)->orWhere('task_month',$current_month->month_id)->get();
+		if(count($tasks))
+		{
+			foreach($tasks as $task)
+			{
+				if($task->task_week != 0) { $period = 'Weekly'; }
+				else { $period = 'Monthly'; }
+				$get_dates = DB::table('task_email_sent')->where('task_id',$task->task_id)->get();
+
+				$columns1 = array($task->task_name,$period,$task->network,$task->task_email,$task->secondary_email,count($get_dates),$task->liability);
+				fputcsv($file, $columns1);
+			}
+		}
+		fclose($file);
+		echo 'current_payroll_lists.csv';
+	}
+	public function start_rating()
+	{
+		$taskid = Input::get('taskid');
+		$value = Input::get('value');
+		$data['rating'] = $value;
+		DB::table('task')->where('task_id',$taskid)->update($data);
+	}
 }
 
 

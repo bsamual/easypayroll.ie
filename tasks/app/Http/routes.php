@@ -1738,3 +1738,6 @@ Route::post('/user/remove_2bill_status', 'user\TwobillController@remove_2bill_st
 
 Route::post('/user/change_billing_status', 'user\TwobillController@change_billing_status');
 
+Route::post('/user/current_payroll_list', 'user\UserController@current_payroll_list');
+Route::post('/user/start_rating', 'user\UserController@start_rating');
+

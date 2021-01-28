@@ -1258,6 +1258,7 @@ $(window).click(function(e) {
           var creation_date = $(".creation_date_search_class").val();
           var make_internal = $("#hidden_make_internal").val();
           var select_tasks = $(".select_internal_tasks").val();
+          
           if(client_id_search == "")
           {
             $("#copy_client_search").val("");
@@ -1427,10 +1428,19 @@ $(window).click(function(e) {
         var author = $(".search_author").val();
         var open_task = $(".open_task_search:checked").val();
         var client_id = $("#copy_client_search").val();
+        var client_id_search = $(".copy_client_search_class ").val();
         var subject = $(".subject_search_class").val();
         var recurring = $("#hidden_recurring_task").val();
         var due_date = $(".due_date_search_class").val();
         var creation_date = $(".creation_date_search_class").val();
+        var make_internal = $("#hidden_make_internal").val();
+        var select_tasks = $(".select_internal_tasks").val();
+
+        if(client_id_search == "")
+		{
+			$("#copy_client_search").val("");
+			client_id = "";
+		}
 
         $.ajax({
           url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
@@ -1441,10 +1451,21 @@ $(window).click(function(e) {
             $.ajax({
               url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
               type:"post",
-              data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date},
+              data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
               success:function(result)
               {
                 $("#task_body_search").html(result);
+                $("[data-toggle=popover]").popover({
+                  html : true,
+                  content: function() {
+                    var content = $(this).attr("data-popover-content");
+                    return $(content).children(".popover-body").html();
+                  },
+                  title: function() {
+                    var title = $(this).attr("data-popover-content");
+                    return $(title).children(".popover-heading").html();
+                  }
+              });
                 $("body").removeClass("loading");
               }
             })
@@ -1455,13 +1476,23 @@ $(window).click(function(e) {
       {
         $("body").addClass("loading");
         var task_id = $(e.target).attr("data-element");
+
         var author = $(".search_author").val();
         var open_task = $(".open_task_search:checked").val();
         var client_id = $("#copy_client_search").val();
+        var client_id_search = $(".copy_client_search_class ").val();
         var subject = $(".subject_search_class").val();
         var recurring = $("#hidden_recurring_task").val();
         var due_date = $(".due_date_search_class").val();
         var creation_date = $(".creation_date_search_class").val();
+        var make_internal = $("#hidden_make_internal").val();
+        var select_tasks = $(".select_internal_tasks").val();
+
+        if(client_id_search == "")
+		{
+			$("#copy_client_search").val("");
+			client_id = "";
+		}
 
         $.ajax({
           url:"<?php echo URL::to('user/taskmanager_mark_incomplete'); ?>",
@@ -1472,10 +1503,21 @@ $(window).click(function(e) {
             $.ajax({
               url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
               type:"post",
-              data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date},
+              data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
               success:function(result)
               {
                 $("#task_body_search").html(result);
+                $("[data-toggle=popover]").popover({
+                  html : true,
+                  content: function() {
+                    var content = $(this).attr("data-popover-content");
+                    return $(content).children(".popover-body").html();
+                  },
+                  title: function() {
+                    var title = $(this).attr("data-popover-content");
+                    return $(title).children(".popover-heading").html();
+                  }
+              });
                 $("body").removeClass("loading");
               }
             })
@@ -1749,27 +1791,40 @@ $(window).click(function(e) {
                     success:function(result)
                     {
                       var author = $(".search_author").val();
-                      var open_task = $(".open_task_search:checked").val();
-                      var client_id = $("#copy_client_search").val();
-                      var client_id_search = $(".copy_client_search_class ").val();
-                      var subject = $(".subject_search_class").val();
-                      var recurring = $("#hidden_recurring_task").val();
-                      var due_date = $(".due_date_search_class").val();
-                      var creation_date = $(".creation_date_search_class").val();
+			          var open_task = $(".open_task_search:checked").val();
+			          var client_id = $("#copy_client_search").val();
+			          var client_id_search = $(".copy_client_search_class ").val();
+			          var subject = $(".subject_search_class").val();
+			          var recurring = $("#hidden_recurring_task").val();
+			          var due_date = $(".due_date_search_class").val();
+			          var creation_date = $(".creation_date_search_class").val();
+			          var make_internal = $("#hidden_make_internal").val();
+			          var select_tasks = $(".select_internal_tasks").val();
 
-                      if(client_id_search == "")
-                      {
-                        $("#copy_client_search").val("");
-                        client_id = "";
-                      }
+			          if(client_id_search == "")
+			          {
+			            $("#copy_client_search").val("");
+			            client_id = "";
+			          }
                       
                       $.ajax({
                         url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
                         type:"post",
-                        data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date},
+                        data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
                         success:function(result)
                         {
                           $("#task_body_search").html(result);
+                          $("[data-toggle=popover]").popover({
+			                  html : true,
+			                  content: function() {
+			                    var content = $(this).attr("data-popover-content");
+			                    return $(content).children(".popover-body").html();
+			                  },
+			                  title: function() {
+			                    var title = $(this).attr("data-popover-content");
+			                    return $(title).children(".popover-heading").html();
+			                  }
+			              });
                           $("body").removeClass("loading");
                         }
                       })
@@ -1824,13 +1879,15 @@ $(window).click(function(e) {
                     success:function(result)
                     {
                       var author = $(".search_author").val();
-                      var open_task = $(".open_task_search:checked").val();
-                      var client_id = $("#copy_client_search").val();
-                      var client_id_search = $(".copy_client_search_class ").val();
-                      var subject = $(".subject_search_class").val();
-                      var recurring = $("#hidden_recurring_task").val();
-                      var due_date = $(".due_date_search_class").val();
-                      var creation_date = $(".creation_date_search_class").val();
+			          var open_task = $(".open_task_search:checked").val();
+			          var client_id = $("#copy_client_search").val();
+			          var client_id_search = $(".copy_client_search_class ").val();
+			          var subject = $(".subject_search_class").val();
+			          var recurring = $("#hidden_recurring_task").val();
+			          var due_date = $(".due_date_search_class").val();
+			          var creation_date = $(".creation_date_search_class").val();
+			          var make_internal = $("#hidden_make_internal").val();
+			          var select_tasks = $(".select_internal_tasks").val();
 
                       if(client_id_search == "")
                       {
@@ -1841,10 +1898,21 @@ $(window).click(function(e) {
                       $.ajax({
                         url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
                         type:"post",
-                        data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date},
+                        data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
                         success:function(result)
                         {
                           $("#task_body_search").html(result);
+                          $("[data-toggle=popover]").popover({
+			                  html : true,
+			                  content: function() {
+			                    var content = $(this).attr("data-popover-content");
+			                    return $(content).children(".popover-body").html();
+			                  },
+			                  title: function() {
+			                    var title = $(this).attr("data-popover-content");
+			                    return $(title).children(".popover-heading").html();
+			                  }
+			              });
                           $("body").removeClass("loading");
                         }
                       })
@@ -2005,13 +2073,15 @@ $(window).click(function(e) {
               $(".allocation_modal").modal("hide");
           setTimeout(function() {
             var author = $(".search_author").val();
-            var open_task = $(".open_task_search:checked").val();
-            var client_id = $("#copy_client_search").val();
-            var client_id_search = $(".copy_client_search_class ").val();
-            var subject = $(".subject_search_class").val();
-            var recurring = $("#hidden_recurring_task").val();
-            var due_date = $(".due_date_search_class").val();
-            var creation_date = $(".creation_date_search_class").val();
+			var open_task = $(".open_task_search:checked").val();
+			var client_id = $("#copy_client_search").val();
+			var client_id_search = $(".copy_client_search_class").val();
+			var subject = $(".subject_search_class").val();
+			var recurring = $("#hidden_recurring_task").val();
+			var due_date = $(".due_date_search_class").val();
+			var creation_date = $(".creation_date_search_class").val();
+			var make_internal = $("#hidden_make_internal").val();
+			var select_tasks = $(".select_internal_tasks").val();
 
             if(client_id_search == "")
             {
@@ -2022,10 +2092,21 @@ $(window).click(function(e) {
             $.ajax({
               url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
               type:"post",
-              data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date},
+              data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
               success:function(result)
               {
                 $("#task_body_search").html(result);
+                $("[data-toggle=popover]").popover({
+	                  html : true,
+	                  content: function() {
+	                    var content = $(this).attr("data-popover-content");
+	                    return $(content).children(".popover-body").html();
+	                  },
+	                  title: function() {
+	                    var title = $(this).attr("data-popover-content");
+	                    return $(title).children(".popover-heading").html();
+	                  }
+	              });
                 $("body").removeClass("loading");
               }
             })

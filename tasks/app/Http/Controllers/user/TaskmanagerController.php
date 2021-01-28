@@ -873,8 +873,8 @@ class TaskmanagerController extends Controller {
 				$ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
 
 				$output.='<p class="link_yearend_p">
-							  <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
-                              <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+							  <a href="'.$ele.'" target="_blank">'.$i.'</a>
+                              <a href="'.$ele.'" target="_blank">'.$file->document.'</a>
                               <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$insertedid.'').'" class="fa fa-trash delete_attachments"></a>
                           </p>';
 				$i++;
@@ -3006,8 +3006,9 @@ class TaskmanagerController extends Controller {
                                       $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
 
                                       $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
-                                      $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
-                                      <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                                      $fileoutput.='<p class="link_yearend_p">
+                                      <a href="'.$ele.'" target="_blank">'.$i.'</a>
+                                      <a href="'.$ele.'" target="_blank">'.$file->document.'</a>
                                       <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$yearend->id.'').'" class="fa fa-trash delete_attachments"></a>
                                       </p>';
                                       $i++;
@@ -3636,8 +3637,9 @@ class TaskmanagerController extends Controller {
                                       $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
 
                                       $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
-                                      $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
-                                      <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                                      $fileoutput.='<p class="link_yearend_p">
+                                      <a href="'.$ele.'" target="_blank">'.$i.'</a>
+                                      <a href="'.$ele.'" target="_blank">'.$file->document.'</a>
                                       <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$yearend->id.'').'" class="fa fa-trash delete_attachments"></a>
                                       </p>';
                                       $i++;
@@ -4589,8 +4591,9 @@ class TaskmanagerController extends Controller {
                                       $yearend_id = DB::table('year_client')->where('client_id',$year_client_id)->orderBy('id','desc')->first();
 
                                       $ele = URL::to('user/yearend_individualclient/'.base64_encode($yearend_id->id).'');
-                                      $fileoutput.='<p class="link_yearend_p"><a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$i.'</a>
-                                      <a href="javascript:" class="link_yearend" data-element="'.$ele.'">'.$file->document.'</a>
+                                      $fileoutput.='<p class="link_yearend_p">
+                                      <a href="'.$ele.'" target="_blank">'.$i.'</a>
+                                      <a href="'.$ele.'" target="_blank">'.$file->document.'</a>
                                       <a href="'.URL::to('user/delete_taskmanager_yearend?file_id='.$yearend->id.'').'" class="fa fa-trash delete_attachments"></a>
                                       </p>';
                                       $i++;
