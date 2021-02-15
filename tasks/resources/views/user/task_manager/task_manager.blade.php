@@ -493,7 +493,7 @@ input:checked + .slider:before {
         </div>
   </div>
 </div>
-<div class="modal fade allocation_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;z-index:99999999999">
+<div class="modal fade allocation_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:35%;">
         <div class="modal-content">
           <div class="modal-header allocation_body">
@@ -668,7 +668,7 @@ input:checked + .slider:before {
         </div>
   </div>
 </div>
-<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
+<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_job_form">
         <div class="modal-content">
@@ -1703,7 +1703,7 @@ input:checked + .slider:before {
 	                    	<table style="width:100%">
 		                    	<tr>
 		                    		<td style="width:40%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>
-		                    		<td class="layout_progress_'.$task->id.'" class="progress_sort_val" style="width:40%;padding:10px; font-size:14px; font-weight:800;">'.$task->progress.'%</td>
+		                    		<td class="layout_progress_'.$task->id.'" style="width:40%;padding:10px; font-size:14px; font-weight:800;"><spam class="progress_sort_val" style="display:none">'.$task->progress.'</spam>'.$task->progress.'%</td>
 		                    		<td style="width:20%;padding:10px; font-size:14px; font-weight:800">
 		                    			<a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800">
 	                              		</a> 
@@ -2202,16 +2202,16 @@ $(window).click(function(e) {
 		  $("#progress_sortoptions").val('desc');
 		  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
 		    return (ascending ==
-		         (convertToNumber($(a).find('.progress_sort_val').text()) <
-		    convertToNumber($(b).find('.progress_sort_val').text()))) ? 1 : -1;
+		         (parseconvertToNumber($(a).find('.progress_sort_val').text()) <
+		    parseconvertToNumber($(b).find('.progress_sort_val').text()))) ? 1 : -1;
 		  });
 		}
 		else{
 		  $("#progress_sortoptions").val('asc');
 		  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
 		    return (ascending ==
-		         (convertToNumber($(a).find('.progress_sort_val').text()) <
-		    convertToNumber($(b).find('.progress_sort_val').text()))) ? -1 : 1;
+		         (parseconvertToNumber($(a).find('.progress_sort_val').text()) <
+		    parseconvertToNumber($(b).find('.progress_sort_val').text()))) ? -1 : 1;
 		  });
 		}
 		ascending = ascending ? false : true;

@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('login_user_id'); ?>
 <style>
 .fa-sort{
   cursor: pointer;
@@ -39,14 +38,9 @@ body.loading .modal_load {
                     <select class="form-control" name="year" id="year_add" required>
                       <option value="">Select Year</option>
                       <?php 
-                      $last_year = DB::table('year')->where('user_login_id',$user_login_id)->orderBy('year_id','desc')->first();
-                      if(count($last_year))
-                      {
-                        ?>
-                        <option value="<?php echo $last_year->year_name + 1; ?>"><?php echo $last_year->year_name + 1; ?></option>
-                        <?php 
-                      }
+                      $last_year = DB::table('year')->orderBy('year_id','desc')->first();
                       ?>
+                        <option value="<?php echo $last_year->year_name + 1; ?>"><?php echo $last_year->year_name + 1; ?></option>
                     </select>
                   </td>
                 </tr>

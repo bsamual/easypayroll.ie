@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
@@ -104,7 +103,7 @@ a:hover{text-decoration: underline;}
                     $disabled='';
                     if($client->active == "2")
                     {
-                      $check_color = DB::table('cm_class')->where('user_login_id',$user_login_id)->where('id',$client->active)->first();
+                      $check_color = DB::table('cm_class')->where('id',$client->active)->first();
                       $style="color:#f00";
                       $active_cli = 'inactive_clients';
                     }
@@ -112,7 +111,7 @@ a:hover{text-decoration: underline;}
                       $style="color:#000";
                       $active_cli = 'active_clients';
                     }
-                    $balance_check = DB::table('opening_balance')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->first();
+                    $balance_check = DB::table('opening_balance')->where('client_id',$client->client_id)->first();
                     if(count($balance_check))
                     {
                       if($balance_check->opening_balance == "")

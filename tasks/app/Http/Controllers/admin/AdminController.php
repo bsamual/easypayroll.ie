@@ -146,4 +146,16 @@ class AdminController extends Controller {
 		DB::table('central_locations')->where('id',1)->update($data);
 		return Redirect::back()->with('message', 'Central Locations Updated Successfully');
 	}
+	public function manage_cro()
+	{
+		$cro = DB::table('cro_credentials')->first();
+		return view('admin/manage_cro', array('cro' => $cro));
+	}
+	public function update_cro_setting(){
+		$username = Input::get('username');
+		$api_key = Input::get('api_key');
+		
+		DB::table('cro_credentials')->where('id',1)->update(['username' =>$username, 'api_key' =>$api_key]);
+		return Redirect::back()->with('emailmessage', 'CRO Settings Updated Successfully');
+	}
 }

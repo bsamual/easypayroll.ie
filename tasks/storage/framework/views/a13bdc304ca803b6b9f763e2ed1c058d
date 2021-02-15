@@ -93,19 +93,12 @@
                 </ul>
             </li>
             <li class="<?php if($segment1 == "setup_request_category") { echo 'active'; } ?>""><a href="<?php echo URL::to('admin/setup_request_category')?>">Setup Request Categories</a></li>
-            <li class="dropdown <?php if($segment1 == "profile" || $segment1 == "vat_profile") { echo 'active'; } ?>"><a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
+            <li class="dropdown <?php if($segment1 == "profile" || $segment1 == "vat_profile" || $segment1 == "manage_cro") { echo 'active'; } ?>"><a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
                 <ul class="dropdown-menu">
-                    <li><a href="<?php echo URL::to('admin/profile')?>">Manage Admin Login</a></li>
-                    <?php
-                    if(Session::get('login_user_id') == 1){
-                        ?>
-                        <li><a href="<?php echo URL::to('admin/manage_users')?>">Manage Users Login</a></li>
-                        <?php
-                    }
-                    ?>
+                    <li><a href="<?php echo URL::to('admin/profile')?>">Manage Admin/User Login</a></li>
+                    <li><a href="<?php echo URL::to('admin/manage_cro')?>">Manage CRO</a></li>
                     <li><a href="<?php echo URL::to('admin/vat_profile')?>">VAT Email Signature</a></li>
                     <li><a href="<?php echo URL::to('admin/email_settings')?>">Email Settings</a></li>
-                    
                 </ul>
             </li>
             <li><a href="<?php echo URL::to('admin/logout')?>">Logout</a></li>

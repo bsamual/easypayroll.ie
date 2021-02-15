@@ -250,7 +250,7 @@ a:hover{text-decoration: underline;}
                 <td><?php echo $invoice->invoice_number; ?></td>
                 <td><?php echo date("d-M-Y", strtotime($invoice->invoice_date)); ?></td>
                 <td style="text-align: right"><?php echo number_format_invoice($invoice->gross); ?></td>
-                <td style="text-align: right"><?php echo ($invoice->import_balance == "")?'-':number_format_invoice($invoice->import_balance); ?></td>
+                <td style="text-align: right"><?php echo number_format_invoice($invoice->import_balance); ?></td>
                 <td style="text-align: right"><?php echo $balance_remaining; ?></td>
               </tr>
               <?php

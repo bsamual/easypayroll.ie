@@ -335,50 +335,49 @@ class TimejobController extends Controller {
 			$data['bulk_job'] = $bulk_job;
 			$data['color'] = 1;
 			$task_new_id = DB::table('task_job')->insertGetid($data);
-			//$task_new_id = mysql_insert_id();
-			// if($type !=  0)
-			// {
-			// 	$client_id = Input::get("clientid");
-			// 	$get_invoice = DB::table('ta_auto_allocation')->where('auto_client_id',$client_id)->first();
-			// 	$get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
-			// 	if(count($get_invoice))
-			// 	{
-			// 		$unserialize = unserialize($get_invoice->auto_tasks);
-			// 		$inv_no = '';
-			// 		if(count($unserialize))
-			// 		{
-			// 			foreach($unserialize as $key => $arrayval)
-			// 			{
-			// 				if(in_array(Input::get("task_id"), $arrayval))
-			// 				{
-			// 					$inv_no = $key;
-			// 				}
-			// 			}
-			// 		}
-			// 		if($inv_no != "")
-			// 		{	
-			// 			if(count($get_client_invoice))
-			// 			{
-			// 				$unserialize_tasks = unserialize($get_client_invoice->tasks);
-			// 				$get_invoice_tasks = $unserialize_tasks[$inv_no];
-			// 				array_push($get_invoice_tasks,$task_new_id);
+			if($type !=  0)
+			{
+				$client_id = Input::get("clientid");
+				$get_invoice = DB::table('ta_auto_allocation')->where('auto_client_id',$client_id)->first();
+				$get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
+				if(count($get_invoice))
+				{
+					$unserialize = unserialize($get_invoice->auto_tasks);
+					$inv_no = '';
+					if(count($unserialize))
+					{
+						foreach($unserialize as $key => $arrayval)
+						{
+							if(in_array(Input::get("task_id"), $arrayval))
+							{
+								$inv_no = $key;
+							}
+						}
+					}
+					if($inv_no != "")
+					{	
+						if(count($get_client_invoice))
+						{
+							$unserialize_tasks = unserialize($get_client_invoice->tasks);
+							$get_invoice_tasks = $unserialize_tasks[$inv_no];
+							array_push($get_invoice_tasks,$task_new_id);
 
-			// 				$unserialize_tasks[$inv_no] = $get_invoice_tasks;
-			// 				$serialize_tasks = serialize($unserialize_tasks);
-			// 				$datatask['tasks'] = $serialize_tasks;
-			// 				DB::table('ta_client_invoice')->where('client_id',$client_id)->update($datatask);
-			// 			}
-			// 			else{
-			// 				$unserialize_tasks[$inv_no] = array($task_new_id);
-			// 				$serialize_tasks = serialize($unserialize_tasks);
-			// 				$datatask['tasks'] = $serialize_tasks;
-			// 				$datatask['client_id'] = $client_id;
-			// 				$datatask['invoice'] = $inv_no;
-			// 				DB::table('ta_client_invoice')->where('client_id',$client_id)->insert($datatask);
-			// 			}
-			// 		}
-			// 	}
-			// }
+							$unserialize_tasks[$inv_no] = $get_invoice_tasks;
+							$serialize_tasks = serialize($unserialize_tasks);
+							$datatask['tasks'] = $serialize_tasks;
+							DB::table('ta_client_invoice')->where('client_id',$client_id)->update($datatask);
+						}
+						else{
+							$unserialize_tasks[$inv_no] = array($task_new_id);
+							$serialize_tasks = serialize($unserialize_tasks);
+							$datatask['tasks'] = $serialize_tasks;
+							$datatask['client_id'] = $client_id;
+							$datatask['invoice'] = $inv_no;
+							DB::table('ta_client_invoice')->where('client_id',$client_id)->insert($datatask);
+						}
+					}
+				}
+			}
 			return Redirect::back()->with('message', 'Job added Successfully');
 		}
 		else{
@@ -794,7 +793,49 @@ class TimejobController extends Controller {
 				       	$dataquick['bulk_job'] = 0; 
 				       	$dataquick['job_created_date'] = $jobs->job_created_date;
 				       	$dataquick['status'] = 1;
-				       	DB::table('task_job')->insert($dataquick);
+				       	$task_new_id = DB::table('task_job')->insertGetid($dataquick);
+
+						$client_id = $client;
+						$get_invoice = DB::table('ta_auto_allocation')->where('auto_client_id',$client_id)->first();
+						$get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
+						if(count($get_invoice))
+						{
+							$unserialize = unserialize($get_invoice->auto_tasks);
+							$inv_no = '';
+							if(count($unserialize))
+							{
+								foreach($unserialize as $key => $arrayval)
+								{
+									if(in_array($dataquick['task_id'], $arrayval))
+									{
+										$inv_no = $key;
+									}
+								}
+							}
+							if($inv_no != "")
+							{	
+								if(count($get_client_invoice))
+								{
+									$unserialize_tasks = unserialize($get_client_invoice->tasks);
+									$get_invoice_tasks = $unserialize_tasks[$inv_no];
+									array_push($get_invoice_tasks,$task_new_id);
+
+									$unserialize_tasks[$inv_no] = $get_invoice_tasks;
+									$serialize_tasks = serialize($unserialize_tasks);
+									$datatask['tasks'] = $serialize_tasks;
+									DB::table('ta_client_invoice')->where('client_id',$client_id)->update($datatask);
+								}
+								else{
+									$unserialize_tasks[$inv_no] = array($task_new_id);
+									$serialize_tasks = serialize($unserialize_tasks);
+									$datatask['tasks'] = $serialize_tasks;
+									$datatask['client_id'] = $client_id;
+									$datatask['invoice'] = $inv_no;
+									DB::table('ta_client_invoice')->where('client_id',$client_id)->insert($datatask);
+								}
+							}
+						}
+
 				       	$quickstarttime = $quickstop_time;
 					}
 				}
@@ -844,7 +885,48 @@ class TimejobController extends Controller {
 					       	$dataquick['bulk_job'] = 0; 
 					       	$dataquick['job_created_date'] = $jobs->job_created_date;
 					       	$dataquick['status'] = 1;
-					       	DB::table('task_job')->insert($dataquick);
+					       	$task_new_id = DB::table('task_job')->insertGetid($dataquick);
+
+							$client_id = $client;
+							$get_invoice = DB::table('ta_auto_allocation')->where('auto_client_id',$client_id)->first();
+							$get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
+							if(count($get_invoice))
+							{
+								$unserialize = unserialize($get_invoice->auto_tasks);
+								$inv_no = '';
+								if(count($unserialize))
+								{
+									foreach($unserialize as $key => $arrayval)
+									{
+										if(in_array($dataquick['task_id'], $arrayval))
+										{
+											$inv_no = $key;
+										}
+									}
+								}
+								if($inv_no != "")
+								{	
+									if(count($get_client_invoice))
+									{
+										$unserialize_tasks = unserialize($get_client_invoice->tasks);
+										$get_invoice_tasks = $unserialize_tasks[$inv_no];
+										array_push($get_invoice_tasks,$task_new_id);
+
+										$unserialize_tasks[$inv_no] = $get_invoice_tasks;
+										$serialize_tasks = serialize($unserialize_tasks);
+										$datatask['tasks'] = $serialize_tasks;
+										DB::table('ta_client_invoice')->where('client_id',$client_id)->update($datatask);
+									}
+									else{
+										$unserialize_tasks[$inv_no] = array($task_new_id);
+										$serialize_tasks = serialize($unserialize_tasks);
+										$datatask['tasks'] = $serialize_tasks;
+										$datatask['client_id'] = $client_id;
+										$datatask['invoice'] = $inv_no;
+										DB::table('ta_client_invoice')->where('client_id',$client_id)->insert($datatask);
+									}
+								}
+							}
 					       	$quickstarttime = $quickstop_time;
 						}
 					}
@@ -890,7 +972,48 @@ class TimejobController extends Controller {
 					       	$dataquick['bulk_job'] = 0; 
 					       	$dataquick['job_created_date'] = $jobs->job_created_date;
 					       	$dataquick['status'] = 1;
-					       	DB::table('task_job')->insert($dataquick);
+					       	$task_new_id = DB::table('task_job')->insertGetid($dataquick);
+
+							$client_id = $client;
+							$get_invoice = DB::table('ta_auto_allocation')->where('auto_client_id',$client_id)->first();
+							$get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
+							if(count($get_invoice))
+							{
+								$unserialize = unserialize($get_invoice->auto_tasks);
+								$inv_no = '';
+								if(count($unserialize))
+								{
+									foreach($unserialize as $key => $arrayval)
+									{
+										if(in_array($dataquick['task_id'], $arrayval))
+										{
+											$inv_no = $key;
+										}
+									}
+								}
+								if($inv_no != "")
+								{	
+									if(count($get_client_invoice))
+									{
+										$unserialize_tasks = unserialize($get_client_invoice->tasks);
+										$get_invoice_tasks = $unserialize_tasks[$inv_no];
+										array_push($get_invoice_tasks,$task_new_id);
+
+										$unserialize_tasks[$inv_no] = $get_invoice_tasks;
+										$serialize_tasks = serialize($unserialize_tasks);
+										$datatask['tasks'] = $serialize_tasks;
+										DB::table('ta_client_invoice')->where('client_id',$client_id)->update($datatask);
+									}
+									else{
+										$unserialize_tasks[$inv_no] = array($task_new_id);
+										$serialize_tasks = serialize($unserialize_tasks);
+										$datatask['tasks'] = $serialize_tasks;
+										$datatask['client_id'] = $client_id;
+										$datatask['invoice'] = $inv_no;
+										DB::table('ta_client_invoice')->where('client_id',$client_id)->insert($datatask);
+									}
+								}
+							}
 					       	$quickstarttime = $quickstop_time;
 						}
 					}

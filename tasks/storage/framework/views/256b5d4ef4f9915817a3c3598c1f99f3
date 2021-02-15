@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 <script src="<?php echo URL::to('assets/js/jquery.dataTables.min.js'); ?>"></script>
@@ -13,6 +12,9 @@
 .client_inactive td,.selected_inactive td {color:#f00 !important;}
 body{
   background: #2fd9ff !important;
+}
+.modal-header{
+	cursor:move;
 }
 .modal_load {
     display:    none;
@@ -269,7 +271,7 @@ body #coupon {
 
 </style>
 
-<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document" style="width:35%">
 
@@ -504,7 +506,7 @@ body #coupon {
 
 
 
-<div class="modal fade stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
     <form action="<?php echo URL::to('user/time_job_stop')?>" method="post" class="add_new_form" id="time_job_stop">
         <div class="modal-content">
@@ -688,8 +690,8 @@ body #coupon {
               <input type="radio" name="select_client_groups" id="groups_clients" class="select_client_groups" value="3"><label for="groups_clients">Groups</label> 
 
               <?php
-              $groups = DB::table('messageus_groups')->where('user_login_id',$user_login_id)->get();
-              $clients = DB::table('cm_clients')->where('user_login_id',$user_login_id)->get();
+              $groups = DB::table('messageus_groups')->get();
+              $clients = DB::table('cm_clients')->get();
               ?>
               <div class="groups_combo">
                 <label>Select Group:</label>
@@ -724,7 +726,7 @@ body #coupon {
                 <p><label style="font-weight:800;font-size:18px;text-decoration: underline" id="selected_grp_name"></label> </p>
                  <input type="checkbox" name="select_all_clients" id="select_all_clients" class="select_all_clients" value=""><label for="select_all_clients">Select / Deselect All Clients</label> 
                  <?php
-                  $default_tasks = DB::table('time_task')->where('user_login_id',$user_login_id)->orderBy('task_name','asc')->get();
+                  $default_tasks = DB::table('time_task')->orderBy('task_name','asc')->get();
                   $output_default = '<select name="default_task" class="form-control default_task" style="width: 30%;float: right;">
                     <option value="">Select Default Tasks</option>';
                   if(count($default_tasks)){
@@ -759,7 +761,7 @@ body #coupon {
                             <td class="client_td">'.$client->client_id.'</td>
                             <td class="client_td">'.$client->company.'</td>
                             <td class="client_td">';
-                              $tasks = DB::table('time_task')->where('user_login_id',$user_login_id)->where('clients','like','%'.$client->client_id.'%')->orderBy('task_name','asc')->get();
+                              $tasks = DB::table('time_task')->where('clients','like','%'.$client->client_id.'%')->orderBy('task_name','asc')->get();
                               $output = '<select name="client_task_'.$client->client_id.'" class="form-control client_task">
                                 <option value="">Select Tasks</option>';
                               if(count($tasks)){
@@ -787,52 +789,49 @@ body #coupon {
                   </thead>
                   <tbody id="paye_tbody">
                       <?php
-                      $year = DB::table('paye_p30_year')->where('user_login_id',$user_login_id)->orderBy('year_id','desc')->first();   
-                      if(count($year))
-                      {
-                        $payelist = DB::table('paye_p30_task')->where('user_login_id',$user_login_id)->where('paye_year',$year->year_id)->get();
-                        $group_name = 'PAYE-MRS Clients';
-                        $client_val = '';
-                        if(count($payelist)){
-                            foreach ($payelist as $keytask => $task) {
-                                $get_clients = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('employer_no',$task->task_enumber)->first();
-                                if(count($get_clients))
-                                {
-                                  if($get_clients->active == 2) { 
-                                    if($task->disabled == 1) {
-                                      $label_color = 'color:blue'; $disbledtext = ' (DISABLED)'; 
-                                      $label_cls = 'paye_blue_clients';
-                                    }
-                                    else{
-                                      $label_color = 'color:#f00'; $disbledtext = ''; 
-                                      $label_cls = 'paye_blue_clients';
-                                    }
+                      $year = DB::table('paye_p30_year')->orderBy('year_id','desc')->first();   
+                      $payelist = DB::table('paye_p30_task')->where('paye_year',$year->year_id)->get();
+                      $group_name = 'PAYE-MRS Clients';
+                      $client_val = '';
+                      if(count($payelist)){
+                          foreach ($payelist as $keytask => $task) {
+                              $get_clients = DB::table('cm_clients')->where('employer_no',$task->task_enumber)->first();
+                              if(count($get_clients))
+                              {
+                                if($get_clients->active == 2) { 
+                                  if($task->disabled == 1) {
+                                    $label_color = 'color:blue'; $disbledtext = ' (DISABLED)'; 
+                                    $label_cls = 'paye_blue_clients';
                                   }
                                   else{
-                                    if($task->disabled == 1) {  $label_color = 'color:blue'; $disbledtext = ' (DISABLED)'; $label_cls = 'paye_blue_clients'; } else { $label_color = 'color:#000'; $disbledtext = ''; $label_cls = ''; }
+                                    $label_color = 'color:#f00'; $disbledtext = ''; 
+                                    $label_cls = 'paye_blue_clients';
                                   }
-                                  echo '<tr class="client_tr '.$label_cls.'">
-                                          <td class="client_td" style="'.$label_color.'"><input type="checkbox" name="client_exclude[]" class="client_exclude" value="'.$get_clients->client_id.'"><label>&nbsp;</label></td>
-                                          <td class="client_td" style="'.$label_color.'">'.$get_clients->client_id.'</td>
-                                          <td class="client_td" style="'.$label_color.'">'.$get_clients->company.''.$disbledtext.'</td>
-                                          <td class="client_td">';
-                                            $tasks = DB::table('time_task')->where('user_login_id',$user_login_id)->where('clients','like','%'.$get_clients->client_id.'%')->orderBy('task_name','asc')->get();
-                                            $output = '<select name="paye_client_task_'.$get_clients->client_id.'" class="form-control client_task">
-                                              <option value="">Select Tasks</option>';
-                                            if(count($tasks)){
-                                              foreach ($tasks as $single_task) {
-                                                $output.= '<option value="'.$single_task->id.'">'.$single_task->task_name.'</option>';
-                                              }
-                                            }
-                                            else{
-                                              $output.= '<option value="">No Tasks Found</option>';
-                                            }
-                                            $output.='</select>';
-                                          echo $output.'</td>
-                                        </tr>';
                                 }
-                            }
-                        }
+                                else{
+                                  if($task->disabled == 1) {  $label_color = 'color:blue'; $disbledtext = ' (DISABLED)'; $label_cls = 'paye_blue_clients'; } else { $label_color = 'color:#000'; $disbledtext = ''; $label_cls = ''; }
+                                }
+                                echo '<tr class="client_tr '.$label_cls.'">
+                                        <td class="client_td" style="'.$label_color.'"><input type="checkbox" name="client_exclude[]" class="client_exclude" value="'.$get_clients->client_id.'"><label>&nbsp;</label></td>
+                                        <td class="client_td" style="'.$label_color.'">'.$get_clients->client_id.'</td>
+                                        <td class="client_td" style="'.$label_color.'">'.$get_clients->company.''.$disbledtext.'</td>
+                                        <td class="client_td">';
+                                          $tasks = DB::table('time_task')->where('clients','like','%'.$get_clients->client_id.'%')->orderBy('task_name','asc')->get();
+                                          $output = '<select name="paye_client_task_'.$get_clients->client_id.'" class="form-control client_task">
+                                            <option value="">Select Tasks</option>';
+                                          if(count($tasks)){
+                                            foreach ($tasks as $single_task) {
+                                              $output.= '<option value="'.$single_task->id.'">'.$single_task->task_name.'</option>';
+                                            }
+                                          }
+                                          else{
+                                            $output.= '<option value="">No Tasks Found</option>';
+                                          }
+                                          $output.='</select>';
+                                        echo $output.'</td>
+                                      </tr>';
+                              }
+                          }
                       }
                       ?>
                   </tbody>
@@ -1056,7 +1055,7 @@ body #coupon {
 
 </div>
  -->
-<div class="modal fade stop_quick_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade stop_quick_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
 
@@ -1264,7 +1263,7 @@ body #coupon {
 
 
 
-<div class="modal fade edit_stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade edit_stop_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
 
@@ -1685,7 +1684,7 @@ body #coupon {
 
 
 
-<div class="modal fade take_break_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade take_break_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document">
 
@@ -1753,7 +1752,7 @@ body #coupon {
 
 
 
-<div class="modal fade break_time_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade break_time_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document">
 
@@ -1925,7 +1924,7 @@ body #coupon {
         <?php
         if(Session::has('task_job_user') && Session::get('task_job_user') != "")
         {
-          $check_date_available = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->where('quick_job',0)->where('status',0)->first();
+          $check_date_available = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('quick_job',0)->where('status',0)->first();
 
           if(count($check_date_available))
 
@@ -2005,14 +2004,14 @@ body #coupon {
               foreach ($joblist as $jobs) {
                 if($jobs->quick_job == 0 || $jobs->quick_job == 1){
                   if($jobs->status == 0){
-                    $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $jobs->client_id)->first();
+                    $client_details = DB::table('cm_clients')->where('client_id', $jobs->client_id)->first();
                     if(count($client_details) != ''){
                       $client_name = $client_details->company.' ('.$jobs->client_id.')';
                     }
                     else{
                       $client_name = 'N/A';
                     }
-                    $task_details = DB::table('time_task')->where('user_login_id',$user_login_id)->where('id', $jobs->task_id)->first();
+                    $task_details = DB::table('time_task')->where('id', $jobs->task_id)->first();
                     if(count($task_details) != ''){
                       $task_name = $task_details->task_name;
                       $task_type = $task_details->task_type;
@@ -2030,7 +2029,7 @@ body #coupon {
                       $task_name = 'N/A';
                       $task_type = 'N/A';
                     }
-                    // $break_time_count = DB::table('job_break_time')->where('user_login_id',$user_login_id)->where('job_id', $jobs->id)->get();
+                    // $break_time_count = DB::table('job_break_time')->where('job_id', $jobs->id)->get();
                     // $count_minues = 0;
                     // if(count($break_time_count)){
                     //   foreach ($break_time_count as $break_time1) {
@@ -2169,7 +2168,7 @@ body #coupon {
                       $buttons = '';
                     }
 
-                    $ratelist = DB::table('user_cost')->where('user_login_id',$user_login_id)->where('user_id', $jobs->user_id)->get();
+                    $ratelist = DB::table('user_cost')->where('user_id', $jobs->user_id)->get();
 
                     $rate_result = '0';
                     $cost = '0';
@@ -2201,8 +2200,8 @@ body #coupon {
                     if($jobs->job_type !=  0)
                     {
                       $client_id = $jobs->client_id;
-                      $get_invoice = DB::table('ta_auto_allocation')->where('user_login_id',$user_login_id)->where('auto_client_id',$client_id)->first();
-                      $get_client_invoice = DB::table('ta_client_invoice')->where('user_login_id',$user_login_id)->where('client_id',$client_id)->first();
+                      $get_invoice = DB::table('ta_auto_allocation')->where('auto_client_id',$client_id)->first();
+                      $get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
                       if(count($get_invoice))
                       {
                         $unserialize = unserialize($get_invoice->auto_tasks);
@@ -2240,20 +2239,20 @@ body #coupon {
             </tr>';
               
               $userid = Session::get('task_job_user');
-            $joblist_child = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',$userid)->where('active_id',$jobs->id)->get();
+            $joblist_child = DB::table('task_job')->where('user_id',$userid)->where('active_id',$jobs->id)->get();
                       $childi = 1;
                       if(count($joblist_child)){              
                         foreach ($joblist_child as $child) {
                           if($child->quick_job == 0 || $child->quick_job == 1){
                             if($child->status == 0){
-                              $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $child->client_id)->first();
+                              $client_details = DB::table('cm_clients')->where('client_id', $child->client_id)->first();
                               if(count($client_details) != ''){
                                 $client_name = $client_details->company.' ('.$child->client_id.')';
                               }
                               else{
                                 $client_name = 'N/A';
                               }
-                              $task_details = DB::table('time_task')->where('user_login_id',$user_login_id)->where('id', $child->task_id)->first();
+                              $task_details = DB::table('time_task')->where('id', $child->task_id)->first();
                               if(count($task_details) != ''){
                                 $task_name = $task_details->task_name;
                                 $task_type = $task_details->task_type;
@@ -2364,7 +2363,7 @@ body #coupon {
                                 $buttons = '<a href="javascript:" class="edit_quick_job" data-element="'.$child->id.'" style="'.$redcolor.'">Edit Job</a>';
                               }
 
-                              $ratelist_child = DB::table('user_cost')->where('user_login_id',$user_login_id)->where('user_id', $child->user_id)->get();
+                              $ratelist_child = DB::table('user_cost')->where('user_id', $child->user_id)->get();
 
                               $rate_child_result = '0';
                               $child_cost = '0';
@@ -2393,8 +2392,8 @@ body #coupon {
                               if($child->job_type !=  0)
                               {
                                 $client_id = $child->client_id;
-                                $get_invoice = DB::table('ta_auto_allocation')->where('user_login_id',$user_login_id)->where('auto_client_id',$client_id)->first();
-                                $get_client_invoice = DB::table('ta_client_invoice')->where('user_login_id',$user_login_id)->where('client_id',$client_id)->first();
+                                $get_invoice = DB::table('ta_auto_allocation')->where('auto_client_id',$client_id)->first();
+                                $get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
                                 if(count($get_invoice))
                                 {
                                   $unserialize = unserialize($get_invoice->auto_tasks);
@@ -2537,14 +2536,14 @@ body #coupon {
                 if($current_date == $jobs->job_date)
                 {
                     if($jobs->status == 1 ){
-                    $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $jobs->client_id)->first();
+                    $client_details = DB::table('cm_clients')->where('client_id', $jobs->client_id)->first();
                     if(count($client_details) != ''){
                       $client_name = $client_details->company.' ('.$jobs->client_id.')';
                     }
                     else{
                       $client_name = 'N/A';
                     }
-                    $task_details = DB::table('time_task')->where('user_login_id',$user_login_id)->where('id', $jobs->task_id)->first();
+                    $task_details = DB::table('time_task')->where('id', $jobs->task_id)->first();
                     if(count($task_details) != ''){
                       $task_name = $task_details->task_name;
                       $task_type = $task_details->task_type;
@@ -2566,7 +2565,7 @@ body #coupon {
 
                       $quick_job = 'No';
 
-                      $get_quick_jobs = DB::table('task_job')->where('user_login_id',$user_login_id)->where('active_id',$jobs->id)->get();
+                      $get_quick_jobs = DB::table('task_job')->where('active_id',$jobs->id)->get();
                       $quick_minutes = 0;
                       if(count($get_quick_jobs))
                       {
@@ -2584,7 +2583,7 @@ body #coupon {
                         }
                       }
 
-                      $break_time_min = DB::table('job_break_time')->where('user_login_id',$user_login_id)->where('job_id',$jobs->id)->where('break_time','!=','00:00:00')->first();
+                      $break_time_min = DB::table('job_break_time')->where('job_id',$jobs->id)->where('break_time','!=','00:00:00')->first();
                       $break_timee_minutes = 0;
                       if(count($break_time_min))
                       {
@@ -2629,7 +2628,7 @@ body #coupon {
                     if($jobs->comments != "") { $comments = $jobs->comments; } else { $comments = 'No Comments Found'; }
 
 
-                    $ratelist = DB::table('user_cost')->where('user_login_id',$user_login_id)->where('user_id', $jobs->user_id)->get();
+                    $ratelist = DB::table('user_cost')->where('user_id', $jobs->user_id)->get();
 
                     $rate_result = '0';
                     $cost = '0';
@@ -2685,7 +2684,7 @@ body #coupon {
                       &nbsp;&nbsp;|&nbsp;&nbsp;
                       <a href="javascript:" class="edit_close_job" data-element="'.$jobs->id.'">Edit Job</a>
 
-                        <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
+                        <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
 
                             <div class="modal-dialog" style="width:20%">
 
@@ -2721,7 +2720,7 @@ body #coupon {
 
                     </tr>';
                     $userid = Session::get('task_job_user');
-                    $joblist_child = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',$userid)->where('active_id',$jobs->id)->get();
+                    $joblist_child = DB::table('task_job')->where('user_id',$userid)->where('active_id',$jobs->id)->get();
                     $childi=1;            
                       if(count($joblist_child)){
                         foreach ($joblist_child as $child) {
@@ -2729,14 +2728,14 @@ body #coupon {
                           if($current_date == $child->job_date)
                           {
                               if($child->status == 1 ){
-                              $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id', $child->client_id)->first();
+                              $client_details = DB::table('cm_clients')->where('client_id', $child->client_id)->first();
                               if(count($client_details) != ''){
                                 $client_name = $client_details->company.' ('.$child->client_id.')';
                               }
                               else{
                                 $client_name = 'N/A';
                               }
-                              $task_details = DB::table('time_task')->where('user_login_id',$user_login_id)->where('id', $child->task_id)->first();
+                              $task_details = DB::table('time_task')->where('id', $child->task_id)->first();
                               if(count($task_details) != ''){
                                 $task_name = $task_details->task_name;
                                 $task_type = $task_details->task_type;
@@ -2777,7 +2776,7 @@ body #coupon {
 
                               if($child->comments != "") { $comments = $child->comments; } else { $comments = 'No Comments Found'; }
 
-                              $ratechildlist = DB::table('user_cost')->where('user_login_id',$user_login_id)->where('user_id', $child->user_id)->get();
+                              $ratechildlist = DB::table('user_cost')->where('user_id', $child->user_id)->get();
 
                               $rate_child_result = '0';
                               $child_cost = '0';
@@ -2845,7 +2844,7 @@ body #coupon {
 
                                 <a href="javascript:" class="edit_close_job" data-element="'.$child->id.'">Edit Job</a>
 
-                                  <div id="comments_'.$child->id.'" class="modal fade" role="dialog" >
+                                  <div id="comments_'.$child->id.'" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
 
                                       <div class="modal-dialog" style="width:20%">
 
@@ -2932,14 +2931,14 @@ body #coupon {
           if(Session::has('task_job_user') && Session::get('task_job_user') != "")
           {
             $currentdate = date('Y-m-d');
-            $user_details = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->first();
-            $getdetails_active_jobs = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',0)->where('stop_time','!=','00:00:00')->get();
-            $getdetails_active_jobs_num = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('stop_time','00:00:00')->count();
+            $user_details = DB::table('user')->where('user_id',Session::get('task_job_user'))->first();
+            $getdetails_active_jobs = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',0)->where('stop_time','!=','00:00:00')->get();
+            $getdetails_active_jobs_num = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('stop_time','00:00:00')->count();
 
 
-            $quick_jobs_count = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',1)->count();
+            $quick_jobs_count = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',1)->count();
 
-            $getdetails_quick_jobs = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',1)->get();
+            $getdetails_quick_jobs = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',1)->get();
 
             $currentdatetime = date('Y-m-d H:i:s');
             $spendminutes = 0;
@@ -3055,10 +3054,10 @@ body #coupon {
 
             if($spendquickminutes < 60)
             {
-              $summary_quick_jobs_time = $m.' Minutes';
+              $summary_quick_jobs_time = floor($m).' Minutes';
             }
             else{
-              $summary_quick_jobs_time = $h.':'.$m.' Hours';
+              $summary_quick_jobs_time = floor($h).':'.floor($m).' Hours';
             }
 
             echo '<div class="col-lg-12 user_details_div" style="margin-top: 30px;">        
@@ -3136,8 +3135,8 @@ body #coupon {
       if(Session::has('task_job_user') && Session::get('task_job_user') != "")
       {
         $currentdate = date('Y-m-d');
-        $user_details = DB::table('user')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->first();
-        $getdetails = DB::table('task_job')->where('user_login_id',$user_login_id)->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->get();
+        $user_details = DB::table('user')->where('user_id',Session::get('task_job_user'))->first();
+        $getdetails = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->get();
         $currentdatetime = date('Y-m-d H:i:s');
         $spendminutes = 0;
         $spendhours = 0;
@@ -3780,6 +3779,10 @@ $(window).click(function(e) {
 
           $(".create_new_model").modal("show");
 
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
           $("#quickjob").val('0');
 
           $(".job_title").html('Create an Active Job');
@@ -3856,6 +3859,10 @@ $(window).click(function(e) {
           $(".client_search_class").val("");
           $(".user_id").val(userid);
           $(".create_new_model").modal("show");
+
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
           $("#quickjob").val('0');
           $(".job_title").html('Create an Even Bulk Job');
           $(".job_button_name").val('Create an Even Bulk Job');
@@ -3906,6 +3913,11 @@ $(window).click(function(e) {
         $(".user_id").val(result['userid']);
         $(".hidden_activejob_starttime").val(result['start_time']);
         $(".create_new_model").modal("show");
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
         $("#quickjob").val('1');
         $(".job_title").html('Create a Quick Job');
         $(".job_button_name").val('Create a Quick Job');
@@ -4316,6 +4328,11 @@ $(window).click(function(e) {
           $(".client_task").val("");
 
           $(".stop_model").modal("show");
+
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
           $(".comments").val('');
           $('#stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
           $('#stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
@@ -4331,7 +4348,7 @@ $(window).click(function(e) {
             $("#total_time_minutes_format").css({"color":"#0f9600"});
             $("#stop_active_job").prop("disabled",false);
           }
-          $(".calculate_job_time").val(result['jobtime']);
+          $(".calculate_job_time").val('');
           $("#total_time_minutes_format").val(result['total_time_minutes_format']);
           $("#break_time").val('');
           $("#total_breaks").val('');
@@ -4360,6 +4377,12 @@ $(window).click(function(e) {
           $(".presets_combo").hide();
 
           $(".stop_model").modal("show");
+
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
+
           $(".comments").val('');
           $('#stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
           $('#stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
@@ -4375,7 +4398,7 @@ $(window).click(function(e) {
             $("#total_time_minutes_format").css({"color":"#0f9600"});
             $("#stop_active_job").prop("disabled",false);
           }
-          $(".calculate_job_time").val(result['jobtime']);
+          $(".calculate_job_time").val('');
           $("#total_time_minutes_format").val(result['total_time_minutes_format']);
           $("#break_time").val('');
           $("#total_breaks").val('');
@@ -4413,6 +4436,10 @@ $(window).click(function(e) {
 
         $(".stop_quick_model").modal("show");
 
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
         $(".comments").val('');
 
 
@@ -4427,7 +4454,7 @@ $(window).click(function(e) {
 
         $(".stop_time2").val("");
 
-        $("#calculate_job_time_quick").val(result['jobtime']);
+        $("#calculate_job_time_quick").val('');
 
         
 
@@ -4459,6 +4486,10 @@ $(window).click(function(e) {
 
     $(".take_break_model").modal("show");
 
+    $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
     $(".select_break_class").val('');
 
   }
@@ -4482,6 +4513,10 @@ $(window).click(function(e) {
         $(".break_time_details").html(result);
 
         $(".break_time_model").modal("show");
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
 
         $('#break_tbody').DataTable({            
 
@@ -5046,6 +5081,10 @@ if($(e.target).hasClass('edit_quick_job')){
         }
         $("#hidden_job_id").val(result['id']);
         $(".create_new_model").modal("show");        
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
         $("#hidden_job_id").val(result['id']);
 
         if(result['job_type'] == 0) { 
@@ -5163,6 +5202,10 @@ if($(e.target).hasClass('edit_active_job')){
         }
         $("#hidden_job_id").val(result['id']);
         $(".create_new_model").modal("show");        
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
         $("#hidden_job_id").val(result['id']);
 
         if(result['job_type'] == 0) { 
@@ -5305,6 +5348,10 @@ if($(e.target).hasClass('edit_close_job')){
       dataType:"json",
       success:function(result){        
       $(".edit_stop_model").modal("show");
+
+      $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
       if($('.edit_stop_time1').data("DateTimePicker"))
       {
         $('.edit_stop_time1').data("DateTimePicker").destroy();  

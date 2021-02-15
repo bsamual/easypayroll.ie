@@ -1,7 +1,32 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_infile.js'); ?>'></script>
 <style>
+.content_check{
+  word-wrap:break-word; /*old browsers*/
+  overflow-wrap:break-word;
+}
+.overflow-wrap-hack{
+  max-width:1px;
+}
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    999999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
 .file_attachment_div{width:100%;}
 .fa-sort{cursor:pointer;}
 .user_td_class{
@@ -426,6 +451,25 @@ else{
   $client_session_id = '';
 }
 ?>
+<div class="modal fade integrity_check_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">Integrity Check</h4>
+          </div>
+          <div class="modal-body" id="integrity_check_body">  
+
+          </div>
+          <div class="modal-footer" style="text-align:left">
+             <div class="export_integrity_filename" id="export_integrity_filename">
+                <h5>Download</h5>
+                <a href="<?php echo URL::to('papers/IntegrityCheckReport.csv'); ?>" download>IntegrityCheckReport.csv</a>
+             </div>
+          </div>
+        </div>
+  </div>
+</div>
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title" style="margin-bottom: 2px;">
           <div class="col-lg-2" style="padding: 0px;">
@@ -435,12 +479,13 @@ else{
               <div class="select_button" style=" margin-left: 10px;">
                 <ul style="float: left;">
                 <?php 
-                  $user = DB::table('user_login')->where('id',$user_login_id)->first();
+                  $user = DB::table('user_login')->where('id',1)->first();
                 ?>
                   <li><input type="checkbox" name="hide_inactive" class="hide_inactive" id="hide_inactive" value="1"><label for="hide_inactive" title="Hides the Inactive Clients">Hide Inactive</label></li>
                   
                   <li><input type="checkbox" name="show_incomplete" class="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete" title="Show client who have an Incomplete Batches">Show Incomplete Only</label></li>
                   <li><a href="<?php echo URL::to('user/in_file'); ?>" style="font-size: 13px; font-weight: 500;">Basic View</a></li>
+                  <li><a href="javascript:" class="integrity_check_for_all" style="font-size: 13px; font-weight: 500;">Integrity Check For All Clients</a></li>
                 </ul>
             </div>                        
   </div>
@@ -494,7 +539,7 @@ else{
                 </thead>
                 <tbody>
               <?php
-              $userlist_notify = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+              $userlist_notify = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
               $i = 1;
               if(count($userlist_notify)){
                 foreach ($userlist_notify as $user) {
@@ -537,7 +582,7 @@ else{
                   <select name="select_user" class="form-control select_user_author" required>
                     <option value="">Select User</option>        
                       <?php
-                      $userlist = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status', 0)->where('disabled',0)->orderBy('firstname','asc')->get();
+                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
                       $selected = '';
                       if(count($userlist)){
                         foreach ($userlist as $user) {
@@ -597,7 +642,7 @@ else{
                 if($client_session_id != "")
                 {
                   $client_id = $client_session_id;
-                  $client_details = DB::table('cm_clients')->where('user_login_id',$user_login_id)->where('client_id',$client_id)->first();
+                  $client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
                   $company = $client_details->company.'-'.$client_id;
                 }
                 else{
@@ -621,7 +666,7 @@ else{
                     <ul class="dropdown-menu internal_task_details" role="menu"  aria-labelledby="dropdownMenu" style="width: 100%">
                       <li><a tabindex="-1" href="javascript:" class="tasks_li_internal">Select Task</a></li>
                         <?php
-                        $taskslist = DB::table('time_task')->where('user_login_id',$user_login_id)->where('task_type', 0)->orderBy('task_name', 'asc')->get();
+                        $taskslist = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
                         if(count($taskslist)){
                           foreach ($taskslist as $single_task) {
                             if($single_task->task_type == 0){
@@ -951,9 +996,9 @@ else{
                 $i = '0'.$i;
               }
               
-              $received = DB::table('in_file')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->count();
-              $complete = DB::table('in_file')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->where('status',1)->count();
-              $incomplete = DB::table('in_file')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->where('status',0)->count();
+              $received = DB::table('in_file')->where('client_id',$client->client_id)->count();
+              $complete = DB::table('in_file')->where('client_id',$client->client_id)->where('status',1)->count();
+              $incomplete = DB::table('in_file')->where('client_id',$client->client_id)->where('status',0)->count();
 
               if($incomplete > 0) { $incomplete_cls = 'incomplete_cls'; } else { $incomplete_cls = 'complete_cls'; }
               if($client->active == 2) { $inactive_cls = 'inactive_cls'; } else { $inactive_cls = 'active_cls'; }
@@ -974,8 +1019,17 @@ else{
                 <td class="incomplete_sort_val" style="text-align:left;font-weight:600;'.$color.'">'.$incomplete.'</td>
                 <td class="lastname_sort_val" style="text-align:left;font-weight:600;'.$color.'">
                   <a href="javascript:" class="fa fa-plus common_black_button create_new" title="Add New Batch File" data-element="'.$clientid.'" style="padding: 3px 7px;"></a>
-                  <a href="'.$view_url.'" class="fa fa-eye common_black_button view_client" title="View Client InFiles" style="padding: 3px 7px;"></a>
-                </td>
+                  <a href="'.$view_url.'" class="fa fa-eye common_black_button view_client" title="View Client InFiles" style="padding: 3px 7px;"></a>';
+
+                  $infiles = DB::table('in_file')->where('client_id', $client->client_id)->get();
+                  if(count($infiles))
+                  {
+                    foreach($infiles as $infile)
+                    {
+                      $output.='<input type="button" class="common_black_button integrity_check" value="Integrity Check" data-element="'.$infile->id.'" style="display:none">';
+                    }
+                  }
+                $output.='</td>
               </tr>';
               $i++;
             }
@@ -1008,6 +1062,10 @@ else{
 
 
 <div class="modal_load"></div>
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Infile Items are loaded.</p>
+  <p style="font-size:18px;font-weight: 600;">Loading: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
 <input type="hidden" name="show_alert" id="show_alert" value="">
 <input type="hidden" name="pagination" id="pagination" value="1">
@@ -1098,6 +1156,55 @@ var convertToNumber = function(value){
 }
 var convertToNumber_int = function(value){
        return parseInt(value);
+}
+function next_integrity_check(count)
+{
+  var fileid = $(".integrity_attachment:eq("+count+")").attr("data-element");
+  var keyval = $(".integrity_attachment:eq("+count+")").attr("data-key");
+  $.ajax({
+    url:"<?php echo URL::to('user/check_files_in_files'); ?>",
+    type:"post",
+    data:{fileid:fileid,type:keyval},
+    success:function(result)
+    {
+      $(".integrity_status_"+fileid).html(result);
+      var countval = count + 1;
+      if($(".integrity_attachment:eq("+countval+")").length > 0)
+      {
+        next_integrity_check(countval);
+      }
+      else{
+        $("body").removeClass("loading_apply");
+        $("#export_integrity_filename").show();
+      }
+    }
+  });
+}
+function next_integrity_check_div(count)
+{
+    var client_id = $(".clientid_sort_val:eq("+count+")").html();
+    $.ajax({
+      url:"<?php echo URL::to('user/check_integrity_files_client_id'); ?>",
+      type:"post",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        setTimeout(function() {
+          $("#integrity_check_body").append(result);
+          var countval = count + 1;
+          if($(".clientid_sort_val:eq("+countval+")").length > 0)
+          {
+            next_integrity_check_div(countval);
+            $("#apply_first").html(countval);
+          }
+          else{
+            $(".integrity_check_modal").modal("show");
+            $("#export_integrity_filename").hide();
+            $("body").removeClass("loading_apply");
+          }
+        },200);
+      }
+    });
 }
 $(window).click(function(e) {
 var ascending = false;
@@ -1319,6 +1426,36 @@ if($(e.target).hasClass('close_colorbox'))
 {
   $.colorbox.close();
 }
+if($(e.target).hasClass('integrity_check_for_all'))
+{
+  $("body").addClass("loading_apply");
+  $("#integrity_check_body").html();
+  var countintegrity = $(".clientid_sort_val").length;
+    $("#apply_last").html(countintegrity);
+  var client_id = $(".clientid_sort_val:eq(0)").html();
+  $.ajax({
+    url:"<?php echo URL::to('user/check_integrity_files_client_id'); ?>",
+    type:"post",
+    data:{client_id:client_id},
+    success:function(result)
+    {
+      setTimeout(function() {
+        $("#integrity_check_body").append(result);
+        if($(".clientid_sort_val:eq(1)").length > 0)
+        {
+          next_integrity_check_div(1);
+          $("#apply_first").html(1);
+        }
+        else{
+          $(".integrity_check_modal").modal("show");
+          $("#export_integrity_filename").hide();
+          $("body").removeClass("loading_apply");
+        }
+      },200);
+    }
+  });
+}
+
 if($(e.target).hasClass('view_infiles_item'))
 {
   var hrefval = $(e.target).attr("data-element");

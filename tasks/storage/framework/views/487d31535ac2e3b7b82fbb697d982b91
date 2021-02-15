@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 
@@ -720,10 +719,10 @@ if(Session::has('message_import')) { ?>
       </div><br/>
       <div>
       <?php
-        $red = DB::table('vat_clients')->where('user_login_id',$user_login_id)->where('status',1)->count();
-        $green = DB::table('vat_clients')->where('user_login_id',$user_login_id)->where('status',0)->where('pemail','!=', '')->where('self_manage','no')->count();
-        $yellow = DB::table('vat_clients')->where('user_login_id',$user_login_id)->where('status',0)->where('pemail', '')->where('self_manage','no')->count();
-        $purple = DB::table('vat_clients')->where('user_login_id',$user_login_id)->where('status',0)->where('self_manage','yes')->count();
+        $red = DB::table('vat_clients')->where('status',1)->count();
+        $green = DB::table('vat_clients')->where('status',0)->where('pemail','!=', '')->where('self_manage','no')->count();
+        $yellow = DB::table('vat_clients')->where('status',0)->where('pemail', '')->where('self_manage','no')->count();
+        $purple = DB::table('vat_clients')->where('status',0)->where('self_manage','yes')->count();
       ?>
         <a href="javascript:" class="color_pallete_purple thumbnail" data-toggle="popover" title="<?php echo $purple; ?> Clients With Self Manage" data-placement="left" data-trigger="focus"></a>
         <a href="javascript:" class="color_pallete_yellow thumbnail" data-toggle="popover" title="<?php echo $yellow; ?> Clients Without Primary Email Address" data-placement="left" data-trigger="focus"></a>

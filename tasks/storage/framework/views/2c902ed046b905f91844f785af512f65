@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
@@ -13,12 +12,18 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-
+.disabled_ard{
+  background: #dfdfdf !important;
+  pointer-events: none; 
+}
 body{
   background: #f5f5f5 !important;
 }
 .form-control[readonly]{
       background-color: #fff !important
+}
+.ard_class[readonly]{
+      background-color: #dfdfdf !important
 }
 .formtable tr td{
   padding-left: 15px;
@@ -198,6 +203,35 @@ if(!empty($_GET['import_type_existing']))
       </div>
   </div>
 </div>
+<div class="modal fade" id="module_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="z-index: 99999999999;">
+  <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Edit Task Details</h4>
+          </div>
+          <div class="modal-body">
+              <label>Enter Salutation : </label>
+              <div class="form-group">            
+                  <input class="form-control" name="salutation_module" id="salutation_module" placeholder="Enter Salutation" type="text">
+              </div>
+              <label>Enter Primary Email : </label>
+              <div class="form-group">            
+                  <input class="form-control" name="pemail_module" id="pemail_module" placeholder="Enter Primary Email" type="text">
+              </div>
+              <label>Enter Secondary Email : </label>
+              <div class="form-group">            
+                  <input class="form-control" name="semail_module" id="semail_module" placeholder="Enter Secondary Email" type="text">
+              </div>
+          </div>
+          <div class="modal-footer">
+              <input type="hidden" name="task_type" id="task_type" value="">
+              <input type="hidden" name="task_id_module" id="task_id_module" value="">
+              <input type="submit" class="common_black_button" id="submit_module_update" value="Submit">
+          </div>
+      </div>
+  </div>
+</div>
 <div class="modal fade show_messageus_last_screen_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="z-index:9999999">
   <div class="modal-dialog modal-lg" role="document" >
       <div class="modal-content">
@@ -249,6 +283,7 @@ if(!empty($_GET['import_type_existing']))
                 <input type="checkbox" class="select_import_client" name="import_field[]" id="phone_update" value="phone"> <label for="phone_update" class="field_check">Phone</label>
                 <input type="checkbox" class="select_import_client" name="import_field[]" id="linkcode_update" value="linkcode"> <label for="linkcode_update" class="field_check">LinkCode</label>
                 <input type="checkbox" class="select_import_client" name="import_field[]" id="cro_update" value="cro"> <label for="cro_update" class="field_check">CRO</label>
+                <input type="checkbox" class="select_import_client" name="import_field[]" id="ard_update" value="ard"> <label for="ard_update" class="field_check">ARD</label>
                 <input type="checkbox" class="select_import_client" name="import_field[]" id="trade_status_update" value="trade_status"> <label for="trade_status_update" class="field_check">Trade Status</label>
                 <input type="checkbox" class="select_import_client" name="import_field[]" id="directory_update" value="directory"> <label for="directory_update" class="field_check">Directory</label>
             </div>
@@ -490,9 +525,19 @@ if(!empty($_GET['import_type_existing']))
               </tr>
               <tr>
                   <td>
-                      <label>CRO : </label>
-                      <div class="form-group">                
-                          <input class="form-control cro_add" name="cro" placeholder="Enter CRO" type="text" readonly onfocus="this.removeAttribute('readonly');">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>CRO : </label>
+                          <div class="form-group">                
+                              <input class="form-control cro_add" name="cro" placeholder="Enter CRO" type="text" readonly onfocus="this.removeAttribute('readonly');">
+                          </div>
+                        </div>
+                        <div class="col-md-6" style="margin-top: -7px;">
+                          <spam style="margin-bottom: 5px;font-weight: 700;">ARD : <input type="checkbox" name="disable_ard" class="disable_ard_add" id="disable_ard_add" value="1"><label for="disable_ard_add">Disable<label></spam>
+                          <div class="form-group">                
+                              <input class="form-control ard_add" name="ard" placeholder="Enter ARD" type="text" readonly onfocus="this.removeAttribute('readonly');">
+                          </div>
+                        </div>
                       </div>
                   </td>
                   <td>
@@ -570,7 +615,7 @@ if(!empty($_GET['import_type_existing']))
               </tr>
               
               <?php
-                $getfields = DB::table('cm_fields')->where('user_login_id',$user_login_id)->where('status',0)->get();
+                $getfields = DB::table('cm_fields')->where('status',0)->get();
                 if(count($getfields))
                 {
                   $i = 1;
@@ -885,6 +930,7 @@ if(!empty($_GET['import_type_existing']))
                   <li role="presentation" class="cm_full_ul"><a href="#notes_tab" aria-controls="notes" role="tab" data-toggle="tab">Notes</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#bank_tab" aria-controls="bank" role="tab" data-toggle="tab">Bank</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#message_tab" aria-controls="message" role="tab" data-toggle="tab">Messages Sent</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#coms_tab" aria-controls="coms" role="tab" data-toggle="tab">Module Coms</a></li>
             </ul>
           </div>
           <div class="tab-content ">
@@ -958,10 +1004,20 @@ if(!empty($_GET['import_type_existing']))
                     </tr>
                     <tr>
                         <td>
-                            <label>CRO : </label>
-                            <div class="form-group">                
-                                <input class="form-control cro_class" name="cro" placeholder="Enter CRO" type="text" readonly onfocus="this.removeAttribute('readonly');">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <label>CRO : </label>
+                              <div class="form-group">                
+                                  <input class="form-control cro_class" name="cro" placeholder="Enter CRO" type="text" readonly onfocus="this.removeAttribute('readonly');">
+                              </div>
                             </div>
+                            <div class="col-md-6" style="margin-top: -7px;">
+                              <spam style="margin-bottom: 5px;font-weight: 700;">ARD : <input type="checkbox" name="disable_ard" class="disable_ard_class" id="disable_ard_class" value="1"><label for="disable_ard_class" style="float:right">Disable<label></spam>
+                              <div class="form-group">                
+                                  <input class="form-control ard_class" name="ard" placeholder="Enter ARD" type="text" readonly onfocus="this.removeAttribute('readonly');">
+                              </div>
+                            </div>
+                          </div>
                         </td>
                         <td>
                             <label>Type : </label>
@@ -1078,7 +1134,6 @@ if(!empty($_GET['import_type_existing']))
                   </div>
                 </div>
               </form>
-
             </div>
             <div role="tabpanel" class="tab-pane cm_full_content" id="invoice_tab">
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
@@ -1096,17 +1151,12 @@ if(!empty($_GET['import_type_existing']))
               </div>
             </div>
             <div role="tabpanel" class="tab-pane cm_full_content" id="timetask_tab">
-
-
-                <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
-                  <h4 style="margin-bottom: 15px;">List of tasks assigned to this client</h4>
-                <div id="timetask_tbody" >
-                  
+              <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
+                <h4 style="margin-bottom: 15px;">List of tasks assigned to this client</h4>
+                <div id="timetask_tbody">
                 </div>
-                
               </div>
               <div class="modal-footer">
-                  
               </div>
             </div>
             <div role="tabpanel" class="tab-pane cm_full_content" id="payroll_tab">
@@ -1141,7 +1191,6 @@ if(!empty($_GET['import_type_existing']))
                 </div>                                
               </div>
             </div>
-
             <div role="tabpanel" class="tab-pane cm_full_content" id="bank_tab">
               <div class="modal-body">
                 <div id="bank_detail_body">
@@ -1166,7 +1215,14 @@ if(!empty($_GET['import_type_existing']))
                 </div>                                
               </div>
             </div>
-        </div>
+            <div role="tabpanel" class="tab-pane cm_full_content" id="coms_tab">
+              <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
+                <h4 class="load_more_cm_message" style="margin-bottom: 15px;">Module Coms</h4>
+                <div id="coms_tbody">
+                </div>                                
+              </div>
+            </div>
+          </div>
       </div>         
     </div>
   </div>
@@ -1241,7 +1297,7 @@ if(!empty($_GET['import_type_existing']))
               </ul>
             </div>
             <br/>
-            <?php $check_incomplete = Db::table('user_login')->where('userid',$user_login_id)->first(); if($check_incomplete->cm_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
+            <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->cm_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
                 <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked;?> style="margin-right:10px"><label for="show_incomplete">Hide Deactivated Accounts</label>
   </div>
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
@@ -1259,7 +1315,7 @@ if(!empty($_GET['import_type_existing']))
         </script>
     <?php } 
     
-    if(isset($_GET['email_sent'])) { DB::table('cm_email_attachment')->where('user_login_id',$user_login_id)->delete(); ?>
+    if(isset($_GET['email_sent'])) { DB::table('cm_email_attachment')->delete(); ?>
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Email Sent successfully. </p>
         <script>
             window.history.replaceState(null, null, "<?php echo URL::to('user/client_management'); ?>");
@@ -1295,7 +1351,7 @@ if(!empty($_GET['import_type_existing']))
                                     {
                                       $disabled='disabled';
                                     }
-                                    $check_color = DB::table('cm_class')->where('user_login_id',$user_login_id)->where('id',$client->active)->first();
+                                    $check_color = DB::table('cm_class')->where('id',$client->active)->first();
                                     $style="color:#".$check_color->classcolor."";
                                   }
                                   else{
@@ -1476,6 +1532,34 @@ $( function() {
   $(".client_added_class" ).datepicker({ dateFormat: 'dd/MM/yy',monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], })
 });
+$(function () {       
+    $('.ard_add').datetimepicker({
+        widgetPositioning: {
+            horizontal: 'left'
+        },
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-arrow-up",
+            down: "fa fa-arrow-down"
+        },
+        format: 'L',
+        format: "DD/MM/YYYY",
+    });
+    $('.ard_class').datetimepicker({
+        widgetPositioning: {
+            horizontal: 'left'
+        },
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-arrow-up",
+            down: "fa fa-arrow-down"
+        },
+        format: 'L',
+        format: "DD/MM/YYYY",
+    });
+});
 $(document).ready(function(){
     $('#images').on('change',function(){
       $("body").addClass("loading");
@@ -1522,6 +1606,68 @@ $(document).ready(function() {
 });
 
 $(window).click(function(e) {
+  if($(e.target).hasClass('edit_task_module'))
+  {
+    var type = $(e.target).attr("data-type");
+    var taskid = $(e.target).attr("data-element");
+    var salutation = $(e.target).attr("data-salutation");
+    var primary = $(e.target).attr("data-primary");
+    var secondary = $(e.target).attr("data-secondary");
+
+    $("#task_type").val(type);
+    $("#task_id_module").val(taskid);
+    $("#salutation_module").val(salutation);
+    $("#pemail_module").val(primary);
+    $("#semail_module").val(secondary);
+
+    $("#module_modal").modal("show");
+  }
+  if(e.target.id == "submit_module_update")
+  {
+    var type = $("#task_type").val();
+    var taskid = $("#task_id_module").val();
+    var salutation = $("#salutation_module").val();
+    var primary = $("#pemail_module").val();
+    var secondary = $("#semail_module").val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/update_pms_vat_module'); ?>",
+      type:"post",
+      data:{type:type,taskid:taskid,salutation:salutation,primary:primary,secondary:secondary},
+      success: function(result)
+      {
+        if(type == "2")
+        {
+          $(".vat_module_"+taskid).find(".salutation_mod").html(salutation);
+          $(".vat_module_"+taskid).find(".primary_mod").html(primary);
+          $(".vat_module_"+taskid).find(".secondary_mod").html(secondary);
+          $(".vat_module_"+taskid).find(".edit_task_module").attr("data-salutation",salutation);
+          $(".vat_module_"+taskid).find(".edit_task_module").attr("data-primary",primary);
+          $(".vat_module_"+taskid).find(".edit_task_module").attr("data-secondary",secondary);
+        }
+        else{
+          $(".pms_module_"+taskid).find(".salutation_mod").html(salutation);
+          $(".pms_module_"+taskid).find(".primary_mod").html(primary);
+          $(".pms_module_"+taskid).find(".secondary_mod").html(secondary);
+          $(".pms_module_"+taskid).find(".edit_task_module").attr("data-salutation",salutation);
+          $(".pms_module_"+taskid).find(".edit_task_module").attr("data-primary",primary);
+          $(".pms_module_"+taskid).find(".edit_task_module").attr("data-secondary",secondary);
+        }
+
+        $("#module_modal").modal("hide");
+      }
+    })
+  }
+  if($(e.target).hasClass('disable_ard_class'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".ard_class").addClass("disabled_ard");
+    }
+    else{
+      $(".ard_class").removeClass("disabled_ard");
+    }
+  }
   if($(e.target).hasClass('view_message'))
   {
     var message_id = $(e.target).attr("data-element");
@@ -2206,6 +2352,8 @@ $(window).click(function(e) {
     $(".bs-example-modal-sm").find(".editsp").hide();
     $(".bs-example-modal-sm").find(".addsp").show();
     $(".bs-example-modal-sm").find(".modal-title").html("Add Clients");
+    $(".ard_add").prop("disabled",true);
+    $(".disable_ard_add").prop("checked",true);
   }
   if($(e.target).hasClass('deactivate_clients'))
   {
@@ -2349,13 +2497,14 @@ $(window).click(function(e) {
            $(".link_add").val(result['linkcode']);
            
            $(".cro_add").val(result['cro']);
+           $(".ard_add").val(result['ard']);
            $(".status_add").val(result['trade_status']);
            $(".directory_add").val(result['directory']);
            $("#client_id_div").show();
            $(".client_id_add").val(result['clientid']);
 
            <?php
-           $fields = DB::table('cm_fields')->where('user_login_id',$user_login_id)->where('status',0)->get();
+           $fields = DB::table('cm_fields')->where('status',0)->get();
            if(count($fields))
            {
             foreach($fields as $fld)
@@ -2428,6 +2577,7 @@ $(window).click(function(e) {
              $(".salutation_edit").val(result['salutation']);
              
              $(".cro_class").val(result['cro']);
+             $(".ard_class").val(result['ard']);
              $(".trade_status_class").val(result['trade_status']);
              $(".directory_class").val(result['directory']);
 
@@ -2463,9 +2613,7 @@ $(window).click(function(e) {
 
   if($(e.target).hasClass('invoice_class')) {
     $("body").addClass("loading");
-
     if (CKEDITOR.instances.editor_2) CKEDITOR.instances.editor_2.destroy();
-   
     setTimeout(function(){ 
         var editid = $(e.target).attr("id");
           $(".copy_clients").attr("data-element", editid);
@@ -2504,6 +2652,7 @@ $(window).click(function(e) {
                  $("#bank_detail_body").html(result['outputbank']);
                  $(".bank_client_class").val(result['bank_client_id']);
                  $(".invoice_client_id").val(result['clientid']);
+                 $("#coms_tbody").html(result['outputmodule']);
 
                  CKEDITOR.replace('editor_2',
                  {
@@ -2540,6 +2689,7 @@ $(window).click(function(e) {
                $(".linkcode_class").val(result['linkcode']);
                
                $(".cro_class").val(result['cro']);
+               $(".ard_class").val(result['ard']);
                $(".trade_status_class").val(result['trade_status']);
                $(".directory_class").val(result['directory']);
                $(".employerno_edit_class").val(result['employer_no']);
@@ -2564,7 +2714,8 @@ $(window).click(function(e) {
                   $(".deactivate_clients").attr("title", 'Deactivate This Client');
                }
                $("#edit_clients_div").html(result['htmlcontent']);
-               
+               $(".ard_class").addClass("disabled_ard");
+                $(".disable_ard_class").prop("checked",true);
            
                $("body").removeClass("loading");
                
@@ -2582,6 +2733,17 @@ $(window).click(function(e) {
                 });
 
                $('#payroll_expand').DataTable({
+                  fixedHeader: {
+                    headerOffset: 75
+                  },
+                  autoWidth: true,
+                  scrollX: false,
+                  fixedColumns: false,
+                  searching: false,
+                  paging: false,
+                  info: false
+              });
+               $('#module_expand').DataTable({
                   fixedHeader: {
                     headerOffset: 75
                   },

@@ -27,7 +27,6 @@
   <script src="<?php echo URL::to('assets/ckeditor/src/js/main.js'); ?>"></script>
   <script src="<?php echo URL::to('assets/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-  <?php $user_login_id = Session::get('userid'); ?>
 <?php
  $segment1 =  Request::segment(2);  
   if($segment1 == 'manage_week' || $segment1 == 'week_manage' || $segment1 == 'select_week') { 
@@ -336,7 +335,7 @@ font-weight: 800;
             if(count($with_emailed)){              
               foreach($with_emailed as $with){    
               if(in_array($with->taxnumber,$taxnumber_compared)) {                             
-                $check_compare = DB::table('vat_clients_compare')->where('user_login_id',$user_login_id)->where('taxnumber',$with->taxnumber)->get();
+                $check_compare = DB::table('vat_clients_compare')->where('taxnumber',$with->taxnumber)->get();
                 if(count($check_compare)) {
                   foreach($check_compare as $key => $compare)
                   {

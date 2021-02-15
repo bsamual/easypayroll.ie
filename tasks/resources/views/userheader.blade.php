@@ -75,6 +75,9 @@
  elseif($page_segment == "opening_balance_manager") { $title = 'Opening Balance Manager'; }
  elseif($page_segment == "client_opening_balance_manager") { $title = 'Opening Balance Manager'; }
  elseif($page_segment == "import_opening_balance_manager") { $title = 'Opening Balance Manager'; }
+
+ elseif($page_segment == "two_bill_manager") { $title = '2Bill'; }
+ elseif($page_segment == "manage_croard") { $title = 'CRO ARD'; }
  
  else{ $title = 'Easypayroll'; }
  ?>
@@ -333,7 +336,7 @@
                 </ul>
             </li>
 
-            <li class="dropdown <?php if($segment1 == "vat_clients" || $segment1 == "rct_system" || $segment1 == "rct_liability_assessment" || $segment1 == "rct_client_manager" || $segment1 == "gbs_p30" || $segment1 == "gbs_p30month_manage" || $segment1 == "gbs_p30_select_month" || $segment1 == "year_end_manager" || $segment1 == "yearend_setting" || $segment1 == "supplementary_manager" || $segment1 == "yeadend_clients" || $segment1 == "yearend_individualclient" || $segment1 == "supplementary_note_create" || $segment1 == "gbs_paye_p30month_manage" || $segment1 == "gbs_paye_p30_select_month" || $segment1 == "yeadend_liability" || $segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_edit" || $segment1 == "client_request_view") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Client Functions</a>
+            <li class="dropdown <?php if($segment1 == "vat_clients" || $segment1 == "rct_system" || $segment1 == "rct_liability_assessment" || $segment1 == "rct_client_manager" || $segment1 == "gbs_p30" || $segment1 == "gbs_p30month_manage" || $segment1 == "gbs_p30_select_month" || $segment1 == "year_end_manager" || $segment1 == "yearend_setting" || $segment1 == "supplementary_manager" || $segment1 == "yeadend_clients" || $segment1 == "yearend_individualclient" || $segment1 == "supplementary_note_create" || $segment1 == "gbs_paye_p30month_manage" || $segment1 == "gbs_paye_p30_select_month" || $segment1 == "yeadend_liability" || $segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_edit" || $segment1 == "client_request_view" || $segment1 == "manage_croard") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Client Functions</a>
                 <ul class="dropdown-menu">
                     <li class="<?php if(($segment1 == "vat_clients")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/vat_clients')?>">VAT Management</a></li>
                     <li class="<?php if(($segment1 == "rct_system") || ($segment1 == "rct_liability_assessment") || ($segment1 == "rct_client_manager")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/rct_system')?>">RCT System</a></li>
@@ -341,6 +344,8 @@
                     <li class="<?php if(($segment1 == "year_end_manager"  || $segment1 == "yeadend_clients"  || $segment1 == "yearend_individualclient"  || $segment1 == "yeadend_liability")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/year_end_manager'); ?>">Year End Manager</a></li>
                     <li class="<?php if(($segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_view" || $segment1 == "client_request_edit")) { echo "active"; } else { echo ""; } ?>"><a 
                       href="<?php echo URL::to('user/client_request_system'); ?>">Client Request System</a></li>
+                      <li class="<?php if(($segment1 == "manage_croard")) { echo "active"; } else { echo ""; } ?>"><a 
+                      href="<?php echo URL::to('user/manage_croard'); ?>">CRO ARD</a></li>
                 </ul>
             </li>
             <li class="<?php if(($segment1 == "time_me" || $segment1 == "time_task" || $segment1 == "time_me_overview" || $segment1 == "time_me_joboftheday" || $segment1 == "time_me_client_review" || $segment1 == "time_me_all_job" || $segment1 == "time_track" || $segment1 == "ta_system" || $segment1 == "ta_allocation")) { echo "active"; } else { echo ""; } ?>"><a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Time Me</a>
@@ -461,7 +466,7 @@ $(document).ajaxComplete(function (event, request, settings) {
     var str = request.responseText.toLocaleLowerCase();
     console.log(str);
     if (str.includes("user login") === true) {
-       window.location.replace("<?php echo URL::to('/'); ?>");
+       //window.location.replace("<?php echo URL::to('/'); ?>");
     }
 });
 $(window).click(function(e) {

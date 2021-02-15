@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
@@ -320,7 +319,7 @@ a:hover{text-decoration: underline;}
                                     $icount = 0;
 
                                     $rct_output = '';
-                                    $rctsubmission = DB::table('rct_submission')->where('user_login_id',$user_login_id)->where('client_id', $client->client_id)->first();
+                                    $rctsubmission = DB::table('rct_submission')->where('client_id', $client->client_id)->first();
                                     if(count($rctsubmission)){
                                       $start_date = unserialize($rctsubmission->start_date);
                                       $grossval = unserialize($rctsubmission->value_gross);
@@ -402,7 +401,7 @@ a:hover{text-decoration: underline;}
                                 <td align="left" class="count_clientid" style="<?php echo $color; ?>"><?php echo ($icount)?$icount:'-'; ?></td>
                                 <td align="left" class="emails_clientid">
                                   <?php
-                                  $emails = DB::table('rct_submission_email')->where('user_login_id',$user_login_id)->where('client_id',$client->client_id)->where('start_date',$prev_date2)->get();
+                                  $emails = DB::table('rct_submission_email')->where('client_id',$client->client_id)->where('start_date',$prev_date2)->get();
                                   if(count($emails))
                                   {
                                     foreach($emails as $email)

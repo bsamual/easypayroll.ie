@@ -1741,3 +1741,9 @@ Route::post('/user/change_billing_status', 'user\TwobillController@change_billin
 Route::post('/user/current_payroll_list', 'user\UserController@current_payroll_list');
 Route::post('/user/start_rating', 'user\UserController@start_rating');
 
+Route::get('/admin/manage_cro', 'admin\AdminController@manage_cro');
+Route::post('/admin/update_cro_setting', 'admin\AdminController@update_cro_setting');
+
+Route::get('/user/manage_croard', 'user\CroardController@manage_croard');
+Route::post('/user/get_company_details_cro', 'user\CroardController@get_company_details_cro');
+Route::get('/user/refresh_cro_ard', 'user\CroardController@refresh_cro_ard');

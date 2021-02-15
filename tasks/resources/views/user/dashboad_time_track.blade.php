@@ -14,6 +14,9 @@
 body{
   background: #2fd9ff !important;
 }
+.modal-header{
+	cursor:move;
+}
 .modal_load {
     display:    none;
     position:   fixed;
@@ -3777,6 +3780,10 @@ $(window).click(function(e) {
 
           $(".create_new_model").modal("show");
 
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
           $("#quickjob").val('0');
 
           $(".job_title").html('Create an Active Job');
@@ -3853,6 +3860,10 @@ $(window).click(function(e) {
           $(".client_search_class").val("");
           $(".user_id").val(userid);
           $(".create_new_model").modal("show");
+
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
           $("#quickjob").val('0');
           $(".job_title").html('Create an Even Bulk Job');
           $(".job_button_name").val('Create an Even Bulk Job');
@@ -3903,6 +3914,11 @@ $(window).click(function(e) {
         $(".user_id").val(result['userid']);
         $(".hidden_activejob_starttime").val(result['start_time']);
         $(".create_new_model").modal("show");
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
         $("#quickjob").val('1');
         $(".job_title").html('Create a Quick Job');
         $(".job_button_name").val('Create a Quick Job');
@@ -4313,6 +4329,11 @@ $(window).click(function(e) {
           $(".client_task").val("");
 
           $(".stop_model").modal("show");
+
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
           $(".comments").val('');
           $('#stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
           $('#stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
@@ -4357,6 +4378,12 @@ $(window).click(function(e) {
           $(".presets_combo").hide();
 
           $(".stop_model").modal("show");
+
+          $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
+
           $(".comments").val('');
           $('#stop_time1').data("DateTimePicker").minDate(moment().startOf('day').hour(result['start_hour']).minute(result['start_min']));
           $('#stop_time1').data("DateTimePicker").maxDate(moment().startOf('day').hour(23).minute(59));
@@ -4410,6 +4437,10 @@ $(window).click(function(e) {
 
         $(".stop_quick_model").modal("show");
 
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
         $(".comments").val('');
 
 
@@ -4456,6 +4487,10 @@ $(window).click(function(e) {
 
     $(".take_break_model").modal("show");
 
+    $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
+
     $(".select_break_class").val('');
 
   }
@@ -4479,6 +4514,10 @@ $(window).click(function(e) {
         $(".break_time_details").html(result);
 
         $(".break_time_model").modal("show");
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
 
         $('#break_tbody').DataTable({            
 
@@ -5043,6 +5082,10 @@ if($(e.target).hasClass('edit_quick_job')){
         }
         $("#hidden_job_id").val(result['id']);
         $(".create_new_model").modal("show");        
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
         $("#hidden_job_id").val(result['id']);
 
         if(result['job_type'] == 0) { 
@@ -5160,6 +5203,10 @@ if($(e.target).hasClass('edit_active_job')){
         }
         $("#hidden_job_id").val(result['id']);
         $(".create_new_model").modal("show");        
+
+        $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
         $("#hidden_job_id").val(result['id']);
 
         if(result['job_type'] == 0) { 
@@ -5302,6 +5349,10 @@ if($(e.target).hasClass('edit_close_job')){
       dataType:"json",
       success:function(result){        
       $(".edit_stop_model").modal("show");
+
+      $('.modal-dialog').draggable({
+		    handle: ".modal-header"
+		  });
       if($('.edit_stop_time1').data("DateTimePicker"))
       {
         $('.edit_stop_time1').data("DateTimePicker").destroy();  

@@ -3,15 +3,15 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="http://malsup.github.com/jquery.form.js"></script>
 <style>
-  .fa-star-o { color:#000; }
-  .fa-star { color:#ff0; }
-  .start_rating { cursor:pointer; }
-  .start_yellow { color:yellow; font-weight:800; }
-  .start_brown { color:brown; font-weight:800; }
-  .start_orange { color:orange; font-weight:800; }
-  .start_lred { color:#f04444; font-weight:800; }
-  .start_red { color:red; font-weight:800; }
-  .disabled_star { color:grey !important; }
+  .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
+
+  .start_red { color:#f0ff00; }
+  .start_lred { color:#ffce00; }
+  .start_orange { color:#ff9a00; }
+  .start_brown { color:#ff5a00; }
+  .start_yellow { color:#ff0000; }
+  .fa-star-o { color:#000 !important; }
+
   .error{ color:#f00; }
   .secret_button:focus { background: #7bab15;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
@@ -4697,11 +4697,15 @@ if(Session::has('error')) { ?>
 
                   ?>
                   <br/>
-                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
+                  <i class="starfa starzero start_rating start_red fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starone start_rating start_lred fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa startwo start_rating start_orange fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starthree start_rating start_brown fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starfour start_rating start_yellow fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>"></i>
+                  
+                  
+                  
+                  
 
                   </td>
 
@@ -5758,11 +5762,11 @@ if(Session::has('error')) { ?>
 
                   ?>
                   <br/>
-                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
+                  <i class="starfa starzero start_rating start_red fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starone start_rating start_lred fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa startwo start_rating start_orange fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starthree start_rating start_brown fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starfour start_rating start_yellow fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>"></i>
                   </td>
 
 
@@ -6888,11 +6892,11 @@ if(Session::has('error')) { ?>
 
                   ?>
                   <br/>
-                  <i class="starfa starfour fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_yellow <?php if($result->rating == 4) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starthree fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_brown <?php if($result->rating == 3) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa startwo fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_orange <?php if($result->rating == 2) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starone fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_lred <?php if($result->rating == 1) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>">START</spam><br/>
-                  <i class="starfa starzero fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>"></i> &nbsp; <spam class="start_rating start_red <?php if($result->rating == 0) { echo 'disabled_star'; } else { echo ''; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>">START</spam>
+                  <i class="starfa starzero start_rating start_red fa <?php if($result->rating >= 0) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="0" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starone start_rating start_lred fa <?php if($result->rating >= 1) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="1" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa startwo start_rating start_orange fa <?php if($result->rating >= 2) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="2" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starthree start_rating start_brown fa <?php if($result->rating >= 3) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="3" data-task="<?php echo $result->task_id; ?>"></i>
+                  <i class="starfa starfour start_rating start_yellow fa <?php if($result->rating == 4) { echo 'fa-star'; } else { echo 'fa-star-o'; } ?>" data-element="4" data-task="<?php echo $result->task_id; ?>"></i>
                   </td>
 
 
@@ -8281,7 +8285,6 @@ $(window).click(function(e) {
       success:function(result)
       {
         $(e.target).parents("td").find(".start_rating").removeClass("disabled_star");
-        $(e.target).addClass("disabled_star");
         if(value == "4")
         {
           $(e.target).parents("td").find(".starfour").removeClass('fa-star-o').removeClass('fa-star').addClass('fa-star');

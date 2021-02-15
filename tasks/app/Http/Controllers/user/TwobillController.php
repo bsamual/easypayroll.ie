@@ -92,10 +92,15 @@ class TwobillController extends Controller {
 						<td><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'">'.$i.'</a></td>
 						<td><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'">'.$invoice->invoice_number.'</a></td>
 						<td><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'">'.date('d-m-Y', strtotime($invoice->invoice_date)).'</a></td>
-						<td><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'">'.$invoice->inv_net.'</a></td>
+						<td><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'">'.number_format_invoice($invoice->inv_net).'</a></td>
 					</tr>';
 					$i++;
 				}
+			}
+			else{
+				$output.='<tr>
+						<td colspan="4">No Invoice Found</td>
+					</tr>';
 			}
 			$output.='</tbody>
 		</table>';
