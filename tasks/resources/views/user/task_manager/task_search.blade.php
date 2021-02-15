@@ -293,6 +293,29 @@ input:checked + .slider:before {
   $admin_details = Db::table('admin')->first();
   $admin_cc = $admin_details->task_cc_email;
 ?> 
+<div class="modal fade park_task_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Choose Park Date</h4>
+          </div>
+          <div class="modal-body" style="min-height: 100px;">  
+            <div class="col-md-12">
+              <label>Until What Date Do you want to Park this task? </label>
+            </div>
+            <div class="col-md-12">
+              <input type="text" name="park_task_date" class="form-control park_task_date" id="park_task_date" value="" placeholder="Choose Date to Park">
+            </div>
+          </div>
+          <div class="modal-footer">  
+            <input type="hidden" class="hidden_task_id_park_task" name="hidden_task_id_park_task" value="">
+            <input type="button" class="common_black_button" data-dismiss="modal" aria-label="Close" value="Cancel">
+            <input type="button" class="common_black_button" id="park_submit" value="Submit">
+          </div>
+        </div>
+  </div>
+</div>
 <div class="modal fade change_taskname_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:30%;">
         <div class="modal-content">
@@ -1121,6 +1144,120 @@ $(window).click(function(e) {
     alert("You are not authorized to edit this task. You should be either an author or the allocated user to edit this task");
   }
   else{
+      if($(e.target).hasClass('activate_task_button'))
+      {
+        var r = confirm("Do you want to make this task live now?");
+        if(r)
+        {
+          $("body").addClass("loading");
+          var task_id = $(e.target).attr("data-element");
+          var author = $(".search_author").val();
+          var open_task = $(".open_task_search:checked").val();
+          var client_id = $("#copy_client_search").val();
+          var client_id_search = $(".copy_client_search_class ").val();
+          var subject = $(".subject_search_class").val();
+          var recurring = $("#hidden_recurring_task").val();
+          var due_date = $(".due_date_search_class").val();
+          var creation_date = $(".creation_date_search_class").val();
+          var make_internal = $("#hidden_make_internal").val();
+          var select_tasks = $(".select_internal_tasks").val();
+
+          $.ajax({
+            url:"<?php echo URL::to('user/park_task_incomplete'); ?>",
+            type:"post",
+            data:{task_id:task_id},
+            success:function(resultval)
+            {
+              $.ajax({
+                url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
+                type:"post",
+                data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
+                success:function(result)
+                {
+                  $("#task_body_search").html(result);
+                  $("[data-toggle=popover]").popover({
+                    html : true,
+                    content: function() {
+                      var content = $(this).attr("data-popover-content");
+                      return $(content).children(".popover-body").html();
+                    },
+                    title: function() {
+                      var title = $(this).attr("data-popover-content");
+                      return $(title).children(".popover-heading").html();
+                    }
+                });
+                  $("body").removeClass("loading");
+                }
+              })
+            }
+          })
+        }
+      }
+      if($(e.target).hasClass('park_task_button'))
+      {
+        var taskid = $(e.target).attr("data-element");
+        $(".hidden_task_id_park_task").val(taskid);
+        $(".park_task_modal").modal("show");
+        $("#park_task_date").val("");
+        $("#park_task_date").datetimepicker({
+               defaultDate: fullDate,       
+               format: 'L',
+               format: 'DD-MMM-YYYY',
+            });
+      }
+      if(e.target.id == "park_submit")
+      {
+          var park_date = $("#park_task_date").val();
+          if(park_date == "")
+          {
+            alert("Please choose the Date to Park the Task.");
+          }
+          else{
+            $("body").addClass("loading");
+            var task_id = $(".hidden_task_id_park_task").val();
+            var author = $(".search_author").val();
+            var open_task = $(".open_task_search:checked").val();
+            var client_id = $("#copy_client_search").val();
+            var client_id_search = $(".copy_client_search_class ").val();
+            var subject = $(".subject_search_class").val();
+            var recurring = $("#hidden_recurring_task").val();
+            var due_date = $(".due_date_search_class").val();
+            var creation_date = $(".creation_date_search_class").val();
+            var make_internal = $("#hidden_make_internal").val();
+            var select_tasks = $(".select_internal_tasks").val();
+
+            $.ajax({
+              url:"<?php echo URL::to('user/park_task_complete'); ?>",
+              type:"post",
+              data:{task_id:task_id,park_date:park_date},
+              success:function(resultval)
+              {
+                $(".park_task_modal").modal("hide");
+                $.ajax({
+                  url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
+                  type:"post",
+                  data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
+                  success:function(result)
+                  {
+                    $("#task_body_search").html(result);
+                    $("[data-toggle=popover]").popover({
+                      html : true,
+                      content: function() {
+                        var content = $(this).attr("data-popover-content");
+                        return $(content).children(".popover-body").html();
+                      },
+                      title: function() {
+                        var title = $(this).attr("data-popover-content");
+                        return $(title).children(".popover-heading").html();
+                      }
+                  });
+                    $("body").removeClass("loading");
+                  }
+                })
+              }
+            })
+          }
+      }
       if($(e.target).hasClass('edit_task_name'))
       {
         var taskid = $(e.target).attr("data-element");
@@ -1437,10 +1574,10 @@ $(window).click(function(e) {
         var select_tasks = $(".select_internal_tasks").val();
 
         if(client_id_search == "")
-		{
-			$("#copy_client_search").val("");
-			client_id = "";
-		}
+    		{
+    			$("#copy_client_search").val("");
+    			client_id = "";
+    		}
 
         $.ajax({
           url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",

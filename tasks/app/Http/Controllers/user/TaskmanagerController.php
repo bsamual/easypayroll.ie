@@ -4438,7 +4438,7 @@ class TaskmanagerController extends Controller {
 	                    {
 	                      $open_tasks.='<a href="javascript:" class="common_black_button mark_as_incomplete" data-element="'.$task->id.'" style="font-size:12px">Completed</a>';
 	                    }
-	                    elseif($task->status == 1)
+	                    elseif($task->status == 2)
 	                    {
 	                      if(Session::has('taskmanager_user'))
                             {

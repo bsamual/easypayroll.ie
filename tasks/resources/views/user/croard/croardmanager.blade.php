@@ -1,8 +1,10 @@
 @extends('userheader')
 @section('content')
+<script src='<?php echo URL::to('assets/js/table-fixed-header_croard.js'); ?>'></script>
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
-<script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
+.table>thead>tr>th { background: #fff !important; }
+.fa-sort{ cursor:pointer; }
 .company_td { font-weight:800; }
 .form-control[disabled] { background-color:#ececec !important; cursor: pointer; }
 .fa-check { color:green; }
@@ -534,15 +536,15 @@ input:checked + .slider:before {
       <div class="col-md-3" style="margin-top:10px;">
       	<input type="checkbox" name="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete" style="float:right">Hide Deactivated Accounts</label>
       </div>
-      	<table class="table" style="width:100%;margin-top:145px">
-	        <thead>
-	            <th style="width:2%;text-align: left;">S.No</th>
-	            <th style="width:6%;text-align: left;">Client Code</th>
-	            <th style="width:25%;text-align: left;">Company Name</th>
-	            <th style="width:7%;text-align: left;">CRO Number</th>
-	            <th style="width:15%;text-align: left;">ARD</th>
-	            <th style="width:15%;text-align: left;">Type</th>
-	            <th style="width:15%;text-align: left;">CRO ARD</th>
+      	<table class="table table-fixed-header" style="width:100%;margin-top:145px">
+	        <thead class="header">
+	            <th style="width:3%;text-align: left;">S.No <i class="fa fa-sort sno_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:6%;text-align: left;">Client Code <i class="fa fa-sort clientid_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:25%;text-align: left;">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:7%;text-align: left;">CRO Number <i class="fa fa-sort cro_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:15%;text-align: left;">ARD <i class="fa fa-sort ard_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:15%;text-align: left;">Type <i class="fa fa-sort type_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:15%;text-align: left;">CRO ARD <i class="fa fa-sort cro_ard_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:15%;text-align: left;">Action</th>
 	        </thead>                            
         	<tbody id="clients_tbody">
@@ -565,6 +567,7 @@ input:checked + .slider:before {
 	              $cmp = '<spam class="company_td" style="font-style:italic;"></spam>';
 	              $cr_ard_date = '';
 	              $ard_color = '';
+                $timestampcroard = '';
 	              $cro_ard_details = DB::table('croard')->where('client_id',$client->client_id)->first();
 	              if(count($cro_ard_details))
 	              {
@@ -583,29 +586,59 @@ input:checked + .slider:before {
 		              	{
 		              		$ard_date_month = $ard[0].'/'.$ard[1];
 		              	}
-						else{
-							$ard_date_month = '';
-						}
+        						else{
+        							$ard_date_month = '';
+        						}
 		              	if($ard_date_month == $api_date_month)
 		              	{
 		              		$cr_ard_date = $cro_ard_details->cro_ard;
+
+                      if($cro_ard_details->cro_ard == "")
+                      {
+                        $timestampcroard = '';
+                      }
+                      else{
+                        $expandcroard = explode('/',$cro_ard_details->cro_ard);
+                        $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
+                        $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                      }
 		              		$ard_color = 'color:green';
 		              	}
 		              	else{
 		              		$cr_ard_date = $cro_ard_details->cro_ard;
+
+                      if($cro_ard_details->cro_ard == "")
+                      {
+                        $timestampcroard = '';
+                      }
+                      else{
+                        $expandcroard = explode('/',$cro_ard_details->cro_ard);
+                        $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
+                        $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                      }
 		              		$ard_color = 'color:red';
 		              	}
 	              	}
 	              }
+
+                if($client->ard == "")
+                {
+                  $timestampard = '';
+                }
+                else{
+                  $expand = explode('/',$client->ard);
+                  $correctard = $expand[2].'-'.$expand[1].'-'.$expand[0];
+                  $timestampard = strtotime($expand[2].'-'.$expand[1].'-'.$expand[0]);
+                }
 		          ?>
 		            <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->client_id; ?>">
-		                <td style="<?php echo $style; ?>"><?php echo $i; ?></td>
-		                <td style="<?php echo $style; ?>" align="left"><?php echo $client->client_id; ?></td>
-		                <td style="<?php echo $style; ?>" align="left"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?> <br/> <?php echo $cmp; ?></td>
-		                <td style="<?php echo $style; ?>" align="left"><?php echo ($client->cro == "")?"-":$client->cro; ?></td>
-		                <td style="<?php echo $style; ?>" align="left"><?php echo ($client->ard == "")?"-":$client->ard; ?></td>
-		                <td style="<?php echo $style; ?>" align="left"><?php echo ($client->tye == "")?"-":$client->tye; ?></td>
-		                <td class="cro_ard_td" style="<?php echo $ard_color; ?>" align="left"><?php echo $cr_ard_date; ?></td>
+		                <td style="<?php echo $style; ?>" class="sno_sort_val"><?php echo $i; ?></td>
+		                <td style="<?php echo $style; ?>" class="clientid_sort_val" align="left"><?php echo $client->client_id; ?></td>
+		                <td style="<?php echo $style; ?>" align="left"><spam class="company_sort_val"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></spam> <br/> <?php echo $cmp; ?></td>
+		                <td style="<?php echo $style; ?>" class="cro_sort_val" align="left"><?php echo ($client->cro == "")?"-":$client->cro; ?></td>
+		                <td style="<?php echo $style; ?>" align="left"><spam class="ard_sort_val" style="display: none"><?php echo $timestampard; ?></spam><?php echo ($client->ard == "")?"-":$client->ard; ?></td>
+		                <td style="<?php echo $style; ?>" class="type_sort_val" align="left"><?php echo ($client->tye == "")?"-":$client->tye; ?></td>
+		                <td class="cro_ard_td" style="<?php echo $ard_color; ?>" align="left"><spam class="cro_ard_sort_val" style="display: none"><?php echo $timestampcroard; ?></spam><?php echo $cr_ard_date; ?></td>
 		                <td align="left"><a href="javascript:" class="fa fa-refresh refresh_croard" data-element="<?php echo $client->client_id; ?>" data-cro="<?php echo trim($client->cro); ?>" data-type="<?php echo trim($client->tye); ?>" style="<?php echo $style; ?>"></a></td>
 		            </tr>
 	              <?php
@@ -626,7 +659,19 @@ input:checked + .slider:before {
   <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Clients are loaded.</p>
   <p style="font-size:18px;font-weight: 600;">Loading: <span id="count_first"></span> of <span id="count_last"></span></p>
 </div>
+
+<input type="hidden" name="sno_sortoptions" id="sno_sortoptions" value="asc">
+<input type="hidden" name="clientid_sortoptions" id="clientid_sortoptions" value="asc">
+<input type="hidden" name="company_sortoptions" id="company_sortoptions" value="asc">
+<input type="hidden" name="cro_sortoptions" id="cro_sortoptions" value="asc">
+<input type="hidden" name="ard_sortoptions" id="ard_sortoptions" value="asc">
+<input type="hidden" name="type_sortoptions" id="type_sortoptions" value="asc">
+<input type="hidden" name="cro_ard_sortoptions" id="cro_ard_sortoptions" value="asc">
+
 <script>
+$(document).ready(function() {
+  $('.table-fixed-header').fixedHeader();
+});
 function refresh_all_function(ival)
 {
 	var ival = ival + 1;
@@ -639,7 +684,7 @@ function refresh_all_function(ival)
 
 	if(cro == "")
 	{
-		if(ival == countval) { $("body").removeClass("loading_content"); }
+		if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
 		else { refresh_all_function(ival); }
 	}
 	else
@@ -665,85 +710,266 @@ function refresh_all_function(ival)
 
   					if(result['ardstatus'] == "0")
   					{
-  						$("#clientidtr_"+clientid).find(".cro_ard_td").html(result['next_ard']);
+  						$("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
   						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
   					}
   					else{
-  						$("#clientidtr_"+clientid).find(".cro_ard_td").html(result['next_ard']);
+  						$("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
   						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
   					}
 
-  					if(ival == countval) { $("body").removeClass("loading_content"); }
+  					if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
   					else { refresh_all_function(ival); }
   				}
   			});
   		}
   		else{
-  			if(ival == countval) { $("body").removeClass("loading_content"); }
+  			if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
   			else { refresh_all_function(ival); }
   		}
   	}
 }
+var convertToNumber = function(value){
+       return value.toLowerCase();
+}
+var convertToNumeric = function(value){
+      value = value.replace(',','');
+      value = value.replace(',','');
+      value = value.replace(',','');
+      value = value.replace(',','');
+
+       return parseInt(value.toLowerCase());
+}
 $(window).click(function(e) {
+  var ascending = false;
+  if($(e.target).hasClass('sno_sort'))
+  {
+    var sort = $("#sno_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#sno_sortoptions").val('desc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.sno_sort_val').html()) <
+        convertToNumeric($(b).find('.sno_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#sno_sortoptions").val('asc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.sno_sort_val').html()) <
+        convertToNumeric($(b).find('.sno_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('clientid_sort'))
+  {
+    var sort = $("#clientid_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#clientid_sortoptions").val('desc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.clientid_sort_val').html()) <
+        convertToNumber($(b).find('.clientid_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#clientid_sortoptions").val('asc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.clientid_sort_val').html()) <
+        convertToNumber($(b).find('.clientid_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('company_sort'))
+  {
+    var sort = $("#company_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#company_sortoptions").val('desc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.company_sort_val').html()) <
+        convertToNumber($(b).find('.company_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#company_sortoptions").val('asc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.company_sort_val').html()) <
+        convertToNumber($(b).find('.company_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('cro_sort'))
+  {
+    var sort = $("#cro_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#cro_sortoptions").val('desc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.cro_sort_val').html()) <
+        convertToNumber($(b).find('.cro_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#cro_sortoptions").val('asc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.cro_sort_val').html()) <
+        convertToNumber($(b).find('.cro_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('ard_sort'))
+  {
+    var sort = $("#ard_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#ard_sortoptions").val('desc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.ard_sort_val').html()) <
+        convertToNumber($(b).find('.ard_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#ard_sortoptions").val('asc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.ard_sort_val').html()) <
+        convertToNumber($(b).find('.ard_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('type_sort'))
+  {
+    var sort = $("#type_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#type_sortoptions").val('desc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.type_sort_val').html()) <
+        convertToNumber($(b).find('.type_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#type_sortoptions").val('asc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.type_sort_val').html()) <
+        convertToNumber($(b).find('.type_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('cro_ard_sort'))
+  {
+    var sort = $("#cro_ard_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#cro_ard_sortoptions").val('desc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.cro_ard_sort_val').html()) <
+        convertToNumber($(b).find('.cro_ard_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#cro_ard_sortoptions").val('asc');
+      var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.cro_ard_sort_val').html()) <
+        convertToNumber($(b).find('.cro_ard_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_tbody').html(sorted);
+  }
 	if($(e.target).hasClass('global_core_call'))
 	{
-		$("body").addClass("loading_content");
-		var ival = 1;
-		var countval = $(".refresh_croard").length;
-		var clientid = $(".refresh_croard:eq("+ival+")").attr("data-element");
-  		var cro = $(".refresh_croard:eq("+ival+")").attr("data-cro");
-  		var type = $(".refresh_croard:eq("+ival+")").attr("data-type");
-
-  		$("#count_last").html(countval);
-  		$("#count_first").html(ival);
-
-  		if(cro == "")
-  		{
-  			if(ival == countval) { $("body").removeClass("loading_content"); }
-  			else { refresh_all_function(ival); }
-  		}
-  		else
-	  	{
-	  		if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
-	  		{
-	  			$.ajax({
-	  				url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
-	  				dataType:"json",
-	  				type:"get",
-	  				data:{clientid:clientid,cro:cro},
-	  				success:function(result)
-	  				{
-	  					if(result['companystatus'] == "0")
-	  					{
-	  						$("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-	  						$("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
-	  					}
-	  					else{
-	  						$("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-	  						$("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
-	  					}
-
-	  					if(result['ardstatus'] == "0")
-	  					{
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").html(result['next_ard']);
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
-	  					}
-	  					else{
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").html(result['next_ard']);
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
-	  					}
-
-	  					if(ival == countval) { $("body").removeClass("loading_content"); }
-	  					else { refresh_all_function(ival); }
-	  				}
-	  			});
-	  		}
-	  		else{
-	  			if(ival == countval) { $("body").removeClass("loading_content"); }
-	  			else { refresh_all_function(ival); }
-	  		}
-	  	}
+    $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});
 	}
+  if($(e.target).hasClass('yes_proceed'))
+  {
+    $("body").addClass("loading_content");
+    var ival = 1;
+    var countval = $(".refresh_croard").length;
+    var clientid = $(".refresh_croard:eq("+ival+")").attr("data-element");
+    var cro = $(".refresh_croard:eq("+ival+")").attr("data-cro");
+    var type = $(".refresh_croard:eq("+ival+")").attr("data-type");
+
+    $("#count_last").html(countval);
+    $("#count_first").html(ival);
+
+    if(cro == "")
+    {
+      if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+      else { refresh_all_function(ival); }
+    }
+    else
+    {
+      if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
+      {
+        $.ajax({
+          url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
+          dataType:"json",
+          type:"get",
+          data:{clientid:clientid,cro:cro},
+          success:function(result)
+          {
+            if(result['companystatus'] == "0")
+            {
+              $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+              $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
+            }
+            else{
+              $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+              $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
+            }
+
+            if(result['ardstatus'] == "0")
+            {
+              $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+              $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+            }
+            else{
+              $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+              $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+            }
+
+            if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+            else { refresh_all_function(ival); }
+          }
+        });
+      }
+      else{
+        if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+        else { refresh_all_function(ival); }
+      }
+    }
+  }
+  if($(e.target).hasClass('no_proceed'))
+  {
+    $.colorbox.close();
+  }
 	if(e.target.id == 'show_incomplete')
 	{
 	    if($(e.target).is(':checked'))
@@ -764,83 +990,94 @@ $(window).click(function(e) {
 	      });
 	    }
 	}
-  	if($(e.target).hasClass('search_company_btn'))
-  	{
-	    var checked = $(".indicator:checked").length;
-	    var company_number = $(".company_number").val();
-	    var indicator = $(".indicator:checked").val();
-	    if(checked < 1)
-	    {
-	      alert("Please select the Company / Business indicator to search for a Company");
-	    }
-	    else if(company_number == "")
-	    {
-	      alert("Please enter the Company Number to search for a Company");
-	    }
-	    else{
-	      $("body").addClass("loading");
-	      $.ajax({
-	        url:"<?php echo URL::to('user/get_company_details_cro'); ?>",
-	        type:"post",
-	        data:{company_number:company_number,indicator:indicator},
-	        success:function(result)
-	        {
-	          $(".table_api").html(result);
-	          //$(".search_company_modal").modal("hide");
-	          $("body").removeClass("loading");
-	        }
-	      });
-	    }
-  	}
-  	if($(e.target).hasClass('refresh_croard'))
-  	{
-  		var clientid = $(e.target).attr("data-element");
-  		var cro = $(e.target).attr("data-cro");
-  		var type = $(e.target).attr("data-type");
-  		if(cro == "")
+	if($(e.target).hasClass('search_company_btn'))
+	{
+    var checked = $(".indicator:checked").length;
+    var company_number = $(".company_number").val();
+    var indicator = $(".indicator:checked").val();
+    if(checked < 1)
+    {
+      alert("Please select the Company / Business indicator to search for a Company");
+    }
+    else if(company_number == "")
+    {
+      alert("Please enter the Company Number to search for a Company");
+    }
+    else{
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/get_company_details_cro'); ?>",
+        type:"post",
+        data:{company_number:company_number,indicator:indicator},
+        success:function(result)
+        {
+          $(".table_api").html(result);
+          //$(".search_company_modal").modal("hide");
+          $("body").removeClass("loading");
+        }
+      });
+    }
+	}
+	if($(e.target).hasClass('refresh_croard'))
+	{
+		var clientid = $(e.target).attr("data-element");
+		var cro = $(e.target).attr("data-cro");
+		var type = $(e.target).attr("data-type");
+		if(cro == "")
+		{
+			alert("Sorry you cant fetch the details from api because the CRO Number for this client is empty.")
+		}
+		else 
+  	{	
+  		if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
   		{
-  			alert("Sorry you cant fetch the details from api because the CRO Number for this client is empty.")
+        $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed_single" data-element="'+clientid+'" data-cro="'+cro+'">Yes</a><a href="javascript:" class="common_black_button no_proceed_single">No</a></p>',fixed:true,width:"800px"});
   		}
-  		else 
-	  	{	
-	  		if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
-	  		{
-	  			$("body").addClass("loading");
-	  			$.ajax({
-	  				url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
-	  				dataType:"json",
-	  				type:"get",
-	  				data:{clientid:clientid,cro:cro},
-	  				success:function(result)
-	  				{
-	  					if(result['companystatus'] == "0")
-	  					{
-	  						$("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-	  						$("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
-	  					}
-	  					else{
-	  						$("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-	  						$("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
-	  					}
-
-	  					if(result['ardstatus'] == "0")
-	  					{
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").html(result['next_ard']);
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
-	  					}
-	  					else{
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").html(result['next_ard']);
-	  						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
-	  					}
-	  					$("body").removeClass("loading");
-	  				}
-	  			});
-	  		}
-	  		else{
-	  			alert("Sorry you cant fetch the details from api because the type should be 'Ltd' or 'Limited'.")
-	  		}
-	  	}
+  		else{
+  			alert("Sorry you cant fetch the details from api because the type should be 'Ltd' or 'Limited'.")
+  		}
   	}
+	}
+  if($(e.target).hasClass('yes_proceed_single'))
+  {
+    $("body").addClass("loading");
+    var clientid = $(e.target).attr("data-element");
+    var cro = $(e.target).attr("data-cro");
+    $.ajax({
+      url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
+      dataType:"json",
+      type:"get",
+      data:{clientid:clientid,cro:cro},
+      success:function(result)
+      {
+        if(result['companystatus'] == "0")
+        {
+          $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+          $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
+        }
+        else{
+          $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+          $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
+        }
+
+        if(result['ardstatus'] == "0")
+        {
+          $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+          $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+        }
+        else{
+          $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+          $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+        }
+        $.colorbox.close();
+        $("body").removeClass("loading");
+      }
+    });
+  }
+  if($(e.target).hasClass('no_proceed_single'))
+  {
+    $.colorbox.close();
+  }
 })
 
 </script>

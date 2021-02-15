@@ -2,10 +2,15 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="http://malsup.github.com/jquery.form.js"></script>
 <style>
-  .fa-star-o { color:#000; }
-  .fa-star { color:#ff0; }
   .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
-  
+
+  .start_red { color:#f0ff00; }
+  .start_lred { color:#ffce00; }
+  .start_orange { color:#ff9a00; }
+  .start_brown { color:#ff5a00; }
+  .start_yellow { color:#ff0000; }
+  .fa-star-o { color:#000 !important; }
+
   .error{ color:#f00; }
   .secret_button:focus { background: #7bab15;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }

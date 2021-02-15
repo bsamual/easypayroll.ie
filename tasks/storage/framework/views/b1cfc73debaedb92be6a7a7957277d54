@@ -13,6 +13,17 @@
 
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js')?>'></script>
 <style>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
 body{
   background: #f5f5f5 !important;
 }
@@ -741,6 +752,16 @@ $(window).keyup(function(e) {
     {        
         var that = $(e.target);
         var input_val = $(e.target).val();
+        input_val = input_val.replace(",","");
+        input_val = input_val.replace(",","");
+        input_val = input_val.replace(",","");
+        input_val = input_val.replace(",","");
+
+        input_val = input_val.replace("..",".");
+        input_val = input_val.replace("..",".");
+        input_val = input_val.replace("..",".");
+        input_val = input_val.replace("..",".");
+
         var setting_id = $(".setting_class").val();        
         var client_id  = $(e.target).attr("data-element");
         var year_id  = $("#year_id").val();
@@ -751,6 +772,16 @@ $(window).keyup(function(e) {
     {        
         var that = $(e.target);
         var input_val = $(e.target).val();
+        input_val = input_val.replace(",","");
+        input_val = input_val.replace(",","");
+        input_val = input_val.replace(",","");
+        input_val = input_val.replace(",","");
+
+        input_val = input_val.replace("..",".");
+        input_val = input_val.replace("..",".");
+        input_val = input_val.replace("..",".");
+        input_val = input_val.replace("..",".");
+
         var setting_id = $(".setting_class").val();        
         var client_id  = $(e.target).attr("data-element");
         var year_id  = $("#year_id").val();
@@ -758,6 +789,14 @@ $(window).keyup(function(e) {
         valueTimmer = setTimeout(doneTyping_prelim, valueInterval,input_val, client_id, year_id, setting_id, that);   
     }
 });
+function preventNonNumericalInput(e) {
+  e = e || window.event;
+  var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
+  var charStr = String.fromCharCode(charCode);
+
+  if (!charStr.match(/^[0-9.,-]+$/))
+    e.preventDefault();
+}
 function doneTyping_payment (payment_value, client_id, year_id, setting_id, that) {
   $.ajax({
         url:"<?php echo URL::to('user/yearend_liability_payment')?>",

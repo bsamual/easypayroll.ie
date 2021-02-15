@@ -256,15 +256,18 @@ class CroardController extends Controller {
 			if($ard_date_month == $api_date_month)
 			{
 				$coreard = date('d/m/Y',strtotime($nextard));
+				$corard_timestamp = strtotime($nextard);
 				$ardstatus = "0";
 			}
 			else{
 				$coreard = date('d/m/Y',strtotime($nextard));
+				$corard_timestamp = strtotime($nextard);
 				$ardstatus = "1";
 			}
 		}
 		else{
 			$coreard = '';
+			$corard_timestamp = '';
 			$ardstatus = "0";
 		}
 
@@ -291,7 +294,7 @@ class CroardController extends Controller {
 			DB::table('croard')->insert($data);
 		}
 		
-		echo json_encode(array('company_name' => $companyname, 'next_ard' => $coreard, 'companystatus' => $companystatus, 'ardstatus' => $ardstatus));
+		echo json_encode(array('company_name' => $companyname, 'next_ard' => $coreard, 'corard_timestamp' => $corard_timestamp, 'companystatus' => $companystatus, 'ardstatus' => $ardstatus));
 	}
 }
 
