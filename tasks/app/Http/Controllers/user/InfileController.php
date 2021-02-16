@@ -541,22 +541,27 @@ class InfileController extends Controller {
 		$imgid = Input::get('imgid');			
 		$check_network = DB::table('in_file_attachment')->where('id',$imgid)->first();
 
+		$url = '';
 		DB::table('in_file_attachment')->where('id',$imgid)->delete();
 		if($check_network->status == 0)
 		{
+			$file_id = $check_network->file_id;
+			$file_details = DB::table('in_file')->where('id',$file_id)->first();
+			if(count($file_details))
+			{
+				$url = URL::to('user/infile_search?client_id='.$file_details->client_id.'&infile_item='.$file_id);
+			}
+
 			$count = DB::table('in_file_attachment')->where('file_id',$check_network->file_id)->where('status',0)->count();
 			if($count > 0)
 			{
-
 			}
 			else{
-
 				$dataval['task_notify'] = 0;
 				DB::table('in_file')->where('id',$check_network->file_id)->update($dataval);
-
 			}
-
 		}
+		echo $url;
 
 	}
 	public function infile_delete_all_image()

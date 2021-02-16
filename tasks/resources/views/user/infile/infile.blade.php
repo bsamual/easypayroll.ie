@@ -2304,6 +2304,7 @@ $(document).ready(function () {
 	  $divid = $_GET['infile_item'];
 	  ?>
 	  $(document).scrollTop($("#infile_<?php echo $divid; ?>").offset().top - 50);
+    $("#infile_<?php echo $divid; ?>").find(".show_attachments").trigger("click");
 	  <?php
 	}
 	?>
@@ -4650,9 +4651,13 @@ $(window).click(function(e) {
           data:{imgid:imgid},
 
           success: function(result) {
-
-            window.location.reload();
-
+            if(result == "")
+            {
+              window.location.reload();
+            }
+            else{
+              window.location.replace(result);
+            }
           }
 
       });
