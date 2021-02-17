@@ -1084,6 +1084,7 @@ input:checked + .slider:before {
 	                            else{ $due_color = '#000'; }
 	                          ?>
 	                          <td style="background: #2fd9ff;font-weight:700;text-decoration: underline;">Due Date:</td>
+
 	                          <td style="background: #2fd9ff" class="<?php echo $disabled_icon; ?>">
 	                            <spam style="color:<?php echo $due_color; ?> !important;font-weight:800" id="due_date_task_<?php echo $task->id; ?>"><?php echo date('d-M-Y', strtotime($task->due_date)); ?></spam>
 	                            <a href="javascript:" data-element="<?php echo $task->id?>" data-subject="<?php echo $subject; ?>" data-value="<?php echo date('d-M-Y', strtotime($task->due_date)); ?>" data-duedate="<?php echo $task->due_date; ?>" data-color="<?php echo $due_color; ?>" class="fa fa-edit edit_due_date edit_due_date_<?php echo $task->id; ?> <?php echo $disabled; ?>" style="font-weight:800"></a>
@@ -1586,6 +1587,18 @@ input:checked + .slider:before {
 		                    			<spam class="hidden_due_date_layout" style="display:none">'.strtotime($task->due_date).'</spam>
 		                    			<spam class="layout_due_date_task" style="color:'.$due_color.' !important;font-weight:800" id="layout_due_date_task_'.$task->id.'">'.date('d-M-Y', strtotime($task->due_date)).'</spam>
 		                    		</td>
+                            <td style="width:50%;padding:10px; font-size:14px; font-weight:800;">
+                              '.date('d-M-Y', strtotime($task->park_date)).'
+                            </td>
+                            <td style="width:50%;padding:10px; font-size:14px; font-weight:800;">';
+                              if(strtotime(date('Y-m-d')) >= strtotime($task->park_date))
+                              {
+                                $layout.='Will Park';
+                              }
+                              else{
+                                $layout.='Not Park';
+                              }
+                            $layout.='</td>
 		                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800" class="createddate_sort_val">
 		                    		<spam class="hidden_created_date_layout" style="display:none">'.strtotime($task->creation_date).'</spam>
 		                    		'.date('d-M-Y', strtotime($task->creation_date)).'
@@ -1645,6 +1658,8 @@ input:checked + .slider:before {
                     	<table style="width:100%">
 	                    	<tr>
 	                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Due Date<i class="fa fa-sort duedate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+                          <td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Parked until<i class="fa fa-sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+                          <td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Status<i class="fa fa-sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Created Date<i class="fa fa-sort createddate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    	</tr>
 	                    </table>

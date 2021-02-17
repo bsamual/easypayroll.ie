@@ -969,15 +969,15 @@ else{
   <table class="table table_bg table-fixed-header">
     <thead class="header">
       <tr class="background_bg">
-        <th width="100px" style="text-align:left"><i class="fa fa-sort sort_sno"></i> S.No</th>
-        <th width="150px" style="text-align:left"><i class="fa fa-sort sort_clientid"></i>Client ID</th>
-        <th style="text-align:left"><i class="fa fa-sort sort_company"></i> Company</th>
-        <th style="text-align:left"><i class="fa fa-sort sort_firstname"></i> First Name</th>
-        <th style="text-align:left"><i class="fa fa-sort sort_lastname"></i> Surname</th>
-        <th style="text-align:left"><i class="fa fa-sort sort_received"></i> Batches Received </th>
-        <th style="text-align:left"><i class="fa fa-sort sort_complete"></i> Batches Complete </th>
-        <th style="text-align:left"><i class="fa fa-sort sort_incomplete"></i> Batches Incomplete </th>
-        <th style="text-align:left"> Action </th>
+        <th width="100px" style="text-align:left"> S.No <i class="fa fa-sort sort_sno"></i></th>
+        <th width="150px" style="text-align:left">Client ID <i class="fa fa-sort sort_clientid"></i></th>
+        <th style="text-align:left"> Company <i class="fa fa-sort sort_company"></i></th>
+        <th style="text-align:left"> First Name <i class="fa fa-sort sort_firstname"></i></th>
+        <th style="text-align:left"> Surname <i class="fa fa-sort sort_lastname"></i></th>
+        <th style="text-align:left;width:11%"> Batches Received <i class="fa fa-sort sort_received"></i></th>
+        <th style="text-align:left;width:11%"> Batches Complete <i class="fa fa-sort sort_complete"></i></th>
+        <th style="text-align:left;width:11%"> Batches Incomplete <i class="fa fa-sort sort_incomplete"></i></th>
+        <th style="text-align:left;width:5%"> Action </th>
       </tr>   
     </thead>
     <tbody id="task_body">    
