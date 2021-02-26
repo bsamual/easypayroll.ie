@@ -1747,3 +1747,9 @@ Route::post('/admin/update_cro_setting', 'admin\AdminController@update_cro_setti
 Route::get('/user/manage_croard', 'user\CroardController@manage_croard');
 Route::post('/user/get_company_details_cro', 'user\CroardController@get_company_details_cro');
 Route::get('/user/refresh_cro_ard', 'user\CroardController@refresh_cro_ard');
+
+Route::post('/user/check_missing_files', 'user\InfileController@check_missing_files');
+Route::post('/user/import_available_files', 'user\InfileController@import_available_files');
+
+
+Route::post('/user/update_cro_notes', 'user\CroardController@update_cro_notes');

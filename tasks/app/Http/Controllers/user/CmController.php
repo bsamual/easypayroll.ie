@@ -1964,7 +1964,7 @@ class CmController extends Controller {
 				$outputinvoice.='
 					<tr>
 						<td>'.$i.' <input type="checkbox" name="invoice_check" class="invoice_check" data-element="'.$invoice->id.'" id="invoice_id_'.$invoice->id.'"> <label for="invoice_id_'.$invoice->id.'">&nbsp;</label></td>
-						<td align="left" style="'.$textcolor.'">'.$invoice->invoice_number.'</td>
+						<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_inside_class" data-element="'.$invoice->invoice_number.'">'.$invoice->invoice_number.'</a></td>
 						<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
 						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
 						<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>

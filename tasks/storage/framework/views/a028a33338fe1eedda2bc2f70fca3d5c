@@ -973,10 +973,10 @@ else{
         <th style="text-align:left"> Company <i class="fa fa-sort sort_company"></i></th>
         <th style="text-align:left"> First Name <i class="fa fa-sort sort_firstname"></i></th>
         <th style="text-align:left"> Surname <i class="fa fa-sort sort_lastname"></i></th>
-        <th style="text-align:left"> Batches Received <i class="fa fa-sort sort_received"></i></th>
-        <th style="text-align:left"> Batches Complete <i class="fa fa-sort sort_complete"></i></th>
-        <th style="text-align:left"> Batches Incomplete <i class="fa fa-sort sort_incomplete"></i></th>
-        <th style="text-align:left"> Action </th>
+        <th style="text-align:left;width:11%"> Batches Received <i class="fa fa-sort sort_received"></i></th>
+        <th style="text-align:left;width:11%"> Batches Complete <i class="fa fa-sort sort_complete"></i></th>
+        <th style="text-align:left;width:11%"> Batches Incomplete <i class="fa fa-sort sort_incomplete"></i></th>
+        <th style="text-align:left;width:5%"> Action </th>
       </tr>   
     </thead>
     <tbody id="task_body">    

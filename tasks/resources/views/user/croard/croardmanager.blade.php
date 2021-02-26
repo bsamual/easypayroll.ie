@@ -542,10 +542,11 @@ input:checked + .slider:before {
 	            <th style="width:6%;text-align: left;">Client Code <i class="fa fa-sort clientid_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:25%;text-align: left;">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:7%;text-align: left;">CRO Number <i class="fa fa-sort cro_sort" aria-hidden="true" style="float: right;"></i></th>
-	            <th style="width:15%;text-align: left;">ARD <i class="fa fa-sort ard_sort" aria-hidden="true" style="float: right;"></i></th>
-	            <th style="width:15%;text-align: left;">Type <i class="fa fa-sort type_sort" aria-hidden="true" style="float: right;"></i></th>
-	            <th style="width:15%;text-align: left;">CRO ARD <i class="fa fa-sort cro_ard_sort" aria-hidden="true" style="float: right;"></i></th>
-	            <th style="width:15%;text-align: left;">Action</th>
+	            <th style="width:10%;text-align: left;">ARD <i class="fa fa-sort ard_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:10%;text-align: left;">Type <i class="fa fa-sort type_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:10%;text-align: left;">CRO ARD <i class="fa fa-sort cro_ard_sort" aria-hidden="true" style="float: right;"></i></th>
+              <th style="width:25%;text-align: left;">NOTES </th>
+	            <th style="width:5%;text-align: left;">Action</th>
 	        </thead>                            
         	<tbody id="clients_tbody">
 	        <?php
@@ -569,8 +570,10 @@ input:checked + .slider:before {
 	              $ard_color = '';
                 $timestampcroard = '';
 	              $cro_ard_details = DB::table('croard')->where('client_id',$client->client_id)->first();
+                $notes = '';
 	              if(count($cro_ard_details))
 	              {
+                  $notes = $cro_ard_details->notes;
 	              	if(strtolower($client->company) == strtolower($cro_ard_details->company_name))
 	              	{
 	              		$cmp = '<spam class="company_td" style="color:green;font-style:italic">'.$cro_ard_details->company_name.'</spam>';
@@ -599,8 +602,14 @@ input:checked + .slider:before {
                       }
                       else{
                         $expandcroard = explode('/',$cro_ard_details->cro_ard);
-                        $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
-                        $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                        if(count($expandcroard) > 1)
+                        {
+                          $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
+                            $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                        }
+                        else{
+                          $timestampcroard = '';
+                        }
                       }
 		              		$ard_color = 'color:green';
 		              	}
@@ -613,8 +622,14 @@ input:checked + .slider:before {
                       }
                       else{
                         $expandcroard = explode('/',$cro_ard_details->cro_ard);
-                        $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
-                        $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                        if(count($expandcroard) > 1)
+                        {
+                          $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
+                          $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                        }
+                        else{
+                          $timestampcroard = '';
+                        }
                       }
 		              		$ard_color = 'color:red';
 		              	}
@@ -627,18 +642,31 @@ input:checked + .slider:before {
                 }
                 else{
                   $expand = explode('/',$client->ard);
-                  $correctard = $expand[2].'-'.$expand[1].'-'.$expand[0];
-                  $timestampard = strtotime($expand[2].'-'.$expand[1].'-'.$expand[0]);
+                  if(count($expand) > 1)
+                  {
+                    $correctard = $expand[2].'-'.$expand[1].'-'.$expand[0];
+                      $timestampard = strtotime($expand[2].'-'.$expand[1].'-'.$expand[0]);
+                  }
+                  else{
+                    $timestampard = '';
+                  }
+                  
                 }
 		          ?>
 		            <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->client_id; ?>">
 		                <td style="<?php echo $style; ?>" class="sno_sort_val"><?php echo $i; ?></td>
 		                <td style="<?php echo $style; ?>" class="clientid_sort_val" align="left"><?php echo $client->client_id; ?></td>
 		                <td style="<?php echo $style; ?>" align="left"><spam class="company_sort_val"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></spam> <br/> <?php echo $cmp; ?></td>
-		                <td style="<?php echo $style; ?>" class="cro_sort_val" align="left"><?php echo ($client->cro == "")?"-":$client->cro; ?></td>
+		                <td style="<?php echo $style; ?>" class="cro_sort_val" align="left">
+                          
+                          <?php echo ($client->cro == "")?"-":'<a href="javascript:" class="check_cro" data-element="'.$client->cro.'">'.$client->cro.'</a>'; ?>
+                    </td>
 		                <td style="<?php echo $style; ?>" align="left"><spam class="ard_sort_val" style="display: none"><?php echo $timestampard; ?></spam><?php echo ($client->ard == "")?"-":$client->ard; ?></td>
 		                <td style="<?php echo $style; ?>" class="type_sort_val" align="left"><?php echo ($client->tye == "")?"-":$client->tye; ?></td>
 		                <td class="cro_ard_td" style="<?php echo $ard_color; ?>" align="left"><spam class="cro_ard_sort_val" style="display: none"><?php echo $timestampcroard; ?></spam><?php echo $cr_ard_date; ?></td>
+                    <td class="cro_ard_td" align="left">
+                      <textarea name="cro_notes" class="form-control cro_notes" data-element="<?php echo $client->client_id; ?>" style="height:50px"><?php echo $notes; ?></textarea>
+                    </td>
 		                <td align="left"><a href="javascript:" class="fa fa-refresh refresh_croard" data-element="<?php echo $client->client_id; ?>" data-cro="<?php echo trim($client->cro); ?>" data-type="<?php echo trim($client->tye); ?>" style="<?php echo $style; ?>"></a></td>
 		            </tr>
 	              <?php
@@ -739,6 +767,42 @@ var convertToNumeric = function(value){
       value = value.replace(',','');
 
        return parseInt(value.toLowerCase());
+}
+$(".cro_notes").blur(function() {
+  var input_val = $(this).val();
+  var clientid = $(this).attr('data-element');
+  
+    $.ajax({
+        url:"<?php echo URL::to('user/update_cro_notes'); ?>",
+        type:"post",
+        data:{input_val:input_val,clientid:clientid},
+        success: function(result) {
+
+        }
+    });
+});
+var $input1 = $('.cro_notes');
+$input1.on('keyup', function () {
+  var input_val = $(this).val();
+  var clientid = $(this).attr('data-element');
+  var that = $(this);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTyping_cro, doneTypingInterval,input_val,clientid,that);
+});
+//on keydown, clear the countdown 
+$input1.on('keydown', function () {
+  clearTimeout(typingTimer);
+});
+
+function doneTyping_cro (input,clientid,that) {
+  $.ajax({
+      url:"<?php echo URL::to('user/update_cro_notes'); ?>",
+      type:"post",
+      data:{input_val:input,clientid:clientid},
+      success: function(result) {
+
+      }
+  });
 }
 $(window).click(function(e) {
   var ascending = false;
@@ -969,6 +1033,18 @@ $(window).click(function(e) {
   if($(e.target).hasClass('no_proceed'))
   {
     $.colorbox.close();
+  }
+  if($(e.target).hasClass('check_cro'))
+  {
+    $("body").addClass("loading");
+    var cro = $(e.target).attr("data-element");
+    $(".company_number").val(cro);
+    $(".search_company_modal").modal("show");
+    $("#indicator_1").prop("checked",true);
+    setTimeout( function() { 
+      $(".search_company_btn").trigger("click");
+      
+    },1000);
   }
 	if(e.target.id == 'show_incomplete')
 	{

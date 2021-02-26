@@ -10,6 +10,10 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+.fa-sort{ cursor:pointer; }
+.hidden_tasks_tr>td{
+	cursor:pointer;
+}
 .error{
   color:#f00;
 }
@@ -283,6 +287,10 @@ input:checked + .slider:before {
 }
 .avoid_email{ color:green; font-size:18px;}
 .retain_email { color: #f00 !important; }
+
+.open_layout_div{width:99%;margin: 0px auto;}
+.open_layout_div_change::before{width: 100%; height: 30px; content: ""; position: fixed; background: #fff; margin-top: 300px; z-index: 99}
+.table_layout { border:0px; }
 </style>
 <script src="<?php echo URL::to('ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('ckeditor/samples/js/sample.js'); ?>"></script>
@@ -923,8 +931,15 @@ input:checked + .slider:before {
           <label style="margin-left: 1%; text-align:center;font-size:20px">Task Search</label>
         </div>
         <div class="col-md-5 padding_00">
-          &nbsp;
-        </div>
+		    	<div class="compressed_layout_div" style="float:right;width:31%;margin-right: 80px;">
+			      <label >Compressed Layout:</label>
+	              <label class="switch" style="margin-right: 10px; float:right !important">
+	                <input type="checkbox" class="compressed_layout" value="1" checked>
+	                <span class="slider round"></span>
+	              </label>
+	              <input type="hidden" id="hidden_compressed_layout" value="1">
+          		</div>
+		    </div>
       </div>
       <div class="row">
           <div class="col-md-5 padding_00">
@@ -974,7 +989,7 @@ input:checked + .slider:before {
           <?php }
           ?>
           </div>
-          <div style="margin-top:20px;">
+          <div style="margin-top:-6px;position:fixed;background: #fff;width: 100%;height: 103px;padding-top: 21px;">
             <div class="col-md-2">
               <label>Search By Author:</label>
               <select name="select_user" class="form-control search_author">
@@ -1042,16 +1057,78 @@ input:checked + .slider:before {
             </div>
           </div>
           <p>&nbsp;</p>
-            <table class="table_bg table-fixed-header" style="width:100%;margin-top: 0px;">
+
+          <div class="open_layout_div" style="margin-top:53px">
+            <table class="table_bg table-fixed-header open_layout" style="width:100%;margin-top: 0px;">
               <tbody id="task_body_search">
                 <td colspan="4"> Search For the Tasks </td>
               </tbody>
             </table>
+           </div>
+
+        	<table class="table_bg table-fixed-header table_layout" style="width:100%;float:left;display:none">
+	          	<thead>
+	          		<tr>
+		                <td colspan="4" style="background: #fff;border: 0px">
+		                  <input type="button" name="export_csv" class="export_csv common_black_button" value="Export CSV" style="float:right;">
+		                </td>
+		            </tr>
+	          		<tr class="hidden_tasks_th" id="menulist">
+	                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+	                    	<table style="width:100%">
+		                    	<tr>
+		                    		<td style="color:#fff;width:45%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Client/Task Name<i class="fa fa-sort taskname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                          		<td style="color:#fff;width:5%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686"></td>
+		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Subject<i class="fa fa-sort subject_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    	</tr>
+		                    </table>
+	                    </td>
+	                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+	                    	<table style="width:100%">
+		                    	<tr>
+		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Author Name<i class="fa fa-sort author_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Allocated Name<i class="fa fa-sort allocated_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    	</tr>
+	                    	</table>
+	                    </td>
+	                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+	                    	<table style="width:100%">
+		                    	<tr>
+		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Due Date<i class="fa fa-sort duedate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Created Date<i class="fa fa-sort createddate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    	</tr>
+		                    </table>
+	                    </td>
+	                    <td style="background: #000;padding:0px;border:1px solid #868686">
+	                    	<table style="width:100%">
+		                    	<tr>
+		                    		<td style="color:#fff;width:40%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Task ID<i class="fa fa-sort taskid_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#fff;width:40%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Progress<i class="fa fa-sort progress_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#fff;width:20%;padding:10px; font-size:14px; font-weight:800">
+		                    			Action
+		                    		</td>
+		                    	</tr>
+		                    </table>
+	                    </td>
+	                </tr>
+	          	</thead>
+	          	<tbody id="task_body_layout">
+	          		
+	          	</tbody>
+          	</table>
         </div>
       </div>
     </div>
 </div>
-
+<input type="hidden" name="taskname_sortoptions" id="taskname_sortoptions" value="asc">
+<input type="hidden" name="subject_sortoptions" id="subject_sortoptions" value="asc">
+<input type="hidden" name="author_sortoptions" id="author_sortoptions" value="asc">
+<input type="hidden" name="allocated_sortoptions" id="allocated_sortoptions" value="asc">
+<input type="hidden" name="duedate_sortoptions" id="duedate_sortoptions" value="asc">
+<input type="hidden" name="createddate_sortoptions" id="createddate_sortoptions" value="asc">
+<input type="hidden" name="taskid_sortoptions" id="taskid_sortoptions" value="asc">
+<input type="hidden" name="progress_sortoptions" id="progress_sortoptions" value="asc">
+<input type="hidden" name="redlight_sortoptions" id="redlight_sortoptions" value="asc">
 <div class="modal_load"></div>
 
 <script>
@@ -1137,12 +1214,331 @@ $('html').on('click', function(e) {
     $('[data-original-title]').popover('hide');
   }
 });
+var convertToNumber = function(value){
+       return value.toLowerCase();
+}
+var parseconvertToNumber = function(value){
+       return parseInt(value);
+}
 $(window).click(function(e) {
   if($(e.target).hasClass('cant_edit_task'))
   {
     alert("You are not authorized to edit this task. You should be either an author or the allocated user to edit this task");
   }
   else{
+  		var ascending = false;
+		if($(e.target).hasClass('taskname_sort'))
+		{
+			var sort = $("#taskname_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#taskname_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.taskname_sort_val').text()) <
+			    convertToNumber($(b).find('.taskname_sort_val').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#taskname_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.taskname_sort_val').text()) <
+			    convertToNumber($(b).find('.taskname_sort_val').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('redlight_sort'))
+		{
+			var sort = $("#redlight_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#redlight_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.hidden_redlight_value').text()) <
+			    convertToNumber($(b).find('.hidden_redlight_value').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#redlight_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.hidden_redlight_value').text()) <
+			    convertToNumber($(b).find('.hidden_redlight_value').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('subject_sort'))
+		{
+			var sort = $("#subject_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#subject_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.subject_sort_val').text()) <
+			    convertToNumber($(b).find('.subject_sort_val').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#subject_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.subject_sort_val').text()) <
+			    convertToNumber($(b).find('.subject_sort_val').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('author_sort'))
+		{
+			var sort = $("#author_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#author_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.author_sort_val').text()) <
+			    convertToNumber($(b).find('.author_sort_val').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#author_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.author_sort_val').text()) <
+			    convertToNumber($(b).find('.author_sort_val').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('allocated_sort'))
+		{
+			var sort = $("#allocated_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#allocated_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.allocated_sort_val').text()) <
+			    convertToNumber($(b).find('.allocated_sort_val').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#allocated_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.allocated_sort_val').text()) <
+			    convertToNumber($(b).find('.allocated_sort_val').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('duedate_sort'))
+		{
+			var sort = $("#duedate_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#duedate_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (parseconvertToNumber($(a).find('.hidden_due_date_layout').text()) <
+			    parseconvertToNumber($(b).find('.hidden_due_date_layout').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#duedate_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (parseconvertToNumber($(a).find('.hidden_due_date_layout').text()) <
+			    parseconvertToNumber($(b).find('.hidden_due_date_layout').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('createddate_sort'))
+		{
+			var sort = $("#createddate_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#createddate_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (parseconvertToNumber($(a).find('.hidden_created_date_layout').text()) <
+			    parseconvertToNumber($(b).find('.hidden_created_date_layout').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#createddate_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (parseconvertToNumber($(a).find('.hidden_created_date_layout').text()) <
+			    parseconvertToNumber($(b).find('.hidden_created_date_layout').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('taskid_sort'))
+		{
+			var sort = $("#taskid_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#taskid_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.taskid_sort_val').text()) <
+			    convertToNumber($(b).find('.taskid_sort_val').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#taskid_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (convertToNumber($(a).find('.taskid_sort_val').text()) <
+			    convertToNumber($(b).find('.taskid_sort_val').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('progress_sort'))
+		{
+			var sort = $("#progress_sortoptions").val();
+			if(sort == 'asc')
+			{
+			  $("#progress_sortoptions").val('desc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (parseconvertToNumber($(a).find('.progress_sort_val').text()) <
+			    parseconvertToNumber($(b).find('.progress_sort_val').text()))) ? 1 : -1;
+			  });
+			}
+			else{
+			  $("#progress_sortoptions").val('asc');
+			  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
+			    return (ascending ==
+			         (parseconvertToNumber($(a).find('.progress_sort_val').text()) <
+			    parseconvertToNumber($(b).find('.progress_sort_val').text()))) ? -1 : 1;
+			  });
+			}
+			ascending = ascending ? false : true;
+			$('#task_body_layout').html(sorted);
+		}
+		if($(e.target).hasClass('export_csv'))
+		{
+		    $("body").addClass("loading");
+		}
+		if($(e.target).parents(".hidden_tasks_tr").length > 0)
+		{
+			$(".hidden_tasks_tr").find("td").css("background","#dcdcdc");
+			$(e.target).parents(".hidden_tasks_tr").find("td").css("background","#2fd9ff");
+
+			var taskid = $(e.target).parents(".hidden_tasks_tr").attr("data-element");
+
+			$(".tasks_tr").hide();
+			$(".tasks_tr").next().hide();
+
+			$("#task_tr_"+taskid).show();
+			$("#task_tr_"+taskid).next().show();
+			var layout = $("#hidden_compressed_layout").val();
+		    if(layout == "1")
+			{
+			  $(".open_layout_div").addClass("open_layout_div_change");
+			  var open_tasks_height = $(".open_layout_div").height();
+			  var margintop = parseInt(open_tasks_height);
+			  $(".open_layout_div").css("position","fixed");
+			  $(".open_layout_div").css("height","312px");
+			  $(".open_layout_div").css("margin-top","44px");
+			  if(open_tasks_height > 312)
+			  {
+			    $(".open_layout_div").css("overflow-y","scroll");
+			  }
+			  if(open_tasks_height < 50)
+			  {
+			    $(".table_layout").css("margin-top","20px");
+			  }
+			    else{
+			      $(".table_layout").css("margin-top","380px");
+			    }
+			}
+			else{
+			  $(".open_layout_div").removeClass("open_layout_div_change");
+			  $(".open_layout_div").css("position","unset");
+			  $(".open_layout_div").css("height","auto");
+			  $(".open_layout_div").css("overflow-y","unset");
+			    $(".table_layout").css("margin-top","0px");
+			    $(".open_layout_div").css("margin-top","53px");
+			}
+		}
+  	    if($(e.target).parents(".switch").length > 0)
+		{
+			if($(e.target).parents(".compressed_layout_div").find(".compressed_layout").is(":checked"))
+			{
+			  $(e.target).parents(".compressed_layout_div").find("#hidden_compressed_layout").val("1");
+			}
+			else{
+			  $(e.target).parents(".compressed_layout_div").find("#hidden_compressed_layout").val("0");
+			}
+
+			var layout = $("#hidden_compressed_layout").val();
+			$(".tasks_tr").hide();
+			$(".tasks_tr").next().hide();
+			$(".hidden_tasks_tr").hide();
+
+            if(layout == "1")
+			{
+			  $(".tasks_tr:first").show();
+			  $(".tasks_tr:first").next().show();
+			  $(".table_layout").show();
+			  $(".table_layout").find(".hidden_tasks_tr").show();
+			  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+			}
+			else{
+			  $(".tasks_tr").show();
+			  $(".tasks_tr").next().show();
+			  $(".table_layout").hide();
+			  $(".table_layout").find(".hidden_tasks_tr").hide();
+			}
+
+			if(layout == "1")
+	      {
+	        $(".open_layout_div").addClass("open_layout_div_change");
+	        var open_tasks_height = $(".open_layout_div").height();
+	        var margintop = parseInt(open_tasks_height);
+	        $(".open_layout_div").css("position","fixed");
+	        $(".open_layout_div").css("height","312px");
+	        $(".open_layout_div").css("margin-top","44px");
+	        if(open_tasks_height > 312)
+	        {
+	          $(".open_layout_div").css("overflow-y","scroll");
+	        }
+	        if(open_tasks_height < 50)
+	        {
+	          $(".table_layout").css("margin-top","20px");
+	        }
+	          else{
+	            $(".table_layout").css("margin-top","380px");
+	          }
+	      }
+	      else{
+	        $(".open_layout_div").removeClass("open_layout_div_change");
+	        $(".open_layout_div").css("position","unset");
+	        $(".open_layout_div").css("height","auto");
+	        $(".open_layout_div").css("overflow-y","unset");
+	          $(".table_layout").css("margin-top","0px");
+	          $(".open_layout_div").css("margin-top","53px");
+	      }
+		}
       if($(e.target).hasClass('activate_task_button'))
       {
         var r = confirm("Do you want to make this task live now?");
@@ -1170,22 +1566,74 @@ $(window).click(function(e) {
               $.ajax({
                 url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
                 type:"post",
+                dataType:"json",
                 data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
                 success:function(result)
                 {
-                  $("#task_body_search").html(result);
-                  $("[data-toggle=popover]").popover({
-                    html : true,
-                    content: function() {
-                      var content = $(this).attr("data-popover-content");
-                      return $(content).children(".popover-body").html();
-                    },
-                    title: function() {
-                      var title = $(this).attr("data-popover-content");
-                      return $(title).children(".popover-heading").html();
-                    }
-                });
-                  $("body").removeClass("loading");
+					$("#task_body_search").html(result['open_tasks']);
+					$("#task_body_layout").html(result['layout']);
+
+					var layout = $("#hidden_compressed_layout").val();
+					$(".tasks_tr").hide();
+					$(".tasks_tr").next().hide();
+					$(".hidden_tasks_tr").hide();
+
+                    if(layout == "1")
+					{
+					  $(".tasks_tr:first").show();
+					  $(".tasks_tr:first").next().show();
+					  $(".table_layout").show();
+					  $(".table_layout").find(".hidden_tasks_tr").show();
+					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+					}
+					else{
+					  $(".tasks_tr").show();
+					  $(".tasks_tr").next().show();
+					  $(".table_layout").hide();
+					  $(".table_layout").find(".hidden_tasks_tr").hide();
+					}
+
+					if(layout == "1")
+				      {
+				        $(".open_layout_div").addClass("open_layout_div_change");
+				        var open_tasks_height = $(".open_layout_div").height();
+				        var margintop = parseInt(open_tasks_height);
+				        $(".open_layout_div").css("position","fixed");
+				        $(".open_layout_div").css("height","312px");
+				        $(".open_layout_div").css("margin-top","44px");
+				        if(open_tasks_height > 312)
+				        {
+				          $(".open_layout_div").css("overflow-y","scroll");
+				        }
+				        if(open_tasks_height < 50)
+				        {
+				          $(".table_layout").css("margin-top","20px");
+				        }
+				          else{
+				            $(".table_layout").css("margin-top","380px");
+				          }
+				      }
+				      else{
+				        $(".open_layout_div").removeClass("open_layout_div_change");
+				        $(".open_layout_div").css("position","unset");
+				        $(".open_layout_div").css("height","auto");
+				        $(".open_layout_div").css("overflow-y","unset");
+				          $(".table_layout").css("margin-top","0px");
+				          $(".open_layout_div").css("margin-top","53px");
+				      }
+
+					$("[data-toggle=popover]").popover({
+						html : true,
+						content: function() {
+						  var content = $(this).attr("data-popover-content");
+						  return $(content).children(".popover-body").html();
+						},
+						title: function() {
+						  var title = $(this).attr("data-popover-content");
+						  return $(title).children(".popover-heading").html();
+						}
+					});
+                  	$("body").removeClass("loading");
                 }
               })
             }
@@ -1235,10 +1683,62 @@ $(window).click(function(e) {
                 $.ajax({
                   url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
                   type:"post",
+                  dataType:"json",
                   data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
                   success:function(result)
                   {
-                    $("#task_body_search").html(result);
+                    $("#task_body_search").html(result['open_tasks']);
+                    $("#task_body_layout").html(result['layout']);
+
+                    var layout = $("#hidden_compressed_layout").val();
+					$(".tasks_tr").hide();
+					$(".tasks_tr").next().hide();
+					$(".hidden_tasks_tr").hide();
+
+                    if(layout == "1")
+					{
+					  $(".tasks_tr:first").show();
+					  $(".tasks_tr:first").next().show();
+					  $(".table_layout").show();
+					  $(".table_layout").find(".hidden_tasks_tr").show();
+					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+					}
+					else{
+					  $(".tasks_tr").show();
+					  $(".tasks_tr").next().show();
+					  $(".table_layout").hide();
+					  $(".table_layout").find(".hidden_tasks_tr").hide();
+					}
+
+					if(layout == "1")
+			      {
+			        $(".open_layout_div").addClass("open_layout_div_change");
+			        var open_tasks_height = $(".open_layout_div").height();
+			        var margintop = parseInt(open_tasks_height);
+			        $(".open_layout_div").css("position","fixed");
+			        $(".open_layout_div").css("height","312px");
+			        $(".open_layout_div").css("margin-top","44px");
+			        if(open_tasks_height > 312)
+			        {
+			          $(".open_layout_div").css("overflow-y","scroll");
+			        }
+			        if(open_tasks_height < 50)
+			        {
+			          $(".table_layout").css("margin-top","20px");
+			        }
+			          else{
+			            $(".table_layout").css("margin-top","380px");
+			          }
+			      }
+			      else{
+			        $(".open_layout_div").removeClass("open_layout_div_change");
+			        $(".open_layout_div").css("position","unset");
+			        $(".open_layout_div").css("height","auto");
+			        $(".open_layout_div").css("overflow-y","unset");
+			          $(".table_layout").css("margin-top","0px");
+			          $(".open_layout_div").css("margin-top","53px");
+			      }
+
                     $("[data-toggle=popover]").popover({
                       html : true,
                       content: function() {
@@ -1404,10 +1904,61 @@ $(window).click(function(e) {
           $.ajax({
             url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
             type:"post",
+            dataType:"json",
             data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
             success:function(result)
             {
-              $("#task_body_search").html(result);
+              $("#task_body_search").html(result['open_tasks']);
+              $("#task_body_layout").html(result['layout']);
+
+              var layout = $("#hidden_compressed_layout").val();
+				$(".tasks_tr").hide();
+				$(".tasks_tr").next().hide();
+				$(".hidden_tasks_tr").hide();
+
+                if(layout == "1")
+				{
+				  $(".tasks_tr:first").show();
+				  $(".tasks_tr:first").next().show();
+				  $(".table_layout").show();
+				  $(".table_layout").find(".hidden_tasks_tr").show();
+				  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+				}
+				else{
+				  $(".tasks_tr").show();
+				  $(".tasks_tr").next().show();
+				  $(".table_layout").hide();
+				  $(".table_layout").find(".hidden_tasks_tr").hide();
+				}
+
+				if(layout == "1")
+		      {
+		        $(".open_layout_div").addClass("open_layout_div_change");
+		        var open_tasks_height = $(".open_layout_div").height();
+		        var margintop = parseInt(open_tasks_height);
+		        $(".open_layout_div").css("position","fixed");
+		        $(".open_layout_div").css("height","312px");
+		        $(".open_layout_div").css("margin-top","44px");
+		        if(open_tasks_height > 312)
+		        {
+		          $(".open_layout_div").css("overflow-y","scroll");
+		        }
+		        if(open_tasks_height < 50)
+		        {
+		          $(".table_layout").css("margin-top","20px");
+		        }
+		          else{
+		            $(".table_layout").css("margin-top","380px");
+		          }
+		      }
+		      else{
+		        $(".open_layout_div").removeClass("open_layout_div_change");
+		        $(".open_layout_div").css("position","unset");
+		        $(".open_layout_div").css("height","auto");
+		        $(".open_layout_div").css("overflow-y","unset");
+		          $(".table_layout").css("margin-top","0px");
+		          $(".open_layout_div").css("margin-top","53px");
+		      }
               $("[data-toggle=popover]").popover({
                   html : true,
                   content: function() {
@@ -1587,10 +2138,62 @@ $(window).click(function(e) {
             $.ajax({
               url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
               type:"post",
+              dataType:"json",
               data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
               success:function(result)
               {
-                $("#task_body_search").html(result);
+                $("#task_body_search").html(result['open_tasks']);
+                $("#task_body_layout").html(result['layout']);
+
+                var layout = $("#hidden_compressed_layout").val();
+					$(".tasks_tr").hide();
+					$(".tasks_tr").next().hide();
+					$(".hidden_tasks_tr").hide();
+
+                    if(layout == "1")
+					{
+					  $(".tasks_tr:first").show();
+					  $(".tasks_tr:first").next().show();
+					  $(".table_layout").show();
+					  $(".table_layout").find(".hidden_tasks_tr").show();
+					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+					}
+					else{
+					  $(".tasks_tr").show();
+					  $(".tasks_tr").next().show();
+					  $(".table_layout").hide();
+					  $(".table_layout").find(".hidden_tasks_tr").hide();
+					}
+
+					if(layout == "1")
+			      {
+			        $(".open_layout_div").addClass("open_layout_div_change");
+			        var open_tasks_height = $(".open_layout_div").height();
+			        var margintop = parseInt(open_tasks_height);
+			        $(".open_layout_div").css("position","fixed");
+			        $(".open_layout_div").css("height","312px");
+			        $(".open_layout_div").css("margin-top","44px");
+			        if(open_tasks_height > 312)
+			        {
+			          $(".open_layout_div").css("overflow-y","scroll");
+			        }
+			        if(open_tasks_height < 50)
+			        {
+			          $(".table_layout").css("margin-top","20px");
+			        }
+			          else{
+			            $(".table_layout").css("margin-top","380px");
+			          }
+			      }
+			      else{
+			        $(".open_layout_div").removeClass("open_layout_div_change");
+			        $(".open_layout_div").css("position","unset");
+			        $(".open_layout_div").css("height","auto");
+			        $(".open_layout_div").css("overflow-y","unset");
+			          $(".table_layout").css("margin-top","0px");
+			          $(".open_layout_div").css("margin-top","53px");
+			      }
+
                 $("[data-toggle=popover]").popover({
                   html : true,
                   content: function() {
@@ -1639,10 +2242,62 @@ $(window).click(function(e) {
             $.ajax({
               url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
               type:"post",
+              dataType:"json",
               data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
               success:function(result)
               {
-                $("#task_body_search").html(result);
+                $("#task_body_search").html(result['open_tasks']);
+                $("#task_body_layout").html(result['layout']);
+
+                var layout = $("#hidden_compressed_layout").val();
+					$(".tasks_tr").hide();
+					$(".tasks_tr").next().hide();
+					$(".hidden_tasks_tr").hide();
+
+                    if(layout == "1")
+					{
+					  $(".tasks_tr:first").show();
+					  $(".tasks_tr:first").next().show();
+					  $(".table_layout").show();
+					  $(".table_layout").find(".hidden_tasks_tr").show();
+					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+					}
+					else{
+					  $(".tasks_tr").show();
+					  $(".tasks_tr").next().show();
+					  $(".table_layout").hide();
+					  $(".table_layout").find(".hidden_tasks_tr").hide();
+					}
+
+					if(layout == "1")
+			      {
+			        $(".open_layout_div").addClass("open_layout_div_change");
+			        var open_tasks_height = $(".open_layout_div").height();
+			        var margintop = parseInt(open_tasks_height);
+			        $(".open_layout_div").css("position","fixed");
+			        $(".open_layout_div").css("height","312px");
+			        $(".open_layout_div").css("margin-top","44px");
+			        if(open_tasks_height > 312)
+			        {
+			          $(".open_layout_div").css("overflow-y","scroll");
+			        }
+			        if(open_tasks_height < 50)
+			        {
+			          $(".table_layout").css("margin-top","20px");
+			        }
+			          else{
+			            $(".table_layout").css("margin-top","380px");
+			          }
+			      }
+			      else{
+			        $(".open_layout_div").removeClass("open_layout_div_change");
+			        $(".open_layout_div").css("position","unset");
+			        $(".open_layout_div").css("height","auto");
+			        $(".open_layout_div").css("overflow-y","unset");
+			          $(".table_layout").css("margin-top","0px");
+			          $(".open_layout_div").css("margin-top","53px");
+			      }
+
                 $("[data-toggle=popover]").popover({
                   html : true,
                   content: function() {
@@ -1946,10 +2601,62 @@ $(window).click(function(e) {
                       $.ajax({
                         url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
                         type:"post",
+                        dataType:"json",
                         data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
                         success:function(result)
                         {
-                          $("#task_body_search").html(result);
+                          $("#task_body_search").html(result['open_tasks']);
+                          $("#task_body_layout").html(result['layout']);
+
+                          var layout = $("#hidden_compressed_layout").val();
+						$(".tasks_tr").hide();
+						$(".tasks_tr").next().hide();
+						$(".hidden_tasks_tr").hide();
+
+	                    if(layout == "1")
+						{
+						  $(".tasks_tr:first").show();
+						  $(".tasks_tr:first").next().show();
+						  $(".table_layout").show();
+						  $(".table_layout").find(".hidden_tasks_tr").show();
+						  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+						}
+						else{
+						  $(".tasks_tr").show();
+						  $(".tasks_tr").next().show();
+						  $(".table_layout").hide();
+						  $(".table_layout").find(".hidden_tasks_tr").hide();
+						}
+
+						if(layout == "1")
+				      {
+				        $(".open_layout_div").addClass("open_layout_div_change");
+				        var open_tasks_height = $(".open_layout_div").height();
+				        var margintop = parseInt(open_tasks_height);
+				        $(".open_layout_div").css("position","fixed");
+				        $(".open_layout_div").css("height","312px");
+				        $(".open_layout_div").css("margin-top","44px");
+				        if(open_tasks_height > 312)
+				        {
+				          $(".open_layout_div").css("overflow-y","scroll");
+				        }
+				        if(open_tasks_height < 50)
+				        {
+				          $(".table_layout").css("margin-top","20px");
+				        }
+				          else{
+				            $(".table_layout").css("margin-top","380px");
+				          }
+				      }
+				      else{
+				        $(".open_layout_div").removeClass("open_layout_div_change");
+				        $(".open_layout_div").css("position","unset");
+				        $(".open_layout_div").css("height","auto");
+				        $(".open_layout_div").css("overflow-y","unset");
+				          $(".table_layout").css("margin-top","0px");
+				          $(".open_layout_div").css("margin-top","53px");
+				      }
+
                           $("[data-toggle=popover]").popover({
 			                  html : true,
 			                  content: function() {
@@ -2034,10 +2741,63 @@ $(window).click(function(e) {
                       $.ajax({
                         url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
                         type:"post",
+                        dataType:"json",
                         data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
                         success:function(result)
                         {
-                          $("#task_body_search").html(result);
+                          $("#task_body_search").html(result['open_tasks']);
+                          $("#task_body_layout").html(result['layout']);
+
+                          var layout = $("#hidden_compressed_layout").val();
+					$(".tasks_tr").hide();
+					$(".tasks_tr").next().hide();
+					$(".hidden_tasks_tr").hide();
+
+                    if(layout == "1")
+					{
+					  $(".tasks_tr:first").show();
+					  $(".tasks_tr:first").next().show();
+					  $(".table_layout").show();
+					  $(".table_layout").find(".hidden_tasks_tr").show();
+					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+					}
+					else{
+					  $(".tasks_tr").show();
+					  $(".tasks_tr").next().show();
+					  $(".table_layout").hide();
+					  $(".table_layout").find(".hidden_tasks_tr").hide();
+					}
+
+					if(layout == "1")
+			      {
+			        $(".open_layout_div").addClass("open_layout_div_change");
+			        var open_tasks_height = $(".open_layout_div").height();
+			        var margintop = parseInt(open_tasks_height);
+			        $(".open_layout_div").css("position","fixed");
+			        $(".open_layout_div").css("height","312px");
+			        $(".open_layout_div").css("margin-top","44px");
+			        if(open_tasks_height > 312)
+			        {
+			          $(".open_layout_div").css("overflow-y","scroll");
+			        }
+			        if(open_tasks_height < 50)
+			        {
+			          $(".table_layout").css("margin-top","20px");
+			        }
+			          else{
+			            $(".table_layout").css("margin-top","380px");
+			          }
+			      }
+			      else{
+			        $(".open_layout_div").removeClass("open_layout_div_change");
+			        $(".open_layout_div").css("position","unset");
+			        $(".open_layout_div").css("height","auto");
+			        $(".open_layout_div").css("overflow-y","unset");
+			          $(".table_layout").css("margin-top","0px");
+			          $(".open_layout_div").css("margin-top","53px");
+			      }
+
+
                           $("[data-toggle=popover]").popover({
 			                  html : true,
 			                  content: function() {
@@ -2228,10 +2988,62 @@ $(window).click(function(e) {
             $.ajax({
               url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
               type:"post",
+              dataType:"json",
               data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
               success:function(result)
               {
-                $("#task_body_search").html(result);
+                $("#task_body_search").html(result['open_tasks']);
+                $("#task_body_layout").html(result['layout']);
+
+                var layout = $("#hidden_compressed_layout").val();
+					$(".tasks_tr").hide();
+					$(".tasks_tr").next().hide();
+					$(".hidden_tasks_tr").hide();
+
+                    if(layout == "1")
+					{
+					  $(".tasks_tr:first").show();
+					  $(".tasks_tr:first").next().show();
+					  $(".table_layout").show();
+					  $(".table_layout").find(".hidden_tasks_tr").show();
+					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+					}
+					else{
+					  $(".tasks_tr").show();
+					  $(".tasks_tr").next().show();
+					  $(".table_layout").hide();
+					  $(".table_layout").find(".hidden_tasks_tr").hide();
+					}
+
+					if(layout == "1")
+			      {
+			        $(".open_layout_div").addClass("open_layout_div_change");
+			        var open_tasks_height = $(".open_layout_div").height();
+			        var margintop = parseInt(open_tasks_height);
+			        $(".open_layout_div").css("position","fixed");
+			        $(".open_layout_div").css("height","312px");
+			        $(".open_layout_div").css("margin-top","44px");
+			        if(open_tasks_height > 312)
+			        {
+			          $(".open_layout_div").css("overflow-y","scroll");
+			        }
+			        if(open_tasks_height < 50)
+			        {
+			          $(".table_layout").css("margin-top","20px");
+			        }
+			          else{
+			            $(".table_layout").css("margin-top","380px");
+			          }
+			      }
+			      else{
+			        $(".open_layout_div").removeClass("open_layout_div_change");
+			        $(".open_layout_div").css("position","unset");
+			        $(".open_layout_div").css("height","auto");
+			        $(".open_layout_div").css("overflow-y","unset");
+			          $(".table_layout").css("margin-top","0px");
+			          $(".open_layout_div").css("margin-top","53px");
+			      }
+
                 $("[data-toggle=popover]").popover({
 	                  html : true,
 	                  content: function() {

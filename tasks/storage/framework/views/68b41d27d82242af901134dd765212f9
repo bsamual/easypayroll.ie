@@ -66,6 +66,7 @@ if(Session::has('taskmanager_user'))
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
+.table_layout { border:0px; }
 .tasks_drop {text-align: left !important; }
 .existing_comments > p { margin-bottom: 0px !important; }
 /* Chrome, Safari, Edge, Opera */
@@ -1725,8 +1726,14 @@ input:checked + .slider:before {
 	      </div>
           <?php 
           if($open_task_count == 0 && $authored_task_count == 0) {  } else { ?>
+
           <table class="table_bg table-fixed-header table_layout" style="width:100%;float:left;display:none">
           	<thead>
+              <tr>
+                <td colspan="4" style="background: #fff;border: 0px">
+                  <input type="button" name="export_csv" class="export_csv common_black_button" value="Export CSV" style="float:right;">
+                </td>
+              </tr>
           		<tr class="hidden_tasks_th" id="menulist">
                     <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
                     	<table style="width:100%">
@@ -2216,6 +2223,10 @@ $(window).click(function(e) {
 		ascending = ascending ? false : true;
 		$('#task_body_layout').html(sorted);
 	}
+  if($(e.target).hasClass('export_csv'))
+  {
+    $("body").addClass("loading");
+  }
   if($(e.target).hasClass('edit_task_name'))
   {
     var taskid = $(e.target).attr("data-element");

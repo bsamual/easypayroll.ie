@@ -3050,8 +3050,9 @@ class InfileController extends Controller {
 		<div class="row" style="max-height:500px;overflow-y:scroll">
 		<table class="table">
 			<thead>
-				<th style="text-align:left;width:70%">Filename</th>
-				<th style="text-align:left;width:30%">Status</th>
+				<th style="text-align:left;width:60%">Filename</th>
+				<th style="text-align:left;width:20%">Status</th>
+				<th style="text-align:left;width:20%">Action</th>
 			</thead>
 			<tbody>';
 				if(count($infile_attacments))
@@ -3062,6 +3063,7 @@ class InfileController extends Controller {
 						$output.='<tr>
 							<td class="integrity_attachment overflow-wrap-hack" data-element="'.$attachment->id.'" data-file="'.$attachment->file_id.'" data-key="'.$key.'"><div class="content_check">'.$attachment->attachment.'</div></td>
 							<td class="integrity_status integrity_status_'.$attachment->id.'"> - </td>
+							<td class="action_status action_status_'.$attachment->id.'"> - </td>
 						</tr>';
 					}
 				}
@@ -3099,8 +3101,9 @@ class InfileController extends Controller {
 				<div class="row" style="max-height:500px;overflow-y:scroll">
 					<table class="table">
 						<thead>
-							<th style="text-align:left;width:70%">Filename</th>
-							<th style="text-align:left;width:30%">Status</th>
+							<th style="text-align:left;width:60%">Filename</th>
+							<th style="text-align:left;width:20%">Status</th>
+							<th style="text-align:left;width:20%">Action</th>
 						</thead>
 						<tbody>';
 							if(count($infile_attacments))
@@ -3109,15 +3112,16 @@ class InfileController extends Controller {
 								{
 									if(!file_exists($attachment->url.'/'.$attachment->attachment))
 									{
-										$status = '<spam style="color:#f00;font-weight:600">Missing</spam>';
+										$status = '<spam class="files_spam missing_spam" style="color:#f00;font-weight:600"><spam class="hide_attach" style="display:none">'.strtolower($attachment->attachment).'</spam>Missing</spam><input type="hidden" name="hidden_file_missing" class="hidden_file_missing" id="hidden_file_missing" value="">';
 									}
 									else{
-										$status = '<spam style="color:green;font-weight:600">Ok</spam>';
+										$status = '<spam class="files_spam ok_spam" style="color:green;font-weight:600">Ok</spam>';
 									}
 									$key = $key + 1;
 									$output.='<tr>
 										<td class="overflow-wrap-hack"><div class="content_check">'.$attachment->attachment.'</div></td>
-										<td class="integrity_status_'.$attachment->id.'">'.$status.'</td>
+										<td class="integrity_status integrity_status_'.$attachment->id.'">'.$status.'</td>
+										<td class="action_status action_status_'.$attachment->id.'"> - </td>
 									</tr>';
 								}
 							}
@@ -3135,19 +3139,27 @@ class InfileController extends Controller {
 	{
 		$fileid = Input::get('fileid');
 		$type = Input::get('type');
+		$round = Input::get('round');
+
+		if($round == "0")
+		{
+			$file = fopen("papers/IntegrityCheckReport.csv","r+");
+			ftruncate($file, 0);
+			fclose($file);
+		}
 
 		$check_file = DB::table('in_file_attachment')->where('id',$fileid)->first();
 		if(count($check_file))
 		{
+
 			if(!file_exists($check_file->url.'/'.$check_file->attachment))
 			{
-				echo '<spam style="color:#f00;font-weight:600">Missing</spam>';
 				$status = 'Missing';
 			}
 			else{
-				echo '<spam style="color:green;font-weight:600">Ok</spam>';
 				$status = 'Ok';
 			}
+
 			if($type == "0")
 			{
 				$item_details = DB::table('in_file')->where('id',$check_file->file_id)->first();
@@ -3159,6 +3171,7 @@ class InfileController extends Controller {
 				  array("Filename","Status","",""),
 				  array($check_file->attachment,$status,"","",""),
 				);
+
 				$file = fopen("papers/IntegrityCheckReport.csv","w");
 				foreach ($list as $line) {
 				  fputcsv($file, $line);
@@ -3188,6 +3201,14 @@ class InfileController extends Controller {
 				//fwrite($fp, $row1.",".$row2); //Append row,row to file
 				fputcsv($file, array($check_file->attachment,$status,"","")); //@Optimist
 				fclose($file); //Close the file to free memory.
+			}
+
+			if(!file_exists($check_file->url.'/'.$check_file->attachment))
+			{
+				echo '<spam class="files_spam missing_spam" style="color:#f00;font-weight:600"><spam class="hide_attach" style="display:none">'.strtolower($check_file->attachment).'</spam>Missing</spam><input type="hidden" name="hidden_file_missing" id="hidden_file_missing" class="hidden_file_missing" value="">';
+			}
+			else{
+				echo '<spam class="files_spam ok_spam" style="color:green;font-weight:600">Ok</spam>';
 			}
 		}
 
@@ -3470,6 +3491,33 @@ class InfileController extends Controller {
 			</div>
 			<div class="clearfix"></div>';
       	echo json_encode(array("output" => $output,"ps_data_btn" => $ps_data_btn));
+	}
+	public function check_missing_files()
+	{
+		$missing_files = strtolower(Input::get('missing_files'));
+		$path = Input::get('path');
+		$files = glob(dirname($path));
+		print_r($files);
+		exit;
+		print_r(getDirContents($path,$missing_files));
+	}
+	public function import_available_files()
+	{
+		$filename = Input::get('filename');
+		$fileid = Input::get('fileid');
+		$fileval = Input::get('fileval');
+
+
+	    $image_parts = explode(";base64,", $fileval);
+	    $image_base64 = base64_decode($image_parts[1]);
+	    $file = 'uploads/infile_image/'.base64_encode($fileid).'/'.$filename;
+	    if(file_put_contents($file, $image_base64))
+	    {
+			echo "0";
+		}
+		else{
+			echo "1";
+		}
 	}
 }
 

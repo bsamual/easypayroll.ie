@@ -296,5 +296,20 @@ class CroardController extends Controller {
 		
 		echo json_encode(array('company_name' => $companyname, 'next_ard' => $coreard, 'corard_timestamp' => $corard_timestamp, 'companystatus' => $companystatus, 'ardstatus' => $ardstatus));
 	}
+	public function update_cro_notes()
+	{
+		$value = Input::get('input_val');
+		$clientid = Input::get('clientid');
+		$details = DB::table('croard')->where('client_id',$clientid)->first();
+		if(count($details))
+		{
+			$data['notes'] = $value;
+			DB::table('croard')->where('id',$details->id)->update($data);
+		}
+		else{
+			$data['notes'] = $value;
+			DB::table('croard')->insert($data);
+		}
+	}
 }
 

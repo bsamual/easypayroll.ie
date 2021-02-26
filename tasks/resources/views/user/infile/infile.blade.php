@@ -35,6 +35,87 @@ body.loading_apply {
 body.loading_apply .modal_load_apply {
     display: block;
 }
+
+.modal_load_available {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_available {
+    overflow: hidden;   
+}
+body.loading_available .modal_load_available {
+    display: block;
+}
+
+.modal_load_browse {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_browse {
+    overflow: hidden;   
+}
+body.loading_browse .modal_load_browse {
+    display: block;
+}
+
+.modal_load_review {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_review {
+    overflow: hidden;   
+}
+body.loading_review .modal_load_review {
+    display: block;
+}
+
+
+.modal_load_import {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_import {
+    overflow: hidden;   
+}
+body.loading_import .modal_load_import {
+    display: block;
+}
 .flag_gray{ color:gray; cursor: pointer }
 .flag_orange{ color:orange; cursor: pointer }
 .flag_red{ color:red; cursor: pointer }
@@ -511,15 +592,43 @@ elseif(Session::has('countupdated'))
   </div>
 </div>
 <div class="modal fade integrity_check_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
-  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
+  <div class="modal-dialog modal-sm" role="document" style="width:40%;">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title job_title">Integrity Check</h4>
             <input type="button" class="check_now common_black_button" value="Check Now" style="margin-top:-32px;margin-right:28px;float:right">
           </div>
-          <div class="modal-body" id="integrity_check_body">  
+          <div class="modal-body">  
+            <div id="integrity_check_body">
 
+            </div>
+            <div class="available_import_div">
+              <form name="availability_form" id="availability_form" method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-12">
+                      <p>Number of Files:<spam class="number_of_files"></spam></p>
+                      <p>Number of OK Files:<spam class="number_of_ok_files"></spam></p>
+                      <p>Number of Missing Files:<spam class="number_of_missing_files"></spam></p>
+                    </div>
+                    <div class="col-md-2">
+                      <h5 style="font-weight:700;font-weight:18px">Location Path:</h5>
+                    </div>
+                    <div class="col-md-6">
+                      <input type="file" name="location_path" class="form-control location_path" id="location_path" webkitdirectory directory multiple/>
+
+                    </div>
+                    <div class="col-md-4">
+                      <input type="button" name="review_location" class="review_location common_black_button" value="Review Location"> 
+                    </div>
+
+                    <div class="col-md-2">&nbsp;</div>
+                    <div class="col-md-6">
+                      <input type="button" name="import_available_files" class="import_available_files common_black_button" value="Import Available Files"> 
+                    </div>
+                </div>
+              </form>
+            </div>
           </div>
           <div class="modal-footer" style="text-align:left">
              <div class="export_integrity_filename" id="export_integrity_filename">
@@ -1588,6 +1697,24 @@ elseif(Session::has('countupdated'))
   <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Infile Items are loaded.</p>
   <p style="font-size:18px;font-weight: 600;">Loading: <span id="apply_first"></span> of <span id="apply_last"></span></p>
 </div>
+
+<div class="modal_load_import" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait while we import all the missing files from this folder.</p>
+  <p style="font-size:18px;font-weight: 600;">Importing: <span id="import_first"></span> of <span id="import_last"></span></p>
+</div>
+
+<div class="modal_load_browse" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait while we load the selected folder for scanning. <br/>This may take upto 3 minutes but it may take longer depending on the number of files in this folder.</p>
+</div>
+
+<div class="modal_load_available" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait while we import the missing file from this folder.</p>
+</div>
+
+<div class="modal_load_review" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait while we scan this entire folder to find if any missing files are available in this folder. <br/>This may take upto 3 minutes but it may take longer depending on the number of files in this folder.</p>
+</div>
+
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
 <input type="hidden" name="show_alert" id="show_alert" value="">
 <input type="hidden" name="pagination" id="pagination" value="1">
@@ -1600,6 +1727,9 @@ elseif(Session::has('countupdated'))
 
 
 <script>
+var dialog = new CommonOpenFileDialog();
+dialog.IsFolderPicker = true;    
+dialog.SetOpenButtonText("SAVE TO THIS FOLDER");
 
 //on keyup, start the countdown
 var typingTimer;                //timer identifier
@@ -1700,8 +1830,6 @@ $input6.on('keyup', function () {
 $input6.on('keydown', function () {
   clearTimeout(typingTimer);
 });
-
-
 
 //user is "finished typing," do something
 function doneTyping (input,id) {
@@ -2453,7 +2581,10 @@ $(".image_file_add").change(function(){
 
 $(window).change(function(e) {
 
-
+  if($(e.target).hasClass('location_path'))
+  {
+    $("body").removeClass("loading_browse");
+  }
 
   if($(e.target).hasClass('user_select'))
 
@@ -2627,7 +2758,7 @@ function next_integrity_check(count)
   $.ajax({
     url:"<?php echo URL::to('user/check_files_in_files'); ?>",
     type:"post",
-    data:{fileid:fileid,type:keyval},
+    data:{fileid:fileid,type:keyval,round:"1"},
     success:function(result)
     {
     	setTimeout( function() {
@@ -2639,6 +2770,13 @@ function next_integrity_check(count)
 	        $("#apply_first").html(countval);
 	      }
 	      else{
+          $(".available_import_div").show();
+          var total_files = $(".files_spam").length;
+          var ok_files = $(".ok_spam").length;
+          var missing_files = $(".missing_spam").length;
+          $(".number_of_files").html(total_files)
+          $(".number_of_ok_files").html(ok_files)
+          $(".number_of_missing_files").html(missing_files)
 	        $("body").removeClass("loading_apply");
 	        $("#export_integrity_filename").show();
 	      }
@@ -2672,7 +2810,134 @@ function next_integrity_check_div(count)
       }
     });
 }
+function next_available_check_div(count)
+{ 
+    var url = $(".available_files:eq(0)").parents("tr:first").find(".hidden_file_missing").val();
+    var fileid = $(".available_files:eq(0)").parents("tr:first").find(".integrity_attachment").attr("data-file");
+    var filename = $(".available_files:eq(0)").attr("data-filename");
+
+    $.ajax({
+      url:"<?php echo URL::to('user/import_available_files'); ?>",
+      type:"post",
+      data:{fileval:url,fileid:fileid,filename:filename},
+      success:function(result)
+      {
+        if(result == "0")
+        {
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").removeClass("missing_spam");
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").addClass("ok_spam");
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").css("color","green");
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").html("OK");
+          $(".available_files:eq(0)").parents("tr:first").find(".action_status").html("File Imported");
+
+          var okfiles = $(".number_of_ok_files").html();
+          var missingfiles = $(".number_of_missing_files").html();
+
+          okfiles = parseInt(okfiles) + 1;
+          missingfiles = parseInt(missingfiles) - 1;
+          $(".number_of_ok_files").html(okfiles);
+          $(".number_of_missing_files").html(missingfiles);
+        }
+
+        setTimeout( function() {
+          var countval = count + 1;
+          if($(".available_files:eq(0)").length > 0)
+          {
+            next_available_check_div(countval);
+            $("#import_first").html(countval);
+          }
+          else{
+            $("body").removeClass("loading_import");
+          }
+        },1000);
+      }
+    });
+}
 $(window).click(function(e) {
+  if($(e.target).hasClass('location_path'))
+  {
+    $("body").addClass("loading_browse");
+  }
+  if($(e.target).hasClass('available_files'))
+  {
+    $("body").addClass("loading_available");
+    setTimeout(function() {
+        var url = $(e.target).parents("tr:first").find(".hidden_file_missing").val();
+        var fileid = $(e.target).parents("tr:first").find(".integrity_attachment").attr("data-file");
+        var filename = $(e.target).attr("data-filename");
+
+        $.ajax({
+          url:"<?php echo URL::to('user/import_available_files'); ?>",
+          type:"post",
+          data:{fileval:url,fileid:fileid,filename:filename},
+          success:function(result)
+          {
+            if(result == "0")
+            {
+              $(e.target).parents("tr:first").find(".files_spam").removeClass("missing_spam");
+              $(e.target).parents("tr:first").find(".files_spam").addClass("ok_spam");
+              $(e.target).parents("tr:first").find(".files_spam").css("color","green");
+              $(e.target).parents("tr:first").find(".files_spam").html("OK");
+              $(e.target).parents("tr:first").find(".action_status").html("File Imported");
+
+              var okfiles = $(".number_of_ok_files").html();
+              var missingfiles = $(".number_of_missing_files").html();
+
+              okfiles = parseInt(okfiles) + 1;
+              missingfiles = parseInt(missingfiles) - 1;
+              $(".number_of_ok_files").html(okfiles);
+              $(".number_of_missing_files").html(missingfiles);
+            }
+            $("body").removeClass("loading_available");
+          }
+        })
+    },1000);
+  }
+  if($(e.target).hasClass('import_available_files'))
+  {
+    $("body").addClass("loading_import");
+    var countavailable = $(".available_files").length;
+    $("#import_last").html(countavailable);
+    var url = $(".available_files:eq(0)").parents("tr:first").find(".hidden_file_missing").val();
+    var fileid = $(".available_files:eq(0)").parents("tr:first").find(".integrity_attachment").attr("data-file");
+    var filename = $(".available_files:eq(0)").attr("data-filename");
+
+    $.ajax({
+      url:"<?php echo URL::to('user/import_available_files'); ?>",
+      type:"post",
+      data:{fileval:url,fileid:fileid,filename:filename},
+      success:function(result)
+      {
+        if(result == "0")
+        {
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").removeClass("missing_spam");
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").addClass("ok_spam");
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").css("color","green");
+          $(".available_files:eq(0)").parents("tr:first").find(".files_spam").html("OK");
+          $(".available_files:eq(0)").parents("tr:first").find(".action_status").html("File Imported");
+
+          var okfiles = $(".number_of_ok_files").html();
+          var missingfiles = $(".number_of_missing_files").html();
+
+          okfiles = parseInt(okfiles) + 1;
+          missingfiles = parseInt(missingfiles) - 1;
+          $(".number_of_ok_files").html(okfiles);
+          $(".number_of_missing_files").html(missingfiles);
+        }
+
+        setTimeout( function() {
+          if($(".available_files:eq(1)").length > 0)
+          {
+            next_available_check_div(1);
+            $("#import_first").html(1);
+          }
+          else{
+            $("body").removeClass("loading_import");
+          }
+        },3000);
+      }
+    });
+  }
   if($(e.target).hasClass('show_attachments'))
   {
     if($(e.target).hasClass('remove_attachments'))
@@ -2721,6 +2986,7 @@ $(window).click(function(e) {
       data:{fileid:fileid},
       success:function(result)
       {
+        $(".available_import_div").hide();
         setTimeout( function() {
         	$("#integrity_check_body").append(result);
 	        if($(".integrity_check:eq(1)").length > 0)
@@ -2747,6 +3013,7 @@ $(window).click(function(e) {
       data:{fileid:fileid},
       success:function(result)
       {
+        $(".available_import_div").hide();
         $("#integrity_check_body").html(result);
         $(".integrity_check_modal").modal("show");
         $("#export_integrity_filename").hide();
@@ -2764,7 +3031,7 @@ $(window).click(function(e) {
     $.ajax({
       url:"<?php echo URL::to('user/check_files_in_files'); ?>",
       type:"post",
-      data:{fileid:fileid,type:"0"},
+      data:{fileid:fileid,type:"0",round:"0"},
       success:function(result)
       {
       	setTimeout( function() {
@@ -2780,6 +3047,69 @@ $(window).click(function(e) {
 	    },200);
       }
     });
+  }
+  if($(e.target).hasClass('review_location'))
+  {
+    var path = $('.location_path')[0].files;
+    var countmissing = $(".missing_spam").length;
+    var fileslength = path.length;
+    if(path == "")
+    {
+      alert("Please Select the Directory to Review the Missing Files");
+    }
+    else if(countmissing == 0)
+    {
+      alert("There is no Missing files to check availability.");
+    }
+    else{
+      $("body").addClass("loading_review");
+      setTimeout(function() {
+        var missing_files = '';
+        var ser = '';
+        $(".missing_spam").each(function() {
+          var attachment = $(this).find(".hide_attach").html();
+          if(missing_files == "")
+          {
+            missing_files = attachment;
+          }
+          else{
+            missing_files = missing_files+'||'+attachment;
+          }
+        });
+        var missing = missing_files.split("||");
+        var countval = 0;
+        $.each(path,function(index,value) {
+          var name = value.name;
+          var nameval = value.name;
+          name = name.toLowerCase();
+          if(jQuery.inArray(name, missing) !== -1)
+          {
+            var reader = new FileReader();
+            reader.readAsDataURL(value); 
+            reader.onloadend = function(e) {
+                //console.log(e.target.fileName);
+                 var base64data = reader.result;
+                 $(".hide_attach:contains("+name+")").parents("tr:first").find(".action_status").html('<a href="javascript:" class="available_files" data-filename="'+nameval+'">Available</a>');
+                 $(".hide_attach:contains("+name+")").parents("tr:first").find(".hidden_file_missing").val(base64data);
+
+                  countval = countval + 1;
+                  if(countval == fileslength)
+                  {
+                    $("#location_path").val("");
+                    $("body").removeClass("loading_review");
+                  }
+            }
+          }
+          else{
+            countval = countval + 1;
+            if(countval == fileslength)
+            {
+              $("body").removeClass("loading_review");
+            }
+          }
+        });
+      },1000);
+    }
   }
   if($(e.target).hasClass('add_secondary'))
   {
@@ -5573,7 +5903,7 @@ if($(e.target).hasClass('bpso_all_check')){
   {
     $("#report_pdf_type_two_tbody_single").html('');
     var status = $(".report_show_incomplete").val();
-    console.log(status);
+    //console.log(status);
     if($(".select_client:checked").length)
     {
       $("body").addClass("loading");
@@ -5976,7 +6306,7 @@ Dropzone.options.imageUpload = {
 
         this.on("error", function (file) {
 
-            console.log(file);
+            //console.log(file);
 
             $("body").removeClass("loading");
 

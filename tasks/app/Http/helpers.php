@@ -192,4 +192,32 @@ function number_format_invoice_without_comma($value)
 	}
 	return $first.'.'.$after_decimal;
 }
+function getDirContents($dir,$missing_files,&$results = array(),&$filess = array())
+{
+	$files = explode("||",$missing_files);
+	$ffs = opendir($dir);
+	print_r($ffs);
+	exit;
+    foreach($ffs as $ff)
+    {
+        $ff = str_replace("'","''",$ff);
+        if($ff!='.' && $ff!='..')
+        {
+            if(is_dir($dir.'/'.$ff))
+            {
+                $file = $dir.'/'.$ff;
+                $file = str_replace('//', '/', $file);
+                getDirContents($file,$missing_files,$results,$filess);
+            }
+            else{
+            	if(in_array(strtolower($ff), $files))
+            	{
+            		$results[] = $dir.'/'.$ff;
+            		$filess[] = strtolower($ff);
+            	}
+            }
+        }
+    }
+    return json_encode(array("urls" => $results,"files" => $filess));
+}
 ?>
