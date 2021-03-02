@@ -183,6 +183,91 @@ if(!empty($_GET['import_type_existing']))
 }
 ?>
 <img id="coupon" />
+<div class="modal fade invoice_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-keyboard="false" data-backdrop="static" style="z-index: 9999999999999999999999999999">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Invoices</h4>
+        </div>
+        <div class="modal-body" style="height: 600px; font-size: 14px; overflow-y: scroll;">
+          <style type="text/css">
+            .account_table .account_row .account_row_td{font-size: 14px; line-height: 20px; float:left;}
+            .account_table .account_row .account_row_td.left{width:40%;}
+            .account_table .account_row .account_row_td.right{width:60%;}
+
+            .tax_table_div{width: 100%; height: auto; float: left;}
+            .tax_table{width: 80%; height: auto; float: left;margin-left: 10%;}
+            .tax_table .tax_row .tax_row_td.right{width:30%;text-align: right; padding-right: 10px; border-top:2px solid #000; }
+
+            .class_row{width: 100%; height: 20px;}
+
+            .details_table .class_row .class_row_td, .tax_table .tax_row .tax_row_td{ font-size: 14px; font-weight: 600;float:left;}
+            .details_table .class_row .class_row_td.left{width:70%;min-height:10px; text-align: left; float: left; height:20px;}
+            .details_table .class_row .class_row_td.left_corner{width:10%;text-align: right; float: left;height:20px;}
+            .details_table .class_row .class_row_td.right_start{width:10%;text-align: right; float: left;height:20px;}
+            .details_table .class_row .class_row_td.right{width:10%;text-align: right; padding-right: 10px; float: right;height:20px;}
+
+            .tax_table .tax_row .tax_row_td.left{width:70%;text-align: left; float: left;}
+            .tax_table .tax_row .tax_row_td.right{width:30%;text-align: right; padding-right: 10px; float: right;}
+
+            .details_table .class_row, .tax_table .tax_row{line-height: 30px; clear: both;}
+
+            .company_details_class{width: 100%; margin: 0px auto; height: auto;}
+
+            .company_details_div{width: 40%; height: auto; float: left; margin-top: 220px; margin-left: 10%}
+            .firstname_div{width: 100%; float: left; margin-top: 55px;}
+            .aib_account{ width: 200px; height: auto; float: right; line-height: 20px; color: #ccc; font-size: 12px; }
+            .account_details_div{width: 50%; height:auto; float: left; margin-top: 220px;}
+            .account_details_main_address_div{width: 100%; height: auto; float: right;}
+            .account_details_address_div{width: 100%; height: auto; float: left; }
+            .account_details_invoice_div{width: 200px; height: auto; float: right; clear: both; margin-top: 20px;}
+            .invoice_label{width: 100%; height: auto; float: left; margin: 20px 0px; font-size: 15px; font-weight: bold; text-align: center; letter-spacing: 10px;}
+            .tax_details_class_maindiv{width: 100%; min-height: 539px; float: left;}
+          </style>
+          <div id="letterpad_modal" style="width: 100%;height:1235px; float: left; background:url('<?php echo URL::to('assets/invoice_letterpad.jpg');?>') no-repeat">
+            <div class="company_details_class"></div>
+            <div class="tax_details_class_maindiv">
+              <div class="details_table" style="width: 80%; height: auto; margin: 0px 10%;">
+                <div class="class_row class_row1"></div>
+                <div class="class_row class_row2"></div>
+                <div class="class_row class_row3"></div>
+                <div class="class_row class_row4"></div>
+                <div class="class_row class_row5"></div>
+                <div class="class_row class_row6"></div>
+                <div class="class_row class_row7"></div>
+                <div class="class_row class_row8"></div>
+                <div class="class_row class_row9"></div>
+                <div class="class_row class_row10"></div>
+                <div class="class_row class_row11"></div>
+                <div class="class_row class_row12"></div>
+                <div class="class_row class_row13"></div>
+                <div class="class_row class_row14"></div>
+                <div class="class_row class_row15"></div>
+                <div class="class_row class_row16"></div>
+                <div class="class_row class_row17"></div>
+                <div class="class_row class_row18"></div>
+                <div class="class_row class_row19"></div>
+                <div class="class_row class_row20"></div>
+              </div>
+            </div>
+            <input type="hidden" name="invoice_number_pdf" id="invoice_number_pdf" value="">
+            <div class="tax_details_class"></div> 
+          </div>
+        </div>
+
+        <div class="modal-footer">
+
+            <input type="button" class="common_black_button saveas_pdf" value="Save as PDF">
+            <input type="button" class="common_black_button print_pdf" value="Print">
+
+        </div>
+
+      </div>
+
+  </div>
+
+</div>
 <div class="modal fade" id="import_newclient_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-sm" role="document">
       <div class="modal-content">
@@ -922,6 +1007,7 @@ if(!empty($_GET['import_type_existing']))
        
           <div class="modal-header" style="border-bottom: 0px;">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="cm_title"></h4>
             <ul class="nav nav-tabs" role="tablist">
                   <li role="presentation" class="cm_full_ul active"><a href="#edit_clients_tab" aria-controls="ediclient" role="tab" data-toggle="tab">Edit Client</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#invoice_tab"  aria-controls="invoicetab" role="tab" data-toggle="tab">Invoice</a></li>
@@ -1606,6 +1692,42 @@ $(document).ready(function() {
 });
 
 $(window).click(function(e) {
+  if($(e.target).hasClass('invoice_inside_class')){
+    var editid = $(e.target).attr("data-element");
+    $.ajax({
+          url: "<?php echo URL::to('user/invoices_print_view') ?>",
+          data:{id:editid},
+          dataType:'json',
+          type:"post",
+          success:function(result){      
+             $(".invoice_modal").modal("show");
+             $("body").removeClass("loading");  
+             $("#invoice_number_pdf").val(editid);
+             $(".company_details_class").html(result['companyname']);
+             $(".tax_details_class").html(result['taxdetails']);
+             $(".class_row1").html(result['row1']);
+             $(".class_row2").html(result['row2']);
+             $(".class_row3").html(result['row3']);
+             $(".class_row4").html(result['row4']);
+             $(".class_row5").html(result['row5']);
+             $(".class_row6").html(result['row6']);
+             $(".class_row7").html(result['row7']);
+             $(".class_row8").html(result['row8']);
+             $(".class_row9").html(result['row9']);
+             $(".class_row10").html(result['row10']);
+             $(".class_row11").html(result['row11']);
+             $(".class_row12").html(result['row12']);
+             $(".class_row13").html(result['row13']);
+             $(".class_row14").html(result['row14']);
+             $(".class_row15").html(result['row15']);
+             $(".class_row16").html(result['row16']);
+             $(".class_row17").html(result['row17']);
+             $(".class_row18").html(result['row18']);
+             $(".class_row19").html(result['row19']);
+             $(".class_row20").html(result['row20']);
+      }
+    });
+  }
   if($(e.target).hasClass('edit_task_module'))
   {
     var type = $(e.target).attr("data-type");
@@ -2626,6 +2748,7 @@ $(window).click(function(e) {
               type:"post",
               success:function(result){
                  $(".invoice_model").modal("show");
+                 $(".cm_title").html(result['clientid']+' - '+result['company']);
                  $(".invoice_model").find(".editsp").show();
 
                  $(".load_more_cm").hide();

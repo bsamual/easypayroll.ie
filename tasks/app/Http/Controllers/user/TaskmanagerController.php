@@ -1972,8 +1972,11 @@ class TaskmanagerController extends Controller {
 		else{
 			$show_auto_close_msg = 0;
 		}
+		$task_specifics_val = strip_tags($task_details->task_specifics);
+		if($task_details->subject == "") { $subject = substr($task_specifics_val,0,30); }
+	    else{ $subject = $task_details->subject; }
 
-		echo json_encode(array("output" => $output, "auto_close" => $task_details->auto_close, "show_auto_close_msg" => $show_auto_close_msg));
+		echo json_encode(array("output" => $output, "auto_close" => $task_details->auto_close, "show_auto_close_msg" => $show_auto_close_msg, 'title' => 'Title: '.$subject));
 	}
 	public function add_comment_specifics()
 	{
@@ -4477,8 +4480,8 @@ class TaskmanagerController extends Controller {
 				                $complete_button = 'mark_as_complete';
 				            }
 				            
-				          $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
-				          <a href="javascript:" class="common_black_button activate_task_button" data-element="'.$task->id.'" style="font-size:12px">Activate</a>';
+				          $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.' '.$disabled.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+				          <a href="javascript:" class="common_black_button activate_task_button '.$disabled.'" data-element="'.$task->id.'" style="font-size:12px">Activate</a>';
 				        }
 				        else{
 				        	if(Session::has('taskmanager_user'))
@@ -4496,8 +4499,8 @@ class TaskmanagerController extends Controller {
 				                $complete_button = 'mark_as_complete';
 				            }
 				            
-				          $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
-				          <a href="javascript:" class="common_black_button park_task_button" data-element="'.$task->id.'" style="font-size:12px">Park Task</a>';
+				          $open_tasks.='<a href="javascript:" class="common_black_button '.$complete_button.' '.$close_task.' '.$disabled.'" data-element="'.$task->id.'" style="font-size:12px">Mark Complete</a>
+				          <a href="javascript:" class="common_black_button park_task_button '.$disabled.'" data-element="'.$task->id.'" style="font-size:12px">Park Task</a>';
 				        }
 				      $open_tasks.='</td>
 				    </tr>
@@ -4708,11 +4711,14 @@ class TaskmanagerController extends Controller {
 		$days = Input::get('days');
 		$specific_recurring = Input::get('specific_recurring');
 		$task_type = Input::get('task_type');
+		$subject = Input::get('subject');
 
 		$data['author'] = $author;
 		$data['allocated_to'] = $allocated;
 		$data['retain_specifics'] = $specifics;
 		$data['retain_files'] = $files;
+		$data['subject'] = $subject;
+		
 		if($task_type == "0")
 		{
 			$data['task_type'] = 0;
@@ -5430,7 +5436,7 @@ class TaskmanagerController extends Controller {
 		$userid = Input::get('userid');
 		$date = date('Y-m-d');
 
-		$park_task = DB::select("SELECT * FROM `taskmanager` WHERE `status` = '2' AND `park_date` <= '".$date."' AND (`allocated_to` = '".$userid."' OR `allocated_to` = '0' OR `author` = '".$userid."')");
+		$park_task = DB::select("SELECT * FROM `taskmanager` WHERE `status` = '2' AND `park_date` <= '".$date."' AND `allocated_to` = '".$userid."'");
 		if(count($park_task))
 		{
 			foreach($park_task as $task)
@@ -5471,6 +5477,18 @@ class TaskmanagerController extends Controller {
 		}
 	      $dataval['park_status'] = 1;
 	      DB::table('user')->where('user_id',$userid)->update($dataval);
+	}
+	public function edit_task_details_admin_screen()
+	{
+		$taskid = Input::get('task_id');
+		$details = DB::table('taskmanager')->where('id',$taskid)->first();
+		if(count($details))
+		{
+			echo $details->subject;
+		}
+		else{
+			echo '';
+		}
 	}
 }
 

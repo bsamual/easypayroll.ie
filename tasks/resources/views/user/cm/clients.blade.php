@@ -1008,6 +1008,7 @@ if(!empty($_GET['import_type_existing']))
        
           <div class="modal-header" style="border-bottom: 0px;">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="cm_title"></h4>
             <ul class="nav nav-tabs" role="tablist">
                   <li role="presentation" class="cm_full_ul active"><a href="#edit_clients_tab" aria-controls="ediclient" role="tab" data-toggle="tab">Edit Client</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#invoice_tab"  aria-controls="invoicetab" role="tab" data-toggle="tab">Invoice</a></li>
@@ -2748,6 +2749,7 @@ $(window).click(function(e) {
               type:"post",
               success:function(result){
                  $(".invoice_model").modal("show");
+                 $(".cm_title").html(result['clientid']+' - '+result['company']);
                  $(".invoice_model").find(".editsp").show();
 
                  $(".load_more_cm").hide();

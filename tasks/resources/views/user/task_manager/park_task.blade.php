@@ -479,6 +479,7 @@ input:checked + .slider:before {
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" style="font-weight:700;font-size:20px">Task Specifics</h4>
+            <h5 class="title_task_details" style="font-size:18px;font-weight:600"></h5>
           </div>
           <div class="modal-body" style="min-height: 193px;padding: 5px;">
             <label class="col-md-12" style="padding: 0px;">
@@ -5164,6 +5165,7 @@ $(window).click(function(e) {
              });
           $("#hidden_task_id_task_specifics").val(task_id);
           $("#existing_comments").html(result['output']);
+          $(".title_task_details").html(result['title']);
           $(".task_specifics_modal").modal("show");
           $(".redlight_indication_"+task_id).hide();
           $(".redlight_indication_layout_"+task_id).hide();

@@ -269,6 +269,10 @@ input:checked + .slider:before {
                     ?>
                 </select>
             </div>
+            <div class="form-group start_group">
+                <div class="form-title">Task Subject</div>
+                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+            </div>
             <div class="col-md-12 internal_tasks_grp internal_tasks_group" style="padding:0px">
               <label style="margin-top:5px">Select Task:</label>
             </div>
@@ -772,7 +776,16 @@ $(window).click(function(e) {
       $("#idtask_change").val("0");
     }
 
-    $(".edit_task_modal").modal("show");
+    $.ajax({
+      url:"<?php echo URL::to('user/edit_task_details_admin_screen'); ?>",
+      type:"post",
+      data:{task_id:task_id},
+      success:function(result)
+      {
+        $(".subject_class").val(result);
+        $(".edit_task_modal").modal("show");
+      }
+    });
   }
   if($(e.target).hasClass('tasks_li_internal_change'))
   {
@@ -791,6 +804,7 @@ $(window).click(function(e) {
     var days = $(".recurring_checkbox:checked").val();
     var specific_recurring = $(".specific_recurring").val();
     var task_type = $("#idtask_change").val();
+    var subject = $(".subject_class").val();
 
     if(author == "")
     {
@@ -804,7 +818,7 @@ $(window).click(function(e) {
       $.ajax({
         url:"<?php echo URL::to('user/update_taskmanager_details'); ?>",
         type:"post",
-        data:{task_id:task_id,author:author,allocated:allocated,specifics:specifics,files:files,recurring:recurring,days:days,specific_recurring:specific_recurring,task_type:task_type},
+        data:{task_id:task_id,author:author,allocated:allocated,specifics:specifics,files:files,recurring:recurring,days:days,specific_recurring:specific_recurring,task_type:task_type,subject:subject},
         dataType:"json",
         success:function(result)
         {

@@ -1753,3 +1753,4 @@ Route::post('/user/import_available_files', 'user\InfileController@import_availa
 
 
 Route::post('/user/update_cro_notes', 'user\CroardController@update_cro_notes');
+Route::post('/user/edit_task_details_admin_screen', 'user\TaskmanagerController@edit_task_details_admin_screen');

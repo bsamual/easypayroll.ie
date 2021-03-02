@@ -664,7 +664,7 @@ input:checked + .slider:before {
 		                <td style="<?php echo $style; ?>" align="left"><spam class="ard_sort_val" style="display: none"><?php echo $timestampard; ?></spam><?php echo ($client->ard == "")?"-":$client->ard; ?></td>
 		                <td style="<?php echo $style; ?>" class="type_sort_val" align="left"><?php echo ($client->tye == "")?"-":$client->tye; ?></td>
 		                <td class="cro_ard_td" style="<?php echo $ard_color; ?>" align="left"><spam class="cro_ard_sort_val" style="display: none"><?php echo $timestampcroard; ?></spam><?php echo $cr_ard_date; ?></td>
-                    <td class="cro_ard_td" align="left">
+                    <td align="left">
                       <textarea name="cro_notes" class="form-control cro_notes" data-element="<?php echo $client->client_id; ?>" style="height:50px"><?php echo $notes; ?></textarea>
                     </td>
 		                <td align="left"><a href="javascript:" class="fa fa-refresh refresh_croard" data-element="<?php echo $client->client_id; ?>" data-cro="<?php echo trim($client->cro); ?>" data-type="<?php echo trim($client->tye); ?>" style="<?php echo $style; ?>"></a></td>

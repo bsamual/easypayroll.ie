@@ -1694,8 +1694,8 @@ elseif(Session::has('countupdated'))
 
 <div class="modal_load"></div>
 <div class="modal_load_apply" style="text-align: center;">
-  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Infile Items are loaded.</p>
-  <p style="font-size:18px;font-weight: 600;">Loading: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Infile Items are Checked.</p>
+  <p style="font-size:18px;font-weight: 600;">Checking File: <span id="apply_first"></span> of <span id="apply_last"></span></p>
 </div>
 
 <div class="modal_load_import" style="text-align: center;">
@@ -3053,7 +3053,7 @@ $(window).click(function(e) {
     var path = $('.location_path')[0].files;
     var countmissing = $(".missing_spam").length;
     var fileslength = path.length;
-    if(path == "")
+    if(path.length < 1)
     {
       alert("Please Select the Directory to Review the Missing Files");
     }

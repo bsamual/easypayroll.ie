@@ -2146,65 +2146,65 @@ $(window).click(function(e) {
                 $("#task_body_layout").html(result['layout']);
 
                 var layout = $("#hidden_compressed_layout").val();
-					$(".tasks_tr").hide();
-					$(".tasks_tr").next().hide();
-					$(".hidden_tasks_tr").hide();
+      					$(".tasks_tr").hide();
+      					$(".tasks_tr").next().hide();
+      					$(".hidden_tasks_tr").hide();
 
-                    if(layout == "1")
-					{
-					  $(".tasks_tr:first").show();
-					  $(".tasks_tr:first").next().show();
-					  $(".table_layout").show();
-					  $(".table_layout").find(".hidden_tasks_tr").show();
-					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
-					}
-					else{
-					  $(".tasks_tr").show();
-					  $(".tasks_tr").next().show();
-					  $(".table_layout").hide();
-					  $(".table_layout").find(".hidden_tasks_tr").hide();
-					}
+                if(layout == "1")
+      					{
+      					  $(".tasks_tr:first").show();
+      					  $(".tasks_tr:first").next().show();
+      					  $(".table_layout").show();
+      					  $(".table_layout").find(".hidden_tasks_tr").show();
+      					  $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+      					}
+      					else{
+      					  $(".tasks_tr").show();
+      					  $(".tasks_tr").next().show();
+      					  $(".table_layout").hide();
+      					  $(".table_layout").find(".hidden_tasks_tr").hide();
+      					}
 
-					if(layout == "1")
-			      {
-			        $(".open_layout_div").addClass("open_layout_div_change");
-			        var open_tasks_height = $(".open_layout_div").height();
-			        var margintop = parseInt(open_tasks_height);
-			        $(".open_layout_div").css("position","fixed");
-			        $(".open_layout_div").css("height","312px");
-			        $(".open_layout_div").css("margin-top","44px");
-			        if(open_tasks_height > 312)
-			        {
-			          $(".open_layout_div").css("overflow-y","scroll");
-			        }
-			        if(open_tasks_height < 50)
-			        {
-			          $(".table_layout").css("margin-top","20px");
-			        }
-			          else{
-			            $(".table_layout").css("margin-top","380px");
-			          }
-			      }
-			      else{
-			        $(".open_layout_div").removeClass("open_layout_div_change");
-			        $(".open_layout_div").css("position","unset");
-			        $(".open_layout_div").css("height","auto");
-			        $(".open_layout_div").css("overflow-y","unset");
-			          $(".table_layout").css("margin-top","0px");
-			          $(".open_layout_div").css("margin-top","53px");
-			      }
+					      if(layout == "1")
+    			      {
+    			        $(".open_layout_div").addClass("open_layout_div_change");
+    			        var open_tasks_height = $(".open_layout_div").height();
+    			        var margintop = parseInt(open_tasks_height);
+    			        $(".open_layout_div").css("position","fixed");
+    			        $(".open_layout_div").css("height","312px");
+    			        $(".open_layout_div").css("margin-top","44px");
+    			        if(open_tasks_height > 312)
+    			        {
+    			          $(".open_layout_div").css("overflow-y","scroll");
+    			        }
+    			        if(open_tasks_height < 50)
+    			        {
+    			          $(".table_layout").css("margin-top","20px");
+    			        }
+    			          else{
+    			            $(".table_layout").css("margin-top","380px");
+    			          }
+    			      }
+    			      else{
+    			        $(".open_layout_div").removeClass("open_layout_div_change");
+    			        $(".open_layout_div").css("position","unset");
+    			        $(".open_layout_div").css("height","auto");
+    			        $(".open_layout_div").css("overflow-y","unset");
+    			          $(".table_layout").css("margin-top","0px");
+    			          $(".open_layout_div").css("margin-top","53px");
+    			      }
 
                 $("[data-toggle=popover]").popover({
-                  html : true,
-                  content: function() {
-                    var content = $(this).attr("data-popover-content");
-                    return $(content).children(".popover-body").html();
-                  },
-                  title: function() {
-                    var title = $(this).attr("data-popover-content");
-                    return $(title).children(".popover-heading").html();
-                  }
-              });
+                    html : true,
+                    content: function() {
+                      var content = $(this).attr("data-popover-content");
+                      return $(content).children(".popover-body").html();
+                    },
+                    title: function() {
+                      var title = $(this).attr("data-popover-content");
+                      return $(title).children(".popover-heading").html();
+                    }
+                });
                 $("body").removeClass("loading");
               }
             })
@@ -2228,10 +2228,10 @@ $(window).click(function(e) {
         var select_tasks = $(".select_internal_tasks").val();
 
         if(client_id_search == "")
-		{
-			$("#copy_client_search").val("");
-			client_id = "";
-		}
+    		{
+    			$("#copy_client_search").val("");
+    			client_id = "";
+    		}
 
         $.ajax({
           url:"<?php echo URL::to('user/taskmanager_mark_incomplete'); ?>",
@@ -2315,7 +2315,108 @@ $(window).click(function(e) {
           }
         })
       }
-      
+      if($(e.target).hasClass('mark_as_complete_author'))
+      {
+        var r = confirm("You are about to mark this task as Complete are you sure you want to continue?");
+        if(r)
+        {
+          $("body").addClass("loading");
+          var task_id = $(e.target).attr("data-element");
+
+          var author = $(".search_author").val();
+          var open_task = $(".open_task_search:checked").val();
+          var client_id = $("#copy_client_search").val();
+          var client_id_search = $(".copy_client_search_class ").val();
+          var subject = $(".subject_search_class").val();
+          var recurring = $("#hidden_recurring_task").val();
+          var due_date = $(".due_date_search_class").val();
+          var creation_date = $(".creation_date_search_class").val();
+          var make_internal = $("#hidden_make_internal").val();
+          var select_tasks = $(".select_internal_tasks").val();
+
+          $.ajax({
+            url:"<?php echo URL::to('user/taskmanager_mark_complete'); ?>",
+            type:"post",
+            data:{task_id:task_id,type:"0"},
+            success:function(resultval)
+            {
+              $.ajax({
+                url:"<?php echo URL::to('user/search_taskmanager_task'); ?>",
+                type:"post",
+                dataType:"json",
+                data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
+                success:function(result)
+                {
+                  $("#task_body_search").html(result['open_tasks']);
+                  $("#task_body_layout").html(result['layout']);
+
+                  var layout = $("#hidden_compressed_layout").val();
+                  $(".tasks_tr").hide();
+                  $(".tasks_tr").next().hide();
+                  $(".hidden_tasks_tr").hide();
+
+                  if(layout == "1")
+                  {
+                    $(".tasks_tr:first").show();
+                    $(".tasks_tr:first").next().show();
+                    $(".table_layout").show();
+                    $(".table_layout").find(".hidden_tasks_tr").show();
+                    $(".table_layout").find(".hidden_tasks_tr:first").find("td").css("background","#2fd9ff");
+                  }
+                  else{
+                    $(".tasks_tr").show();
+                    $(".tasks_tr").next().show();
+                    $(".table_layout").hide();
+                    $(".table_layout").find(".hidden_tasks_tr").hide();
+                  }
+
+                  if(layout == "1")
+                  {
+                    $(".open_layout_div").addClass("open_layout_div_change");
+                    var open_tasks_height = $(".open_layout_div").height();
+                    var margintop = parseInt(open_tasks_height);
+                    $(".open_layout_div").css("position","fixed");
+                    $(".open_layout_div").css("height","312px");
+                    $(".open_layout_div").css("margin-top","44px");
+                    if(open_tasks_height > 312)
+                    {
+                      $(".open_layout_div").css("overflow-y","scroll");
+                    }
+                    if(open_tasks_height < 50)
+                    {
+                      $(".table_layout").css("margin-top","20px");
+                    }
+                      else{
+                        $(".table_layout").css("margin-top","380px");
+                      }
+                  }
+                  else{
+                    $(".open_layout_div").removeClass("open_layout_div_change");
+                    $(".open_layout_div").css("position","unset");
+                    $(".open_layout_div").css("height","auto");
+                    $(".open_layout_div").css("overflow-y","unset");
+                      $(".table_layout").css("margin-top","0px");
+                      $(".open_layout_div").css("margin-top","53px");
+                  }
+
+                  $("[data-toggle=popover]").popover({
+                      html : true,
+                      content: function() {
+                        var content = $(this).attr("data-popover-content");
+                        return $(content).children(".popover-body").html();
+                      },
+                      title: function() {
+                        var title = $(this).attr("data-popover-content");
+                        return $(title).children(".popover-heading").html();
+                      }
+                  });
+                  $("body").removeClass("loading");
+                }
+              })
+            }
+          })
+        }
+      }
       if($(e.target).hasClass('copy_task'))
       {
         $("#hidden_copied_files").val("");
