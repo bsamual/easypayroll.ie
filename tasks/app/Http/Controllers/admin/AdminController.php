@@ -158,4 +158,34 @@ class AdminController extends Controller {
 		DB::table('cro_credentials')->where('id',1)->update(['username' =>$username, 'api_key' =>$api_key]);
 		return Redirect::back()->with('emailmessage', 'CRO Settings Updated Successfully');
 	}
+	public function clear_opening_balance()
+	{
+		$client = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();
+		return view('admin/clear_opening_balance', array('clientlist' => $client));
+	}
+	public function clear_all_opening_balance()
+	{
+		$data['opening_balance'] = '';
+		$data['opening_date'] = '0000-00-00';
+
+		$dataval['import_balance'] = '';
+		$dataval['balance_remaining'] = '';
+
+		DB::table('opening_balance')->update($data);
+		DB::table('opening_balance_import')->delete();
+		DB::table('invoice_system')->update($dataval);
+	}
+	public function clear_opening_balance_for_client()
+	{
+		$client_id = Input::get('client_id');
+		$data['opening_balance'] = '';
+		$data['opening_date'] = '0000-00-00';
+
+		$dataval['import_balance'] = '';
+		$dataval['balance_remaining'] = '';
+
+		DB::table('opening_balance')->where('client_id',$client_id)->update($data);
+		DB::table('opening_balance_import')->where('client_id',$client_id)->delete();
+		DB::table('invoice_system')->where('client_id',$client_id)->update($dataval);
+	}
 }

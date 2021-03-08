@@ -1754,3 +1754,21 @@ Route::post('/user/import_available_files', 'user\InfileController@import_availa
 
 Route::post('/user/update_cro_notes', 'user\CroardController@update_cro_notes');
 Route::post('/user/edit_task_details_admin_screen', 'user\TaskmanagerController@edit_task_details_admin_screen');
+
+Route::get('/user/admin_deactive_request/{id?}', 'user\RequestController@deactiverequest');
+Route::get('/user/admin_active_request/{id?}', 'user\RequestController@activerequest');
+Route::get('/user/admin_delete_request/{id?}', 'user\RequestController@deleterequest');
+Route::post('/user/admin_request_signature', 'user\RequestController@requestsignature');
+Route::post('/user/admin_request_add', 'user\RequestController@requestadd');
+Route::get('/user/admin_request_edit_category', 'user\RequestController@request_edit_category');
+Route::post('/user/admin_request_edit_form', 'user\RequestController@request_edit_form');
+
+Route::post('/user/get_infile_check_reports', 'user\InfileController@get_infile_check_reports');
+
+
+Route::get('/admin/clear_opening_balance', 'admin\AdminController@clear_opening_balance');
+Route::post('/admin/clear_all_opening_balance', 'admin\AdminController@clear_all_opening_balance');
+Route::post('/admin/clear_opening_balance_for_client', 'admin\AdminController@clear_opening_balance_for_client');
+
+
+

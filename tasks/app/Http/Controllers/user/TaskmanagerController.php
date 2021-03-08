@@ -4785,6 +4785,7 @@ class TaskmanagerController extends Controller {
 		$dataval['retain_spec'] = $specificsval;
 		$dataval['retain_files'] = $filesval;
 		$dataval['task_type'] = $task_type;
+		$dataval['subject'] = $subject;
 
 		echo json_encode($dataval);
 	}

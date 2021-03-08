@@ -3141,17 +3141,9 @@ class InfileController extends Controller {
 		$type = Input::get('type');
 		$round = Input::get('round');
 
-		if($round == "0")
-		{
-			$file = fopen("papers/IntegrityCheckReport.csv","r+");
-			ftruncate($file, 0);
-			fclose($file);
-		}
-
 		$check_file = DB::table('in_file_attachment')->where('id',$fileid)->first();
 		if(count($check_file))
 		{
-
 			if(!file_exists($check_file->url.'/'.$check_file->attachment))
 			{
 				$status = 'Missing';
@@ -3172,11 +3164,30 @@ class InfileController extends Controller {
 				  array($check_file->attachment,$status,"","",""),
 				);
 
-				$file = fopen("papers/IntegrityCheckReport.csv","w");
+				$upload_dir = 'papers/infile_report';
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+				$upload_dir = $upload_dir.'/'.$check_file->file_id;
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+
+				$data['url'] = $upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv";
+				$data['filename'] = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
+				$data['fileid'] = $check_file->file_id;
+
+				DB::table('infile_check_report')->insert($data);
+
+				
+				$file = fopen($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv","w");
 				foreach ($list as $line) {
 				  fputcsv($file, $line);
 				}
 				fclose($file);
+
+				$filename_url = URL::to($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv");
+				$ffname = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
 			}
 			elseif($type == "1")
 			{
@@ -3190,26 +3201,51 @@ class InfileController extends Controller {
 				  array("Filename","Status","",""),
 				  array($check_file->attachment,$status,"","",""),
 				);
-				$file = fopen("papers/IntegrityCheckReport.csv","a");
+
+				$upload_dir = 'papers/infile_report';
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+				$upload_dir = $upload_dir.'/'.$check_file->file_id;
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+
+				$data['url'] = $upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv";
+				$data['filename'] = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
+				$data['fileid'] = $check_file->file_id;
+
+				DB::table('infile_check_report')->insert($data);
+
+				$file = fopen($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv","a");
 				foreach ($list as $line) {
 				  fputcsv($file, $line);
 				}
 				fclose($file);
+
+				$filename_url = URL::to($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv");
+				$ffname = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
 			}
 			else{
-				$file = fopen("papers/IntegrityCheckReport.csv","a");
+				$infile_report = DB::table('infile_check_report')->where('fileid',$check_file->file_id)->orderBy('id','desc')->first();
+				$file = fopen($infile_report->url,"a");
 				//fwrite($fp, $row1.",".$row2); //Append row,row to file
 				fputcsv($file, array($check_file->attachment,$status,"","")); //@Optimist
 				fclose($file); //Close the file to free memory.
+
+				$filename_url = URL::to($infile_report->url);
+				$ffname = $infile_report->filename;
 			}
 
 			if(!file_exists($check_file->url.'/'.$check_file->attachment))
 			{
-				echo '<spam class="files_spam missing_spam" style="color:#f00;font-weight:600"><spam class="hide_attach" style="display:none">'.strtolower($check_file->attachment).'</spam>Missing</spam><input type="hidden" name="hidden_file_missing" id="hidden_file_missing" class="hidden_file_missing" value="">';
+				$status = '<spam class="files_spam missing_spam" style="color:#f00;font-weight:600"><spam class="hide_attach" style="display:none">'.strtolower($check_file->attachment).'</spam>Missing</spam><input type="hidden" name="hidden_file_missing" id="hidden_file_missing" class="hidden_file_missing" value="">';
 			}
 			else{
-				echo '<spam class="files_spam ok_spam" style="color:green;font-weight:600">Ok</spam>';
+				$status = '<spam class="files_spam ok_spam" style="color:green;font-weight:600">Ok</spam>';
 			}
+
+			echo json_encode(array("status" => $status, "url" => $filename_url, "filename" => $ffname));
 		}
 
 	}
@@ -3518,6 +3554,20 @@ class InfileController extends Controller {
 		else{
 			echo "1";
 		}
+	}
+	public function get_infile_check_reports()
+	{
+		$fileid = Input::get('fileid');
+		$get_reports = DB::table('infile_check_report')->where('fileid',$fileid)->get();
+		$output = '<h5>Download:</h5>';
+		if(count($get_reports))
+		{
+			foreach($get_reports as $report)
+			{
+				$output.='<p><a href="'.URL::to($report->url).'" download="">'.$report->filename.'</a></p>';
+			}
+		}
+		echo $output;
 	}
 }
 

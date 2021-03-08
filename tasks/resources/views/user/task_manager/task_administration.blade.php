@@ -829,6 +829,7 @@ $(window).click(function(e) {
           $("#tr_task_"+task_id).find(".retain_files_td").html(result['retain_files']);
           $("#tr_task_"+task_id).find(".recurring_days_td").html(result['recurring_days']);
           $("#tr_task_"+task_id).find(".recurring_task_td").html(result['recurring_task']);
+          $("#tr_task_"+task_id).find(".subject_td").html(result['subject']);
           if(result['task_type'] == "0")
           {
 
@@ -843,6 +844,7 @@ $(window).click(function(e) {
             $(".edit_task_"+task_id).attr("data-tasktype",result['task_type']);
           }
           $(".edit_task_modal").modal("hide");
+          $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Task Updated successfully.</p>',fixed:true,width:"800px"});
         }
       })
     }

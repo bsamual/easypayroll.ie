@@ -5083,10 +5083,9 @@ if($(e.target).hasClass('edit_quick_job')){
         $(".create_new_model").modal("show");        
 
         $('.modal-dialog').draggable({
-		    handle: ".modal-header"
-		  });
+  		    handle: ".modal-header"
+  		  });
         $("#hidden_job_id").val(result['id']);
-
         if(result['job_type'] == 0) { 
           $(".internal_type").val('0');
           $(".mark_internal").prop("checked",true);
@@ -5113,74 +5112,79 @@ if($(e.target).hasClass('edit_quick_job')){
           $(".tasks_group").show();
           $(".task_details").html(result['tasks_group']);
 
-         var taskid = result['task_id'];
-         $("#idtask").val(taskid);
-         $(".task-choose:first-child").text(result['task_name']);
-      }
-      $("#idtask").val(result['task_id']);
-      if(result['quick_job'] == 1) {
+           var taskid = result['task_id'];
+           $("#idtask").val(taskid);
+           $(".task-choose:first-child").text(result['task_name']);
+        }
+        $("#idtask").val(result['task_id']);
+        if(result['quick_job'] == 1) {
           $(".job_title").html('Edit Quick Break');
           $(".job_button_name").val('Edit Quick Break');   
         }
-      else{
-        $(".job_title").html('Edit Active Job');
-        $(".job_button_name").val('Edit Active Job');
+        else{
+          $(".job_title").html('Edit Active Job');
+          $(".job_button_name").val('Edit Active Job');
         }
-      $(".user_id").val(result['user_id']);
-      
-      $("#quickjob").val(result['quick_job']);
+        $(".user_id").val(result['user_id']);
+        
+        $("#quickjob").val(result['quick_job']);
 
-      $(".create_dateclass").prop("required",true);      
-      $(".start_group").show();
-      var splittime = result['active_start_time'].split(":");
-
-      if(result['stop_time'] == "00:00")
-      {
-        $('#start_time').datetimepicker({
+        $(".create_dateclass").prop("required",true);      
+        $(".start_group").show();
+        var splittime = result['active_start_time'].split(":");
+        if(result['stop_time'] == "00:00")
+        {
+          $('#start_time').datetimepicker({
+                format: 'LT',
+                format: 'HH:mm',
+                minDate: moment().startOf('day').hour(splittime[0]).minute(splittime[1]),
+                maxDate: moment().startOf('day').hour(23).minute(59),
+            });
+          $('.create_startclass').datetimepicker({
               format: 'LT',
               format: 'HH:mm',
               minDate: moment().startOf('day').hour(splittime[0]).minute(splittime[1]),
               maxDate: moment().startOf('day').hour(23).minute(59),
           });
-        $('.create_startclass').datetimepicker({
-            format: 'LT',
-            format: 'HH:mm',
-            minDate: moment().startOf('day').hour(splittime[0]).minute(splittime[1]),
-            maxDate: moment().startOf('day').hour(23).minute(59),
-        });
-      }
-      else{
-        var splitstoptime = result['stop_time'].split(":");
-        $('#start_time').datetimepicker({
+        }
+        else{
+          var splitstoptime = result['stop_time'].split(":");
+          $('#start_time').datetimepicker({
+                format: 'LT',
+                format: 'HH:mm',
+                minDate: moment().startOf('day').hour(splittime[0]).minute(splittime[1]),
+                maxDate: moment().startOf('day').hour(splitstoptime[0]).minute(splitstoptime[1]),
+            });
+          $('.stop_time').datetimepicker({
+                format: 'LT',
+                format: 'HH:mm',
+                minDate: moment().startOf('day').hour(splittime[0]).minute(splittime[1]),
+                maxDate: moment().startOf('day').hour(23).minute(59),
+            });
+          $('.create_startclass').datetimepicker({
               format: 'LT',
               format: 'HH:mm',
               minDate: moment().startOf('day').hour(splittime[0]).minute(splittime[1]),
               maxDate: moment().startOf('day').hour(splitstoptime[0]).minute(splitstoptime[1]),
           });
-        $('.create_startclass').datetimepicker({
-            format: 'LT',
-            format: 'HH:mm',
-            minDate: moment().startOf('day').hour(splittime[0]).minute(splittime[1]),
-            maxDate: moment().startOf('day').hour(splitstoptime[0]).minute(splitstoptime[1]),
-        });
+          $(".stop_group").show();
+          $(".stop_time").val(result['stop_time']);
+        }
+        $(".start_time").prop("required",true);
+        $(".create_startclass").val(result['start_time']);
+        $(".start_button").hide();
+        $(".create_dateclass").val(result['job_date']);
+
+        $(".date_group").show();
+        $(".start_button_quick").hide();
+        
+        $(".job_button_name").show();
+        
+
+        $(".add_edit_job").val(1);
+        $(".acive_id").val(result['active_id']);
+        $(".taskjob_id").val(result['id']);
       }
-      $(".start_time").prop("required",true);
-      $(".create_startclass").val(result['start_time']);
-      $(".start_button").hide();
-      $(".create_dateclass").val(result['job_date']);
-
-      $(".date_group").show();
-      $(".start_button_quick").hide();
-      
-      $(".job_button_name").show();
-      
-
-      $(".add_edit_job").val(1);
-      $(".acive_id").val(result['active_id']);
-      $(".taskjob_id").val(result['id']);
-      }
-
-
     })
 }
 if($(e.target).hasClass('edit_active_job')){  

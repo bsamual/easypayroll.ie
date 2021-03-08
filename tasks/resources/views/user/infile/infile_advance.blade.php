@@ -1165,10 +1165,11 @@ function next_integrity_check(count)
   $.ajax({
     url:"<?php echo URL::to('user/check_files_in_files'); ?>",
     type:"post",
+    dataType:"json",
     data:{fileid:fileid,type:keyval},
     success:function(result)
     {
-      $(".integrity_status_"+fileid).html(result);
+      $(".integrity_status_"+fileid).html(result['status']);
       var countval = count + 1;
       if($(".integrity_attachment:eq("+countval+")").length > 0)
       {

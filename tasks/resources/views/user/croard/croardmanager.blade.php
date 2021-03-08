@@ -506,37 +506,34 @@ input:checked + .slider:before {
   	</div>
     <div class="table-responsive" style="width: 100%; float: left;margin-top:10px">
       <div class="col-md-12" style="float:right">
-          <div class="col-md-7">&nbsp;
+          <div class="col-md-5">&nbsp;
           </div>
           <div class="col-md-2" style="text-align: right">
-            <label>CRO Api Username:</label>
+            <label style="margin-top: 5px;">CRO Api Username:</label>
           </div>
           <div class="col-md-2" style="padding:0px">
             <input type="text" name="cro_username" class="form-control cro_username" id="cro_username" value="<?php echo $cro->username; ?>" disabled>
           </div>
-          <div class="col-md-1">
-            <input type="button" name="check_company" class="common_black_button check_company" value="Check Company" data-toggle="modal" data-target=".search_company_modal">
-          </div>
-      </div>
-      <div class="col-md-12" style="margin-top:10px">
-          <div class="col-md-7">&nbsp;
-          </div>
-          <div class="col-md-2" style="text-align: right">
-            <label>CRO Api Key:</label>
+          <div class="col-md-1" style="text-align: right">
+            <label style="margin-top: 5px;">CRO Api Key:</label>
           </div>
           <div class="col-md-2" style="padding:0px">
             <input type="text" name="cro_api" class="form-control cro_api" id="cro_api" value="<?php echo $cro->api_key; ?>" disabled>
           </div>
-          <div class="col-md-1">
-            <input type="button" name="global_core_call" class="common_black_button global_core_call" value="Global Core Call"> 
-          </div>
       </div>
-      <div class="col-md-9">&nbsp;
+      <div class="col-md-12" style="margin-top:10px;">
+        <div class="col-md-6">&nbsp;
+        </div>
+        <div class="col-md-2">
+          <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete" style="margin-top: 9px;">Hide Deactivated Accounts</label>
+        </div>
+        <div class="col-md-4">
+          <input type="button" name="check_company" class="common_black_button check_company" value="Check Company" data-toggle="modal" data-target=".search_company_modal">
+          <input type="button" name="global_core_call" class="common_black_button global_core_call" value="Global Core Call"> 
+          <input type="button" name="show_ltd" id="show_ltd" class="common_black_button show_ltd" value="Show Active Ltd Clients Only">
+        </div>
       </div>
-      <div class="col-md-3" style="margin-top:10px;">
-      	<input type="checkbox" name="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete" style="float:right">Hide Deactivated Accounts</label>
-      </div>
-      	<table class="table table-fixed-header" style="width:100%;margin-top:145px">
+      	<table class="table table-fixed-header" style="width:100%;margin-top:92px">
 	        <thead class="header">
 	            <th style="width:3%;text-align: left;">S.No <i class="fa fa-sort sno_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:6%;text-align: left;">Client Code <i class="fa fa-sort clientid_sort" aria-hidden="true" style="float: right;"></i></th>
@@ -967,6 +964,22 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#clients_tbody').html(sorted);
   }
+  	if($(e.target).hasClass('show_ltd'))
+  	{
+  		if($(e.target).hasClass('show_all'))
+  		{
+  			$(".type_sort_val").parents("tr").show();
+  			$(e.target).removeClass("show_all");
+  			$(e.target).val("Show Active Ltd Clients Only");
+  		}
+  		else{
+  			$(".type_sort_val").parents("tr").hide();
+  			$(".type_sort_val:contains(Ltd)").parents("tr").show();
+  			$(".type_sort_val").parents(".disabled_tr").hide();
+  			$(e.target).addClass("show_all");
+  			$(e.target).val("Show all Clients");
+  		}
+  	}
 	if($(e.target).hasClass('global_core_call'))
 	{
     $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});

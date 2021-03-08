@@ -631,8 +631,8 @@ elseif(Session::has('countupdated'))
           </div>
           <div class="modal-footer" style="text-align:left">
              <div class="export_integrity_filename" id="export_integrity_filename">
-                <h5>Download</h5>
-                <a href="<?php echo URL::to('papers/IntegrityCheckReport.csv'); ?>" download>IntegrityCheckReport.csv</a>
+              <h5>Download</h5>
+
              </div>
           </div>
         </div>
@@ -2757,11 +2757,18 @@ function next_integrity_check(count)
   $.ajax({
     url:"<?php echo URL::to('user/check_files_in_files'); ?>",
     type:"post",
+    dataType:"json",
     data:{fileid:fileid,type:keyval,round:"1"},
     success:function(result)
     {
     	setTimeout( function() {
-	      $(".integrity_status_"+fileid).html(result);
+	      $(".integrity_status_"+fileid).html(result['status']);
+
+        if(keyval == "1")
+        {
+          $(".export_integrity_filename").append('<p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
+        }
+
 	      var countval = count + 1;
 	      if($(".integrity_attachment:eq("+countval+")").length > 0)
 	      {
@@ -3015,8 +3022,17 @@ $(window).click(function(e) {
         $(".available_import_div").hide();
         $("#integrity_check_body").html(result);
         $(".integrity_check_modal").modal("show");
-        $("#export_integrity_filename").hide();
-        $("body").removeClass("loading");
+        $("#export_integrity_filename").show();
+        $.ajax({
+          url:"<?php echo URL::to('user/get_infile_check_reports'); ?>",
+          type:"post",
+          data:{fileid:fileid},
+          success:function(result)
+          {
+            $("#export_integrity_filename").html(result);
+            $("body").removeClass("loading");
+          }
+        })
       }
     });
   }
@@ -3030,11 +3046,13 @@ $(window).click(function(e) {
     $.ajax({
       url:"<?php echo URL::to('user/check_files_in_files'); ?>",
       type:"post",
+      dataType:"json",
       data:{fileid:fileid,type:"0",round:"0"},
       success:function(result)
       {
       	setTimeout( function() {
-	        $(".integrity_status_"+fileid).html(result);
+	        $(".integrity_status_"+fileid).html(result['status']);
+          $(".export_integrity_filename").append('<p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
 	        if($(".integrity_attachment:eq(1)").length > 0)
 	        {
 	          next_integrity_check(1);

@@ -92,7 +92,8 @@
                     <li><a href="<?php echo URL::to('admin/cm_profile')?>">CM system Crypt Pin</a></li>               
                 </ul>
             </li>
-            <li class="<?php if($segment1 == "setup_request_category") { echo 'active'; } ?>""><a href="<?php echo URL::to('admin/setup_request_category')?>">Setup Request Categories</a></li>
+            <!-- <li class="<?php if($segment1 == "setup_request_category") { echo 'active'; } ?>""><a href="<?php echo URL::to('admin/setup_request_category')?>">Setup Request Categories</a></li> -->
+            <li class="<?php if($segment1 == "clear_opening_balance") { echo 'active'; } ?>"><a href="<?php echo URL::to('admin/clear_opening_balance')?>">Clear Opening Balance</a></li>
             <li class="dropdown <?php if($segment1 == "profile" || $segment1 == "vat_profile" || $segment1 == "manage_cro") { echo 'active'; } ?>"><a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo URL::to('admin/profile')?>">Manage Admin/User Login</a></li>

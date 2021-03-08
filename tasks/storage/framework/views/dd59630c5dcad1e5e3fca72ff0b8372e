@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('login_user_id'); ?>
 <style>
 .label_class{
   width:20%;
@@ -114,7 +113,7 @@ table tr td{font-size: 15px !important;}
         $i=1;
         if(count($requestlist)){
           foreach ($requestlist as $request) {
-            $sub_category=DB::table('request_sub_category')->where('user_login_id',$user_login_id)->where('category_id', $request->category_id)->get();
+            $sub_category=DB::table('request_sub_category')->where('category_id', $request->category_id)->get();
             if(count($sub_category)){
               $outputsub='';
               foreach ($sub_category as $sub) {
@@ -176,26 +175,26 @@ if($(e.target).hasClass('minus_remove'))
 	$(".minus_remove:last").parent().html('<a href="javascript:" class="minus_remove">-</a><a href="javascript:" class="plus_add">+</a>');
 }
 if($(e.target).hasClass('edit_icon'))
-  {
-    var id = $(e.target).attr("data-element");
-    $("#category_id_edit").val(id);
-    $.ajax({
-      url:"<?php echo URL::to('admin/request_edit_category'); ?>",
-      type:"get",
-      data:{id:id},
-      dataType:"json",
-      success: function(result) {
-        $(".edit_model").modal("show");
-        $(".category_edit").val(result['category_name']);
-        var items = result['sub_category_name'];
-        var items_sep = items.split("||");
-        $.each(items_sep, function(index,value)
-        {
-        	$("#edit_items_div").append('<div class="row single_item_div_edit"><div class="col-lg-10"><div class="form-group"><label>Enter Item Name</label><input type="text" required class="form-control" placeholder="Enter Item Name" name="request_item_edit[]" value="'+value+'"></div> </div><div class="col-lg-2"></div></div>')
-        });
-      }
-    })
-  }
+{
+  var id = $(e.target).attr("data-element");
+  $("#category_id_edit").val(id);
+  $.ajax({
+    url:"<?php echo URL::to('admin/request_edit_category'); ?>",
+    type:"get",
+    data:{id:id},
+    dataType:"json",
+    success: function(result) {
+      $(".edit_model").modal("show");
+      $(".category_edit").val(result['category_name']);
+      var items = result['sub_category_name'];
+      var items_sep = items.split("||");
+      $.each(items_sep, function(index,value)
+      {
+      	$("#edit_items_div").append('<div class="row single_item_div_edit"><div class="col-lg-10"><div class="form-group"><label>Enter Item Name</label><input type="text" required class="form-control" placeholder="Enter Item Name" name="request_item_edit[]" value="'+value+'"></div> </div><div class="col-lg-2"></div></div>')
+      });
+    }
+  })
+}
 })
 $(window).keyup(function(e) {
     var valueTimmer;                //timer identifier

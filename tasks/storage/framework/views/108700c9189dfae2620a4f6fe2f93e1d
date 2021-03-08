@@ -1,5 +1,5 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('login_user_id'); ?>
+
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/vendors/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css') ?>">
 
 

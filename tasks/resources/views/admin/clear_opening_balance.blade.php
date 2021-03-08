@@ -1,4 +1,5 @@
-<?php $__env->startSection('content'); ?>
+@extends('adminheader')
+@section('content')
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
@@ -193,7 +194,7 @@ body.loading .modal_load {
     body #coupon {
       display: none;
     }
-    @media  print {
+    @media print {
       body * {
         display: none;
       }
@@ -368,10 +369,10 @@ a:hover{text-decoration: underline;}
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
         <h4 class="col-lg-3" style="padding: 0px;">
-                Client Request System              
+                Clear Opening Balance             
             </h4>
             <div class="col-lg-9 text-right" style="padding-right: 0px; line-height: 35px;text-align: right">
-                <a href="javascript:" class="fa fa-cog setup_request" data-toggle="modal" data-target="#setup_request_modal" title="Setup Request Categories" style="font-size: 50px;"></a> 
+                <a href="javascript:" class="common_black_button clear_all_opening_balance" title="Clear all Opening Balance for all Clients">Clear Opening Balance for all Clients</a> 
             </div>
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
   </div>
@@ -397,12 +398,7 @@ a:hover{text-decoration: underline;}
                              <th width="2%" style="text-align: left;">S.No</th>
                             <th style="text-align: left;">Client ID</th>
                             <th style="text-align: left;">Company</th>
-                            <th style="text-align: left;">First Name</th>
-                            <th style="text-align: left;">Surname</th>
-                            <th style="text-align: center;">Requests</th>
-                            <th style="text-align: center;">Outstanding</th>
-                            <th style="text-align: center;">Awaiting Approval</th> 
-                            
+                            <th style="text-align: left;">Action</th>
                         </tr>
                         </thead>                            
                         <tbody id="clients_tbody">
@@ -410,69 +406,12 @@ a:hover{text-decoration: underline;}
                             $i=1;
                             if(count($clientlist)){              
                               foreach($clientlist as $key => $client){
-                                $countoutstanding = 0;
-                               /* $outstanding_count = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 0)->count();*/
-                                $awaiting_request = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 0)->count();
-                                $request_count = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 1)->count();
-
-                                $get_req = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 1)->get();
-                                if(count($get_req))
-                                {
-                                  foreach($get_req as $req)
-                                  {
-                                      $check_received_purchase = DB::table('request_purchase_invoice')->where('request_id',$req->request_id)->where('status',0)->count();
-                                      $check_received_purchase_attached = DB::table('request_purchase_attached')->where('request_id',$req->request_id)->where('status',0)->count(); 
-
-                                      $check_received_sales = DB::table('request_sales_invoice')->where('request_id',$req->request_id)->where('status',0)->count();
-                                      $check_received_sales_attached = DB::table('request_sales_attached')->where('request_id',$req->request_id)->where('status',0)->count();
-
-                                      $check_received_bank = DB::table('request_bank_statement')->where('request_id',$req->request_id)->where('status',0)->count();
-
-                                      $check_received_cheque = DB::table('request_cheque')->where('request_id',$req->request_id)->where('status',0)->count();
-                                      $check_received_cheque_attached = DB::table('request_cheque_attached')->where('request_id',$req->request_id)->where('status',0)->count();
-
-                                      $check_received_others = DB::table('request_others')->where('request_id',$req->request_id)->where('status',0)->count();
-
-                                      $check_purchase = DB::table('request_purchase_invoice')->where('request_id',$req->request_id)->count();
-                                      $check_purchase_attached = DB::table('request_purchase_attached')->where('request_id',$req->request_id)->count(); 
-
-                                      $check_sales = DB::table('request_sales_invoice')->where('request_id',$req->request_id)->count();
-                                      $check_sales_attached = DB::table('request_sales_attached')->where('request_id',$req->request_id)->count();
-
-                                      $check_bank = DB::table('request_bank_statement')->where('request_id',$req->request_id)->count();
-
-                                      $check_cheque = DB::table('request_cheque')->where('request_id',$req->request_id)->count();
-                                      $check_cheque_attached = DB::table('request_cheque_attached')->where('request_id',$req->request_id)->count();
-
-                                      $check_others = DB::table('request_others')->where('request_id',$req->request_id)->count();
-
-                                      $countval_not_received = $check_received_purchase + $check_received_purchase_attached + $check_received_sales + $check_received_sales_attached + $check_received_bank + $check_received_cheque + $check_received_cheque_attached + $check_received_others;
-
-                                      $countval = $check_purchase + $check_purchase_attached + $check_sales + $check_sales_attached + $check_bank + $check_cheque + $check_cheque_attached + $check_others;
-
-                                      if($countval_not_received != 0)
-                                      {
-                                        $countoutstanding++;
-                                      }
-                                  }
-                                }
                           ?>
                             <tr class="edit_task " id="clientidtr_<?php echo $client->id; ?>">
                                 <td style=""><?php echo $i; ?></td>
                                 <td align="left"><a href="<?php echo URL::to('user/client_request_manager/'.base64_encode($client->client_id))?>" id="<?php echo base64_encode($client->id); ?>" class="invoice_class" style=""><?php echo $client->client_id; ?></a></td>
                                 <td align="left"><a href="<?php echo URL::to('user/client_request_manager/'.base64_encode($client->client_id))?>" id="<?php echo base64_encode($client->id); ?>" class="invoice_class" style=""><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
-                                <td align="left"><?php echo $client->firstname; ?></td>
-                                <td align="left"><?php echo $client->surname; ?></td>
-
-                                <td align="center">                                  
-                                  <?php echo $request_count?>
-                                </td>
-                                <td align="center">                                  
-                                  <?php echo $countoutstanding; ?>
-                                </td>
-                                <td align="center">                                  
-                                  <?php echo $awaiting_request?>
-                                </td>
+                                <td align="left"><a href="javascript:" class="clear_opening_balance" title="Clear Opening Balance for this Client" data-element="<?php echo $client->client_id; ?>">Clear Balance</a></td>
                             </tr>
                             <?php
                               $i++;
@@ -488,73 +427,6 @@ a:hover{text-decoration: underline;}
 </div>
     <!-- End  -->
 <div class="main-backdrop"><!-- --></div>
-<div id="print_image">
-    
-</div>
-<div id="report_pdf_type_two" style="display:none">
-  <style>
-  .table_style {
-      width: 100%;
-      border-collapse:collapse;
-      border:1px solid #c5c5c5;
-  }
-  </style>
-  <table class="table_style">
-    <thead>
-      <tr>
-      <td style="text-align: left;border:1px solid #000;">#</td>
-      <td style="text-align: left;border:1px solid #000;">Client Id</td>
-      <td style="text-align: left;border:1px solid #000;">Company</td>
-      <td style="text-align: left;border:1px solid #000;">First Name</td>
-      <td style="text-align: left;border:1px solid #000;">Surname</td>
-      <td style="text-align: left;border:1px solid #000;">Client Source</td>
-      <td style="text-align: left;border:1px solid #000;">Date Client Since</td>
-      <td style="text-align: left;border:1px solid #000;">Client Identity</td>      
-      <td style="text-align: left;border:1px solid #000;">Bank Account</td>
-      <td style="text-align: left;border:1px solid #000;">File Review</td>
-      <td style="text-align: left;border:1px solid #000;">Risk Category</td>
-      </tr>
-    </thead>
-    <tbody id="report_pdf_type_two_tbody">
-
-    </tbody>
-  </table>
-</div>
-
-
-
-<div id="report_pdf_type_two_invoice" style="display:none">
-  <style>
-  .table_style {
-      width: 100%;
-      border-collapse:collapse;
-      border:1px solid #c5c5c5;
-  }
-  </style>
-
-  <h3 id="pdf_title_inivoice" style="width: 100%; text-align: center; margin: 15px 0px; float: left;">List of Invoices issued to <span class="invoice_filename"></span></h3>  
-
-  <table class="table_style">
-    <thead>
-      <tr>
-      <th width="2%" style="text-align: left; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">S.No</th>
-      <th style="text-align: left; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">Invoice ID</th>
-      <th style="text-align: left; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">Date</th>
-      <th style="text-align: left; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">Client ID</th>
-      <th style="text-align: left; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px ">Company Name</th>
-      <th style="text-align: right; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px ">Net</th>
-      <th style="text-align: right; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">VAT</th>
-      <th style="text-align: right; border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">Gross</th>
-      </tr>
-    </thead>
-    <tbody id="report_pdf_type_two_tbody_invoice">
-
-    </tbody>
-  </table>
-</div>
-
-
-
 
 
 <div class="modal_load"></div>
@@ -564,6 +436,40 @@ a:hover{text-decoration: underline;}
 
 
 <script>
+$(window).click(function(e) {
+  if($(e.target).hasClass('clear_all_opening_balance'))
+  {
+    var r = confirm("Are you sure you want to delete all the Balance for all the Clients");
+    if(r)
+    {
+      $.ajax({
+        url:"<?php echo URL::to('admin/clear_all_opening_balance'); ?>",
+        type:"post",
+        success:function(result)
+        {
+          window.location.replace("<?php echo URL::to('admin/clear_opening_balance?cleared=1'); ?>");
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('clear_opening_balance'))
+  {
+    var r = confirm("Are you sure you want to delete all the Balance for the selected Client");
+    if(r)
+    {
+      var client_id = $(e.target).attr("data-element");
+      $.ajax({
+        url:"<?php echo URL::to('admin/clear_opening_balance_for_client'); ?>",
+        type:"post",
+        data:{client_id:client_id},
+        success:function(result)
+        {
+          //window.location.replace("<?php echo URL::to('admin/clear_opening_balance?cleared=1'); ?>");
+        }
+      })
+    }
+  }
+});
 $(function(){
     $('#crm_expand').DataTable({
         fixedHeader: {
@@ -579,74 +485,7 @@ $(function(){
 });
 
 $(window).click(function(e) { 
-if($(e.target).hasClass('plus_add'))
-{
-  $("#add_items_div").append('<div class="row single_item_div"><div class="col-lg-10"><div class="form-group"><label>Enter Item Name</label><input type="text" required class="form-control" placeholder="Enter Item Name" name="request_item[]"></div> </div><div class="col-lg-2"><a href="javascript:" class="plus_add">+</a></div></div>');
 
-  $(".plus_add").each(function(){
-    $(this).parent().html('<a href="javascript:" class="minus_remove">-</a>');
-  });
-  $(".minus_remove:last").parent().html('<a href="javascript:" class="minus_remove">-</a><a href="javascript:" class="plus_add">+</a>');
-}
-if($(e.target).hasClass('minus_remove'))
-{
-  $(e.target).parents(".single_item_div").detach();
-  $(".plus_add").each(function(){
-    $(this).parent().html('<a href="javascript:" class="minus_remove">-</a>');
-  });
-  $(".minus_remove:last").parent().html('<a href="javascript:" class="minus_remove">-</a><a href="javascript:" class="plus_add">+</a>');
-}
-if($(e.target).hasClass('edit_icon'))
-{
-  var id = $(e.target).attr("data-element");
-  $("#category_id_edit").val(id);
-  $.ajax({
-    url:"<?php echo URL::to('user/admin_request_edit_category'); ?>",
-    type:"get",
-    data:{id:id},
-    dataType:"json",
-    success: function(result) {
-      $(".edit_model").modal("show");
-      $("#edit_items_div").html("");
-      $(".category_edit").val(result['category_name']);
-      var items = result['sub_category_name'];
-      var items_sep = items.split("||");
-      $.each(items_sep, function(index,value)
-      {
-        $("#edit_items_div").append('<div class="row single_item_div_edit"><div class="col-lg-10"><div class="form-group"><label>Enter Item Name</label><input type="text" required class="form-control" placeholder="Enter Item Name" name="request_item_edit[]" value="'+value+'"></div> </div><div class="col-lg-2"></div></div>')
-      });
-    }
-  })
-}
 })
-
-$(window).keyup(function(e) {
-    var valueTimmer;                //timer identifier
-    var valueInterval = 500;  //time in ms, 5 second for example
-    var $signature_value = $('.class_signature');    
-    if($(e.target).hasClass('class_signature'))
-    {        
-        var input_val = $(e.target).val();  
-        var id = $(e.target).attr("data-element");
-        clearTimeout(valueTimmer);
-        valueTimmer = setTimeout(doneTyping, valueInterval,input_val, id);   
-    }    
-});
-function doneTyping (signature_value,id) {
-  $.ajax({
-        url:"<?php echo URL::to('user/admin_request_signature')?>",
-        type:"post",
-        dataType:"json",
-        data:{value:signature_value, id:id},
-        success: function(result) {            
-            
-        }
-      });
-}
 </script>
-
-
-
-
-<?php $__env->stopSection(); ?>
-<?php echo $__env->make('userheader', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+@stop

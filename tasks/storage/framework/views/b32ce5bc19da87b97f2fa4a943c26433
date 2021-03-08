@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('login_user_id'); ?>
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-sm" role="document">
     <form action="<?php echo URL::to('admin/add_p30_period'); ?>" method="post" class="addsp">
@@ -83,7 +82,7 @@
             <td>
               <select name="sort_period" id="sort_<?php echo $period->id; ?>" data-element="<?php echo $period->id; ?>" class="form-control sort_period">
                 <?php 
-                $count = DB::table('p30_period')->where('user_login_id',$user_login_id)->count();
+                $count = DB::table('p30_period')->count();
                 for($ival=1;$ival<=$count;$ival++)
                 {
                   if($ival == $period->sort) { $selected = 'selected'; } else { $selected = ''; }

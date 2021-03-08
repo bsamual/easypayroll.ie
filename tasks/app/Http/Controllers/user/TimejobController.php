@@ -305,7 +305,6 @@ class TimejobController extends Controller {
 				return Redirect::back()->with('message', 'You can only have 1 active job! You must stop the current active job before you create a New Active Job');
 				exit;
 			}
-
 			$data['job_type'] = Input::get("internal_type");
 			$data['user_id'] = Input::get("user_id");
 			$data['task_id'] = Input::get("task_id");						
@@ -384,7 +383,9 @@ class TimejobController extends Controller {
 			$job_id = Input::get('taskjob_id');
 			$jobs = DB::table('task_job')->where('id',$job_id)->first();
 			if($jobs->quick_job == 1 && $jobs->stop_time != '00:00:00'){
-				$stoptime = $jobs->stop_time;
+				$stopptime = Input::get("stoptime");
+
+				$stoptime = $stopptime;
 				$created_date = $jobs->job_created_date;
 				$starttime = date('H:i:s', strtotime(Input::get("starttime")));
 				
@@ -430,20 +431,13 @@ class TimejobController extends Controller {
 		        $jobtime =   $hours.':'.$minutes.':'.$second;
 
 		        //-----------Job Time End----------------
-
+		        $data['stop_time'] = $stopptime;
 		        $data['job_time'] = $jobtime;
 		    }
-
 			DB::table('task_job')->where('id',$job_id)->update($data);
 			return Redirect::back()->with('message', 'Job updated Successfully');
 		}
-
-
-		
-
 	}
-
-
 	public function time_job_edit(){
 		$jobid = Input::get("hidden_job_id");
 		$type = Input::get("internal_type");

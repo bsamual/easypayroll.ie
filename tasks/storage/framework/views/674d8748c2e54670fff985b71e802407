@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('login_user_id'); ?>
 <style>
 .sub_title{
     font-size: 18px;
@@ -41,7 +40,7 @@
                     <label>Due Date</label>
                 </div>
                 <div class="col-md-6">
-                    <input type="number" min="1" max="31" name="date" class="form-control input-sm" value="<?php if(count($duedate)) { echo $duedate->date; } else { echo ''; }?>" required>
+                    <input type="number" min="1" max="31" name="date" class="form-control input-sm" value="<?php echo $duedate->date; ?>" required>
                 </div>
             </div>
             
