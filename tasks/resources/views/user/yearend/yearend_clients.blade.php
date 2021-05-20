@@ -281,6 +281,11 @@ a:hover{text-decoration: underline;}
         <th style="text-align:left"><i class="fa fa-sort sort_firstname"></i> First Name</th>
         <th style="text-align:left"><i class="fa fa-sort sort_lastname"></i> Last Name</th>
         <th style="text-align:left"><i class="fa fa-sort sort_company"></i> Company</th>
+
+        <th style="text-align:left">Type</th>
+        <th style="text-align:left">Notes</th>
+        <th style="text-align:left">Requests</th>
+
         <th style="text-align:left"><i class="fa fa-sort sort_status"></i> Status </th>
       </tr>   
     </thead>
@@ -291,6 +296,53 @@ a:hover{text-decoration: underline;}
           if(count($clientslist)){
             foreach ($clientslist as $client) {
               $client_details = DB::table('cm_clients')->where('client_id', $client->client_id)->first();
+
+              $countoutstanding = 0;
+              /* $outstanding_count = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 0)->count();*/
+              $awaiting_request = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 0)->count();
+              $request_count = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 1)->count();
+
+              $get_req = DB::table('request_client')->where('client_id', $client->client_id)->where('status', 1)->get();
+              if(count($get_req))
+              {
+                foreach($get_req as $req)
+                {
+                    $check_received_purchase = DB::table('request_purchase_invoice')->where('request_id',$req->request_id)->where('status',0)->count();
+                    $check_received_purchase_attached = DB::table('request_purchase_attached')->where('request_id',$req->request_id)->where('status',0)->count(); 
+
+                    $check_received_sales = DB::table('request_sales_invoice')->where('request_id',$req->request_id)->where('status',0)->count();
+                    $check_received_sales_attached = DB::table('request_sales_attached')->where('request_id',$req->request_id)->where('status',0)->count();
+
+                    $check_received_bank = DB::table('request_bank_statement')->where('request_id',$req->request_id)->where('status',0)->count();
+
+                    $check_received_cheque = DB::table('request_cheque')->where('request_id',$req->request_id)->where('status',0)->count();
+                    $check_received_cheque_attached = DB::table('request_cheque_attached')->where('request_id',$req->request_id)->where('status',0)->count();
+
+                    $check_received_others = DB::table('request_others')->where('request_id',$req->request_id)->where('status',0)->count();
+
+                    $check_purchase = DB::table('request_purchase_invoice')->where('request_id',$req->request_id)->count();
+                    $check_purchase_attached = DB::table('request_purchase_attached')->where('request_id',$req->request_id)->count(); 
+
+                    $check_sales = DB::table('request_sales_invoice')->where('request_id',$req->request_id)->count();
+                    $check_sales_attached = DB::table('request_sales_attached')->where('request_id',$req->request_id)->count();
+
+                    $check_bank = DB::table('request_bank_statement')->where('request_id',$req->request_id)->count();
+
+                    $check_cheque = DB::table('request_cheque')->where('request_id',$req->request_id)->count();
+                    $check_cheque_attached = DB::table('request_cheque_attached')->where('request_id',$req->request_id)->count();
+
+                    $check_others = DB::table('request_others')->where('request_id',$req->request_id)->count();
+
+                    $countval_not_received = $check_received_purchase + $check_received_purchase_attached + $check_received_sales + $check_received_sales_attached + $check_received_bank + $check_received_cheque + $check_received_cheque_attached + $check_received_others;
+
+                    $countval = $check_purchase + $check_purchase_attached + $check_sales + $check_sales_attached + $check_bank + $check_cheque + $check_cheque_attached + $check_others;
+
+                    if($countval_not_received != 0)
+                    {
+                      $countoutstanding++;
+                    }
+                }
+              }
               if(count($client_details)){
                 $clientid = $client_details->client_id;
                 $firstname = $client_details->firstname;
@@ -333,6 +385,15 @@ a:hover{text-decoration: underline;}
                 <td class="firstname_sort_val" style="'.$color.'text-align:left;font-weight:600"><a style="'.$color.'" href="'.URL::to('user/yearend_individualclient/'.base64_encode($client->id)).'">'.$firstname.'</a></td>
                 <td class="lastname_sort_val" style="'.$color.'text-align:left;font-weight:600"><a style="'.$color.'" href="'.URL::to('user/yearend_individualclient/'.base64_encode($client->id)).'">'.$lastname.'</a></td>
                 <td class="company_sort_val" style="'.$color.'text-align:left;font-weight:600"><a style="'.$color.'" href="'.URL::to('user/yearend_individualclient/'.base64_encode($client->id)).'">'.$company.'</a></td>
+
+
+                <td class="type_sort_val" style="'.$color.'text-align:left;font-weight:600">'.$client_details->tye.'</td>
+                <td class="notes_sort_val" style="'.$color.'text-align:left;font-weight:600">
+                  <textarea name="yearend_notes" class="form-control yearend_notes" data-element="'.$client->client_id.'" data-year="'.$client->year.'" style="height:50px">'.$client->notes.'</textarea>
+                </td>
+                <td class="request_sort_val" style="'.$color.'text-align:left;font-weight:600"><a style="'.$color.'font-weight:600" href="'.URL::to('user/client_request_manager/'.base64_encode($client->client_id)).'">'.$request_count.'/'.$countoutstanding.'/'.$awaiting_request.'</a></td>
+
+
                 <td class="status_sort_val" style="'.$color.'text-align:left;font-weight:600">'.$stausval.'</td>
               </tr>';
               $i++;
@@ -380,7 +441,16 @@ var convertToNumber = function(value){
 var convertToNumber_int = function(value){
        return parseInt(value);
 }
+
 $(window).click(function(e) {
+$(".yearend_notes").blur(function() {
+    var that = $(this);
+    var input_val = $(this).val();
+    var client_id  = $(this).attr("data-element");
+    var year_id  = $(this).attr("data-year");
+
+    doneTyping_notes(input_val,client_id,year_id,that);
+});
 var ascending = false;
 if($(e.target).hasClass('sort_sno'))
 {
@@ -779,11 +849,32 @@ if($(e.target).hasClass('new_year_end_class')){
     $(".crypt_modal").modal("show");    
     $(".crypt_pin_setting").val('');
 }
-
-
-
-
 });
+
+$(window).keyup(function(e) {
+    var valueTimmer;                //timer identifier
+    var valueInterval = 500;  //time in ms, 5 second for example
+    if($(e.target).hasClass('yearend_notes'))
+    {        
+        var that = $(e.target);
+        var input_val = $(e.target).val();
+        var client_id  = $(".client_id").val();
+        var year_id  = $(".year_id").val();
+        clearTimeout(valueTimmer);
+        valueTimmer = setTimeout(doneTyping_notes, valueInterval,input_val, client_id, year_id, that);   
+    }
+});
+
+function doneTyping_notes (notes_value, client_id, year_id, that) {
+  $.ajax({
+        url:"<?php echo URL::to('user/yearend_notes_update')?>",
+        type:"post",
+        data:{value:notes_value, year_id:year_id, client_id:client_id},
+        success: function(result) { 
+          //that.val(result);
+        } 
+  });            
+}
 
 $(".add_modal").keypress(function(e) {
   if (e.which == 13 && !$(e.target).is("textarea")) {

@@ -390,7 +390,7 @@ a:hover{text-decoration: underline;}
               <td align="center">
                 <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$jobs->id.'" title="View Comments"></a>
                 
-                  <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                  <div id="comments_'.$jobs->id.'" class="modal fade" role="dialog" >
                       <div class="modal-dialog" style="width:20%">
                         <div class="modal-content">
                           <div class="modal-header">
@@ -554,7 +554,7 @@ a:hover{text-decoration: underline;}
               <td align="center">
                 <a href="javascript:" class="fa fa-comment" data-toggle="modal" data-target="#comments_'.$child->id.'" title="View Comments"></a>
                 
-                  <div id="comments_'.$child->id.'" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+                  <div id="comments_'.$child->id.'" class="modal fade" role="dialog" >
                       <div class="modal-dialog" style="width:20%">
                         <div class="modal-content">
                           <div class="modal-header">

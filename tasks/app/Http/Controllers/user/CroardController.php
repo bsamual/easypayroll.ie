@@ -236,8 +236,16 @@ class CroardController extends Controller {
 		curl_close($ch);
 		$results_array = json_decode($response);
 
-		$nextard = $results_array->next_ar_date;
-		$company = $results_array->company_name;
+		if(count($results_array))
+		{
+			$nextard = $results_array->next_ar_date;
+			$company = $results_array->company_name;
+		}
+		else{
+			$nextard = '';
+			$company = '';
+		}
+		
 
 		$client = DB::table('cm_clients')->where('client_id',$client_id)->first();
 		$ard = explode("/",$client->ard);

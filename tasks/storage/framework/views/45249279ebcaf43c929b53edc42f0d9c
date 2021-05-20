@@ -526,6 +526,7 @@ input:checked + .slider:before {
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title" style="font-weight:700;font-size:20px">Task Specifics</h4>
+            <h5 class="title_task_details" style="font-size:18px;font-weight:600"></h5>
           </div>
           <div class="modal-body" style="min-height: 193px;padding: 5px;">
             <label class="col-md-12" style="padding: 0px;">
@@ -563,8 +564,11 @@ input:checked + .slider:before {
               <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="float: right;font-size:12px">
               <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="float: right;font-size:12px">
               
-
-              <div class="col-md-12" style="float:right;margin-top:10px;padding:0px">
+              <div class="col-md-6" style="float:left;margin-top:10px;padding:0px">
+                <input type="button" class="common_black_button add_progress_files_from_task_specifics" id="add_progress_files_from_task_specifics" value="Add Progress Files" data-element="" style="float: left;font-size:12px">
+                <spam class="progress_spam" style="font-weight:600;color:green;margin-top:10px"></spam>
+              </div>
+              <div class="col-md-6" style="float:right;margin-top:10px;padding:0px">
                   <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
               </div>
             </div>
@@ -839,7 +843,11 @@ input:checked + .slider:before {
                 </div>
             </div>
             <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label></div>
+                <div class="form-title" style="font-weight:600;margin-left:-10px">
+                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                </div>
             </div>
           </div>
           <div class="modal-footer">     
@@ -1437,6 +1445,27 @@ $(window).click(function(e) {
 		if($(e.target).hasClass('export_csv'))
 		{
 		    $("body").addClass("loading");
+        var author = $(".search_author").val();
+        var open_task = $(".open_task_search:checked").val();
+        var client_id = $("#copy_client_search").val();
+        var client_id_search = $(".copy_client_search_class ").val();
+        var subject = $(".subject_search_class").val();
+        var recurring = $("#hidden_recurring_task").val();
+        var due_date = $(".due_date_search_class").val();
+        var creation_date = $(".creation_date_search_class").val();
+        var make_internal = $("#hidden_make_internal").val();
+        var select_tasks = $(".select_internal_tasks").val();
+
+        $.ajax({
+          url:"<?php echo URL::to('user/download_export_csv_task_search'); ?>",
+          type:"post",
+          data:{author:author,open_task:open_task,client_id:client_id,subject:subject,recurring:recurring,due_date:due_date,creation_date:creation_date,make_internal:make_internal,select_tasks:select_tasks},
+          success:function(result)
+          {
+            SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+            $("body").removeClass("loading");
+          }
+        })
 		}
 		if($(e.target).parents(".hidden_tasks_tr").length > 0)
 		{
@@ -2946,7 +2975,10 @@ $(window).click(function(e) {
                   contentsCss: "body {font-size: 16px;font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif}",
                  });
               $("#hidden_task_id_task_specifics").val(task_id);
+              $("#add_progress_files_from_task_specifics").attr("data-element",task_id);
+              $(".progress_spam").html("");
               $("#existing_comments").html(result['output']);
+              $(".title_task_details").html(result['title']);
               $(".task_specifics_modal").modal("show");
               if(result['auto_close'] == "1")
               {
@@ -3914,6 +3946,15 @@ $(window).click(function(e) {
         $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");
       }
       if($(e.target).hasClass('faplus_progress'))
+      {
+        var task_id = $(e.target).attr("data-element");
+        $("#hidden_task_id_progress").val(task_id);
+        $(".dropzone_progress_modal").modal("show");
+        // Dropzone.forElement("#imageUpload").removeAllFiles(true);
+        // Dropzone.forElement("#imageUpload2").removeAllFiles(true);
+        $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");
+      }
+      if($(e.target).hasClass('add_progress_files_from_task_specifics'))
       {
         var task_id = $(e.target).attr("data-element");
         $("#hidden_task_id_progress").val(task_id);
@@ -5060,6 +5101,7 @@ Dropzone.options.imageUpload = {
             var totalcount = acceptedcount + rejectedcount;
             $("#total_count_files").val(totalcount);
             $("body").removeClass("loading");
+            $(".progress_spam").html("Progress files added Successfully");
             Dropzone.forElement("#imageUpload").removeAllFiles(true);
             Dropzone.forElement("#imageUpload2").removeAllFiles(true);
             $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");

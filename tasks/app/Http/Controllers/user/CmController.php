@@ -1368,7 +1368,9 @@ class CmController extends Controller {
 			if(move_uploaded_file($tmp_name, "$uploads_dir/$name")){
 
 				$filepath = $uploads_dir.'/'.$name;
-				$objPHPExcel = PHPExcel_IOFactory::load($filepath);
+				$objReader = PHPExcel_IOFactory::createReader('CSV');
+				$objReader->setInputEncoding('ISO-8859-1');
+				$objPHPExcel = $objReader->load( $filepath );
 				foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
 					$worksheetTitle     = $worksheet->getTitle();
 					$highestRow         = $worksheet->getHighestRow(); // e.g. 10
@@ -1406,7 +1408,13 @@ class CmController extends Controller {
 								$firstname = trim($firstname->getValue());
 								$surname = $worksheet->getCellByColumnAndRow(2, $row); $data['surname'] = trim($surname->getValue());
 								$surname = trim($surname->getValue());
-								$company = $worksheet->getCellByColumnAndRow(3, $row); $company = trim($company->getValue());
+
+								if ($worksheet->getCellByColumnAndRow(3, $row)->getValue() instanceof PHPExcel_RichText) {
+			                        $company = $worksheet->getCellByColumnAndRow(3, $row)->getValue()->getPlainText();
+			                    } else {
+			                        $company= $worksheet->getCellByColumnAndRow(3, $row)->getValue();
+			                    }
+								//$company = $worksheet->getCellByColumnAndRow(3, $row); $company = trim($company->getValue()->getPlainText());
 
 								if($company != "")
 								{
@@ -1518,8 +1526,9 @@ class CmController extends Controller {
 		$name = Input::get('filename');
 		$uploads_dir = dirname($_SERVER["SCRIPT_FILENAME"]).'/uploads/importfiles';
 		$filepath = $uploads_dir.'/'.$name;
-		$objPHPExcel = PHPExcel_IOFactory::load($filepath);
-
+		$objReader = PHPExcel_IOFactory::createReader('CSV');
+		$objReader->setInputEncoding('ISO-8859-1');
+		$objPHPExcel = $objReader->load( $filepath );
 		foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
 			$worksheetTitle     = $worksheet->getTitle();
 			$highestRow         = $worksheet->getHighestRow(); // e.g. 10
@@ -1560,7 +1569,12 @@ class CmController extends Controller {
 					$firstname = trim($firstname->getValue());
 					$surname = $worksheet->getCellByColumnAndRow(2, $row); $data['surname'] = trim($surname->getValue());
 					$surname = trim($surname->getValue());
-					$company = $worksheet->getCellByColumnAndRow(3, $row); $company = trim($company->getValue());
+					
+					if ($worksheet->getCellByColumnAndRow(3, $row)->getValue() instanceof PHPExcel_RichText) {
+                        $company = $worksheet->getCellByColumnAndRow(3, $row)->getValue()->getPlainText();
+                    } else {
+                        $company= $worksheet->getCellByColumnAndRow(3, $row)->getValue();
+                    }
 
 					if($company != "")
 					{

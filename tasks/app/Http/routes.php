@@ -401,47 +401,22 @@ Route::post('/user/update_p30_na_status_month', 'user\P30Controller@update_p30_n
 
 
 
+Route::get('/user/p30_task_leval', 'user\P30adminController@tasklevel');
+Route::get('/user/deactive_p30_tasklevel/{id?}', 'user\P30adminController@deactivetasklevel');
+Route::get('/user/active_p30_tasklevel/{id?}', 'user\P30adminController@activetasklevel');
+Route::post('/user/add_p30_tasklevel/', 'user\P30adminController@addtasklevel');
+Route::post('/user/edit_p30_tasklevel/{id?}', 'user\P30adminController@edittasklevel');
+Route::post('/user/update_p30_tasklevel/', 'user\P30adminController@updatetasklevel');
 
-
-Route::get('/admin/p30_task_leval', 'admin\P30Controller@tasklevel');
-
-Route::get('/admin/deactive_p30_tasklevel/{id?}', 'admin\P30Controller@deactivetasklevel');
-
-Route::get('/admin/active_p30_tasklevel/{id?}', 'admin\P30Controller@activetasklevel');
-
-Route::post('/admin/add_p30_tasklevel/', 'admin\P30Controller@addtasklevel');
-
-Route::post('/admin/edit_p30_tasklevel/{id?}', 'admin\P30Controller@edittasklevel');
-
-Route::post('/admin/update_p30_tasklevel/', 'admin\P30Controller@updatetasklevel');
-
-
-
-Route::get('/admin/p30_period', 'admin\P30Controller@period');
-
-Route::get('/admin/deactive_p30_period/{id?}', 'admin\P30Controller@deactiveperiod');
-
-Route::get('/admin/active_p30_period/{id?}', 'admin\P30Controller@activeperiod');
-
-Route::post('/admin/add_p30_period/', 'admin\P30Controller@addperiod');
-
-Route::post('/admin/edit_p30_period/{id?}', 'admin\P30Controller@editperiod');
-
-Route::post('/admin/update_p30_period/', 'admin\P30Controller@updateperiod');
-
-
-
-Route::get('/admin/period_sort_order/', 'admin\P30Controller@period_sort_order');
-
-
-
-Route::get('/admin/p30_due_date', 'admin\P30Controller@duedate');
-
-Route::post('/admin/update_p30_duedate/', 'admin\P30Controller@updateduedate');
-
-
-
-
+Route::get('/user/p30_period', 'user\P30adminController@period');
+Route::get('/user/deactive_p30_period/{id?}', 'user\P30adminController@deactiveperiod');
+Route::get('/user/active_p30_period/{id?}', 'user\P30adminController@activeperiod');
+Route::post('/user/add_p30_period/', 'user\P30adminController@addperiod');
+Route::post('/user/edit_p30_period/{id?}', 'user\P30adminController@editperiod');
+Route::post('/user/update_p30_period/', 'user\P30adminController@updateperiod');
+Route::get('/user/period_sort_order/', 'user\P30adminController@period_sort_order');
+Route::get('/user/p30_due_date', 'user\P30adminController@duedate');
+Route::post('/user/update_p30_duedate/', 'user\P30adminController@updateduedate');
 
 /*----------------------GBSCO P30 START----------------------*/
 
@@ -1478,6 +1453,7 @@ Route::post('/user/yearend_liability_export', 'user\YearendController@yearendlia
 /*----USER TA System------*/
 Route::get('/user/ta_system', 'user\TaController@ta_system');
 Route::post('/user/ta_system_ajax_response', 'user\TaController@ta_system_ajax_response');
+Route::post('/user/load_unallocated_time_for_client', 'user\TaController@load_unallocated_time_for_client');
 Route::get('/user/ta_allocation', 'user\TaController@taallocation');
 Route::get('/user/ta_overview', 'user\TaController@taoverview');
 Route::get('/user/ta_auto_allocation', 'user\TaController@taautoallocation');
@@ -1701,6 +1677,14 @@ Route::get('/user/update_percent_two_infile_attachment', 'user\InfileController@
 Route::get('/user/update_percent_three_infile_attachment', 'user\InfileController@update_percent_three_infile_attachment');
 Route::get('/user/update_percent_four_infile_attachment', 'user\InfileController@update_percent_four_infile_attachment');
 Route::post('/user/infile_attachment_date_filled', 'user\InfileController@infile_attachment_date_filled');
+Route::post('/user/infile_attachment_code_filled', 'user\InfileController@infile_attachment_code_filled');
+
+Route::post('/user/infile_attachment_currency_filled', 'user\InfileController@infile_attachment_currency_filled');
+Route::post('/user/infile_attachment_value_filled', 'user\InfileController@infile_attachment_value_filled');
+
+Route::post('/user/save_imported_status', 'user\InfileController@save_imported_status');
+Route::post('/user/save_imported_date', 'user\InfileController@save_imported_date');
+
 Route::get('/user/infile_download_bpso_all_image_csv', 'user\InfileController@infile_download_bpso_all_image_csv');
 Route::get('/user/infile_download_bpso_all_image_both', 'user\InfileController@infile_download_bpso_all_image_both');
 
@@ -1770,5 +1754,38 @@ Route::get('/admin/clear_opening_balance', 'admin\AdminController@clear_opening_
 Route::post('/admin/clear_all_opening_balance', 'admin\AdminController@clear_all_opening_balance');
 Route::post('/admin/clear_opening_balance_for_client', 'admin\AdminController@clear_opening_balance_for_client');
 
+Route::get('/user/client_account_review', 'user\ClientreviewController@client_account_review');
 
+Route::get('/user/client_review_client_common_search', 'user\ClientreviewController@client_review_commonclient_search');
+Route::get('/user/client_review_client_select', 'user\ClientreviewController@client_review_client_select');
+Route::post('/user/update_cro_ard_date', 'user\ClientreviewController@update_cro_ard_date');
 
+Route::post('/user/client_review_load_all_client_invoice', 'user\ClientreviewController@client_review_load_all_client_invoice');
+Route::post('/user/invoice_download_selected_pdfs', 'user\ClientreviewController@invoice_download_selected_pdfs');
+Route::post('/user/invoice_email_selected_pdfs', 'user\ClientreviewController@invoice_email_selected_pdfs');
+Route::post('/user/client_review_email_selected_pdf', 'user\ClientreviewController@client_review_email_selected_pdf');
+
+Route::post('/user/download_export_csv_task_manager', 'user\TaskmanagerController@download_export_csv_task_manager');
+Route::post('/user/download_export_csv_task_search', 'user\TaskmanagerController@download_export_csv_task_search');
+
+Route::post('/user/yearend_notes_update', 'user\YearendController@yearend_notes_update');
+Route::post('/user/yearend_status_notes_update', 'user\YearendController@yearend_status_notes_update');
+
+Route::post('/user/insert_update_invoice_nominals', 'user\InvoiceController@insert_update_invoice_nominals');
+
+Route::get('/user/financials', 'user\FinancialController@financials');
+
+Route::get('/user/check_nominal_code', 'user\FinancialController@check_nominal_code');
+Route::post('/user/add_nominal_code_financial', 'user\FinancialController@add_nominal_code_financial');
+Route::post('/user/add_bank_financial', 'user\FinancialController@add_bank_financial');
+
+Route::post('/user/edit_nominal_code_finance', 'user\FinancialController@edit_nominal_code_finance');
+Route::post('/user/get_nominal_codes_for_bank', 'user\FinancialController@get_nominal_codes_for_bank');
+Route::post('/user/financial_opening_balance_show', 'user\FinancialController@financial_opening_balance_show');
+Route::post('/user/save_opening_balance_values', 'user\FinancialController@save_opening_balance_values');
+Route::post('/user/save_opening_balance_date', 'user\FinancialController@save_opening_balance_date');
+Route::post('/user/save_debit_credit_finance_client', 'user\FinancialController@save_debit_credit_finance_client');
+
+Route::post('/user/build_supplier_names_for_client_id', 'user\InfileController@build_supplier_names_for_client_id');
+Route::post('/user/update_infile_textvalue_item', 'user\InfileController@update_infile_textvalue_item');
+Route::post('/user/load_journals_financials', 'user\FinancialController@load_journals_financials');

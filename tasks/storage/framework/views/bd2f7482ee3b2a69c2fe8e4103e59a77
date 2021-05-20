@@ -824,7 +824,22 @@ a:hover{text-decoration: underline;}
                     </div>
                  </div>
             </td>
-            <td colspan="6" style="border-top: 0px solid"></td>
+            <td colspan="3" rowspan="2" style="border-top: 0px solid">
+            	<?php
+            	if($year_details->notes_status == "1")
+            	{
+            		$notes_checked = 'checked';
+            	}
+            	else{
+            		$notes_checked = '';
+            	}
+            	?>
+            	<h4 style="font-weight:700;margin-top:0px;margin-bottom:4px">Notes </h4>
+            	<textarea name="yearend_notes" class="form-control yearend_notes" id="yearend_notes"><?php echo $year_details->notes; ?></textarea>
+            	<input type="checkbox" name="yearend_notes_status" class="yearend_notes_status" id="yearend_notes_status" <?php echo $notes_checked; ?>><label for="yearend_notes_status">Carry forward</label>
+            </td>
+            <td colspan="3" rowspan="2" style="border-top: 0px solid">
+            </td>
           </tr>
           <tr class="table_tr" style="font-weight: bold;">
             <td colspan="2" align="center" style="border-top: 0px solid"><span style="float:left;margin-top:3px">Year End Date : </span> <input type="text" class="date_client_year_end form-control input-sm" id="date_client_year_end" value="<?php echo $year_details->year_end_date; ?>" style="width:55%" placeholder="Enter Date As <?php echo date('d-M-Y'); ?>" ></td>
@@ -1767,6 +1782,44 @@ $(window).change(function(e) {
   }
 });
 $(window).click(function(e) {
+$(".yearend_notes").blur(function() {
+	var that = $(this);
+    var input_val = $(this).val();
+    var client_id  = $(".client_id").val();
+    var year_id  = $(".year_id").val();
+
+    doneTyping_notes(input_val,client_id,year_id,that);
+});
+if($(e.target).hasClass('yearend_notes_status'))
+{
+	if($(e.target).is(":checked"))
+	{
+	    var client_id = $(".client_id").val();
+	    var year_id = $(".year_id").val();
+	    $.ajax({
+	    	url:"<?php echo URL::to('user/yearend_status_notes_update'); ?>",
+	    	type:"post",
+	    	data:{client_id:client_id,year_id:year_id,status:"1"},
+	    	success:function(result)
+	    	{
+
+	    	}
+	    })
+	}
+	else{
+		var client_id  = $(".client_id").val();
+	    var year_id  = $(".year_id").val();
+	    $.ajax({
+	    	url:"<?php echo URL::to('user/yearend_status_notes_update'); ?>",
+	    	type:"post",
+	    	data:{client_id:client_id,year_id:year_id,status:"0"},
+	    	success:function(result)
+	    	{
+
+	    	}
+	    })
+	}
+}
 if(e.target.id == "hide_na_docs")
 {
   var yearend_id = "<?php echo $year_details->id; ?>";
@@ -2930,6 +2983,15 @@ $(window).keyup(function(e) {
         clearTimeout(valueTimmer);
         valueTimmer = setTimeout(doneTyping_liability3, valueInterval,input_val, row_id, client_id, year_id, setting_id, that);   
     }
+    if($(e.target).hasClass('yearend_notes'))
+    {        
+        var that = $(e.target);
+        var input_val = $(e.target).val();
+        var client_id  = $(".client_id").val();
+        var year_id  = $(".year_id").val();
+        clearTimeout(valueTimmer);
+        valueTimmer = setTimeout(doneTyping_notes, valueInterval,input_val, client_id, year_id, that);   
+    }
 });
 
 function doneTyping_liability1 (liability1_value, row_id, client_id, year_id, setting_id, that) {
@@ -2959,6 +3021,17 @@ function doneTyping_liability3 (liability3_value, row_id, client_id, year_id, se
         url:"<?php echo URL::to('user/yearend_liability_update')?>",
         type:"post",
         data:{setting_id:setting_id, value:liability3_value, year_id:year_id, row_id:row_id, client_id:client_id, type:3},
+        success: function(result) { 
+          //that.val(result);
+        } 
+  });            
+}
+
+function doneTyping_notes (notes_value, client_id, year_id, that) {
+  $.ajax({
+        url:"<?php echo URL::to('user/yearend_notes_update')?>",
+        type:"post",
+        data:{value:notes_value, year_id:year_id, client_id:client_id},
         success: function(result) { 
           //that.val(result);
         } 

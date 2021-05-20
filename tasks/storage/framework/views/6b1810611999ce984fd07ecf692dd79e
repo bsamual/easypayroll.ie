@@ -1,4 +1,4 @@
-<html>
+ <html>
 <head>
 <meta charset="UTF-8">
 <?php
@@ -19,9 +19,9 @@
  elseif($page_segment == "manage_month") { $title = 'Monthly Payroll Management'; }
  elseif($page_segment == "month_manage") { $title = 'Monthly Payroll Management'; }
  elseif($page_segment == "select_month") { $title = 'Monthly Payroll Management'; }
- elseif($page_segment == "p30") { $title = 'P30 System'; }
- elseif($page_segment == "p30month_manage") { $title = 'P30 System'; }
- elseif($page_segment == "p30_select_month") { $title = 'P30 System'; }
+ elseif($page_segment == "p30") { $title = 'PAYE MRS'; }
+ elseif($page_segment == "p30month_manage") { $title = 'PAYE MRS'; }
+ elseif($page_segment == "p30_select_month") { $title = 'PAYE MRS'; }
  elseif($page_segment == "paye_p30_manage") { $title = 'PAYE M.R.S'; }
  elseif($page_segment == "paye_p30_ros_liabilities") { $title = 'PAYE M.R.S'; }
  elseif($page_segment == "vat_clients") { $title = 'VAT Management System'; }
@@ -75,6 +75,10 @@
  elseif($page_segment == "opening_balance_manager") { $title = 'Opening Balance Manager'; }
  elseif($page_segment == "client_opening_balance_manager") { $title = 'Opening Balance Manager'; }
  elseif($page_segment == "import_opening_balance_manager") { $title = 'Opening Balance Manager'; }
+
+ elseif($page_segment == "client_account_review") { $title = 'Client Account Review'; }
+
+ elseif($page_segment == "financials") { $title = 'Financials'; }
 
  elseif($page_segment == "two_bill_manager") { $title = '2Bill'; }
  elseif($page_segment == "manage_croard") { $title = 'CRO ARD'; }
@@ -139,7 +143,6 @@
   if($segment1 == 'manage_week' || $segment1 == 'week_manage' || $segment1 == 'select_week') { 
     if($segment1 == 'select_week') { ?>
       .body_bg{
-        background: #7bab15;
         width:2030px !important;
       }
       .page_title{
@@ -160,7 +163,6 @@
       <?php } 
     else{ ?>
       .body_bg{
-        background: #7bab15;
       }
       <?php
       } 
@@ -168,7 +170,6 @@
   elseif($segment1 == 'manage_month' || $segment1 == 'month_manage' || $segment1 == 'select_month') { 
     if($segment1 == 'select_month') { ?>
       .body_bg{
-        background: #ffa12d;
         width:2030px !important;
       }
       .page_title{
@@ -189,7 +190,6 @@
       <?php } 
     else{ ?>
       .body_bg{
-        background: #ffa12d;
       }
       <?php
     }
@@ -289,6 +289,9 @@
 {
   width:200px;
 }
+.dropdown-header{
+  font-size: 16px;
+}
 </style>
 </head>
 <body class="body_bg">
@@ -310,29 +313,31 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right menu" style="margin-right: 25.5%;">
-            <li class="dropdown <?php if($segment1 == "client_management" || $segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "time_management" || $segment1 == "aml_system" || $segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages" || $segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager" || $segment1 == "two_bill_manager") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Practice Functions</a>
-                <ul class="dropdown-menu">
+            <li class="dropdown <?php if($segment1 == "client_management" || $segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "time_management" || $segment1 == "aml_system" || $segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages" || $segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager" || $segment1 == "two_bill_manager" || $segment1 == "client_account_review" || $segment1 == "financials") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Practice Functions</a>
+                <ul class="dropdown-menu dropdown-menu-right text-right">
                     <li class="<?php if($segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/task_manager')?>">Task Manager</a></li>
                     <li class="<?php if($segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/directmessaging')?>">MessageUs System</a></li>
                     <li class="<?php if(($segment1 == "client_management")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_management'); ?>">Client Mangement</a></li>
                     <li class="<?php if(($segment1 == "aml_system")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/aml_system'); ?>">AML System</a></li>
-                     <li class="dropdown-submenu <?php if($segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager" || $segment1 == "two_bill_manager") { echo 'active'; } ?>">
-                        <a class="dropdown-item" tabindex="-1" href="#">Accounts</a>
-                        <ul class="dropdown-menu">
-                            <li class="<?php if(($segment1 == "client_statements")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_statements'); ?>">Client Statements</a></li>
-                            <li class="<?php if(($segment1 == "receipt_management")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/receipt_management'); ?>">Receipt Management</a></li>
-                            <li class="<?php if(($segment1 == "invoice_management")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/invoice_management'); ?>">Invoice Management</a></li>
-                            <li class="<?php if(($segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/opening_balance_manager'); ?>">Opening Balances</a></li>
-                            <li class="<?php if(($segment1 == "two_bill_manager")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/two_bill_manager'); ?>">2Bill Manager</a></li>
-                        </ul>
+                    <li class="<?php if(($segment1 == "client_account_review")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_account_review'); ?>">Client Account Review</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">
+                      Accounts
                     </li>
+                    <li role="separator" class="divider"></li>
+                    <li class="<?php if(($segment1 == "client_statements")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/client_statements'); ?>">Client Statements</a></li>
+                    <li class="<?php if(($segment1 == "receipt_management")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/receipt_management'); ?>">Receipt Management</a></li>
+                    <li class="<?php if(($segment1 == "invoice_management")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/invoice_management'); ?>">Invoice Management</a></li>
+                    <li class="<?php if(($segment1 == "financials")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/financials'); ?>">Financials</a></li>
+                    <li class="<?php if(($segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/opening_balance_manager'); ?>">Opening Balances</a></li>
+                    <li class="<?php if(($segment1 == "two_bill_manager")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/two_bill_manager'); ?>">2Bill Manager</a></li>
                 </ul>
             </li>
             <li class="dropdown <?php if($segment1 == "manage_week" || $segment1 == "week_manage" || $segment1 == "select_week" || $segment1 == "manage_month" || $segment1 == "month_manage" || $segment1 == "select_month" || $segment1 == "p30" || $segment1 == "p30month_manage" || $segment1 == "p30_select_month" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage" || $segment1 == "paye_p30_ros_liabilities") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payroll Functions</a>
                 <ul class="dropdown-menu">
                     <li class="<?php if(($segment1 == "manage_week") || ($segment1 == "week_manage") || ($segment1 == "select_week")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/manage_week')?>">Weekly Payroll</a></li>
                     <li class="<?php if(($segment1 == "manage_month") || ($segment1 == "month_manage") || ($segment1 == "select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/manage_month')?>">Monthly Payroll</a></li>
-                    <li class="<?php if(($segment1 == "p30") || ($segment1 == "p30month_manage" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage" || $segment1 == "paye_p30_ros_liabilities") || ($segment1 == "p30_select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/p30'); ?>">P30 System</a></li>
+                    <li class="<?php if(($segment1 == "p30") || ($segment1 == "p30month_manage" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage" || $segment1 == "paye_p30_ros_liabilities") || ($segment1 == "p30_select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/p30'); ?>">PAYE MRS</a></li>
                 </ul>
             </li>
 
@@ -462,13 +467,13 @@ $(document).ready(function() {
        widgetPositioning: { horizontal: 'left', vertical: 'top'}
     });
 })
-$(document).ajaxComplete(function (event, request, settings) {
-    var str = request.responseText.toLocaleLowerCase();
-    console.log(str);
-    if (str.includes("user login") === true) {
-       //window.location.replace("<?php echo URL::to('/'); ?>");
-    }
-});
+// $(document).ajaxComplete(function (event, request, settings) {
+//     var str = request.responseText.toLocaleLowerCase();
+//     console.log(str);
+//     if (str.includes("user login") === true) {
+//        //window.location.replace("<?php echo URL::to('/'); ?>");
+//     }
+// });
 $(window).click(function(e) {
 	if($(e.target).hasClass('set_global_opening_bal_date_now'))
 	{

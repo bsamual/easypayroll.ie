@@ -432,11 +432,13 @@ if(Session::has('countupdated'))
   $message = Session::get('message');
   $client_session_id = Session::get('client_session_id');
   $file_id = Session::get('file_id');
+  if($total_count != "0") {
   ?>
   <script>
     $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><?php echo $message; ?> Files Uploaded <?php echo $countupdated; ?> of <?php echo $total_count; ?> Files successfully</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">Do you want to view this infiles item now?</p><p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-element="<?php echo URL::to('user/infile_search?client_id='.$client_session_id.''); ?>" class="common_black_button view_infiles_item">Yes</a><a href="javascript:" class="common_black_button close_colorbox">No</a></p><p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:"  class="common_black_button create_task_manager" data-element="<?php echo $file_id; ?>">Create Task</a></p>'});
   </script>
   <?php
+  }
 }
 elseif(Session::has('message'))
 {

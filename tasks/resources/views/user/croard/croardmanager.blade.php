@@ -778,6 +778,8 @@ $(".cro_notes").blur(function() {
         }
     });
 });
+var typingTimer;                //timer identifier
+var doneTypingInterval = 1000;  //time in ms, 5 second for example
 var $input1 = $('.cro_notes');
 $input1.on('keyup', function () {
   var input_val = $(this).val();

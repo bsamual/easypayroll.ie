@@ -3085,6 +3085,30 @@ class Payep30Controller extends Controller {
 
 			     $outputtext = $get_paye_task->task_name.' '.$disbledtext;
 			}
+			elseif($task_id_week != "" && $task_id_month != "")
+			{
+				$dataval['task_name'] = $task_name_week;
+				$dataval['task_level'] = $task_week->tasklevel;
+				$dataval['pay'] = $pay_week;
+				$dataval['email'] = $email_week;
+
+				$dataval['task_email'] = $task_primary_week;
+				$dataval['secondary_email'] = $task_secondary_week;
+				$dataval['salutation'] = $task_salution_week;
+
+				DB::table('paye_p30_task')->where('id',$task_id)->update($dataval);
+
+				$task = DB::table('paye_p30_task')->where('id',$task_id)->first();
+				if($task->disabled == 1) { $label_color = 'color:#f00'; $disbledtext = ' (DISABLED)'; } else { $label_color = 'color:#000'; $disbledtext = ''; }
+
+				$output = '<b class="task_name_label" style="font-size:18px;'.$label_color.'">'.$task_name_week.'</b><br>
+			      Emp No. '.$task_week->task_enumber.'<br>
+			      Action: '.$action_wek.'<br>
+			      PAY: '.$pay_wek.'<br>
+			      Email: '.$email_wek.'';
+
+			      $outputtext = $task_name_week.' '.$disbledtext;
+			}
 			else{
 				$level_name = DB::table('p30_tasklevel')->where('id',$get_paye_task->task_level)->first();
 

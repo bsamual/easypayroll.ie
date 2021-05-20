@@ -1709,6 +1709,7 @@ if($(e.target).hasClass('send_request_for_approval'))
       $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>Nothing on the Request to send. Please Create a New Request item.</p>", fixed:true});
     }
     else{
+      $("body").addClass("loading");
       if (CKEDITOR.instances.editor) CKEDITOR.instances.editor.destroy();
         var requestid = $(".request_id").val();
         var to_user = '';
@@ -1727,6 +1728,7 @@ if($(e.target).hasClass('send_request_for_approval'))
                $("#from_user").val(result['user_id']);
                $("#approval_attachments").html(result['attachments']);
                CKEDITOR.instances['editor'].setData(result['content']);
+               $("body").removeClass("loading");
             }
         })
     } 
@@ -1764,6 +1766,7 @@ if($(e.target).hasClass('send_request_to_client'))
     }
     else if(email_sent_type == 2)
     {
+      $("body").addClass("loading");
       if (CKEDITOR.instances.editor_1) CKEDITOR.instances.editor_1.destroy();
       var requestid = $(".request_id").val();
       var to_user = '';
@@ -1784,11 +1787,13 @@ if($(e.target).hasClass('send_request_to_client'))
              $("#client_search").val(result['client_id']);
              $("#client_attachments").html(result['attachments']);
              CKEDITOR.instances['editor_1'].setData(result['content']);
+             $("body").removeClass("loading");
           }
       });
     }
     else if(email_sent_type == 5)
     {
+      $("body").addClass("loading");
       if (CKEDITOR.instances.editor_1) CKEDITOR.instances.editor_1.destroy();
       var requestid = $(".request_id").val();
       var to_user = '';
@@ -1809,10 +1814,12 @@ if($(e.target).hasClass('send_request_to_client'))
              $("#client_search").val(result['client_id']);
              $("#client_attachments").html(result['attachments']);
              CKEDITOR.instances['editor_1'].setData(result['content']);
+             $("body").removeClass("loading");
           }
       });
     }
     else{
+      $("body").addClass("loading");
       if (CKEDITOR.instances.editor_1) CKEDITOR.instances.editor_1.destroy();
       var requestid = $(".request_id").val();
       var to_user = '';
@@ -1833,6 +1840,7 @@ if($(e.target).hasClass('send_request_to_client'))
              $("#client_search").val(result['client_id']);
              $("#client_attachments").html(result['attachments']);
              CKEDITOR.instances['editor_1'].setData(result['content']);
+             $("body").removeClass("loading");
           }
       });
     }

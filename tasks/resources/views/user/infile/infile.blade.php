@@ -8,7 +8,25 @@
 <script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
+<script src="<?php echo URL::to('assets/js/slideupdown.js'); ?>"></script>
 <style>
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.imported_date{
+  margin-left: 10px;
+    padding: 5px;
+    width: 30%;
+    outline: none;
+    margin-top: 10px;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
 .content_check{
   word-wrap:break-word; /*old browsers*/
   overflow-wrap:break-word;
@@ -121,9 +139,7 @@ body.loading_import .modal_load_import {
 .flag_red{ color:red; cursor: pointer }
 #colorbox { z-index:99999999999999999999 !important; }
 .pdf_multipage {
-	float: left;
-	margin-top: -36px;
-margin-left: 200px;
+float:right;
 color: #f00;
 font-size: 18px;
 }
@@ -137,7 +153,7 @@ font-size: 18px;
 .download_s_all_image{ cursor : pointer; }
 .download_o_all_image{ cursor : pointer; }
 .file_attachment_div{width:100%;}
-.add_text{width:95px;}
+.add_text{width:80px;}
 .user_td_class{
   word-wrap: break-word; white-space:normal; min-width:150px; max-width: 150px;
 }
@@ -680,7 +696,8 @@ elseif(Session::has('countupdated'))
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">Supplier/Customer</h4>
+            <h4 class="modal-title job_title">Supplier/Customer <input type="button" name="build_supplier" class="common_black_button build_supplier" value="Build" style="float:right;margin-right: 15px;"></h4>
+
           </div>
           <div class="modal-body">  
           	<textarea name="supplier_text" class="form-control supplier_text" style="height:150px"></textarea>
@@ -1522,6 +1539,11 @@ elseif(Session::has('countupdated'))
 						$output.='<br/><a href="javascript:" class="single_notify '.$disable_class.'" data-element="'.$file->id.'" '.$color.'>Notify</a> &nbsp &nbsp <a href="javascript:"  class="all_notify '.$disable_class.'" data-element="'.$file->id.'" '.$color.'>Notify all</a> &nbsp &nbsp <a href="javascript:"  class="create_task_manager" data-element="'.$file->id.'" '.$color.'>Create Task</a>';
 
 						}
+            if($file->imported_status == 1) { $status_checked = 'checked'; $status_shown = 'display:initial'; } else{ $status_checked = ''; $status_shown = 'display:none'; }
+            if($file->imported_date == "") { $imported_date_val = date('d-M-Y'); } else{ $imported_date_val = $file->imported_date; }
+            $output.='<br/><input type="checkbox" name="imported_workings" class="imported_workings" data-element="'.$file->id.'" id="imported_workings_'.$file->id.'" '.$status_checked.'><label for="imported_workings_'.$file->id.'" style="margin-top: 16px;">Imported into Workings</label>
+            <input type="text" name="imported_date" class="imported_date imported_date_'.$file->id.'" value="'.$imported_date_val.'" data-element="'.$file->id.'" placeholder="Choose Date" style="'.$status_shown.'">
+            ';
 					$output.='</div>
 					<div class="col-md-3 col-lg-3">
 						<h4>Linked to Tasks:</h4>';
@@ -1727,13 +1749,9 @@ elseif(Session::has('countupdated'))
 
 
 <script>
-var dialog = new CommonOpenFileDialog();
-dialog.IsFolderPicker = true;    
-dialog.SetOpenButtonText("SAVE TO THIS FOLDER");
-
 //on keyup, start the countdown
 var typingTimer;                //timer identifier
-var doneTypingInterval = 1000;  //time in ms, 5 second for example
+var doneTypingInterval = 2500;  //time in ms, 5 second for example
 var $input = $('.add_text');
 var $input1 = $('.supplier');
 var $input2 = $('.percent_one_value');
@@ -1741,6 +1759,10 @@ var $input3 = $('.percent_two_value');
 var $input4 = $('.percent_three_value');
 var $input5 = $('.percent_four_value');
 var $input6 = $('.date_attachment');
+var $input7 = $('.code_attachment');
+
+var $input8 = $('.currency_value');
+var $input9 = $('.value_value');
 
 $input.on('keyup', function () {
   var input_val = $(this).val();
@@ -1753,18 +1775,18 @@ $input.on('keydown', function () {
   clearTimeout(typingTimer);
 });
 
-$input1.on('keyup', function () {
-  var input_val = $(this).val();
-  var attachmentid = $(this).attr('data-element');
-  var fileid = $(this).attr('data-file');
-  var that = $(this);
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
-});
-//on keydown, clear the countdown 
-$input1.on('keydown', function () {
-  clearTimeout(typingTimer);
-});
+// $input1.on('keyup', function () {
+//   var input_val = $(this).val();
+//   var attachmentid = $(this).attr('data-element');
+//   var fileid = $(this).attr('data-file');
+//   var that = $(this);
+//   clearTimeout(typingTimer);
+//   typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
+// });
+// //on keydown, clear the countdown 
+// $input1.on('keydown', function () {
+//   clearTimeout(typingTimer);
+// });
 
 $input2.on('keyup', function () {
   var input_val = $(this).val();
@@ -1831,6 +1853,45 @@ $input6.on('keydown', function () {
   clearTimeout(typingTimer);
 });
 
+$input7.on('keyup', function () {
+  var input_val = $(this).val();
+  var attachmentid = $(this).attr('data-element');
+  var fileid = $(this).attr('data-file');
+  var that = $(this);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTyping_code_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+});
+//on keydown, clear the countdown 
+$input7.on('keydown', function () {
+  clearTimeout(typingTimer);
+});
+
+$input8.on('keyup', function () {
+  var input_val = $(this).val();
+  var attachmentid = $(this).attr('data-element');
+  var fileid = $(this).attr('data-file');
+  var that = $(this);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTyping_currency_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+});
+//on keydown, clear the countdown 
+$input8.on('keydown', function () {
+  clearTimeout(typingTimer);
+});
+
+$input9.on('keyup', function () {
+  var input_val = $(this).val();
+  var attachmentid = $(this).attr('data-element');
+  var fileid = $(this).attr('data-file');
+  var that = $(this);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTyping_value_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+});
+//on keydown, clear the countdown 
+$input9.on('keydown', function () {
+  clearTimeout(typingTimer);
+});
+
 //user is "finished typing," do something
 function doneTyping (input,id) {
   	$.ajax({
@@ -1842,19 +1903,19 @@ function doneTyping (input,id) {
         }
     });
 }
-function doneTyping_supplier (input,attachmentid,fileid,that) {
-  if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
-  {
-  	$.ajax({
-        url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
-        type:"get",
-        data:{input:input,attachmentid:attachmentid,fileid:fileid,type:"0"},
-        success: function(result) {
-          that.attr("data-value",input);
-        }
-    });
-  }
-}
+// function doneTyping_supplier (input,attachmentid,fileid,that) {
+//   if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+//   {
+//   	$.ajax({
+//         url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
+//         type:"get",
+//         data:{input:input,attachmentid:attachmentid,fileid:fileid,type:"0"},
+//         success: function(result) {
+//           that.attr("data-value",input);
+//         }
+//     });
+//   }
+// }
 function doneTyping_percent_one (input,attachmentid,fileid,that) {
   if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
   {
@@ -1946,6 +2007,47 @@ function doneTyping_date_attachment (input,attachmentid,fileid,that) {
         url:"<?php echo URL::to('user/infile_attachment_date_filled'); ?>",
         type:"post",
         data:{id:attachmentid,dateval:input},
+        success: function(result) {
+          that.attr("data-value",input);
+        }
+    });
+  }
+}
+function doneTyping_code_attachment (input,attachmentid,fileid,that) {
+  if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+  {
+    $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_code_filled'); ?>",
+        type:"post",
+        data:{id:attachmentid,code:input},
+        success: function(result) {
+          that.attr("data-value",input);
+        }
+    });
+  }
+}
+
+function doneTyping_currency_attachment (input,attachmentid,fileid,that) {
+  if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+  {
+    $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_currency_filled'); ?>",
+        type:"post",
+        data:{id:attachmentid,currency:input},
+        success: function(result) {
+          that.attr("data-value",input);
+        }
+    });
+  }
+}
+
+function doneTyping_value_attachment (input,attachmentid,fileid,that) {
+  if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+  {
+    $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_value_filled'); ?>",
+        type:"post",
+        data:{id:attachmentid,value:input},
         success: function(result) {
           that.attr("data-value",input);
         }
@@ -2096,7 +2198,7 @@ function add_secondary_function()
   
   //on keyup, start the countdown
   var typingTimer;                //timer identifier
-  var doneTypingInterval = 1000;  //time in ms, 5 second for example
+  var doneTypingInterval = 2500;  //time in ms, 5 second for example
   var $input = $('.add_text');
   var $input1 = $('.supplier');
   var $input2 = $('.percent_one_value');
@@ -2104,6 +2206,10 @@ function add_secondary_function()
   var $input4 = $('.percent_three_value');
   var $input5 = $('.percent_four_value');
   var $input6 = $('.date_attachment');
+  var $input7 = $('.code_attachment');
+
+  var $input8 = $('.currency_value');
+  var $input9 = $('.value_value');
 
   $input.on('keyup', function () {
     var input_val = $(this).val();
@@ -2116,18 +2222,18 @@ function add_secondary_function()
     clearTimeout(typingTimer);
   });
 
-  $input1.on('keyup', function () {
-    var input_val = $(this).val();
-    var attachmentid = $(this).attr('data-element');
-    var fileid = $(this).attr('data-file');
-    var that = $(this);
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
-  });
-  //on keydown, clear the countdown 
-  $input1.on('keydown', function () {
-    clearTimeout(typingTimer);
-  });
+  // $input1.on('keyup', function () {
+  //   var input_val = $(this).val();
+  //   var attachmentid = $(this).attr('data-element');
+  //   var fileid = $(this).attr('data-file');
+  //   var that = $(this);
+  //   clearTimeout(typingTimer);
+  //   typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
+  // });
+  // //on keydown, clear the countdown 
+  // $input1.on('keydown', function () {
+  //   clearTimeout(typingTimer);
+  // });
 
   $input2.on('keyup', function () {
     var input_val = $(this).val();
@@ -2194,6 +2300,45 @@ function add_secondary_function()
     clearTimeout(typingTimer);
   });
 
+  $input7.on('keyup', function () {
+    var input_val = $(this).val();
+    var attachmentid = $(this).attr('data-element');
+    var fileid = $(this).attr('data-file');
+    var that = $(this);
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(doneTyping_code_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+  });
+  //on keydown, clear the countdown 
+  $input7.on('keydown', function () {
+    clearTimeout(typingTimer);
+  });
+
+  $input8.on('keyup', function () {
+    var input_val = $(this).val();
+    var attachmentid = $(this).attr('data-element');
+    var fileid = $(this).attr('data-file');
+    var that = $(this);
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(doneTyping_currency_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+  });
+  //on keydown, clear the countdown 
+  $input8.on('keydown', function () {
+    clearTimeout(typingTimer);
+  });
+
+  $input9.on('keyup', function () {
+    var input_val = $(this).val();
+    var attachmentid = $(this).attr('data-element');
+    var fileid = $(this).attr('data-file');
+    var that = $(this);
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(doneTyping_value_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+  });
+  //on keydown, clear the countdown 
+  $input9.on('keydown', function () {
+    clearTimeout(typingTimer);
+  });
+
   $(".supplier").autocomplete({
       source: function(request, response) {
           $.ajax({
@@ -2208,6 +2353,7 @@ function add_secondary_function()
               }
           });
       },
+      delay:1000,
       minLength: 1,
       select: function( event, ui ) {
         $.ajax({
@@ -2362,9 +2508,66 @@ function add_secondary_function()
       })
     }
   });
+  $(".code_attachment").blur(function(){
+    var attachment_id = $(this).attr("data-element");
+    var file_id = $(this).attr("data-file");
+    if($(".infile_tr_body_"+file_id).find(".show_previous").hasClass('disabled_prev_btn'))
+    {
+      var code = $(this).val();
+      $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_code_filled'); ?>",
+        type:"post",
+        data:{id:attachment_id,code:code},
+        success: function(result)
+        {
+
+        }
+      })
+    }
+  });
+
+  $(".currency_value").blur(function(){
+    var attachment_id = $(this).attr("data-element");
+    var file_id = $(this).attr("data-file");
+    if($(".infile_tr_body_"+file_id).find(".show_previous").hasClass('disabled_prev_btn'))
+    {
+      var code = $(this).val();
+      $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_currency_filled'); ?>",
+        type:"post",
+        data:{id:attachment_id,currency:code},
+        success: function(result)
+        {
+
+        }
+      })
+    }
+  });
+
+  $(".value_value").blur(function(){
+    var attachment_id = $(this).attr("data-element");
+    var file_id = $(this).attr("data-file");
+    if($(".infile_tr_body_"+file_id).find(".show_previous").hasClass('disabled_prev_btn'))
+    {
+      var code = $(this).val();
+      $.ajax({
+        url:"<?php echo URL::to('user/infile_attachment_value_filled'); ?>",
+        type:"post",
+        data:{id:attachment_id,value:code},
+        success: function(result)
+        {
+
+        }
+      })
+    }
+  });
 }
 // Basic example
 $(document).ready(function () {
+  $(".imported_date").datetimepicker({
+       format: 'L',
+       format: 'DD-MMM-YYYY',
+    });
 	$('.complete_date').datetimepicker({
 
           widgetPositioning: {
@@ -2701,6 +2904,7 @@ $(".supplier").autocomplete({
               }
           });
       },
+      delay:1000,
       minLength: 1,
       select: function( event, ui ) {
         $.ajax({
@@ -2751,6 +2955,16 @@ $(window).dblclick(function(e) {
     }
 	}
 });
+
+$('body').on('click', function (e) {
+    $('[data-toggle=popover]').each(function () {
+        // hide any open popovers when the anywhere else in the body is clicked
+        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+            $(this).popover('hide');
+        }
+    });
+});
+
 function next_integrity_check(count)
 {
   var fileid = $(".integrity_attachment:eq("+count+")").attr("data-element");
@@ -2861,6 +3075,112 @@ function next_available_check_div(count)
     });
 }
 $(window).click(function(e) {
+  if($(e.target).hasClass('auto_increment'))
+  {
+    $(e.target).popover("toggle");
+  }
+  if($(e.target).hasClass('imported_workings'))
+  {
+    var file_id = $(e.target).attr("data-element");
+    if($(e.target).is(":checked"))
+    {
+      var status = 1;
+      $(".imported_date_"+file_id).css("display","initial");
+    }
+    else{
+      var status = 0;
+      $(".imported_date_"+file_id).css("display","none");
+    }
+
+    $.ajax({
+        url:"<?php echo URL::to('user/save_imported_status'); ?>",
+        type:"post",
+        data:{file_id:file_id,status:status},
+        success:function(result)
+        {
+          
+        }
+    });
+  }
+  if($(e.target).hasClass('submit_auto_value'))
+  {
+    var file_id = $(e.target).attr("data-element");
+    var value = $(e.target).parents(".form-data").find(".auto_number_value_"+file_id).val();
+    var inc = $(e.target).parents(".form-data").find(".inc_number_value_"+file_id).val();
+    var radio = $(e.target).parents(".popover-content").find(".item_auto_num_"+file_id+":checked").val();
+    var pchecked = $("#bspo_id_"+file_id).find(".p_check:checked").length;
+    var schecked = $("#bspo_id_"+file_id).find(".s_check:checked").length;
+
+    if(value == "")
+    {
+      alert("Please Enter the Value");
+    }
+    else if(inc == "")
+    {
+      alert("Please Enter the Increment Value");
+    }
+    else if(typeof radio === "undefined" || radio == "")
+    {
+      alert("Please Select the Item");
+    }
+    else if(radio == "1" && pchecked == 0)
+    {
+      alert("Sorry, can't number the infile items as none of the items are specified as Purchase.")
+    }
+    else if(radio == "2" && schecked == 0)
+    {
+      alert("Sorry, can't number the infile items as none of the items are specified as Sales.")
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
+        type:"post",
+        data:{file_id:file_id,value:value,inc:inc,radio:radio},
+        success:function(result)
+        {
+          $("[data-toggle='popover']").popover('hide');
+          var place = inc.split(".");
+          var get_place_length = place.length;
+          if(get_place_length > 1)
+          {
+            var places = place[1].length;
+          }
+          else{
+            var places = 0;
+          }
+          var alert_value = 1;
+          if(radio == "1")
+          {
+            $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
+               var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+               if(textval == "")
+               {
+                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                alert_value = alert_value + 1;
+               }
+            });
+          }
+          else
+          {
+            $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
+               var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+               if(textval == "")
+               {
+                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                alert_value = alert_value + 1;
+               }
+            });
+          }
+          if(alert_value == 1)
+          {
+            alert("All Infile items are already numbered. No changes made.");
+          }
+        }
+      })
+    }
+  }
   if($(e.target).hasClass('location_path'))
   {
     $("body").addClass("loading_browse");
@@ -2973,6 +3293,20 @@ $(window).click(function(e) {
             $(".show_previous_"+fileid).parents("td:first").append(result['ps_data_btn']);
             $(e.target).val("Hide Attachments");
             $('[data-toggle="tooltip"]').tooltip();
+
+            $("[data-toggle=popover]").each(function(i, obj) {
+
+              $(this).popover({
+                html: true,
+                content: function() {
+                  var id = $(this).attr('id')
+                  return $('#popover-content-' + id).html();
+                }
+              });
+
+            });
+
+
             add_secondary_function();
             $("body").removeClass("loading");
           }
@@ -3185,12 +3519,24 @@ $(window).click(function(e) {
   }
 	if($(e.target).hasClass('show_iframe_next'))
 	{
-		$(".fa-circle:visible").parents(".attachment_tr").next().find(".fileattachment").trigger("click");
+    $(e.target).parents(".show_iframe").slideRow("up",1000);
+		var html = $(e.target).parents(".show_iframe").nextAll(".show_iframe:first").prevAll(".attachment_tr:first").find(".fileattachment").trigger("click");
+    $('html, body').animate({
+       scrollTop: ($(e.target).parents(".show_iframe").nextAll(".show_iframe:first").offset().top - 135)
+     }, 2000);
 	}
 	if($(e.target).hasClass('show_iframe_prev'))
 	{
-		$(".fa-circle:visible").parents(".attachment_tr").prev().find(".fileattachment").trigger("click");
+		$(e.target).parents(".show_iframe").slideRow("up",1000);
+    var html = $(e.target).parents(".show_iframe").prevAll(".show_iframe:first").prevAll(".attachment_tr:first").find(".fileattachment").trigger("click");
+    $('html, body').animate({
+       scrollTop: ($(e.target).parents(".show_iframe").prevAll(".show_iframe:first").offset().top - 135)
+     }, 2000);
 	}
+  if($(e.target).hasClass('show_iframe_hide'))
+  {
+    $(".show_iframe").slideRow("up",1000);
+  }
 	if($(e.target).hasClass('show_previous'))
 	{
 		$("body").addClass("loading");
@@ -3385,6 +3731,40 @@ $(window).click(function(e) {
 			}
 		})
 	}
+  if($(e.target).hasClass('build_supplier'))
+  {
+    $("body").addClass("loading");
+
+    var client_id = $("#client_search_task").val();
+    $.ajax({
+      url:"<?php echo URL::to('user/build_supplier_names_for_client_id'); ?>",
+      type:"post",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        setTimeout(function() {
+          $(".supplier_text").val(result);
+          $(".supplier_modal").modal("hide");
+          $("body").removeClass("loading");
+        },1000);
+        
+      }
+    })
+  }
+  // if($(e.target).hasClass('td_supplier'))
+  // {
+  //   var client_id = $("#client_search_task").val();
+  //   $.ajax({
+  //     url:"<?php echo URL::to('user/get_supplier_names_for_client_id'); ?>",
+  //     type:"post",
+  //     data:{client_id:client_id},
+  //     success:function(result)
+  //     {
+  //       $(".supplier_text").val(result);
+  //       $(".supplier_modal").modal("show");
+  //     }
+  //   })
+  // }
     if($(e.target).hasClass('supplier_button'))
 	{
 		var supplier = $(".supplier_text").val();
@@ -3747,6 +4127,11 @@ $(window).click(function(e) {
       {
       	$(e.target).parents("tr:first").find(".supplier").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".date_attachment").prop("disabled",true);
+        $(e.target).parents("tr:first").find(".code_attachment").prop("disabled",true);
+
+        $(e.target).parents("tr:first").find(".currency_value").prop("disabled",true);
+        $(e.target).parents("tr:first").find(".value_value").prop("disabled",true);
+
       	$(e.target).parents("tr:first").find(".percent_one_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",true);
@@ -3754,6 +4139,11 @@ $(window).click(function(e) {
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",true);
+        $(".attachment_tr_"+attachment_id).find(".code_attachment").prop("disabled",true);
+
+        $(".attachment_tr_"+attachment_id).find(".currency_value").prop("disabled",true);
+        $(".attachment_tr_"+attachment_id).find(".value_value").prop("disabled",true);
+
         $(".attachment_tr_"+attachment_id).find(".percent_one_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",true);
@@ -3781,6 +4171,11 @@ $(window).click(function(e) {
       {
       	$(e.target).parents("tr:first").find(".supplier").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".date_attachment").prop("disabled",false);
+        $(e.target).parents("tr:first").find(".code_attachment").prop("disabled",false);
+
+        $(e.target).parents("tr:first").find(".currency_value").prop("disabled",false);
+        $(e.target).parents("tr:first").find(".value_value").prop("disabled",false);
+
       	$(e.target).parents("tr:first").find(".percent_one_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",false);
@@ -3788,6 +4183,11 @@ $(window).click(function(e) {
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",false);
+        $(".attachment_tr_"+attachment_id).find(".code_attachment").prop("disabled",false);
+
+        $(".attachment_tr_"+attachment_id).find(".currency_value").prop("disabled",false);
+        $(".attachment_tr_"+attachment_id).find(".value_value").prop("disabled",false);
+
         $(".attachment_tr_"+attachment_id).find(".percent_one_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",false);
@@ -3813,6 +4213,11 @@ $(window).click(function(e) {
       {
       	$(e.target).parents("tr:first").find(".supplier").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".date_attachment").prop("disabled",false);
+        $(e.target).parents("tr:first").find(".code_attachment").prop("disabled",false);
+
+        $(e.target).parents("tr:first").find(".currency_value").prop("disabled",false);
+        $(e.target).parents("tr:first").find(".value_value").prop("disabled",false);
+
       	$(e.target).parents("tr:first").find(".percent_one_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",false);
@@ -3820,6 +4225,11 @@ $(window).click(function(e) {
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",false);
+        $(".attachment_tr_"+attachment_id).find(".code_attachment").prop("disabled",false);
+
+        $(".attachment_tr_"+attachment_id).find(".currency_value").prop("disabled",false);
+        $(".attachment_tr_"+attachment_id).find(".value_value").prop("disabled",false);
+
         $(".attachment_tr_"+attachment_id).find(".percent_one_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",false);
@@ -3845,6 +4255,11 @@ $(window).click(function(e) {
       {
       	$(e.target).parents("tr:first").find(".supplier").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".date_attachment").prop("disabled",true);
+        $(e.target).parents("tr:first").find(".code_attachment").prop("disabled",true);
+
+        $(e.target).parents("tr:first").find(".currency_value").prop("disabled",true);
+        $(e.target).parents("tr:first").find(".value_value").prop("disabled",true);
+
       	$(e.target).parents("tr:first").find(".percent_one_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",true);
@@ -3852,6 +4267,11 @@ $(window).click(function(e) {
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",true);
+        $(".attachment_tr_"+attachment_id).find(".code_attachment").prop("disabled",true);
+
+        $(".attachment_tr_"+attachment_id).find(".currency_value").prop("disabled",true);
+        $(".attachment_tr_"+attachment_id).find(".value_value").prop("disabled",true);
+
         $(".attachment_tr_"+attachment_id).find(".percent_one_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",true);
@@ -4843,12 +5263,13 @@ $(window).click(function(e) {
             else{
               $(".pdf_multipage").hide();
             }
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",src);
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-            var pos = $(e.target).position();
-            var leftposi = parseInt(pos.left);
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+            $(".show_iframe_"+fileid).find(".attachment_pdf").attr("src",src);
+            $(".show_iframe_"+fileid).find(".show_iframe_download").attr("href",element);
+            $(".show_iframe_"+fileid).slideRow('down', 500);
+
+            $('html, body').animate({
+               scrollTop: ($(e.target).offset().top - 100)
+            }, 2000);
             setTimeout(function() {
               $('body').removeClass('loading');
             },2000);
@@ -4857,23 +5278,23 @@ $(window).click(function(e) {
       }
       else if(exttype == "jpg" || exttype == "jpeg" || exttype == "png" || exttype == "tif" || exttype == "tiff" || exttype == "gif")
       {
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",element);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-        var pos = $(e.target).position();
-        var leftposi = parseInt(pos.left);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+        $(".show_iframe_"+fileid).find(".attachment_pdf").attr("src",element);
+        $(".show_iframe_"+fileid).find(".show_iframe_download").attr("href",element);
+        $(".show_iframe_"+fileid).slideRow('down', 500);
+        $('html, body').animate({
+               scrollTop: ($(e.target).offset().top - 100)
+            }, 2000);
         setTimeout(function() {
           $('body').removeClass('loading');
         },2000);
       }
       else{
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src","<?php echo URL::to('user/file_not_supported'); ?>");
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-        var pos = $(e.target).position();
-        var leftposi = parseInt(pos.left);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+        $(".show_iframe_"+fileid).find(".attachment_pdf").attr("src","<?php echo URL::to('user/file_not_supported'); ?>");
+        $(".show_iframe_"+fileid).find(".show_iframe_download").attr("href",element);
+        $(".show_iframe_"+fileid).slideRow('down', 500);
+        $('html, body').animate({
+               scrollTop: ($(e.target).offset().top - 100)
+            }, 2000);
         $('body').removeClass('loading');
       }
       $(e.target).parents("tr:first").find(".fa-circle").show();
@@ -6024,6 +6445,19 @@ $(function () {
     	{
 
     	}
+    })
+  });
+  $(".imported_date").on("dp.hide", function (e) {
+    var file_id = $(this).attr("data-element");
+    var dateval = $(this).val();
+    $.ajax({
+      url:"<?php echo URL::to('user/save_imported_date'); ?>",
+      type:"post",
+      data:{file_id:file_id,date:dateval},
+      success: function(result)
+      {
+
+      }
     })
   });
   $(".date_attachment").on("dp.hide", function (e) {

@@ -32,7 +32,25 @@ body{
 
 }
 
-
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
 
 .label_class{
 
@@ -604,7 +622,7 @@ if(!empty($_GET['import_type_new']))
                 <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="invoice_import">Import</a></li>
 
                 <li><a href="javascript:" class="reportclassdiv" style="font-size: 13px; font-weight: 500;">Report</a></li>
-
+                <li><a href="javascript:" class="invoice_nominals" style="font-size: 13px; font-weight: 500;">Invoice Nominals</a></li>
                 <div class="report_div" style="display: none">
 
                     <label>Please select following report type</label><br>
@@ -879,6 +897,11 @@ if(!empty($_GET['import_type_new']))
 
 <div class="modal_load"></div>
 
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Invoices are Loaded.</p>
+  <p style="font-size:18px;font-weight: 600;">Building Sales Invoice Journals: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
+
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
 
 <input type="hidden" name="show_alert" id="show_alert" value="">
@@ -918,9 +941,55 @@ function printPdf(url) {
   iframe.src = url;
 }
 
-
+function next_invoice_check(count)
+{
+  var inv_id = $(".invoice_class:eq("+count+")").html();
+  $.ajax({
+    url:"<?php echo URL::to('user/insert_update_invoice_nominals'); ?>",
+    type:"post",
+    data:{inv_id:inv_id},
+    success:function(result)
+    {
+      setTimeout( function() {
+        var countval = count + 1;
+        if($(".invoice_class:eq("+countval+")").length > 0)
+        {
+          next_invoice_check(countval);
+          $("#apply_first").html(countval);
+        }
+        else{
+          $("body").removeClass("loading_apply");
+        }
+      },200);
+    }
+  });
+}
 $(window).click(function(e) {
-
+  if($(e.target).hasClass("invoice_nominals"))
+  {
+    $("body").addClass("loading_apply");
+    var countinvoice = $(".invoice_class").length;
+    $("#apply_last").html(countinvoice);
+    var inv_id = $(".invoice_class:eq(0)").html();
+    $.ajax({
+      url:"<?php echo URL::to('user/insert_update_invoice_nominals'); ?>",
+      type:"post",
+      data:{inv_id:inv_id},
+      success:function(result)
+      {
+        setTimeout( function() {
+          if($(".invoice_class:eq(1)").length > 0)
+          {
+            next_invoice_check(1);
+            $("#apply_first").html(1);
+          }
+          else{
+            $("body").removeClass("loading_apply");
+          }
+      },200);
+      }
+    });
+  }
   if($(e.target).hasClass('saveas_pdf'))
   {
     var htmlcontent = $("#letterpad_modal").html();

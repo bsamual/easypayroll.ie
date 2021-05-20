@@ -1381,6 +1381,7 @@ if(!empty($_GET['import_type_existing']))
                     <input type="radio" name="import_client" id="import_yes" value="1"><label for="import_yes">Yes</label>
                     <input type="radio" name="import_client" id="import_no" value="1"><label for="import_no">No</label>
                 </div>
+                <li><a href="javascript:" class="importclientbutton" style="font-size: 13px; font-weight: 500;">Client Account Review</a></li>
               </ul>
             </div>
             <br/>

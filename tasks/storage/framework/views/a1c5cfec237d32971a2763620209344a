@@ -222,7 +222,7 @@ a:hover{text-decoration: underline;}
               <select name="from_user" id="from_user" class="form-control input-sm" value="" required>
                   <option value="">Select User</option>
                   <?php
-                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
                     if(count($users))
                     {
                       foreach($users as $user)
@@ -637,12 +637,17 @@ a:hover{text-decoration: underline;}
                     }
 
                     $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-                    $explode_tax_name = explode(',', $tax_details->tax_name);
-                    $explode_tax_number = explode(',', $tax_details->tax_number);
+                    if(count($tax_details))
+                    {
+                      $explode_tax_name = explode(',', $tax_details->tax_name);
+                      $explode_tax_number = explode(',', $tax_details->tax_number);
+                    }
+                    else{
+                      $explode_tax_name = array();
+                      $explode_tax_number = array();
+                    }
 
                     $principal_key = $principal_name[$key];
-
-                    
 
                     if(isset($sub_contractor[$key])){
                       $sub_cont_name = $sub_contractor[$key];
@@ -697,13 +702,14 @@ a:hover{text-decoration: underline;}
                     $total_deduction = $total_deduction+$value_deduction_total;
 
 
-
+                    if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
+                    if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
                     $outputsubmission.='
                     <tr>
                       <td style="text-align:left"><input type="checkbox" class="select_class select_class_'.$type.'" value="'.$key.'"  /><label>&nbsp;</label></td>
                       <td style="text-align:left">'.$type_text.'</td>
                       <td style="text-align:left">'.$rct_id[$key].'<br/></td>
-                      <td style="text-align:left">'.$explode_tax_name[$principal_key].' - '.$explode_tax_number[$principal_key].'</td>
+                      <td style="text-align:left">'.$exp_tax_name.' - '.$exp_tax_number.'</td>
                       <td style="text-align:left">'.$sub_cont_name.'</td>
                       <td style="text-align:left">'.$sub_cont_id.'</td>
                       <td style="text-align:left">'.$site_view.'</td>
@@ -746,8 +752,15 @@ a:hover{text-decoration: underline;}
                     }
 
                     $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
-                    $explode_tax_name = explode(',', $tax_details->tax_name);
-                    $explode_tax_number = explode(',', $tax_details->tax_number);
+                    if(count($tax_details))
+                    {
+                      $explode_tax_name = explode(',', $tax_details->tax_name);
+                      $explode_tax_number = explode(',', $tax_details->tax_number);
+                    }
+                    else{
+                      $explode_tax_name = array();
+                      $explode_tax_number = array();
+                    }
 
                     $principal_key = $principal_name[$key];
 
@@ -804,13 +817,15 @@ a:hover{text-decoration: underline;}
                     $total_deduction = $total_deduction+$value_deduction_total;
 
 
-
+                    if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
+                    if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
+                    
                     $outputsubmission.='
                     <tr>
                       <td style="text-align:left"><input type="checkbox" class="select_class select_class_'.$type.'" value="'.$key.'"  /><label>&nbsp;</label></td>
                       <td style="text-align:left">'.$type_text.'</td>
                       <td style="text-align:left">'.$rct_id[$key].'<br/></td>
-                      <td style="text-align:left">'.$explode_tax_name[$principal_key].' - '.$explode_tax_number[$principal_key].'</td>
+                      <td style="text-align:left">'.$exp_tax_name.' - '.$exp_tax_number.'</td>
                       <td style="text-align:left">'.$sub_cont_name.'</td>
                       <td style="text-align:left">'.$sub_cont_id.'</td>
                       <td style="text-align:left">'.$site_view.'</td>

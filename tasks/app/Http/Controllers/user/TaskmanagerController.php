@@ -5491,5 +5491,181 @@ class TaskmanagerController extends Controller {
 			echo '';
 		}
 	}
+	public function download_export_csv_task_manager()
+	{
+		$view = Input::get('view');
+		$user = Session::get('taskmanager_user');
+		$user_details = DB::table('user')->where('user_id',$user)->first();
+		if($view == "3")
+		{
+			$tasks = DB::table('taskmanager')->where('author',$user)->where('status',0)->get();
+			$filename = 'Allocated Task List for '.$user_details->lastname.' '.$user_details->firstname.'.csv';
+			$file = fopen('papers/Authored Task List for '.$user_details->lastname.' '.$user_details->firstname.'-'.time().'.csv', 'w');
+		}
+		elseif($view == "2")
+		{
+			$tasks = DB::select("SELECT * FROM `taskmanager` WHERE `status` = '0' AND (`allocated_to` = '".$user."' OR `author` = '".$user."' OR `allocated_to` = '0') AND (`author_spec_status` = '1' OR `allocated_spec_status` = '1')");
+			$filename = 'Notified Task List for '.$user_details->lastname.' '.$user_details->firstname.'.csv';
+			$file = fopen('papers/Notified Task List for '.$user_details->lastname.' '.$user_details->firstname.'-'.time().'.csv', 'w');
+		}
+		else{
+			$tasks = DB::table('taskmanager')->where('allocated_to',$user)->where('status',0)->get();
+			$filename = 'Open Task List for '.$user_details->lastname.' '.$user_details->firstname.'.csv';
+			$file = fopen('papers/Allocated Task List for '.$user_details->lastname.' '.$user_details->firstname.'-'.time().'.csv', 'w');
+		}
+
+		if(count($tasks))
+		{
+			$columns = array('Client/Task Name', 'Subject', 'Author Name', 'Allocated Name', 'Due Date', 'Created Date', 'Task ID', 'Progress');
+			fputcsv($file, $columns);
+			foreach($tasks as $task)
+			{
+				if($task->client_id == "")
+				{
+					$title_lable = 'Task Name:';
+					$task_details = DB::table('time_task')->where('id', $task->task_type)->first();
+					if(count($task_details))
+					{
+					  $title = $task_details->task_name;
+					}
+					else{
+					  $title = '';
+					}
+				}
+				else{
+					$title_lable = 'Client:';
+					$client_details = DB::table('cm_clients')->where('client_id', $task->client_id)->first();
+					if(count($client_details))
+					{
+					  $title = $client_details->company.' ('.$task->client_id.')';
+					}
+					else{
+					  $title = ''	;
+					}
+				}
+
+				if($task->subject == "") { $subject = substr($task_specifics_val,0,30); }
+	            else{ $subject = $task->subject; }
+
+	            if($task->allocated_to == 0) { $allocated_to = 'Open Task'; }
+	            else{ $allocated = DB::table('user')->where('user_id',$task->allocated_to)->first(); $allocated_to = $allocated->lastname.' '.$allocated->firstname; }
+
+	            $author = DB::table('user')->where('user_id',$task->author)->first();
+
+			    $columns1 = array($title, $subject, $author->lastname.' '.$author->firstname, $allocated_to, date('d-M-Y', strtotime($task->due_date)), date('d-M-Y', strtotime($task->creation_date)), $task->taskid, $task->progress);
+			    fputcsv($file, $columns1);
+			}
+		}
+		fclose($file);
+   	 	echo $filename;
+	}
+	public function download_export_csv_task_search(){
+		$author = Input::get('author');
+		$open_task = Input::get('open_task');
+		$client_id = Input::get('client_id');
+		$subject = Input::get('subject');
+		$recurring = Input::get('recurring');
+		$due_date = Input::get('due_date');
+		$creation_date = Input::get('creation_date');
+		$make_internal = Input::get('make_internal');
+		$select_tasks = Input::get('select_tasks');
+
+		$filename = 'Search Task Lists '.time().'.csv';
+		$file = fopen('papers/'.$filename, 'w');
+
+		$allocated_to_val = Session::get('taskmanager_user');
+
+		$query = '';
+		if($author != ""){ $query.= "`author` = '".$author."'";  }
+
+		if($open_task == "0"){ 
+			if($query == "") { $query.= "(`status` = '1' OR `status` = '2')"; } else { $query.= " AND (`status` = '1' OR `status` = '2')"; }
+		}
+		elseif($open_task == "1")
+		{
+			if($query == "") { $query.= "(`status` = '0' OR `status` = '2')"; } else { $query.= " AND (`status` = '0' OR `status` = '2')"; }
+		}
+		else{
+			
+		}
+
+		if($make_internal == "0")
+		{
+			if($client_id != ""){ if($query == "") { $query.= "`client_id` = '".$client_id."'"; } else { $query.= " AND `client_id` = '".$client_id."'"; } }
+		}
+		else{
+			if($select_tasks != ""){ if($query == "") { $query.= "`task_type` = '".$select_tasks."'"; } else { $query.= " AND `task_type` = '".$select_tasks."'"; } }
+		}
+		
+		if($recurring != "0"){ if($query == "") { $query.= "`recurring_task` > '0'"; } else { $query.= " AND `recurring_task` > '0'"; } }
+		else{ if($query == "") { $query.= "`recurring_task` = '0'"; } else { $query.= " AND `recurring_task` = '0'"; } }
+
+		if($due_date != ""){
+			$due_date_change = DateTime::createFromFormat('d-M-Y', $due_date);
+			$due_date_change = $due_date_change->format('Y-m-d');
+
+			if($query == "") { $query.= "`due_date` = '".$due_date_change."'"; } else { $query.= " AND `due_date` = '".$due_date_change."'"; } 
+		}
+		if($creation_date != ""){ 
+			$creation_date_change = DateTime::createFromFormat('d-M-Y', $creation_date);
+			$creation_date_change = $creation_date_change->format('Y-m-d');
+
+			if($query == "") { $query.= "`creation_date` = '".$creation_date_change."'"; } else { $query.= " AND `creation_date` = '".$creation_date_change."'"; }
+		}
+		if($subject != "") { 
+			if($query == "") { $query.= "`subject` LIKE '%".$subject."%' OR `task_specifics` LIKE '%".$subject."%' OR `taskid` LIKE '%".$subject."%'"; } 
+			else { $query.= " AND (`subject` LIKE '%".$subject."%' OR `task_specifics` LIKE '%".$subject."%' OR `taskid` LIKE '%".$subject."%')"; } 
+		}
+
+		$query = "SELECT * FROM `taskmanager` WHERE ".$query."";
+		$user_tasks = DB::select($query);
+
+		$open_tasks = '';
+		$layout = '';
+		if(count($user_tasks))
+	    {
+	        $columns = array('Client/Task Name', 'Subject', 'Author Name', 'Allocated Name', 'Due Date', 'Created Date', 'Task ID', 'Progress');
+			fputcsv($file, $columns);
+			foreach($user_tasks as $task)
+			{
+				if($task->client_id == "")
+				{
+					$title_lable = 'Task Name:';
+					$task_details = DB::table('time_task')->where('id', $task->task_type)->first();
+					if(count($task_details))
+					{
+					  $title = $task_details->task_name;
+					}
+					else{
+					  $title = '';
+					}
+				}
+				else{
+					$title_lable = 'Client:';
+					$client_details = DB::table('cm_clients')->where('client_id', $task->client_id)->first();
+					if(count($client_details))
+					{
+					  $title = $client_details->company.' ('.$task->client_id.')';
+					}
+					else{
+					  $title = ''	;
+					}
+				}
+
+				if($task->subject == "") { $subject = substr($task_specifics_val,0,30); }
+	            else{ $subject = $task->subject; }
+
+	            if($task->allocated_to == 0) { $allocated_to = 'Open Task'; }
+	            else{ $allocated = DB::table('user')->where('user_id',$task->allocated_to)->first(); $allocated_to = $allocated->lastname.' '.$allocated->firstname; }
+
+	            $author = DB::table('user')->where('user_id',$task->author)->first();
+
+			    $columns1 = array($title, $subject, $author->lastname.' '.$author->firstname, $allocated_to, date('d-M-Y', strtotime($task->due_date)), date('d-M-Y', strtotime($task->creation_date)), $task->taskid, $task->progress);
+			    fputcsv($file, $columns1);
+			}
+		}
+		fclose($file);
+   	 	echo $filename;
+	}
 }
 

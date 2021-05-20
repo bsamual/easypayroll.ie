@@ -2736,4 +2736,22 @@ class YearendController extends Controller {
             }
             echo $formatted_date;
       }
+      public function yearend_notes_update()
+      {
+            $value = Input::get('value');
+            $year_id = Input::get('year_id');
+            $client_id = Input::get('client_id');
+            
+            $data['notes'] = $value;
+            DB::table('year_client')->where('year',$year_id)->where('client_id',$client_id)->update($data);
+      }
+      public function yearend_status_notes_update()
+      {
+            $status = Input::get('status');
+            $year_id = Input::get('year_id');
+            $client_id = Input::get('client_id');
+            
+            $data['notes_status'] = $status;
+            DB::table('year_client')->where('year',$year_id)->where('client_id',$client_id)->update($data);
+      }
 }

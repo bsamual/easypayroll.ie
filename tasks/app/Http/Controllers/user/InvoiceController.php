@@ -1645,4 +1645,54 @@ class InvoiceController extends Controller {
 		$pdf->save('papers/Invoice Report.pdf');
 		echo 'Invoice Report.pdf';
 	}
+	public function insert_update_invoice_nominals()
+	{
+		$inv_id = Input::get('inv_id');
+		$invoice_details = DB::table('invoice_system')->where('invoice_number',$inv_id)->first();
+		$check_invoice = DB::table('invoice_journals')->where('reference',$inv_id)->first();
+		if(count($check_invoice))
+		{
+			$data['journal_date'] = $invoice_details->invoice_date;
+			$data['description'] = 'Sales Invoice '.$inv_id;
+			$data['dr_value'] = '0.00';
+			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->inv_net);
+			DB::table('invoice_journals')->where('reference',$check_invoice->reference)->where('nominal_code','001')->update($data);
+
+			$data['dr_value'] = '0.00';
+			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->vat_value);
+			DB::table('invoice_journals')->where('reference',$check_invoice->reference)->where('nominal_code','845')->update($data);
+
+			$data['dr_value'] = number_format_invoice_without_comma($invoice_details->gross);
+			$data['cr_value'] = '0.00';
+			DB::table('invoice_journals')->where('reference',$check_invoice->reference)->where('nominal_code','712')->update($data);
+
+			
+		}
+		else{
+			$count_total_journals = DB::table('invoice_journals')->groupBy('reference')->get();
+			$next_connecting_journal = count($count_total_journals) + 1;
+
+			$data['journal_date'] = $invoice_details->invoice_date;
+			$data['description'] = 'Sales Invoice '.$inv_id;
+			$data['reference'] = $inv_id;
+
+			$data['nominal_code'] = '001';
+			$data['connecting_journal_reference'] = $next_connecting_journal;
+			$data['dr_value'] = '0.00';
+			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->inv_net);
+			DB::table('invoice_journals')->insert($data);
+
+			$data['nominal_code'] = '845';
+			$data['connecting_journal_reference'] = $next_connecting_journal.'.01';
+			$data['dr_value'] = '0.00';
+			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->vat_value);
+			DB::table('invoice_journals')->insert($data);
+
+			$data['nominal_code'] = '712';
+			$data['connecting_journal_reference'] = $next_connecting_journal.'.02';
+			$data['dr_value'] = number_format_invoice_without_comma($invoice_details->gross);
+			$data['cr_value'] = '0.00';
+			DB::table('invoice_journals')->insert($data);
+		}
+	}
 }

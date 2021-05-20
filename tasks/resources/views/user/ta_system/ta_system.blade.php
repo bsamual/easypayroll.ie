@@ -170,6 +170,46 @@ body.loading {
 body.loading .modal_load {
     display: block;
 }
+
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
+
+.modal_load_one {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_one {
+    overflow: hidden;   
+}
+body.loading_one .modal_load_one {
+    display: block;
+}
     .table thead th:focus{background: #ddd !important;}
     .form-control{border-radius: 0px;}
     .disabled{cursor :auto !important;pointer-events: auto !important}
@@ -228,8 +268,8 @@ a:hover{text-decoration: underline;}
         <h4 class="col-lg-3" style="padding: 0px;">
                 TA System                
             </h4>
-            <div class="col-lg-4 text-right" style="padding-right: 0px; line-height: 35px;">
-                
+            <div class="col-lg-9 text-right" style="padding-right: 0px; line-height: 35px;">
+                <input type="button" class="common_black_button apply_time_allocations" value="Apply Time Allocations to all Clients">
             </div>
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
   </div>
@@ -252,13 +292,15 @@ a:hover{text-decoration: underline;}
 <table class="display nowrap fullviewtablelist" id="ta_expand" width="100%" style="max-width: 100%;">
                         <thead>
                         <tr style="background: #fff;">
-                             <th width="2%" style="text-align: left;">S.No</th>
+                            <th style="text-align: left;"></th>
+                            <th width="2%" style="text-align: left;">S.No</th>
                             <th style="text-align: left;">Client ID</th>
                             <th style="text-align: left;">Company</th>
                             <th style="text-align: left;">First Name</th>
                             <th style="text-align: left;">Surname</th>
                             <th style="text-align: left;">Allocated time</th>
                             <th style="text-align: left;">Unallocated time</th>
+                            
                         </tr>
                         </thead>                            
                         <tbody id="clients_tbody">
@@ -342,15 +384,16 @@ a:hover{text-decoration: underline;}
                                 //   $minutes_calculate_unallocated = '00';
                                 // } 
                           ?>
-                            <tr class="edit_task">
+                            <tr class="edit_task edit_task_<?php echo $client->client_id; ?>">
+                                <td align="left"><a href="javascript:" class="load_unallocated fa fa-cog" data-element="<?php echo $client->client_id; ?>" title="Apply time allocations to this Client"></a></td>
                                 <td><?php echo $i; ?></td>
                                 <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo $client->client_id; ?></a></td>
                                 <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
                                 <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo $client->firstname; ?></a></td>
                                 <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo $client->surname; ?></a></td>
-                                <td align="left"></td>
-                                <td align="left"></td>
-
+                                <td align="left" class="allocated_time_client allocated_time_client_<?php echo $client->client_id; ?>"></td>
+                                <td align="left" class="unallocated_time_client unallocated_time_client_<?php echo $client->client_id; ?>"></td>
+                                
                                 
                             </tr>
                             <?php
@@ -437,6 +480,11 @@ a:hover{text-decoration: underline;}
 
 
 <div class="modal_load"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Applying Time Allocations to Clients.</h5></div>
+<div class="modal_load_one"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Applying Time Allocations to this Client.</h5></div>
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until we Allocate / Unallocate time for all the clients</p>
+  <p style="font-size:18px;font-weight: 600;">Processing Clients: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
 <input type="hidden" name="show_alert" id="show_alert" value="">
 <input type="hidden" name="pagination" id="pagination" value="1">
@@ -455,13 +503,17 @@ $(function(){
         fixedColumns: false,
         searching: false,
         paging: false,
-        info: false
+        info: false,
+        columnDefs: [ {
+        'targets': [0,6,7], // column index (start from 0)
+        'orderable': false, // set orderable false for selected columns
+        }]
     });
 });
 function ajax_response()
 {
 	setTimeout(function(){
-		$("body").addClass("loading");
+		
 		$.ajax({
 			url:"<?php echo URL::to('user/ta_system_ajax_response'); ?>",
 			type:"post",
@@ -476,20 +528,50 @@ function ajax_response()
             fixedColumns: false,
             searching: false,
             paging: false,
-            info: false
+            info: false,
+            columnDefs: [ {
+            'targets': [0,6,7], // column index (start from 0)
+            'orderable': false, // set orderable false for selected columns
+            }]
         });
+        $(".apply_time_allocations").hide();
 				$("body").removeClass("loading");
 			}
 		})
 	},1000)
 }
-$(document).ready(function() {
-  $(".alert_modal").modal("show");
-  $(".alert_content").html("Do you want to Apply Time Allocations to Clients?");
-});
+
+function next_integrity_check(count)
+{
+  var client_id = $(".load_unallocated:eq("+count+")").attr("data-element");
+  $.ajax({
+    url:"<?php echo URL::to('user/load_unallocated_time_for_client'); ?>",
+    type:"post",
+    dataType:"json",
+    data:{client_id:client_id},
+    success:function(result)
+    {
+      setTimeout( function() {
+        $(".allocated_time_client_"+client_id).html(result['allocated']);
+        $(".unallocated_time_client_"+client_id).html(result['unallocated']);
+
+        var countval = count + 1;
+        if($(".load_unallocated:eq("+countval+")").length > 0)
+        {
+          next_integrity_check(countval);
+          $("#apply_first").html(countval);
+        }
+        else{
+          $("body").removeClass("loading_apply");
+        }
+      },200);
+    }
+  });
+}
 $(window).click(function(e){
-  if($(e.target).hasClass('yes_hit'))
+  if($(e.target).hasClass('apply_time_allocations'))
   {
+    $("body").addClass("loading");
     var table = $('#ta_expand').DataTable();
     table.destroy();
     $(".alert_modal").modal("hide");
@@ -499,6 +581,51 @@ $(window).click(function(e){
   {
     $(".alert_modal").modal("hide");
   }
+  if($(e.target).hasClass('load_unallocated'))
+  {
+    $("body").addClass("loading_one");
+    var client_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/load_unallocated_time_for_client'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        $(".allocated_time_client_"+client_id).html(result['allocated']);
+        $(".unallocated_time_client_"+client_id).html(result['unallocated']);
+        $("body").removeClass("loading_one");
+      }
+    })
+  }
+  // if($(e.target).hasClass("apply_time_allocations"))
+  // {
+  //   $("body").addClass("loading_apply");
+  //   var countintegrity = $(".load_unallocated").length;
+  //   $("#apply_last").html(countintegrity);
+  //   var client_id = $(".load_unallocated:eq(0)").attr("data-element");
+  //   $.ajax({
+  //     url:"<?php echo URL::to('user/load_unallocated_time_for_client'); ?>",
+  //     type:"post",
+  //     dataType:"json",
+  //     data:{client_id:client_id},
+  //     success:function(result)
+  //     {
+  //       setTimeout( function() {
+  //         $(".allocated_time_client_"+client_id).html(result['allocated']);
+  //         $(".unallocated_time_client_"+client_id).html(result['unallocated']);
+  //         if($(".load_unallocated:eq(1)").length > 0)
+  //         {
+  //           next_integrity_check(1);
+  //           $("#apply_first").html(1);
+  //         }
+  //         else{
+  //           $("body").removeClass("loading_apply");
+  //         }
+  //     },200);
+  //     }
+  //   });
+  // }
 });
 </script>
 

@@ -2153,7 +2153,7 @@ body #coupon {
                     if($jobs->quick_job == 0){
                       $quick_job = 'No';                      
                       if($jobs->color == '1'){
-                        $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$jobs->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$jobs->id.'">Quick Job</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:" class="edit_active_job" data-element="'.$jobs->id.'" style="'.$redcolor.'">Edit Job</a>';
+                        $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$jobs->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$jobs->id.'" data-job="'.date('d-M-Y',strtotime($jobs->job_date)).'">Quick Job</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:" class="edit_active_job" data-element="'.$jobs->id.'" style="'.$redcolor.'">Edit Job</a>';
                       }
                       else{
                         $buttons = '<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$jobs->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$jobs->id.'">Quick Job</a>';
@@ -2219,27 +2219,27 @@ body #coupon {
                     }
 
 
-            $output.='
-            <tr>
-              <td align="left" style="'.$redcolor.'">'.$i.'</td>
-              <td align="left" style="'.$redcolor.'">'.$client_name.'</td>
-              <td align="left" style="'.$redcolor.'">'.$task_name.'</td>
-              <td align="left" style="'.$redcolor.'">'.$task_type.'</td>
-              <td align="left" style="'.$redcolor.'">'.$quick_job.'</td>
-              <td align="left" style="'.$redcolor.'">'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
-              <td align="left" style="'.$redcolor.'">'.$data['start_time'] = date('H:i:s', strtotime($jobs->start_time)).'</td>
-              <td align="left" style="'.$redcolor.'">N/A</td>
-              <td align="left" style="'.$redcolor.'">'.number_format_invoice_without_decimal($rate_result).'</td>
-              <td align="left" style="'.$redcolor.'"><span id="job_bep_refresh_'.$jobs->id.'">'.number_format_invoice_without_decimal($cost).'</span></td>
-              <td align="left" style="'.$redcolor.'">
-              <span id="job_time_refresh_'.$jobs->id.'" style="'.$redcolor.'">'.$jobtime.' ('.$total_minutes.')</span> &nbsp;&nbsp;<a href="javascript:"><i class="fa fa-refresh job_time_refresh" aria-hidden="true" data-element="'.$jobs->id.'"></i></a>
+                    $output.='
+                    <tr>
+                      <td align="left" style="'.$redcolor.'">'.$i.'</td>
+                      <td align="left" style="'.$redcolor.'">'.$client_name.'</td>
+                      <td align="left" style="'.$redcolor.'">'.$task_name.'</td>
+                      <td align="left" style="'.$redcolor.'">'.$task_type.'</td>
+                      <td align="left" style="'.$redcolor.'">'.$quick_job.'</td>
+                      <td align="left" style="'.$redcolor.'">'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                      <td align="left" style="'.$redcolor.'">'.$data['start_time'] = date('H:i:s', strtotime($jobs->start_time)).'</td>
+                      <td align="left" style="'.$redcolor.'">N/A</td>
+                      <td align="left" style="'.$redcolor.'">'.number_format_invoice_without_decimal($rate_result).'</td>
+                      <td align="left" style="'.$redcolor.'"><span id="job_bep_refresh_'.$jobs->id.'">'.number_format_invoice_without_decimal($cost).'</span></td>
+                      <td align="left" style="'.$redcolor.'">
+                      <span id="job_time_refresh_'.$jobs->id.'" style="'.$redcolor.'">'.$jobtime.' ('.$total_minutes.')</span> &nbsp;&nbsp;<a href="javascript:"><i class="fa fa-refresh job_time_refresh" aria-hidden="true" data-element="'.$jobs->id.'"></i></a>
 
-              </td>
-              <td align="center" style="'.$redcolor.'">'.$buttons.''.$inv_no.'</td>
-            </tr>';
-              
-              $userid = Session::get('task_job_user');
-            $joblist_child = DB::table('task_job')->where('user_id',$userid)->where('active_id',$jobs->id)->get();
+                      </td>
+                      <td align="center" style="'.$redcolor.'">'.$buttons.''.$inv_no.'</td>
+                    </tr>';
+                      
+                      $userid = Session::get('task_job_user');
+                      $joblist_child = DB::table('task_job')->where('user_id',$userid)->where('active_id',$jobs->id)->get();
                       $childi = 1;
                       if(count($joblist_child)){              
                         foreach ($joblist_child as $child) {
@@ -2348,7 +2348,7 @@ body #coupon {
                               if($child->quick_job == 0){
                                 $quick_job = 'No';                      
                                 if($child->color == '1'){
-                                  $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$child->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$child->id.'">Quick Job</a>';
+                                  $buttons = '<a style="'.$redcolor.'" href="javascript:" class="stop_class" data-element="'.$child->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'" href="javascript:" class="create_new_quick" data-element="'.$child->id.'" data-job="'.date('d-M-Y',strtotime($jobs->job_date)).'">Quick Job</a>';
                                 }
                                 else{
                                   $buttons = '<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$child->id.'" style="'.$redcolor.'" data-bulk="'.$jobs->bulk_job.'">Stop</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a style="'.$redcolor.'; cursor:not-allowed" href="javascript:" data-element="'.$child->id.'">Quick Job</a>';
@@ -3886,6 +3886,7 @@ $(window).click(function(e) {
     $("body").addClass('loading');
 
     var element = $(e.target).attr("data-element");
+    var jobdate = $(e.target).attr("data-job");
 
     $(".acive_id").val(element);
     $(".taskjob_id").val('');
@@ -3915,14 +3916,14 @@ $(window).click(function(e) {
         $(".create_new_model").modal("show");
 
         $('.modal-dialog').draggable({
-		    handle: ".modal-header"
-		  });
+  		    handle: ".modal-header"
+  		  });
 
         $("#quickjob").val('1');
         $(".job_title").html('Create a Quick Job');
         $(".job_button_name").val('Create a Quick Job');
         $(".create_dateclass").prop("required",false);
-
+        $(".start_button_quick").attr("data-job",jobdate);
         //$(".stop_time").prop("required",true);
 
 
@@ -4776,7 +4777,7 @@ $(window).click(function(e) {
 
     }
 
-
+    var datajob = $(e.target).attr("data-job");
     var userid = $("#user_select").val();
     var active_starttime = $(".hidden_activejob_starttime").val();
 
@@ -4894,6 +4895,8 @@ $(window).click(function(e) {
 
         $(".date_group").show();
 
+        $(".create_dateclass").val(datajob);
+
         $.ajax({
           url:"<?php echo URL::to('user/check_last_finished_job_time'); ?>",
           type:"post",
@@ -4999,6 +5002,8 @@ $(window).click(function(e) {
             $(".job_button_name").show(); 
 
             $(".date_group").show();
+
+            $(".create_dateclass").val(datajob);
 
             $.ajax({
               url:"<?php echo URL::to('user/check_last_finished_job_time'); ?>",

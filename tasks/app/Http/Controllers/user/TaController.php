@@ -239,14 +239,16 @@ class TaController extends Controller {
                 $minutes_calculate_unallocated = '00';
               } 
               if($client->company == ""){ $clientname = $client->firstname.' & '.$client->surname; } else { $clientname = $client->company; }
-              $outputclients.='<tr class="edit_task">
+              $outputclients.='<tr class="edit_task edit_task_'.$client->client_id.'">
+                  <td align="left"><a href="javascript:" class="load_unallocated fa fa-cog" data-element="'.$client->client_id.'" title="Apply time allocations to this Client"></a></td>
                   <td>'.$i.'</td>
                   <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->client_id.'</a></td>
                   <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$clientname.'</a></td>
                   <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->firstname.'</a></td>
                   <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->surname.'</a></td>
-                  <td align="left">'.$hour_calculate.':'.$minutes_calculate.':00 ('.$allocated_time.' Mins)'.'</td>
-                  <td align="left">'.$hour_calculate_unallocated.':'.$minutes_calculate_unallocated.':00 ('.$unallocated_time.' Mins)'.'</td>
+                  <td align="left" class="allocated_time_client allocated_time_client_'.$client->client_id.'">'.$hour_calculate.':'.$minutes_calculate.':00 ('.$allocated_time.' Mins)'.'</td>
+                  <td align="left" class="unallocated_time_client unallocated_time_client_'.$client->client_id.'">'.$hour_calculate_unallocated.':'.$minutes_calculate_unallocated.':00 ('.$unallocated_time.' Mins)'.'</td>
+
               </tr>';
             $i++;
         }
@@ -256,6 +258,91 @@ class TaController extends Controller {
         $outputclients.='<tr><td colspan="7" align="center">Empty</td></tr>';
       }
       echo $outputclients;
+    }
+    public function load_unallocated_time_for_client()
+    {
+      $client_id = Input::get('client_id');
+     
+      $task_job_details = DB::table('task_job')->where('client_id',$client_id)->where('status',1)->select('id', 'job_time', 'client_id')->get();
+      if(count($task_job_details))
+      {
+        $allocated_time = 0;
+        $unallocated_time = 0;
+        foreach($task_job_details as $jobs)
+        {
+          $client_id = $jobs->client_id;
+          $get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
+          if(count($get_client_invoice))
+          {
+            if(strpos($get_client_invoice->tasks, '"'.$jobs->id.'"') !== false) {
+              $explode_job_minutes = explode(":",$jobs->job_time);
+              $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
+
+              $allocated_time = $allocated_time + $total_minutes;
+            }
+            else{
+              $explode_job_minutes = explode(":",$jobs->job_time);
+              $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
+
+              $unallocated_time = $unallocated_time + $total_minutes;
+            }
+          }
+          else{
+            $explode_job_minutes = explode(":",$jobs->job_time);
+            $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
+
+            $unallocated_time = $unallocated_time + $total_minutes;
+          }
+        }
+
+        $hour_calculate = strtok(($allocated_time/60), '.');
+        $minutes_calculate = $allocated_time-($hour_calculate*60);
+
+        if($hour_calculate <= 9){
+          $hour_calculate = '0'.$hour_calculate;
+        }
+        else{
+          $hour_calculate = $hour_calculate;
+        }
+
+        if($minutes_calculate <= 9){
+          $minutes_calculate = '0'.$minutes_calculate;
+        }
+        else{
+          $minutes_calculate = $minutes_calculate;
+        }
+
+
+        $hour_calculate_unallocated = strtok(($unallocated_time/60), '.');
+        $minutes_calculate_unallocated = $unallocated_time-($hour_calculate_unallocated*60);
+
+        if($hour_calculate_unallocated <= 9){
+          $hour_calculate_unallocated = '0'.$hour_calculate_unallocated;
+        }
+        else{
+          $hour_calculate_unallocated = $hour_calculate_unallocated;
+        }
+
+        if($minutes_calculate_unallocated <= 9){
+          $minutes_calculate_unallocated = '0'.$minutes_calculate_unallocated;
+        }
+        else{
+          $minutes_calculate_unallocated = $minutes_calculate_unallocated;
+        }
+      }
+      else{
+        $allocated_time = 0;
+        $unallocated_time = 0;
+        $hour_calculate = '00';
+        $minutes_calculate = '00';
+        $hour_calculate_unallocated = '00';
+        $minutes_calculate_unallocated = '00';
+      } 
+
+      $allocated = $hour_calculate.':'.$minutes_calculate.':00 ('.$allocated_time.' Mins)';
+      $unallocated = $hour_calculate_unallocated.':'.$minutes_calculate_unallocated.':00 ('.$unallocated_time.' Mins)';
+      echo json_encode(array("allocated" => $allocated, "unallocated" => $unallocated));
+      
     }
     public function taallocation(){
           $client = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();            

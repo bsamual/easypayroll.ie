@@ -132,7 +132,7 @@ function popitup(url) {
 a:hover{text-decoration: underline;}
 </style>
 <!--*************************************************************************-->
-<div class="modal fade edit_job_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
+<div class="modal fade edit_job_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
   <div class="modal-dialog modal-sm" role="document">
     <form action="<?php echo URL::to('user/time_job_edit')?>" method="post" class="add_new_form" id="create_job_form">
         <div class="modal-content">

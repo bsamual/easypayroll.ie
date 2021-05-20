@@ -1,5 +1,5 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
+
 
 
 <script src='<?php echo URL::to('assets/js/table-fixed-header.js'); ?>'></script>
@@ -484,7 +484,7 @@ body.loading .modal_load {
 
                 <?php 
 
-                  $dont_er = DB::table('p30_task')->where('user_login_id',$user_login_id)->where('task_month',$monthid->month_id)->where('na',1)->get();
+                  $dont_er = DB::table('p30_task')->where('task_month',$monthid->month_id)->where('na',1)->get();
 
                   $output ='';
 
@@ -498,7 +498,7 @@ body.loading .modal_load {
 
                     {
 
-                      $task_level = DB::table('p30_tasklevel')->where('user_login_id',$user_login_id)->where('id',$task->task_level)->first();
+                      $task_level = DB::table('p30_tasklevel')->where('id',$task->task_level)->first();
 
                       if(count($task_level))
 
@@ -514,7 +514,7 @@ body.loading .modal_load {
 
                       }
 
-                      $period = DB::table('p30_period')->where('user_login_id',$user_login_id)->where('id',$task->task_period)->first();
+                      $period = DB::table('p30_period')->where('id',$task->task_period)->first();
 
                       if(count($period))
 
@@ -618,7 +618,7 @@ body.loading .modal_load {
 
                 <?php 
 
-                  $dont_er = DB::table('p30_task')->where('user_login_id',$user_login_id)->where('task_month',$monthid->month_id)->where('na',1)->get();
+                  $dont_er = DB::table('p30_task')->where('task_month',$monthid->month_id)->where('na',1)->get();
 
                   $output ='';
 
@@ -632,7 +632,7 @@ body.loading .modal_load {
 
                     {
 
-                      $task_level = DB::table('p30_tasklevel')->where('user_login_id',$user_login_id)->where('id',$task->task_level)->first();
+                      $task_level = DB::table('p30_tasklevel')->where('id',$task->task_level)->first();
 
                       if(count($task_level))
 
@@ -648,7 +648,7 @@ body.loading .modal_load {
 
                       }
 
-                      $period = DB::table('p30_period')->where('user_login_id',$user_login_id)->where('id',$task->task_period)->first();
+                      $period = DB::table('p30_period')->where('id',$task->task_period)->first();
 
                       if(count($period))
 
@@ -754,7 +754,7 @@ body.loading .modal_load {
 
                 <?php 
 
-                  $dont_er = DB::table('p30_task')->where('user_login_id',$user_login_id)->where('task_month',$monthid->month_id)->where('na',2)->get();
+                  $dont_er = DB::table('p30_task')->where('task_month',$monthid->month_id)->where('na',2)->get();
 
                   $output ='';
 
@@ -768,7 +768,7 @@ body.loading .modal_load {
 
                     {
 
-                      $task_level = DB::table('p30_tasklevel')->where('user_login_id',$user_login_id)->where('id',$task->task_level)->first();
+                      $task_level = DB::table('p30_tasklevel')->where('id',$task->task_level)->first();
 
                       if(count($task_level))
 
@@ -784,7 +784,7 @@ body.loading .modal_load {
 
                       }
 
-                      $period = DB::table('p30_period')->where('user_login_id',$user_login_id)->where('id',$task->task_period)->first();
+                      $period = DB::table('p30_period')->where('id',$task->task_period)->first();
 
                       if(count($period))
 
@@ -966,7 +966,7 @@ body.loading .modal_load {
 
       <ul style="margin-right: 13%;">
 
-        <?php $check_current_year = DB::table('year')->where('user_login_id',$user_login_id)->orderBy('year_id','desc')->first(); ?>
+        <?php $check_current_year = DB::table('year')->orderBy('year_id','desc')->first(); ?>
 
         <li><a href="javascript:" id="review_p30_due" class="" data-toggle="modal" data-target="#p30_review_modal" style="float:right">Review P30's Due</a></li>
 
@@ -974,11 +974,11 @@ body.loading .modal_load {
 
         <li class="<?php if($check_current_year->year_id == $monthid->year) { echo ''; } else { echo 'disable_button'; }?>"><a href="<?php echo URL::to('user/p30_close_create_new_month/'.$monthid->year); ?>" id="review_month" class="" style="float:right">Close and Create New Month</a></li>
 
-        <?php $check_current_month = DB::table('p30_month')->where('user_login_id',$user_login_id)->orderBy('month_id','desc')->first(); ?>
+        <?php $check_current_month = DB::table('p30_month')->orderBy('month_id','desc')->first(); ?>
 
         <li class="<?php if($check_current_month->month_id == $monthid->month_id) { echo ''; } else { echo 'disable_button'; }?>"><a href="<?php echo URL::to('user/p30_review_month/'.$monthid->month_id); ?>" id="review_month">Review Month</a></li>
 
-        <?php $check_incomplete = Db::table('user_login')->where('userid',$user_login_id)->first(); 
+        <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); 
 
         if($check_incomplete->p30_incomplete == 1) { $inc_checked = 'checked="checked"'; } else { $inc_checked = ''; }
 
@@ -1052,7 +1052,7 @@ if(Session::has('error')) { ?>
 
                   <?php
 
-                    $users = DB::table('user')->where('user_login_id',$user_login_id)->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('firstname','asc')->get();
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
 
                     if(count($users))
 
@@ -1300,7 +1300,7 @@ if(Session::has('error')) { ?>
 
                   <td class="level_sort_std_val">
 
-                    <?php $tasklevel = DB::table('p30_tasklevel')->where('user_login_id',$user_login_id)->where('status',0)->orderBy('name','asc')->get(); ?>
+                    <?php $tasklevel = DB::table('p30_tasklevel')->where('status',0)->orderBy('name','asc')->get(); ?>
 
                     <select name="task_level" class="form-control input-sm task_level_class <?php echo $disabled; ?>" data-element="<?php echo $result->id; ?>">
 
@@ -1346,11 +1346,11 @@ if(Session::has('error')) { ?>
 
                     <?php 
 
-                      $due_date = DB::table('p30_due_date')->where('user_login_id',$user_login_id)->first(); 
+                      $due_date = DB::table('p30_due_date')->first(); 
 
-                      $month_details = Db::table('p30_month')->where('user_login_id',$user_login_id)->where('month_id',$monthid->month_id)->first();
+                      $month_details = Db::table('p30_month')->where('month_id',$monthid->month_id)->first();
 
-                      $year_details = DB::table('year')->where('user_login_id',$user_login_id)->where('year_id',$month_details->year)->first();
+                      $year_details = DB::table('year')->where('year_id',$month_details->year)->first();
 
                       if($month_details->month == 1) { $month_name = "February"; }
 
@@ -1392,7 +1392,7 @@ if(Session::has('error')) { ?>
 
                   <td class="period_sort_std_val">
 
-                    <?php $period = DB::table('p30_period')->where('user_login_id',$user_login_id)->where('status',0)->orderBy('sort','asc')->get(); ?>
+                    <?php $period = DB::table('p30_period')->where('status',0)->orderBy('sort','asc')->get(); ?>
 
                     <select name="task_period" class="form-control input-sm period_class <?php echo $disabled; ?>" data-element="<?php echo $result->id; ?>">
 
@@ -1436,7 +1436,7 @@ if(Session::has('error')) { ?>
 
                       <?php
 
-                      $attachments = DB::table('p30_task_attached')->where('user_login_id',$user_login_id)->where('task_id',$result->id)->get();
+                      $attachments = DB::table('p30_task_attached')->where('task_id',$result->id)->get();
 
                       if(count($attachments))
 
@@ -1480,7 +1480,7 @@ if(Session::has('error')) { ?>
 
                     <?php
 
-                      $attachment = DB::table('p30_task_xml')->where('user_login_id',$user_login_id)->where('task_id',$result->id)->first();
+                      $attachment = DB::table('p30_task_xml')->where('task_id',$result->id)->first();
 
                       if(count($attachment))
 

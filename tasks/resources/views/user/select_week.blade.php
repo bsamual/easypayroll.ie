@@ -1,7 +1,7 @@
 @extends('userheader')
 @section('content')
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
-<script src="http://malsup.github.com/jquery.form.js"></script>
+<script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
   .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
 
@@ -13,7 +13,7 @@
   .fa-star-o { color:#000 !important; }
 
   .error{ color:#f00; }
-  .secret_button:focus { background: #7bab15;outline: none; }
+  .secret_button:focus { background: #fff;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
       display:    none;
@@ -113,7 +113,10 @@ table{
   height:212px;
 
 }
-
+.table_bg > tbody > tr > td, .table_bg > tbody > tr > th, .table_bg > tfoot > tr > td, .table_bg > tfoot > tr > th, .table_bg > thead > tr > td
+{
+  color:#000 !important;
+}
 @-moz-document url-prefix('') {
 
     .special_td{
@@ -332,10 +335,6 @@ table{
 
 
 
-  color:#fff !important;
-
-
-
 }
 
 
@@ -348,7 +347,6 @@ table{
 
 
 
-  color:#fff !important;
 
 
 
@@ -448,14 +446,8 @@ table{
 
 
   height: 75px !important;
-  background: #7bab15 !important;
-
-
-
+  background: #fff !important;
   margin-bottom: 0px !important;
-
-
-
 }
 
 
@@ -648,7 +640,6 @@ table{
 
 
 
-    color: #fff;
 
 
 
@@ -740,7 +731,6 @@ table{
 
 
 
-    color: #fff;
 
 
 
@@ -812,7 +802,6 @@ table{
 
 
 
-    color: #fff;
 
 
 
@@ -4593,7 +4582,7 @@ if(Session::has('error')) { ?>
 
 
 
-              <?php if($result->task_status == 1) { $task_label='style="color:#f00;font-weight:800"'; } elseif($result->task_complete_period == 1) { $task_label='style="color:#1b0fd4;font-weight:800"'; } elseif($result->task_started == 1) { $task_label='style="color:#89ff00;font-weight:800"'; } else{ $task_label='style="color:#fff;font-weight:600"'; } ?>
+              <?php if($result->task_status == 1) { $task_label='style="color:#f00;font-weight:800"'; } elseif($result->task_complete_period == 1) { $task_label='style="color:#1b0fd4;font-weight:800"'; } elseif($result->task_started == 1) { $task_label='style="color:#89ff00;font-weight:800"'; } else{ $task_label='style="font-weight:600"'; } ?>
 
 
 
@@ -4635,7 +4624,7 @@ if(Session::has('error')) { ?>
 
                     ?>
 
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -4805,7 +4794,7 @@ if(Session::has('error')) { ?>
                         $attachments = DB::table('task_attached')->where('task_id',$result->task_id)->where('network_attach',1)->get();
                         if(count($attachments))
                         {
-                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -5655,7 +5644,7 @@ if(Session::has('error')) { ?>
 
 
 
-              <?php if($result->task_status == 1) { $task_label='style="color:#f00;font-weight:800"'; } elseif($result->task_complete_period == 1) { $task_label='style="color:#1b0fd4;font-weight:800"'; }  elseif($result->task_started == 1) { $task_label='style="color:#89ff00;font-weight:800"'; } else{ $task_label='style="color:#fff;font-weight:600"'; }  ?>
+              <?php if($result->task_status == 1) { $task_label='style="color:#f00;font-weight:800"'; } elseif($result->task_complete_period == 1) { $task_label='style="color:#1b0fd4;font-weight:800"'; }  elseif($result->task_started == 1) { $task_label='style="color:#89ff00;font-weight:800"'; } else{ $task_label='style="font-weight:600"'; }  ?>
 
 
 
@@ -5698,7 +5687,7 @@ if(Session::has('error')) { ?>
 
                     ?>
 
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -5863,7 +5852,7 @@ if(Session::has('error')) { ?>
                         if(count($attachments))
                         {
                           echo '';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -6787,7 +6776,7 @@ if(Session::has('error')) { ?>
 
 
 
-              <?php if($result->task_status == 1) { $task_label='style="color:#f00;font-weight:800"'; } elseif($result->task_complete_period == 1) { $task_label='style="color:#1b0fd4;font-weight:800"'; }  elseif($result->task_started == 1) { $task_label='style="color:#89ff00;font-weight:800"'; } else{ $task_label='style="color:#fff;font-weight:600"'; } ?>
+              <?php if($result->task_status == 1) { $task_label='style="color:#f00;font-weight:800"'; } elseif($result->task_complete_period == 1) { $task_label='style="color:#1b0fd4;font-weight:800"'; }  elseif($result->task_started == 1) { $task_label='style="color:#89ff00;font-weight:800"'; } else{ $task_label='style="font-weight:600"'; } ?>
 
 
 
@@ -6829,7 +6818,7 @@ if(Session::has('error')) { ?>
 
                     ?>
                     
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #7bab15 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -6992,7 +6981,7 @@ if(Session::has('error')) { ?>
                         if(count($attachments))
                         {
                           echo '';
-                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;color: #fff;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
+                          echo '<h5 style="color:#000; font-weight:600">Files Received : <i class="fa fa-minus-square fadeleteall_attachments '.$disabled.'" data-element="'.$result->task_id.'" style="margin-top:10px;" aria-hidden="true" title="Delete All Attachments"></i></h5>';
                           echo '<div class="scroll_attachment_div">';
                               foreach($attachments as $attachment)
                               {
@@ -8523,7 +8512,7 @@ $(window).click(function(e) {
         success:function(result)
         {
           $(e.target).parents(".special_div").find(".files_received_div").html(result);
-          $(e.target).parents(".special_div").find(".same_as_last_label").css({"color":"#fff","text-decoration":"none","font-weight":"700"})
+          $(e.target).parents(".special_div").find(".same_as_last_label").css({"text-decoration":"none","font-weight":"700"})
         }
       })
     }
@@ -13310,7 +13299,7 @@ $(window).click(function(e) {
     var pos = $(e.target).position();
     var leftposi = parseInt(pos.left) - 200;
     $(e.target).parent().find('.img_div').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
-    var length = (e.target).parents(".special_div").find('.dz-preview').length;
+    var length = $(e.target).parents(".special_div").find('.dz-preview').length;
     if(length > 0)
     {
     	$(".dz-message").parents(".dropzone").addClass("dz-started");
@@ -13492,7 +13481,7 @@ $(window).click(function(e) {
 
 
 
-          $(e.target).parents('tr').find('.task_label').css({'color':'#fff','font-weight':'600'});
+          $(e.target).parents('tr').find('.task_label').css({'font-weight':'600'});
 
 
 
@@ -14485,7 +14474,7 @@ if($(e.target).hasClass('do_complete')){
               $(e.target).removeClass('do_complete');
               $(e.target).parent().css({'color':'#000'});
 
-              $(e.target).parents('tr').find('.task_label').css({'color':'#fff','font-weight':'800'});
+              $(e.target).parents('tr').find('.task_label').css({'font-weight':'800'});
 
               $(e.target).addClass('fa-exclamation-triangle');
 

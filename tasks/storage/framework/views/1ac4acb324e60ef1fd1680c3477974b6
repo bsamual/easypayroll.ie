@@ -7,6 +7,7 @@
 <script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
+<script src="<?php echo URL::to('assets/js/slideupdown.js'); ?>"></script>
 <style>
 .content_check{
   word-wrap:break-word; /*old browsers*/
@@ -120,9 +121,7 @@ body.loading_import .modal_load_import {
 .flag_red{ color:red; cursor: pointer }
 #colorbox { z-index:99999999999999999999 !important; }
 .pdf_multipage {
-	float: left;
-	margin-top: -36px;
-margin-left: 200px;
+float:right;
 color: #f00;
 font-size: 18px;
 }
@@ -136,7 +135,7 @@ font-size: 18px;
 .download_s_all_image{ cursor : pointer; }
 .download_o_all_image{ cursor : pointer; }
 .file_attachment_div{width:100%;}
-.add_text{width:95px;}
+.add_text{width:80px;}
 .user_td_class{
   word-wrap: break-word; white-space:normal; min-width:150px; max-width: 150px;
 }
@@ -679,7 +678,8 @@ elseif(Session::has('countupdated'))
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">Supplier/Customer</h4>
+            <h4 class="modal-title job_title">Supplier/Customer <input type="button" name="build_supplier" class="common_black_button build_supplier" value="Build" style="float:right;margin-right: 15px;"></h4>
+
           </div>
           <div class="modal-body">  
           	<textarea name="supplier_text" class="form-control supplier_text" style="height:150px"></textarea>
@@ -1726,13 +1726,9 @@ elseif(Session::has('countupdated'))
 
 
 <script>
-var dialog = new CommonOpenFileDialog();
-dialog.IsFolderPicker = true;    
-dialog.SetOpenButtonText("SAVE TO THIS FOLDER");
-
 //on keyup, start the countdown
 var typingTimer;                //timer identifier
-var doneTypingInterval = 1000;  //time in ms, 5 second for example
+var doneTypingInterval = 2500;  //time in ms, 5 second for example
 var $input = $('.add_text');
 var $input1 = $('.supplier');
 var $input2 = $('.percent_one_value');
@@ -1752,18 +1748,18 @@ $input.on('keydown', function () {
   clearTimeout(typingTimer);
 });
 
-$input1.on('keyup', function () {
-  var input_val = $(this).val();
-  var attachmentid = $(this).attr('data-element');
-  var fileid = $(this).attr('data-file');
-  var that = $(this);
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
-});
-//on keydown, clear the countdown 
-$input1.on('keydown', function () {
-  clearTimeout(typingTimer);
-});
+// $input1.on('keyup', function () {
+//   var input_val = $(this).val();
+//   var attachmentid = $(this).attr('data-element');
+//   var fileid = $(this).attr('data-file');
+//   var that = $(this);
+//   clearTimeout(typingTimer);
+//   typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
+// });
+// //on keydown, clear the countdown 
+// $input1.on('keydown', function () {
+//   clearTimeout(typingTimer);
+// });
 
 $input2.on('keyup', function () {
   var input_val = $(this).val();
@@ -1841,19 +1837,19 @@ function doneTyping (input,id) {
         }
     });
 }
-function doneTyping_supplier (input,attachmentid,fileid,that) {
-  if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
-  {
-  	$.ajax({
-        url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
-        type:"get",
-        data:{input:input,attachmentid:attachmentid,fileid:fileid,type:"0"},
-        success: function(result) {
-          that.attr("data-value",input);
-        }
-    });
-  }
-}
+// function doneTyping_supplier (input,attachmentid,fileid,that) {
+//   if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+//   {
+//   	$.ajax({
+//         url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
+//         type:"get",
+//         data:{input:input,attachmentid:attachmentid,fileid:fileid,type:"0"},
+//         success: function(result) {
+//           that.attr("data-value",input);
+//         }
+//     });
+//   }
+// }
 function doneTyping_percent_one (input,attachmentid,fileid,that) {
   if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
   {
@@ -2095,7 +2091,7 @@ function add_secondary_function()
   
   //on keyup, start the countdown
   var typingTimer;                //timer identifier
-  var doneTypingInterval = 1000;  //time in ms, 5 second for example
+  var doneTypingInterval = 2500;  //time in ms, 5 second for example
   var $input = $('.add_text');
   var $input1 = $('.supplier');
   var $input2 = $('.percent_one_value');
@@ -2115,18 +2111,18 @@ function add_secondary_function()
     clearTimeout(typingTimer);
   });
 
-  $input1.on('keyup', function () {
-    var input_val = $(this).val();
-    var attachmentid = $(this).attr('data-element');
-    var fileid = $(this).attr('data-file');
-    var that = $(this);
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
-  });
-  //on keydown, clear the countdown 
-  $input1.on('keydown', function () {
-    clearTimeout(typingTimer);
-  });
+  // $input1.on('keyup', function () {
+  //   var input_val = $(this).val();
+  //   var attachmentid = $(this).attr('data-element');
+  //   var fileid = $(this).attr('data-file');
+  //   var that = $(this);
+  //   clearTimeout(typingTimer);
+  //   typingTimer = setTimeout(doneTyping_supplier, doneTypingInterval,input_val,attachmentid,fileid,that);
+  // });
+  // //on keydown, clear the countdown 
+  // $input1.on('keydown', function () {
+  //   clearTimeout(typingTimer);
+  // });
 
   $input2.on('keyup', function () {
     var input_val = $(this).val();
@@ -2207,6 +2203,7 @@ function add_secondary_function()
               }
           });
       },
+      delay:1000,
       minLength: 1,
       select: function( event, ui ) {
         $.ajax({
@@ -2700,6 +2697,7 @@ $(".supplier").autocomplete({
               }
           });
       },
+      delay:1000,
       minLength: 1,
       select: function( event, ui ) {
         $.ajax({
@@ -3184,12 +3182,24 @@ $(window).click(function(e) {
   }
 	if($(e.target).hasClass('show_iframe_next'))
 	{
-		$(".fa-circle:visible").parents(".attachment_tr").next().find(".fileattachment").trigger("click");
+    $(e.target).parents(".show_iframe").slideRow("up",1000);
+		var html = $(e.target).parents(".show_iframe").nextAll(".show_iframe:first").prevAll(".attachment_tr:first").find(".fileattachment").trigger("click");
+    $('html, body').animate({
+       scrollTop: ($(e.target).parents(".show_iframe").nextAll(".show_iframe:first").offset().top - 100)
+     }, 2000);
 	}
 	if($(e.target).hasClass('show_iframe_prev'))
 	{
-		$(".fa-circle:visible").parents(".attachment_tr").prev().find(".fileattachment").trigger("click");
+		$(e.target).parents(".show_iframe").slideRow("up",1000);
+    var html = $(e.target).parents(".show_iframe").prevAll(".show_iframe:first").prevAll(".attachment_tr:first").find(".fileattachment").trigger("click");
+    $('html, body').animate({
+       scrollTop: ($(e.target).parents(".show_iframe").prevAll(".show_iframe:first").offset().top - 100)
+     }, 2000);
 	}
+  if($(e.target).hasClass('show_iframe_hide'))
+  {
+    $(".show_iframe").slideRow("up",1000);
+  }
 	if($(e.target).hasClass('show_previous'))
 	{
 		$("body").addClass("loading");
@@ -3384,6 +3394,40 @@ $(window).click(function(e) {
 			}
 		})
 	}
+  if($(e.target).hasClass('build_supplier'))
+  {
+    $("body").addClass("loading");
+
+    var client_id = $("#client_search_task").val();
+    $.ajax({
+      url:"<?php echo URL::to('user/build_supplier_names_for_client_id'); ?>",
+      type:"post",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        setTimeout(function() {
+          $(".supplier_text").val(result);
+          $(".supplier_modal").modal("hide");
+          $("body").removeClass("loading");
+        },1000);
+        
+      }
+    })
+  }
+  // if($(e.target).hasClass('td_supplier'))
+  // {
+  //   var client_id = $("#client_search_task").val();
+  //   $.ajax({
+  //     url:"<?php echo URL::to('user/get_supplier_names_for_client_id'); ?>",
+  //     type:"post",
+  //     data:{client_id:client_id},
+  //     success:function(result)
+  //     {
+  //       $(".supplier_text").val(result);
+  //       $(".supplier_modal").modal("show");
+  //     }
+  //   })
+  // }
     if($(e.target).hasClass('supplier_button'))
 	{
 		var supplier = $(".supplier_text").val();
@@ -4842,12 +4886,9 @@ $(window).click(function(e) {
             else{
               $(".pdf_multipage").hide();
             }
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",src);
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-            var pos = $(e.target).position();
-            var leftposi = parseInt(pos.left);
-            $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+            $(".show_iframe_"+fileid).find(".attachment_pdf").attr("src",src);
+            $(".show_iframe_"+fileid).find(".show_iframe_download").attr("href",element);
+            $(".show_iframe_"+fileid).slideRow('down', 500);
             setTimeout(function() {
               $('body').removeClass('loading');
             },2000);
@@ -4856,23 +4897,17 @@ $(window).click(function(e) {
       }
       else if(exttype == "jpg" || exttype == "jpeg" || exttype == "png" || exttype == "tif" || exttype == "tiff" || exttype == "gif")
       {
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src",element);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-        var pos = $(e.target).position();
-        var leftposi = parseInt(pos.left);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+        $(".show_iframe_"+fileid).find(".attachment_pdf").attr("src",element);
+        $(".show_iframe_"+fileid).find(".show_iframe_download").attr("href",element);
+        $(".show_iframe_"+fileid).slideRow('down', 500);
         setTimeout(function() {
           $('body').removeClass('loading');
         },2000);
       }
       else{
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".attachment_pdf").attr("src","<?php echo URL::to('user/file_not_supported'); ?>");
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").find(".show_iframe_download").attr("href",element);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").show();
-        var pos = $(e.target).position();
-        var leftposi = parseInt(pos.left);
-        $(e.target).parents(".infile_inner_table_row").find(".show_iframe").css({"position":"relative","top":pos.top,"right":'18px'});
+        $(".show_iframe_"+fileid).find(".attachment_pdf").attr("src","<?php echo URL::to('user/file_not_supported'); ?>");
+        $(".show_iframe_"+fileid).find(".show_iframe_download").attr("href",element);
+        $(".show_iframe_"+fileid).slideRow('down', 500);
         $('body').removeClass('loading');
       }
       $(e.target).parents("tr:first").find(".fa-circle").show();

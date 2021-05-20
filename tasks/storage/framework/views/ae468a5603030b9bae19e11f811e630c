@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <style>
 .table_bg>thead>tr>th
 {
@@ -64,9 +63,9 @@
             if(count($monthlist)){
                 $count = count($arraydate) - 1;
               foreach($monthlist as $month){
-                $task_count = DB::table('p30_task')->where('user_login_id',$user_login_id)->where('task_month',$month->month_id)->count();
-                $task_completed = DB::table('p30_task')->where('user_login_id',$user_login_id)->where('task_month',$month->month_id)->where('task_status',1)->count();
-                $task_incomplete = DB::table('p30_task')->where('user_login_id',$user_login_id)->where('task_month',$month->month_id)->where('task_status',0)->count();
+                $task_count = DB::table('p30_task')->where('task_month',$month->month_id)->count();
+                $task_completed = DB::table('p30_task')->where('task_month',$month->month_id)->where('task_status',1)->count();
+                $task_incomplete = DB::table('p30_task')->where('task_month',$month->month_id)->where('task_status',0)->count();
 
                 if($month->month == 1) { $month_name = "January"; }
                 if($month->month == 2) { $month_name = "February"; }

@@ -174,6 +174,7 @@ body #coupon {
                 ?>
                   <li>Total  Clients : <?php echo $total_clients; ?></li>
                   <li>Active  Clients : <?php echo $active_cm_clients; ?></li>
+                  <li><a href="<?php echo URL::to('user/client_account_review'); ?>" style="color:#fff">Client Account Review</a></li>
                 </ul>
               </div>
             </div>

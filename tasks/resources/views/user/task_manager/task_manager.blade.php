@@ -2228,6 +2228,17 @@ $(window).click(function(e) {
   if($(e.target).hasClass('export_csv'))
   {
     $("body").addClass("loading");
+    var view = $(".select_view").val();
+    $.ajax({
+      url:"<?php echo URL::to('user/download_export_csv_task_manager'); ?>",
+      type:"post",
+      data:{view:view},
+      success:function(result)
+      {
+        SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    })
   }
   if($(e.target).hasClass('edit_task_name'))
   {
