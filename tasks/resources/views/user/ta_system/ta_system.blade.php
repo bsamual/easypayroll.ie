@@ -13,9 +13,9 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-body{
+/*body{
   background: #f5f5f5 !important;
-}
+}*/
 .form-control[readonly]{
       background-color: #fff !important
 }
@@ -264,22 +264,27 @@ a:hover{text-decoration: underline;}
     </div>
 </div>
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
-                TA System                
+
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                TA System                 
             </h4>
-            <div class="col-lg-9 text-right" style="padding-right: 0px; line-height: 35px;">
-                <input type="button" class="common_black_button apply_time_allocations" value="Apply Time Allocations to all Clients">
-            </div>
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
-  </div>
-  <div style="clear: both;">
+    </div>
+  <div class="row">
+    <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
      <?php }   
     ?>
-    </div> 
+    </div>
+        
+    <div class="col-lg-12 text-right">
+        <input type="button" class="common_black_button apply_time_allocations" value="Apply Time Allocations to all Clients">
+    </div>
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:30px">
+  </div>
+   
 
 <style type="text/css">
 .refresh_icon{margin-left: 10px;}
@@ -289,7 +294,7 @@ a:hover{text-decoration: underline;}
 .image_div_attachments p{width: 100%; height: auto; font-size: 13px; font-weight: normal; color: #000;}
 </style>
 
-<table class="display nowrap fullviewtablelist" id="ta_expand" width="100%" style="max-width: 100%;">
+<table class="display nowrap fullviewtablelist own_table_white" id="ta_expand" width="100%" style="max-width: 100%;">
                         <thead>
                         <tr style="background: #fff;">
                             <th style="text-align: left;"></th>

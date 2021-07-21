@@ -1,5 +1,4 @@
 <?php $__env->startSection('content'); ?>
-<?php $user_login_id = Session::get('userid'); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 
@@ -12,9 +11,9 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-body{
+/*body{
   background: #2fd9ff !important;
-}
+}*/
 .ui-autocomplete{
   z-index:9999999;
 }
@@ -95,7 +94,7 @@ body{
 .ok_button{background: #000; text-align: center; padding: 6px 12px; color: #fff; float: left; border: 0px; font-size: 13px; line-height: 20px; font-weight: 500 }
 .ok_button:hover{background: #5f5f5f; text-decoration: none; color: #fff}
 .ok_button:focus{background: #000; text-decoration: none; color: #fff}
-.report_csv, .report_pdf{opacity: 1 !important}
+/*.report_csv, .report_pdf{opacity: 1 !important}*/
 
 body.loading {
     overflow: hidden;   
@@ -262,39 +261,14 @@ a:hover{text-decoration: underline;}
 </div>
 <!--*************************************************************************-->
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
-                Job of the day / Close Job 
+
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Job of the day / Close Job                
             </h4>
-            <div class="col-lg-3 text-right"></div>
-            <div class="col-lg-3 text-right" style="padding-right: 0px; line-height: 35px;">
-              <form action="post">
-                <div class="col-lg-8" style="padding: 0px;">
-                  <div class="form-group date_group">
-                      <label class="input-group datepicker-only-init">
-                          <input type="text" class="form-control" id="search_dateclass" placeholder="Select Date" name="date" style="font-weight: 500;" required />
-                          <span class="input-group-addon">
-                              <i class="glyphicon glyphicon-calendar"></i>
-                          </span>
-                      </label>
-                  </div>                  
-                </div>
-                <div class="col-lg-4">
-                    <input type="button" class="ok_button search_button" value="Search"  name="">
-                    
-                </div>
-                </form>
-            </div>
-            <div class="col-lg-3 text-right" style="padding: 0px;float:right">
-              <div class="select_button" style=" margin-left: 10px;">
-                <ul>
-                <li><a href="javascript:" style="font-size: 13px; font-weight: 500; opacity: 0.5" class="class_report_csv">Report CSV</a></li>               
-                <li><a href="javascript:" style="font-size: 13px; font-weight: 500; opacity: 0.5" class="class_report_pdf">Report PDF</a></li> 
-                <li><a href="<?php echo URL::to('user/time_track'); ?>" style="font-size: 13px; font-weight: 500;">TimeMe Manager</a></li>  
-              </ul>
-            </div>                        
-          </div>
-              
+    </div>
+
+<div class="row">
   <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
@@ -302,12 +276,37 @@ a:hover{text-decoration: underline;}
 
     
     <?php } ?>
-    </div> 
+    </div>
+
+    <div class="col-lg-3 text-right" style="padding-right: 0px; line-height: 35px;">
+      <form action="post">
+        <div class="col-lg-8" style="padding: 0px;">
+          <div class="form-group date_group">
+              <label class="input-group datepicker-only-init">
+                  <input type="text" class="form-control" id="search_dateclass" placeholder="Select Date" name="date" style="font-weight: 500;" required />
+                  <span class="input-group-addon">
+                      <i class="glyphicon glyphicon-calendar"></i>
+                  </span>
+              </label>
+          </div>                  
+        </div>
+        <div class="col-lg-4">
+            <input type="button" class="common_black_button search_button" value="Search" style="float: left;"  name="">
+            
+        </div>
+        </form>
+    </div>
+    <div class="col-lg-9 text-right">
+      <div class="select_button">
+        <ul style="float: right;">
+        <li><a href="javascript:" class="class_report_csv">Report CSV</a></li>               
+        <li><a href="javascript:" class="class_report_pdf">Report PDF</a></li> 
+        <li><a href="<?php echo URL::to('user/time_track'); ?>">TimeMe Manager</a></li>  
+      </ul>
+    </div>                        
+  </div>
 
 
-</div>
-
-<div class="row">
   <div class="col-lg-12">
      <ul class="nav nav-tabs" role="tablist">
         <li role="presentation"><a href="<?php echo URL::to('user/time_me_overview')?>">Active Job</a></li>
@@ -320,10 +319,10 @@ a:hover{text-decoration: underline;}
        <div class="tab-content" style="background: #fff; padding-top: 25px; padding-bottom: 15px;">
           <div class="filter_text" style="width: 100%; text-align: center; font-size: 15px; font-weight: bold;">Please wait while the Jobs of the day are loaded.</div>
           <div class="table_selectall" style="display: none;">
-            <div class="col-lg-2" style="padding: 0px;"><input type="checkbox" class="select_all_class" id="select_all_class" value="1" style="padding-top: 20px;"><label for="select_all_class" style="font-size: 14px; font-weight: normal;">Select all</label></div>
+            <div class="col-lg-2" style="padding: 0px 0px 0px 10px;"><input type="checkbox" class="select_all_class" id="select_all_class" value="1" style="padding-top: 20px;"><label for="select_all_class">Select all</label></div>
             <table class="display nowrap fullviewtablelist" id="job_oftheday" width="100%">
               <thead>
-                <tr style="background: #fff;">
+                <tr style="background: #fff; font-size: 13px;">
                   <th></th>
                   <th width="2%" style="text-align: left;">S.No</th>
                   <th style="text-align: left;">User Name</th>

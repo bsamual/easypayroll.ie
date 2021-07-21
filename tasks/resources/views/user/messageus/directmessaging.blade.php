@@ -174,6 +174,8 @@ input:checked + .slider:before {
 /*.messageus_attachment:nth-child(n+9) {
    display:none;
 }*/
+
+.dz-message{margin-top: 75px !important;}
 </style>
 <script src="<?php echo URL::to('ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('ckeditor/samples/js/sample.js'); ?>"></script>
@@ -183,13 +185,11 @@ input:checked + .slider:before {
 <link rel="stylesheet" href="<?php echo URL::to('ckeditor/samples/toolbarconfigurator/lib/codemirror/neo.css'); ?> ">
 
 <div class="content_section">
-	<div id="fixed-header" style="width:100%;background: #fff;margin-top: -16px;">
-	  <div class="page_title" style="z-index:999;margin-top:20px">
-	  	<div class="row">
-		    <div class="col-md-12 padding_00" style="text-align: center">
-		      <label style="margin-left: 1%; text-align:center;font-size:20px">MessageUs - Central Client Messaging System</label>
-		    </div>
-		  </div>
+	<div id="fixed-header" style="width:100%;">
+	  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                MessageUs - Central Client Messaging System                
+            </h4>
 	  </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light active" style="width:20%;text-align: center">
@@ -210,22 +210,22 @@ input:checked + .slider:before {
   </div>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-      <div class="row" style="background: #c7c7c7;">
+      <div class="row" style="background: #fff;">
         <div class="col-md-6" style="padding:20px">
           <div class="col-md-12">
-            <h5 style="font-weight:800">Message Subject: <spam class="error error_subject"></spam> </h5>
+            <h5 style="font-weight:600">Message Subject: <spam class="error error_subject"></spam> </h5>
             <input type="text" name="message_subject" class="form-control message_subject" value="<?php echo $subject; ?>">
           </div>
           <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Message Body: <spam class="error error_body"></spam></h5>
+            <h5 style="font-weight:600">Message Body: <spam class="error error_body"></spam></h5>
             <textarea name="message_body" class="form-control message_body" id="editor_2"><?php echo $message_body; ?></textarea>
           </div>
         </div>
         <div class="col-md-6" style="padding:20px">
           <div class="col-md-12">
-            <div class="col-md-4" style="padding:10px;background: #ff0">
+            <div class="col-md-4" style="padding:10px;background: #f5f5f5">
               <div class="image_div_attachments" >
-                <form action="<?php echo URL::to('user/messageus_upload_images_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload1" style="clear:both;min-height:250px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                <form action="<?php echo URL::to('user/messageus_upload_images_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload1" style="clear:both;min-height:250px;background: #fff;color:#000;border:0px solid; height:auto; width:100%; float:left">
                           <?php
                           if(isset($_GET['message_id']))
                           {
@@ -240,7 +240,7 @@ input:checked + .slider:before {
               </div>
             </div>
             <div class="col-md-8">
-              <h4 style="font-weight:800">Files to be appended to this message:</h4>
+              <h5 style="font-weight:600">Files to be appended to this message:</h5>
               <div id="add_attachments_div">
                 <?php
                 $fileoutput = '';

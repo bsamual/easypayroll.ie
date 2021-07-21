@@ -1257,11 +1257,7 @@ if(!empty($_GET['import_type_existing']))
               <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
                   <h4 style="margin-bottom: 15px;">Notes</h4>
                 <div class="modal-body">
-              <style type="text/css">
-              .select_button{margin-top: 15px;}
-              .select_button ul li .input_select{background: #000; text-align: center; padding: 8px 12px; color: #fff; float: left; border:0px; font-size: 15px;}
-              .select_button ul li .input_select:hover{background: #5f5f5f; text-decoration: none;}
-              </style>
+             
                   <form action="<?php echo URL::to('user/cm_note_update')?>" method="post">
 
                      <textarea name="notes" id="editor_2" class="notes_class">
@@ -1345,13 +1341,14 @@ if(!empty($_GET['import_type_existing']))
 
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
+        <h4 class="col-lg-12 padding_00 new_main_title">
                 Client Management System                
             </h4>
-            <div class="col-lg-1 text-right" style="padding-right: 0px; line-height: 35px;">
-                
+            <div class="col-lg-2" style="padding: 0px; line-height: 35px;">
+                <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->cm_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
+                <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked;?>><label for="show_incomplete">Hide Deactivated Accounts</label>
             </div>
-            <div class="col-lg-1 text-right" style="padding-right: 0px;">
+            <div class="col-lg-2 text-right" style="padding-right: 0px;">
               <input type="text" name="" placeholder="Search" class="form-control search_input_class" >
             </div>
             <div class="col-lg-2 text-right" style="padding-right: 0px;">
@@ -1366,28 +1363,27 @@ if(!empty($_GET['import_type_existing']))
                 <option value="phone">Phone</option>
               </select>
             </div>
-            <div class="col-lg-5 text-right"  style="padding: 0px;" >
+            <div class="col-lg-6 text-right"  style="padding: 0px;" >
               <div class="select_button" style=" margin-left: 10px;">
                 <ul>
-                <li><a href="javascript:" id="search_button" style="font-size: 13px; font-weight: 500;">Search</a></li>
-                <li><a href="" style="font-size: 13px; font-weight: 500;">Reset</a></li>
-                <li><a href="javascript:" class="bulkemail_button" style="font-size: 13px; font-weight: 500;" data-toggle="modal" data-target=".crypt_modal">Bulk Email</a></li>
-                <li><a href="javascript:" class="report_button" style="font-size: 13px; font-weight: 500;">Report</a></li>
-                <li><a href="javascript:" class="addclientbutton" style="font-size: 13px; font-weight: 500;" data-toggle="modal" data-target=".bs-example-modal-sm">Add Client</a></li>
-                <li><a href="javascript:" class="importclientbutton" style="font-size: 13px; font-weight: 500;">Import Client</a></li>
+                <li><a href="javascript:" id="search_button" style="font-weight: 600;">Search</a></li>
+                <li><a href="" style="font-weight: 600;">Reset</a></li>
+                <li><a href="javascript:" class="bulkemail_button" style="font-weight: 600;" data-toggle="modal" data-target=".crypt_modal">Bulk Email</a></li>
+                <li><a href="javascript:" class="report_button" style="font-weight: 600;">Report</a></li>
+                <li><a href="javascript:" class="addclientbutton" style="font-weight: 600;" data-toggle="modal" data-target=".bs-example-modal-sm" style="font-weight: 600;">Add Client</a></li>
+                <li><a href="javascript:" class="importclientbutton" style="font-weight: 600;">Import Client</a></li>
                 <div class="import_div" style="display:none">
                     <label>DO YOU WANT TO IMPORT NEW RECORDS ONLY</label><br/>
                     <input type="radio" name="import_client" id="import_yes" value="1"><label for="import_yes">Yes</label>
                     <input type="radio" name="import_client" id="import_no" value="1"><label for="import_no">No</label>
                 </div>
-                <li><a href="javascript:" class="importclientbutton" style="font-size: 13px; font-weight: 500;">Client Account Review</a></li>
+                <li><a href="javascript:" class="importclientbutton" style="font-weight: 600;">Client Account Review</a></li>
               </ul>
             </div>
             <br/>
-            <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->cm_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
-                <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked;?> style="margin-right:10px"><label for="show_incomplete">Hide Deactivated Accounts</label>
+            
   </div>
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:30px">
   </div>
   <div style="clear: both;">
    <?php
@@ -1410,7 +1406,7 @@ if(!empty($_GET['import_type_existing']))
     <?php } ?>
     </div> 
 
-<table class="display nowrap fullviewtablelist" id="client_expand" width="100%">
+<table class="display nowrap fullviewtablelist own_table_white" id="client_expand" width="100%">
                         <thead>
                         <tr style="background: #fff;">
                              <th width="2%" style="text-align: left;">S.No</th>

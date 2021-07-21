@@ -30,9 +30,9 @@ DB::table('request_cheque_attached')->where('attachment','')->where('url','')->w
 .plus_add:hover{background: #5f5f5f; color: #fff}
 .minus_remove{ padding: 3px ;background: #000; color: #fff; width: 30px; text-align: center; margin-top: 23px; font-size: 20px; float: right;margin-left: 4px; }
 .minus_remove:hover{background: #5f5f5f; color: #fff}
-body{
+/*body{
   background: #f5f5f5 !important;
-}
+}*/
 .form-control[readonly]{
       background-color: #fff !important
 }
@@ -299,11 +299,11 @@ a:hover{text-decoration: underline;}
           <span aria-hidden="true">&times;</span>
         </button>
         <a href="javascript:" class="addclass common_black_button float_right" data-toggle="modal" data-target=".add_model" style="margin-right: 20px;">Add Setup Category</a>
-         <h5 class="modal-title" id="exampleModalLabel">Setup Request Categories</h5>
+         <h4 class="modal-title" id="exampleModalLabel">Setup Request Categories</h4>
       </div>
       <div class="modal-body">
         <?php $requestlist = DB::table('request_category')->get(); ?>
-        <table class="table">
+        <table class="table own_table_white">
           <thead>
             <tr>
                 <th width="5%" style="text-align: left;">S.No</th>
@@ -358,30 +358,34 @@ a:hover{text-decoration: underline;}
           </tbody>
         </table>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+      <div class="modal-footer">        
+        <button type="button" class="common_black_button">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
-                Client Request System              
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Client Request System                 
             </h4>
-            <div class="col-lg-9 text-right" style="padding-right: 0px; line-height: 35px;text-align: right">
-                <a href="javascript:" class="fa fa-cog setup_request" data-toggle="modal" data-target="#setup_request_modal" title="Setup Request Categories" style="font-size: 50px;"></a> 
-            </div>
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
-  </div>
-  <div style="clear: both;">
+    </div>
+  <div class="row">
+    <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
      <?php }   
     ?>
     </div> 
+        
+            <div class="col-lg-12 text-right" style="line-height: 35px;text-align: right">
+                <!-- <a href="javascript:" class="fa fa-cog setup_request" data-toggle="modal" data-target="#setup_request_modal" title="Setup Request Categories" style="font-size: 50px;"></a> --> 
+                <a href="javascript:" class="common_black_button setup_request" data-toggle="modal" data-target="#setup_request_modal" title="Setup Request Categories">Setup Request Categories</a>
+            </div>
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:40px">
+  </div>
+  
 
 <style type="text/css">
 .refresh_icon{margin-left: 10px;}
@@ -390,8 +394,8 @@ a:hover{text-decoration: underline;}
 .bootstrap-datetimepicker-widget{width: 300px !important;}
 .image_div_attachments P{width: 100%; height: auto; font-size: 13px; font-weight: normal; color: #000;}
 </style>
-
-<table class="display nowrap fullviewtablelist" id="crm_expand" width="100%" style="max-width: 100%;">
+<div class="col-lg-12" style="margin-top: 20px;">
+<table class="display nowrap fullviewtablelist own_table_white" id="crm_expand" width="100%" style="max-width: 100%;">
                         <thead>
                         <tr style="background: #fff;">
                              <th width="2%" style="text-align: left;">S.No</th>
@@ -485,6 +489,7 @@ a:hover{text-decoration: underline;}
                           ?> 
                         </tbody>
                     </table>
+</div>
 </div>
     <!-- End  -->
 <div class="main-backdrop"><!-- --></div>

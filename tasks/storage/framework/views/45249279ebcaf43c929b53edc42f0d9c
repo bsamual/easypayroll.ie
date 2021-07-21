@@ -73,7 +73,7 @@ table{
   text-align: left;
   font-weight:600;
   padding: 6px 10px;
-  background: #dcdcdc;
+  background: #f5f5f5;
 }
 .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td
 {
@@ -82,7 +82,7 @@ table{
   text-align: left;
   font-weight:600;
   padding: 6px 10px;
-  background: #dcdcdc;
+  background: #f5f5f5;
   font-size:15px;
 }
 .ui-widget{z-index: 999999999}
@@ -288,9 +288,10 @@ input:checked + .slider:before {
 .avoid_email{ color:green; font-size:18px;}
 .retain_email { color: #f00 !important; }
 
-.open_layout_div{width:99%;margin: 0px auto;}
+.open_layout_div{width:99%;margin: 0px auto; top: 244px; z-index: 9}
 .open_layout_div_change::before{width: 100%; height: 30px; content: ""; position: fixed; background: #fff; margin-top: 300px; z-index: 99}
 .table_layout { border:0px; }
+.bootstrap-datetimepicker-widget { z-index:9999999999999 !important; }
 </style>
 <script src="<?php echo URL::to('ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('ckeditor/samples/js/sample.js'); ?>"></script>
@@ -908,12 +909,13 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="content_section" style="margin-bottom:200px">
-  <div id="fixed-header" style="width:100%;position: fixed;background: #fff;margin-top: -16px;z-index:999">
-    <div class="page_title" style="z-index:999;margin-top:20px">
+  <div id="fixed-header" style="width:100%;position: fixed;background: #f5f5f5; z-index:999;">
+    <div class="page_title">
+      <h4 class="col-lg-12 padding_00 new_main_title">Task Manager</h4>
       <div class="row">
-        <div class="col-md-5 padding_00">
-          <label class="col-md-1" style="text-align: right">User:</label>
-          <div class="col-md-5">
+        <div class="col-lg-2 padding_00">
+          <label class="col-lg-2" style="text-align: right; line-height: 35px;">User:</label>
+          <div class="col-lg-8">
             <select name="select_user" class="form-control select_user_home">
               <option value="">Select User</option>        
                 <?php
@@ -933,36 +935,26 @@ input:checked + .slider:before {
                 ?>
             </select>
           </div>
-          <label class="col-md-1"><a href="javascript:" class="fa fa-refresh refresh_task" title="Refresh Tasks for this user" style="padding:10px;background: #dfdfdf"></a></label>
+          <label class="col-lg-1"><a href="javascript:" class="fa fa-refresh refresh_task" title="Refresh Tasks for this user" style="padding:10px;background: #dfdfdf"></a></label>
         </div>
-        <div class="col-md-2 padding_00" style="text-align: center">
-          <label style="margin-left: 1%; text-align:center;font-size:20px">Task Search</label>
+        <div class="col-lg-2 padding_00" style="padding-top: 5px;">
+          <input type="checkbox" name="select_check" class="show_authored_task_only" id="show_authored_task_only"><label for="show_authored_task_only" >Show authored tasks only</label>
         </div>
-        <div class="col-md-5 padding_00">
-		    	<div class="compressed_layout_div" style="float:right;width:31%;margin-right: 80px;">
-			      <label >Compressed Layout:</label>
+        
+        <div class="col-md-7">
+          <a href="javascript:" class="common_black_button" id="create_new_task" style="float:right;">New task</a>
+		    	<div class="compressed_layout_div" style="float:right;width:31%;">
+			      
 	              <label class="switch" style="margin-right: 10px; float:right !important">
 	                <input type="checkbox" class="compressed_layout" value="1" checked>
 	                <span class="slider round"></span>
 	              </label>
 	              <input type="hidden" id="hidden_compressed_layout" value="1">
+                <label style="float: right; margin-right: 10px; line-height: 30px;" >Compressed Layout:</label>
           		</div>
 		    </div>
       </div>
-      <div class="row">
-          <div class="col-md-5 padding_00">
-            <label class="col-md-1">&nbsp;</label>
-            <div class="col-md-11">
-                <input type="checkbox" name="select_check" class="show_authored_task_only" id="show_authored_task_only"><label for="show_authored_task_only">Show authored tasks only</label>
-            </div>
-          </div>
-          <div class="col-md-2 padding_00">
-            &nbsp;
-          </div>
-          <div class="col-md-5 padding_00">
-            <a href="javascript:" class="common_black_button" id="create_new_task" style="width:30%;float:right;margin-right: 80px">New task</a>
-          </div>
-      </div>
+      
     </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
@@ -984,10 +976,10 @@ input:checked + .slider:before {
         </li>
     </ul>
   </div>
-    <div class="table-responsive" style="width: 100%; float: left;margin-top:160px;min-height:500px ">
+    <div class="table-responsive" style="width: 100%; float: left;margin-top:250px;min-height:500px ">
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <div style="width:100%;float:left; margin-top: 20px;">
+          <div style="width:100%;float:left; margin-top: 62px;">
           <?php
           if(Session::has('message')) { ?>
               <p class="alert alert-info"><?php echo Session::get('message'); ?></p>
@@ -997,7 +989,7 @@ input:checked + .slider:before {
           <?php }
           ?>
           </div>
-          <div style="margin-top:-6px;position:fixed;background: #fff;width: 100%;height: 103px;padding-top: 21px;">
+          <div style="position:fixed;background: #fff;width: 100%;height: 103px;padding-top: 21px; z-index:999; top: 275px; ">
             <div class="col-md-2">
               <label>Search By Author:</label>
               <select name="select_user" class="form-control search_author">
@@ -1017,7 +1009,7 @@ input:checked + .slider:before {
 
             <div class="col-md-2 open_task_div" style="padding:0px">
               <label style="width:100%">Open/Closed Task:</label>
-              <input type="radio" name="open_task_search" class="open_task_search" id="open_task_search_1" value="1" checked><label for="open_task_search_1">Open Tasks</label>
+              <input type="radio" name="open_task_search" class="open_task_search" id="open_task_search_1" value="1" checked style="margin-top: 10px;"><label for="open_task_search_1">Open Tasks</label>
               <input type="radio" name="open_task_search" class="open_task_search" id="open_task_search_0" value="0"><label for="open_task_search_0">Closed Tasks</label>
               <input type="radio" name="open_task_search" class="open_task_search" id="open_task_search_2" value="2"><label for="open_task_search_2">All</label>
               <input type="hidden" id="hidden_open_task" value="1">
@@ -1064,12 +1056,10 @@ input:checked + .slider:before {
                 <input type="button" class="common_black_button search_tasks" value="Search" style="margin-top:25px"> 
             </div>
           </div>
-          <p>&nbsp;</p>
-
-          <div class="open_layout_div" style="margin-top:53px">
+          <div class="open_layout_div">
             <table class="table_bg table-fixed-header open_layout" style="width:100%;margin-top: 0px;">
               <tbody id="task_body_search">
-                <td colspan="4"> Search For the Tasks </td>
+                <td colspan="4" style="padding: 20px; text-align: center;"> Search For the Tasks </td>
               </tbody>
             </table>
            </div>
@@ -1082,37 +1072,37 @@ input:checked + .slider:before {
 		                </td>
 		            </tr>
 	          		<tr class="hidden_tasks_th" id="menulist">
-	                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+	                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
 	                    	<table style="width:100%">
 		                    	<tr>
-		                    		<td style="color:#fff;width:45%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Client/Task Name<i class="fa fa-sort taskname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                          		<td style="color:#fff;width:5%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686"></td>
-		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Subject<i class="fa fa-sort subject_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#000;width:45%;padding:10px; font-size:14px; font-weight:600;">Client/Task Name<i class="fa fa-sort taskname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                          		<td style="color:#000;width:5%;padding:10px; font-size:14px; font-weight:600;"></td>
+		                    		<td style="color:#000;width:50%;padding:10px; font-size:14px; font-weight:600">Subject<i class="fa fa-sort subject_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 		                    	</tr>
 		                    </table>
 	                    </td>
-	                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+	                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
 	                    	<table style="width:100%">
 		                    	<tr>
-		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Author Name<i class="fa fa-sort author_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Allocated Name<i class="fa fa-sort allocated_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#000;width:50%;padding:10px; font-size:14px; font-weight:600;">Author Name<i class="fa fa-sort author_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#000;width:50%;padding:10px; font-size:14px; font-weight:600">Allocated Name<i class="fa fa-sort allocated_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 		                    	</tr>
 	                    	</table>
 	                    </td>
-	                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+	                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
 	                    	<table style="width:100%">
 		                    	<tr>
-		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Due Date<i class="fa fa-sort duedate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-		                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Created Date<i class="fa fa-sort createddate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#000;width:50%;padding:10px; font-size:14px; font-weight:600;">Due Date<i class="fa fa-sort duedate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#000;width:50%;padding:10px; font-size:14px; font-weight:600">Created Date<i class="fa fa-sort createddate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 		                    	</tr>
 		                    </table>
 	                    </td>
-	                    <td style="background: #000;padding:0px;border:1px solid #868686">
+	                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
 	                    	<table style="width:100%">
 		                    	<tr>
-		                    		<td style="color:#fff;width:40%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Task ID<i class="fa fa-sort taskid_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-		                    		<td style="color:#fff;width:40%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Progress<i class="fa fa-sort progress_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-		                    		<td style="color:#fff;width:20%;padding:10px; font-size:14px; font-weight:800">
+		                    		<td style="color:#000;width:40%;padding:10px; font-size:14px; font-weight:600;">Task ID<i class="fa fa-sort taskid_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#000;width:40%;padding:10px; font-size:14px; font-weight:600;">Progress<i class="fa fa-sort progress_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+		                    		<td style="color:#000;width:20%;padding:10px; font-size:14px; font-weight:600">
 		                    			Action
 		                    		</td>
 		                    	</tr>
@@ -1469,7 +1459,7 @@ $(window).click(function(e) {
 		}
 		if($(e.target).parents(".hidden_tasks_tr").length > 0)
 		{
-			$(".hidden_tasks_tr").find("td").css("background","#dcdcdc");
+			$(".hidden_tasks_tr").find("td").css("background","#fff");
 			$(e.target).parents(".hidden_tasks_tr").find("td").css("background","#2fd9ff");
 
 			var taskid = $(e.target).parents(".hidden_tasks_tr").attr("data-element");
@@ -1487,7 +1477,7 @@ $(window).click(function(e) {
 			  var margintop = parseInt(open_tasks_height);
 			  $(".open_layout_div").css("position","fixed");
 			  $(".open_layout_div").css("height","312px");
-			  $(".open_layout_div").css("margin-top","44px");
+			  $(".open_layout_div").css("margin-top","28px");
 			  if(open_tasks_height > 312)
 			  {
 			    $(".open_layout_div").css("overflow-y","scroll");
@@ -1497,7 +1487,7 @@ $(window).click(function(e) {
 			    $(".table_layout").css("margin-top","20px");
 			  }
 			    else{
-			      $(".table_layout").css("margin-top","380px");
+			      $(".table_layout").css("margin-top","328px");
 			    }
 			}
 			else{
@@ -1546,7 +1536,7 @@ $(window).click(function(e) {
 	        var margintop = parseInt(open_tasks_height);
 	        $(".open_layout_div").css("position","fixed");
 	        $(".open_layout_div").css("height","312px");
-	        $(".open_layout_div").css("margin-top","44px");
+	        $(".open_layout_div").css("margin-top","28px");
 	        if(open_tasks_height > 312)
 	        {
 	          $(".open_layout_div").css("overflow-y","scroll");
@@ -1556,7 +1546,7 @@ $(window).click(function(e) {
 	          $(".table_layout").css("margin-top","20px");
 	        }
 	          else{
-	            $(".table_layout").css("margin-top","380px");
+	            $(".table_layout").css("margin-top","328px");
 	          }
 	      }
 	      else{
@@ -1629,7 +1619,7 @@ $(window).click(function(e) {
 				        var margintop = parseInt(open_tasks_height);
 				        $(".open_layout_div").css("position","fixed");
 				        $(".open_layout_div").css("height","312px");
-				        $(".open_layout_div").css("margin-top","44px");
+				        $(".open_layout_div").css("margin-top","28px");
 				        if(open_tasks_height > 312)
 				        {
 				          $(".open_layout_div").css("overflow-y","scroll");
@@ -1639,7 +1629,7 @@ $(window).click(function(e) {
 				          $(".table_layout").css("margin-top","20px");
 				        }
 				          else{
-				            $(".table_layout").css("margin-top","380px");
+				            $(".table_layout").css("margin-top","328px");
 				          }
 				      }
 				      else{
@@ -1746,7 +1736,7 @@ $(window).click(function(e) {
 			        var margintop = parseInt(open_tasks_height);
 			        $(".open_layout_div").css("position","fixed");
 			        $(".open_layout_div").css("height","312px");
-			        $(".open_layout_div").css("margin-top","44px");
+			        $(".open_layout_div").css("margin-top","28px");
 			        if(open_tasks_height > 312)
 			        {
 			          $(".open_layout_div").css("overflow-y","scroll");
@@ -1756,7 +1746,7 @@ $(window).click(function(e) {
 			          $(".table_layout").css("margin-top","20px");
 			        }
 			          else{
-			            $(".table_layout").css("margin-top","380px");
+			            $(".table_layout").css("margin-top","328px");
 			          }
 			      }
 			      else{
@@ -1967,7 +1957,8 @@ $(window).click(function(e) {
 		        var margintop = parseInt(open_tasks_height);
 		        $(".open_layout_div").css("position","fixed");
 		        $(".open_layout_div").css("height","312px");
-		        $(".open_layout_div").css("margin-top","44px");
+            $(".open_layout_div").css("top", "350px");
+		        $(".open_layout_div").css("margin-top","28px");
 		        if(open_tasks_height > 312)
 		        {
 		          $(".open_layout_div").css("overflow-y","scroll");
@@ -1977,7 +1968,7 @@ $(window).click(function(e) {
 		          $(".table_layout").css("margin-top","20px");
 		        }
 		          else{
-		            $(".table_layout").css("margin-top","380px");
+		            $(".table_layout").css("margin-top","328px");
 		          }
 		      }
 		      else{
@@ -2201,7 +2192,7 @@ $(window).click(function(e) {
     			        var margintop = parseInt(open_tasks_height);
     			        $(".open_layout_div").css("position","fixed");
     			        $(".open_layout_div").css("height","312px");
-    			        $(".open_layout_div").css("margin-top","44px");
+    			        $(".open_layout_div").css("margin-top","28px");
     			        if(open_tasks_height > 312)
     			        {
     			          $(".open_layout_div").css("overflow-y","scroll");
@@ -2211,7 +2202,7 @@ $(window).click(function(e) {
     			          $(".table_layout").css("margin-top","20px");
     			        }
     			          else{
-    			            $(".table_layout").css("margin-top","380px");
+    			            $(".table_layout").css("margin-top","328px");
     			          }
     			      }
     			      else{
@@ -2305,7 +2296,7 @@ $(window).click(function(e) {
 			        var margintop = parseInt(open_tasks_height);
 			        $(".open_layout_div").css("position","fixed");
 			        $(".open_layout_div").css("height","312px");
-			        $(".open_layout_div").css("margin-top","44px");
+			        $(".open_layout_div").css("margin-top","28px");
 			        if(open_tasks_height > 312)
 			        {
 			          $(".open_layout_div").css("overflow-y","scroll");
@@ -2315,7 +2306,7 @@ $(window).click(function(e) {
 			          $(".table_layout").css("margin-top","20px");
 			        }
 			          else{
-			            $(".table_layout").css("margin-top","380px");
+			            $(".table_layout").css("margin-top","328px");
 			          }
 			      }
 			      else{
@@ -2406,7 +2397,7 @@ $(window).click(function(e) {
                     var margintop = parseInt(open_tasks_height);
                     $(".open_layout_div").css("position","fixed");
                     $(".open_layout_div").css("height","312px");
-                    $(".open_layout_div").css("margin-top","44px");
+                    $(".open_layout_div").css("margin-top","28px");
                     if(open_tasks_height > 312)
                     {
                       $(".open_layout_div").css("overflow-y","scroll");
@@ -2416,7 +2407,7 @@ $(window).click(function(e) {
                       $(".table_layout").css("margin-top","20px");
                     }
                       else{
-                        $(".table_layout").css("margin-top","380px");
+                        $(".table_layout").css("margin-top","328px");
                       }
                   }
                   else{
@@ -2765,7 +2756,7 @@ $(window).click(function(e) {
 				        var margintop = parseInt(open_tasks_height);
 				        $(".open_layout_div").css("position","fixed");
 				        $(".open_layout_div").css("height","312px");
-				        $(".open_layout_div").css("margin-top","44px");
+				        $(".open_layout_div").css("margin-top","28px");
 				        if(open_tasks_height > 312)
 				        {
 				          $(".open_layout_div").css("overflow-y","scroll");
@@ -2775,7 +2766,7 @@ $(window).click(function(e) {
 				          $(".table_layout").css("margin-top","20px");
 				        }
 				          else{
-				            $(".table_layout").css("margin-top","380px");
+				            $(".table_layout").css("margin-top","328px");
 				          }
 				      }
 				      else{
@@ -2905,7 +2896,7 @@ $(window).click(function(e) {
 			        var margintop = parseInt(open_tasks_height);
 			        $(".open_layout_div").css("position","fixed");
 			        $(".open_layout_div").css("height","312px");
-			        $(".open_layout_div").css("margin-top","44px");
+			        $(".open_layout_div").css("margin-top","28px");
 			        if(open_tasks_height > 312)
 			        {
 			          $(".open_layout_div").css("overflow-y","scroll");
@@ -2915,7 +2906,7 @@ $(window).click(function(e) {
 			          $(".table_layout").css("margin-top","20px");
 			        }
 			          else{
-			            $(".table_layout").css("margin-top","380px");
+			            $(".table_layout").css("margin-top","328px");
 			          }
 			      }
 			      else{
@@ -3155,7 +3146,7 @@ $(window).click(function(e) {
 			        var margintop = parseInt(open_tasks_height);
 			        $(".open_layout_div").css("position","fixed");
 			        $(".open_layout_div").css("height","312px");
-			        $(".open_layout_div").css("margin-top","44px");
+			        $(".open_layout_div").css("margin-top","28px");
 			        if(open_tasks_height > 312)
 			        {
 			          $(".open_layout_div").css("overflow-y","scroll");
@@ -3165,7 +3156,7 @@ $(window).click(function(e) {
 			          $(".table_layout").css("margin-top","20px");
 			        }
 			          else{
-			            $(".table_layout").css("margin-top","380px");
+			            $(".table_layout").css("margin-top","328px");
 			          }
 			      }
 			      else{

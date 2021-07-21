@@ -9,6 +9,13 @@
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <style>
+.fa-sort { margin-top:3px; }
+/*.nav>li>a:focus, .nav>li>a:hover { background: #d6d6d6;
+    color: #000;
+    font-weight: 700; }
+.nav-item .active { background: #d6d6d6;
+    color: #000;
+    font-weight: 700; }*/
 .upload_img{
   position: absolute;
     top: 0px;
@@ -35,7 +42,7 @@
     height:     100%;
     width:      100%;
     background: rgba( 255, 255, 255, .8 ) 
-                url(<?php echo URL::to('assets/loading.gif'); ?>) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
                 50% 50% 
                 no-repeat;
 }
@@ -360,7 +367,7 @@ if(Session::has('message_import')) { ?>
       <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Vat Notifications Screen</h4>
+            <h4 class="modal-title">VAT Notifications Screen</h4>
           </div>
           <div class="modal-body">
             <iframe src="<?php echo URL::to('user/vat_notifications'); ?>" id="iframe_reload" width="100%" height="500px" style="border:0px;"></iframe>
@@ -695,109 +702,131 @@ if(Session::has('message_import')) { ?>
   </div>
 </div>
 <div class="content_section">
+
+<div class="page_title" style="z-index:999;">
+    <h4 class="col-lg-12 padding_00 new_main_title">
+              VAT Management System             
+          </h4>
+  </div>
+
+<div class="row">
 <?php
   if(Session::has('message')) { ?>
          <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
 <?php } ?>
   <div class="message_edit">
   </div>
-  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-  <div class="page_title">
-    <h5 style="color:#000;text-decoration: underline;text-decoration-color: #fff;">VAT Clients Imported in to VAT Management System</h5>
-    <h3 style="color:#000;margin-bottom:-10px">VAT Management System</h3>
+  
+  
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    
+      <div style="position: absolute; right: 15px; top: 45px; z-index: 1">
+        <div style="float: left;margin-left: 20px;">
+          <?php
+            $red = DB::table('vat_clients')->where('status',1)->count();
+            $green = DB::table('vat_clients')->where('status',0)->where('pemail','!=', '')->where('self_manage','no')->count();
+            $yellow = DB::table('vat_clients')->where('status',0)->where('pemail', '')->where('self_manage','no')->count();
+            $purple = DB::table('vat_clients')->where('status',0)->where('self_manage','yes')->count();
+          ?>
+          <spam style="color:#f00;"><?php echo $red; ?> Clients Disabled</spam>
+          
+        </div>
+        <div style="float: left;margin-left: 30px;">
+          <spam style="color:green"><?php echo $green; ?> Clients With Primary Email Address</spam>
+        </div>
+        <div style="float: left;margin-left: 30px;">
+          <spam style="color:#bd510a"><?php echo $yellow; ?> Clients Without Primary Email Address</spam>        
+        </div>
+        <div style="float: left;margin-left: 30px;">
+          <spam style="color:purple"><?php echo $purple; ?> Clients With Self Manage</spam>
+        </div>
+      </div>
+      <div style="float:right;">
+        <a href="javascript:" class="import_button common_black_button">Import VAT Clients from ROS Extract</a>
+        <a href="javascript:" class="compare_button common_black_button" type="button" >Notify Clients of VAT Returns Due</button></a>
+      </div>
+
+
+    
   </div>
-  </div>
-  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-      <div class="select_button">
-        <ul style="float: right;">
-          <li><a href="javascript:" class="addclass">Add New Client</a></li>
-          <li><a href="javascript:" class="import_button">Import</a></li>
-          <li>
-            <a href="javascript:" class="compare_button" type="button" >VAT Notification</button></a>
-            
-          </li>
-        </ul>
-      </div><br/>
-      <div>
-      <?php
-        $red = DB::table('vat_clients')->where('status',1)->count();
-        $green = DB::table('vat_clients')->where('status',0)->where('pemail','!=', '')->where('self_manage','no')->count();
-        $yellow = DB::table('vat_clients')->where('status',0)->where('pemail', '')->where('self_manage','no')->count();
-        $purple = DB::table('vat_clients')->where('status',0)->where('self_manage','yes')->count();
-      ?>
-        <a href="javascript:" class="color_pallete_purple thumbnail" data-toggle="popover" title="<?php echo $purple; ?> Clients With Self Manage" data-placement="left" data-trigger="focus"></a>
-        <a href="javascript:" class="color_pallete_yellow thumbnail" data-toggle="popover" title="<?php echo $yellow; ?> Clients Without Primary Email Address" data-placement="left" data-trigger="focus"></a>
-        <a href="javascript:" class="color_pallete_green thumbnail" data-toggle="popover" title="<?php echo $green; ?> Clients With Primary Email Address" data-placement="left" data-trigger="focus"></a>
-        <a href="javascript:" class="color_pallete_red thumbnail" data-toggle="popover" title="<?php echo $red; ?> Clients Disabled" data-placement="left" data-trigger="focus"></a>
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+  <ul class="nav nav-tabs" style="margin-top: 20px;">
+    <li class="nav-item active">
+      <a class="nav-link" href="<?php echo URL::to('user/vat_clients'); ?>">VAT Clients Imported in to VAT Management System</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="<?php echo URL::to('user/vat_review'); ?>">VAT Management System VAT Review</a>
+    </li>
+  </ul>
+</div>
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+  <div class="table-responsive">
+      <table class="display nowrap fullviewtablelist own_table_white" id="vat_expand" style="margin-top: 0px !important;">
+        <thead>
+          <tr>
+              <th style="text-align: left;width:8%">Client Code <i class="fa fa-sort sno_sort" style="float:right" aria-hidden="true"></th>
+              <th style="text-align: left; ;">Client Name <i class="fa fa-sort client_sort" style="float:right" aria-hidden="true"></th>
+              <th style="text-align: left; ">Tax Regn./Trader No <i class="fa fa-sort tax_sort" style="float:right" aria-hidden="true"></th>
+              <th style="text-align: left; ">Email <i class="fa fa-sort pemail_sort" style="float:right" aria-hidden="true"></th>
+              <th style="text-align: left; ">Secondary Email <i class="fa fa-sort semail_sort" style="float:right" aria-hidden="true"></th>                            
+              <th style="text-align: left; width:10%">Action</th>
+
+          </tr>
+        </thead>
+        <tbody id="task_body">
+          <?php
+              $i=1;
+              if(count($clientlist)){              
+                foreach($clientlist as $client){                
+                if($client->status == 1) { $fontcolor = 'red'; }
+                elseif($client->status == 0 && $client->pemail != '' && $client->self_manage == 'no') { $fontcolor = 'green'; }
+                elseif($client->status == 0 && $client->pemail == '' && $client->self_manage == 'no') { $fontcolor = '#bd510a'; }
+                elseif($client->status == 0 && $client->self_manage == 'yes') { $fontcolor = 'purple'; }
+                else{$fontcolor = '#fff';}
+            ?>
+          <tr class="task_tr task_<?php echo $client->client_id; ?>" style="text-align:center">
+              <td class="sno_sort_val" width="5%" style="text-align: left;"><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->cm_client_id; ?></label></th>
+              <td class="client_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->name; ?></label></td>
+              <td class="tax_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->taxnumber; ?></label></td>
+              <td class="pemail_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->pemail; ?></label></td>
+              <td class="semail_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->semail; ?></label></td>                            
+              <td style="text-align: left; ">
+                  <a href="javascript:" style="width:auto; float: none; padding: 5px;" id="<?php echo base64_encode($client->client_id); ?>" class="editclass" title="Edit Client"><i class="fa fa-pencil-square editclass" id="<?php echo base64_encode($client->client_id); ?>" aria-hidden="true"></i></a>
+
+                            &nbsp; 
+                  <a href="javascript:" style="width:auto; float: none; padding: 5px;" id="<?php echo base64_encode($client->client_id); ?>" class="email_sent" title="Email Sent Date & Time"><i class="fa fa-envelope email_sent" id="<?php echo base64_encode($client->client_id); ?>" aria-hidden="true"></i></a>
+
+                            &nbsp; 
+                  <?php
+                  if($client->status ==0){
+                    echo'<a href="'.URL::to('user/deactive_vat_clients',base64_encode($client->client_id)).'" style="width:auto; float: none; padding: 5px; " title="Disable Client"><i class="fa fa-check" aria-hidden="true"></i></a>';
+                  }
+                  else{
+                    echo'<a href="'.URL::to('user/active_vat_clients',base64_encode($client->client_id)).'" style="width:auto; float: none; padding: 5px; " title="Enable Client"><i class="fa fa-times" aria-hidden="true"></i></a>';
+                  }
+                ?>
+                  <spam class="icon_div" style="font-size: 20px; color: <?php if($client->cm_client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
+                    <i class="fa <?php if($client->cm_client_id == '') { echo 'fa-chain-broken'; } else{ echo 'fa-link'; } ?>" data-toggle="tooltip" <?php if($client->cm_client_id == '') { echo 'title="This task is not linked"'; } else { echo 'title="This task is linked"'; }?>></i>
+                  </spam>
+
+
+              </td>
+          </tr>
+          <?php
+              $i++;                              
+              }              
+            }
+            if($i == 1)
+            {
+              echo'<tr><td colspan="9" align="center">Empty</td></tr>';
+            }
+          ?>
+          
+        </tbody>            
+      </table>
       </div>
   </div>
-    <div class="select_button">
-        <table class="display nowrap fullviewtablelist" id="vat_expand">
-          <thead>
-            <tr>
-                <th width="5%" style="text-align: left;">S.No <i class="fa fa-sort sno_sort" style="display: none;" aria-hidden="true"></th>
-                <th style="text-align: left; ;">Client Name <i class="fa fa-sort client_sort" style="display: none;" aria-hidden="true"></th>
-                <th style="text-align: left; ">Tax Regn./Trader No <i class="fa fa-sort tax_sort" style="display: none;" aria-hidden="true"></th>
-                <th style="text-align: left; ">Email <i class="fa fa-sort pemail_sort" style="display: none;" aria-hidden="true"></th>
-                <th style="text-align: left; ">Secondary Email <i class="fa fa-sort semail_sort" style="display: none;" aria-hidden="true"></th>                            
-                <th style="text-align: left; width:8%">Action</th>
-
-            </tr>
-          </thead>
-          <tbody id="task_body">
-            <?php
-                $i=1;
-                if(count($clientlist)){              
-                  foreach($clientlist as $client){                
-                  if($client->status == 1) { $fontcolor = 'red'; }
-                  elseif($client->status == 0 && $client->pemail != '' && $client->self_manage == 'no') { $fontcolor = 'green'; }
-                  elseif($client->status == 0 && $client->pemail == '' && $client->self_manage == 'no') { $fontcolor = 'yellow'; }
-                  elseif($client->status == 0 && $client->self_manage == 'yes') { $fontcolor = 'purple'; }
-                  else{$fontcolor = '#fff';}
-              ?>
-            <tr class="task_tr task_<?php echo $client->client_id; ?>" style="text-align:center">
-                <td class="sno_sort_val" width="5%" style="text-align: left;"><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $i; ?></label></th>
-                <td class="client_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->name; ?></label></td>
-                <td class="tax_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->taxnumber; ?></label></td>
-                <td class="pemail_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->pemail; ?></label></td>
-                <td class="semail_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->semail; ?></label></td>                            
-                <td style="text-align: left; ">
-                    <a href="javascript:" style="width:auto; float: none; padding: 5px;" id="<?php echo base64_encode($client->client_id); ?>" class="editclass" title="Edit Client"><i class="fa fa-pencil-square editclass" id="<?php echo base64_encode($client->client_id); ?>" aria-hidden="true"></i></a>
-
-                              &nbsp; 
-                    <a href="javascript:" style="width:auto; float: none; padding: 5px;" id="<?php echo base64_encode($client->client_id); ?>" class="email_sent" title="Email Sent Date & Time"><i class="fa fa-envelope email_sent" id="<?php echo base64_encode($client->client_id); ?>" aria-hidden="true"></i></a>
-
-                              &nbsp; 
-                    <?php
-                    if($client->status ==0){
-                      echo'<a href="'.URL::to('user/deactive_vat_clients',base64_encode($client->client_id)).'" style="width:auto; float: none; padding: 5px; " title="Disable Client"><i class="fa fa-check" aria-hidden="true"></i></a>';
-                    }
-                    else{
-                      echo'<a href="'.URL::to('user/active_vat_clients',base64_encode($client->client_id)).'" style="width:auto; float: none; padding: 5px; " title="Enable Client"><i class="fa fa-times" aria-hidden="true"></i></a>';
-                    }
-                  ?>
-                  <br/><br/>
-                    <div class="icon_div" style="width: 100%; height: auto; text-align: center; float: left; font-size: 30px; color: <?php if($client->cm_client_id == '') { echo 'red'; } else{ echo 'blue'; } ?>">
-                      <i class="fa <?php if($client->cm_client_id == '') { echo 'fa-chain-broken'; } else{ echo 'fa-link'; } ?>" data-toggle="tooltip" <?php if($client->cm_client_id == '') { echo 'title="This task is not linked"'; } else { echo 'title="This task is linked"'; }?>></i>
-                    </div>
-
-
-                </td>
-            </tr>
-            <?php
-                $i++;                              
-                }              
-              }
-              if($i == 1)
-              {
-                echo'<tr><td colspan="9" align="center">Empty</td></tr>';
-              }
-            ?>
-            
-          </tbody>            
-        </table>
-        
-    </div>
+</div>
 </div>
 <input type="hidden" name="sno_sortoptions" id="sno_sortoptions" value="asc">
 <input type="hidden" name="client_sortoptions" id="client_sortoptions" value="asc">
@@ -864,16 +893,16 @@ $(window).click(function(e) {
       $("#sno_sortoptions").val('desc');
       var sorted = $('#task_body').find('.task_tr').sort(function(a,b){
         return (ascending ==
-             (parseconvertToNumber($(a).find('.sno_sort_val').text()) <
-        parseconvertToNumber($(b).find('.sno_sort_val').text()))) ? 1 : -1;
+             (convertToNumber($(a).find('.sno_sort_val').text()) <
+        convertToNumber($(b).find('.sno_sort_val').text()))) ? 1 : -1;
       });
     }
     else{
       $("#sno_sortoptions").val('asc');
       var sorted = $('#task_body').find('.task_tr').sort(function(a,b){
         return (ascending ==
-             (parseconvertToNumber($(a).find('.sno_sort_val').text()) <
-        parseconvertToNumber($(b).find('.sno_sort_val').text()))) ? -1 : 1;
+             (convertToNumber($(a).find('.sno_sort_val').text()) <
+        convertToNumber($(b).find('.sno_sort_val').text()))) ? -1 : 1;
       });
     }
     ascending = ascending ? false : true;
@@ -887,16 +916,16 @@ $(window).click(function(e) {
       $("#client_sortoptions").val('desc');
       var sorted = $('#task_body').find('.task_tr').sort(function(a,b){
         return (ascending ==
-             (convertToNumber($(a).find('.client_sort_val').html()) <
-        convertToNumber($(b).find('.client_sort_val').html()))) ? 1 : -1;
+             (convertToNumber($(a).find('.client_sort_val').find("label").html()) <
+        convertToNumber($(b).find('.client_sort_val').find("label").html()))) ? 1 : -1;
       });
     }
     else{
       $("#client_sortoptions").val('asc');
       var sorted = $('#task_body').find('.task_tr').sort(function(a,b){
         return (ascending ==
-             (convertToNumber($(a).find('.client_sort_val').html()) <
-        convertToNumber($(b).find('.client_sort_val').html()))) ? -1 : 1;
+             (convertToNumber($(a).find('.client_sort_val').find("label").html()) <
+        convertToNumber($(b).find('.client_sort_val').find("label").html()))) ? -1 : 1;
       });
     }
     ascending = ascending ? false : true;
@@ -1026,7 +1055,7 @@ $(window).click(function(e) {
             }
             else if(pemail == "" && self_manage == "no")
             {
-              $(".task_"+id).find(".client_sort_val").find("label").attr("style","color:yellow !important");
+              $(".task_"+id).find(".client_sort_val").find("label").attr("style","color:#bd510a !important");
             }
             else if(self_manage == "yes")
             {
@@ -1367,12 +1396,13 @@ $(function(){
         fixedHeader: {
           headerOffset: 75
         },
-        autoWidth: true,
+        autoWidth: false,
         scrollX: false,
         fixedColumns: false,
         searching: false,
         paging: false,
-        info: false
+        info: false,
+        ordering: false,
     });
 });
 

@@ -211,26 +211,30 @@ class FinancialController extends Controller {
 			{
 				if($debit_balance != "" && $debit_balance != "0.00" && $debit_balance != "0")
 				{
+					$dataval['journal_source'] = 'BOB';
+
 					$dataval['nominal_code'] = $code;
 					$dataval['dr_value'] = $debit_balance;
 					$dataval['cr_value'] = '0.00';
-					DB::table('invoice_journals')->where('connecting_journal_reference',$journal_id)->update($dataval);
+					DB::table('journals')->where('connecting_journal_reference',$journal_id)->update($dataval);
 
 					$dataval['nominal_code'] = '991';
 					$dataval['dr_value'] = '0.00';
 					$dataval['cr_value'] = $debit_balance;
-					DB::table('invoice_journals')->where('connecting_journal_reference',$journal_id.'.01')->update($dataval);
+					DB::table('journals')->where('connecting_journal_reference',$journal_id.'.01')->update($dataval);
 				}
 				else{
+					$dataval['journal_source'] = 'BOB';
+
 					$dataval['nominal_code'] = '991';
 					$dataval['dr_value'] = $credit_balance;
 					$dataval['cr_value'] = '0.00';
-					DB::table('invoice_journals')->where('connecting_journal_reference',$journal_id)->update($dataval);
+					DB::table('journals')->where('connecting_journal_reference',$journal_id)->update($dataval);
 
 					$dataval['nominal_code'] = $code;
 					$dataval['dr_value'] = '0.00';
 					$dataval['cr_value'] = $credit_balance;
-					DB::table('invoice_journals')->where('connecting_journal_reference',$journal_id.'.01')->update($dataval);
+					DB::table('journals')->where('connecting_journal_reference',$journal_id.'.01')->update($dataval);
 				}
 
 				$data['debit_balance'] = $debit_balance;
@@ -238,13 +242,14 @@ class FinancialController extends Controller {
 				DB::table('financial_banks')->where('id',$id)->update($data);
 			}
 			else{
-				$count_total_journals = DB::table('invoice_journals')->groupBy('reference')->get();
+				$count_total_journals = DB::table('journals')->groupBy('reference')->get();
 				$next_connecting_journal = count($count_total_journals) + 1;
 				$date = DB::table('user_login')->where('id',1)->first();
 
 				$dataval['journal_date'] = $date->opening_balance_date;
 				$dataval['description'] = 'Bank Account Opening Balance';
 				$dataval['reference'] = 'OB'.$id;
+				$dataval['journal_source'] = 'BOB';
 
 				if($debit_balance != "" && $debit_balance != "0.00" && $debit_balance != "0")
 				{
@@ -252,26 +257,26 @@ class FinancialController extends Controller {
 					$dataval['nominal_code'] = $bank_details->nominal_code;
 					$dataval['dr_value'] = $debit_balance;
 					$dataval['cr_value'] = '0.00';
-					DB::table('invoice_journals')->insert($dataval);
+					DB::table('journals')->insert($dataval);
 
 					$dataval['connecting_journal_reference'] = $next_connecting_journal.'.01';
 					$dataval['nominal_code'] = '991';
 					$dataval['dr_value'] = '0.00';
 					$dataval['cr_value'] = $debit_balance;
-					DB::table('invoice_journals')->insert($dataval);
+					DB::table('journals')->insert($dataval);
 				}
 				else{
 					$dataval['connecting_journal_reference'] = $next_connecting_journal;
 					$dataval['nominal_code'] = '991';
 					$dataval['dr_value'] = $credit_balance;
 					$dataval['cr_value'] = '0.00';
-					DB::table('invoice_journals')->insert($dataval);
+					DB::table('journals')->insert($dataval);
 
 					$dataval['connecting_journal_reference'] = $next_connecting_journal.'.01';
 					$dataval['nominal_code'] = $bank_details->nominal_code;
 					$dataval['dr_value'] = '0.00';
 					$dataval['cr_value'] = $credit_balance;
-					DB::table('invoice_journals')->insert($dataval);
+					DB::table('journals')->insert($dataval);
 				}
 
 				$data['debit_balance'] = $debit_balance;
@@ -298,30 +303,31 @@ class FinancialController extends Controller {
 			$from_date = strtotime(date('Y-m-d',strtotime($from)));
 			$to_date = strtotime(date('Y-m-d',strtotime($to)));
 
-			$journals = DB::select('SELECT * from `invoice_journals` WHERE UNIX_TIMESTAMP(`journal_date`) >= "'.$from_date.'" AND UNIX_TIMESTAMP(`journal_date`) <= "'.$to_date.'" ORDER BY `id` ASC');
+			$journals = DB::select('SELECT * from `journals` WHERE UNIX_TIMESTAMP(`journal_date`) >= "'.$from_date.'" AND UNIX_TIMESTAMP(`journal_date`) <= "'.$to_date.'" ORDER BY `id` ASC');
 		}
 		elseif($selection == "1")
 		{
 			$current_year = date('Y');
-			$journals = DB::table('invoice_journals')->where('journal_date','like',$current_year.'%')->orderBy('id','asc')->get();
+			$journals = DB::table('journals')->where('journal_date','like',$current_year.'%')->orderBy('id','asc')->get();
 		}
 		elseif($selection == "2")
 		{
 			$current_year = date('Y') - 1;
-			$journals = DB::table('invoice_journals')->where('journal_date','like',$current_year.'%')->orderBy('id','asc')->get();
+			$journals = DB::table('journals')->where('journal_date','like',$current_year.'%')->orderBy('id','asc')->get();
 		}
 		elseif($selection == "3")
 		{
 			$current_month = date('m') - 1;
-			$journals = DB::table('invoice_journals')->where('journal_date','like','%-'.$current_month.'-%')->orderBy('id','asc')->get();
+			$journals = DB::table('journals')->where('journal_date','like','%-'.$current_month.'-%')->orderBy('id','asc')->get();
 		}
-		$output = '<table class="table">
+		$output = '<table class="table own_table_white">
 		<thead>
 			<th style="text-align:left">Journal <br/>ID</th>
 			<th style="text-align:left">Journal <br/>Date</th>
 			<th style="text-align:left">Journal <br/>Description</th>
 			<th style="text-align:left">Nominal <br/>Code</th>
 			<th style="text-align:left">Nominal Code <br/>Description</th>
+			<th style="text-align:left">Journal <br/>Source</th>
 			<th style="text-align:right">Debit <br/>Value</th>
 			<th style="text-align:right">Credit <br/>Value</th>
 		</thead>
@@ -337,6 +343,7 @@ class FinancialController extends Controller {
 					<td>'.$journal->description.'</td>
 					<td>'.$journal->nominal_code.'</td>
 					<td>'.$get_nominal->description.'</td>
+					<td>'.$journal->journal_source.'</td>
 					<td style="text-align:right">'.number_format_invoice($journal->dr_value).'</td>
 					<td style="text-align:right">'.number_format_invoice($journal->cr_value).'</td>
 				</tr>';
@@ -344,7 +351,7 @@ class FinancialController extends Controller {
 		}
 		else{
 			$output.='<tr>
-				<td colspan="7" style="text-align:center">No Journals Found</td>
+				<td colspan="8" style="text-align:center">No Journals Found</td>
 			</tr>';
 		}
 		$output.='</tbody>
@@ -405,6 +412,51 @@ class FinancialController extends Controller {
 			$data['client_id'] = $client_id;
 			DB::table('finance_clients')->insert($data);
 		}
-		echo json_encode(array("bal_status" => $bal_status, 'commit_status' => $commit_status, 'owed_text' => $owed_text, "balance" => $data['balance']));
+		echo json_encode(array("bal_status" => $bal_status, 'commit_status' => $commit_status, 'owed_text' => $owed_text, "balance" => number_format_invoice($data['balance'])));
+	}
+	public function export_csv_client_opening()
+	{
+		$filename = 'client_account_opening_balance_manager.csv';
+
+		$columns = array('Client Code','Surname','Firstname','Company Name','Debit', 'Credit','Balance','Details');
+		$file = fopen('papers/client_account_opening_balance_manager.csv', 'w');
+		fputcsv($file, $columns);
+
+		$clients = DB::table('cm_clients')->get();
+		if(count($clients))
+		{
+			foreach($clients as $client)
+			{
+				$finance_client = DB::table('finance_clients')->where('client_id',$client->client_id)->first();
+				$debit = '0.00';
+				$credit = '0.00';
+				$balance = '0.00';
+				$bal_style = '';
+				$owed_text = '';
+				$commit_style="display:none";
+				if(count($finance_client))
+				{
+					$debit = ($finance_client->debit != "")?$finance_client->debit:"0.00";
+					$credit = ($finance_client->credit != "")?$finance_client->credit:"0.00";
+					if($debit != "" && $debit != "0.00" && $debit != "0" && $credit != "" && $credit != "0.00" && $credit != "0")
+					{
+						$balance = 'ERROR';
+					}
+					else{
+						$balance = ($finance_client->balance != "")?number_format_invoice_without_comma($finance_client->balance):"0.00";
+						if($balance != "0.00" && $balance != "" && $balance != "0")
+						{
+							if($finance_client->balance >= 0) { $owed_text = 'Client Owes Back'; }
+							else { $owed_text = 'Client Is Owed'; }
+						}
+					}
+				}
+
+				$columns1 = array($client->client_id,$client->surname,$client->firstname,$client->company,number_format_invoice_without_comma($debit),number_format_invoice_without_comma($credit),$balance,$owed_text);
+				fputcsv($file, $columns1);
+			}
+		}
+		fclose($file);
+		echo $filename;
 	}
 }

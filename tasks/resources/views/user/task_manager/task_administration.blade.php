@@ -1,9 +1,10 @@
 @extends('userheader')
 @section('content')
+
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
-#table_administration_wrapper{ width:98%; }
+#table_administration_wrapper{ width:98%; margin-top: 25px; }
 .modal_load {
     display:    none;
     position:   fixed;
@@ -23,6 +24,27 @@ body.loading {
 body.loading .modal_load {
     display: block;
 }
+
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
+
 .disclose_label{ width:300px; }
 .option_label{width:100%;}
 table{
@@ -366,15 +388,23 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="content_section" style="margin-bottom:200px">
+  <div style="width:100%;position: fixed; background: #f5f5f5; z-index: 9999">
   <div class="page_title" style="z-index:999">
-    <div class="col-lg-12 padding_00" style="text-align:center;font-size:20px">
-      Task Administration
+    <h4 class="col-lg-12 padding_00 new_main_title">Task Administration</h4>
+    <div class="col-lg-3 padding_00">
+      <label class="col-md-3 padding_00" style="line-height: 35px; width: 116px">Search By Task:</label>
+            <div class="col-md-9">
+                <input type="text" name="search_by_task" class="form-control search_by_task" id="search_by_task" value="" placeholder="Search by Task ID or Task Subject"> 
+            </div>
+    </div>
+    <div class="col-lg-7 padding_00" style="text-align:center;font-size:20px; width: 1250px">
+      
 
-      <a href="javascript:" class="load_closed_jobs common_black_button" style="float:right;font-size:14px">Load Closed Tasks</a>
+      <a href="javascript:" class="load_closed_jobs common_black_button" style="float:left;">Load Closed Tasks</a>
       <input type="hidden" name="hidden_load_closed" id="hidden_load_closed" value="0">
     </div>
   </div>
-  <div style="width:100%;float:left; margin-top: 20px;">
+  <div id="fixed-header" style="width:100%;float:left; margin-top: 28px;">
   <?php
   if(Session::has('message')) { ?>
       <p class="alert alert-info"><?php echo Session::get('message'); ?></p>
@@ -384,50 +414,47 @@ input:checked + .slider:before {
   <?php }
   ?>
   </div>
-    <div class="table-responsive" style="width: 100%; float: left;margin-top:10px">
+    
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item waves-effect waves-light" style="width:15%;text-align: center">
+        <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
           <a href="<?php echo URL::to('user/task_manager'); ?>" class="nav-link">
             <spam id="open_task_count">Your Open Tasks (<?php echo count($open_task_count); ?>)</spam>
             <spam id="authored_task_count" style="display:none">Your Authored Tasks (<?php echo count($authored_task_count); ?>)</spam>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" style="width:15%;text-align: center">
+        <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
           <a href="<?php echo URL::to('user/park_task'); ?>" class="nav-link" id="home-tab">
             <spam id="park_task_count">Park Tasks (<spam id="park_task_count_val"><?php echo count($park_task_count); ?></spam>)</spam>
           </a>
         </li>
-        <li class="nav-item waves-effect waves-light" style="width:15%;text-align: center">
+        <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
           <a href="<?php echo URL::to('user/taskmanager_search'); ?>" class="nav-link">Task Search</a>
         </li>
-        <li class="nav-item waves-effect waves-light active" style="width:15%;text-align: center">
-          <a href="#home" class="nav-link" id="profile-tab" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false">
+        <li class="nav-item waves-effect waves-light active" style="width:20%;text-align: center">
+          <a href="#home" class="nav-link" id="profile-tab" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false" style="border-bottom: 2px solid #fff">
             Task Administration</a>
         </li>
-        <li class="nav-item waves-effect waves-light active" style="width:40%;text-align: right">
-            <label class="col-md-3" style="font-size:16px;">Search By Task:</label>
-            <div class="col-md-5">
-                <input type="text" name="search_by_task" class="form-control search_by_task" id="search_by_task" value="" placeholder="Search by Task ID or Task Subject"> 
-            </div>
-        </li>
+        
       </ul>
+  </div>
+    <div style="width: 100%; float: left;margin-top:195px; background: #fff">
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <table class="table" id="table_administration" style="width:100%;">
-                <thead style="background: #0a0a0a;color: #fff;">
+            <table class="table own_table_white" id="table_administration" style="width:100%; background: #fff">
+                <thead>
                   <tr>
-                    <td>Task ID</td>
-                    <td>Client/Task Name</td>
-                    <td>Author</td>
-                    <td>Roll Forward To</td>
-                    <td style="width:7%">Parked</td>
-                    <td>Retain Orignal Specifics</td>
-                    <td>Retain Original Files</td>
-                    <td>Subject</td>
-                    <td>Repeat</td>
-                    <td>Repeat</td>
-                    <td>Due Time</td>
-                    <td>Action</td>
+                    <th>Task ID</th>
+                    <th>Client/Task Name</th>
+                    <th>Author</th>
+                    <th>Roll Forward To</th>
+                    <th style="width:7%">Parked</th>
+                    <th>Retain Orignal Specifics</th>
+                    <th>Retain Original Files</th>
+                    <th>Subject</th>
+                    <th>Repeat</th>
+                    <th>Repeat</th>
+                    <th>Due Time</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody id="tbody_show_tasks">
@@ -544,19 +571,23 @@ input:checked + .slider:before {
                 </tbody>
             </table>
             <?php
-            $total_tasks = DB::table('taskmanager')->count();
-            if($total_tasks > 500)
+            $total_tasks = DB::table('taskmanager')->get();
+            if(count($total_tasks) > 500)
             {
-              echo '<a href="javascript:" class="show_more_tasks common_black_button">Show More</a> ';
+              echo '<a href="javascript:" class="show_more_tasks common_black_button">Show More</a> &nbsp;&nbsp;<a href="javascript:" class="load_all_tasks common_black_button">Load All Tasks</a>';
             }
             ?>
+            <input type="hidden" id="hidden_tasks_count" name="hidden_tasks_count" value="<?php echo count($total_tasks); ?>">
         </div>
       </div>
     </div>
 </div>
 <input type="hidden" id="hidden_page_no" value="1">
 <div class="modal_load"></div>
-
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the tasks are loaded.</p>
+  <p style="font-size:18px;font-weight: 600;">Tasks Loaded: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
 <script>
 $(function(){
     $('#table_administration').DataTable({
@@ -573,6 +604,7 @@ $(function(){
     });
 });
 $(document).ready(function() {
+  $("#hidden_page_no").val("1");
   $(".creation_date_search_class").datetimepicker({     
      format: 'L',
      format: 'DD-MMM-YYYY',
@@ -618,6 +650,49 @@ function doneTyping(value,targetval)
     }
   });
 }
+function load_all_tasks(count)
+{
+  var page_no = $("#hidden_page_no").val();
+  var tasks_count = $("#hidden_tasks_count").val();
+  var next_count = count + 1;
+  var total_round = parseInt(tasks_count) / 500;
+  total_round = Math.round(total_round);
+  var prev= parseInt(page_no) - 1;
+  var offset = parseInt(prev) * 500;
+  $("#apply_first").html(offset);
+  if(next_count <= total_round)
+  {
+    $.ajax({
+      url:"<?php echo URL::to('user/show_more_tasks'); ?>",
+      type:"post",
+      data:{page_no:page_no},
+      success: function(result)
+      {
+        $("#tbody_show_tasks").append(result);
+        var pageno = parseInt(page_no) + 1;
+        $("#hidden_page_no").val(pageno);
+        load_all_tasks(next_count);
+      }
+    });
+  }
+  else{
+    $('#table_administration').DataTable({
+        fixedHeader: {
+          headerOffset: 75
+        },
+        autoWidth: true,
+        scrollX: false,
+        fixedColumns: false,
+        searching: false,
+        paging: false,
+        info: false,
+        aaSorting: [],
+    });
+    $(".show_more_tasks").hide();
+    $(".load_all_tasks").hide();
+    $("body").removeClass("loading_apply");
+  }
+}
 $(window).click(function(e) {
   if($(e.target).hasClass('download_pdf_task'))
   {
@@ -639,12 +714,19 @@ $(window).click(function(e) {
     $("body").addClass("loading");
     $('#table_administration').DataTable().destroy();
     var page_no = $("#hidden_page_no").val();
+    var tasks_count = $("#hidden_tasks_count").val();
+
     $.ajax({
       url:"<?php echo URL::to('user/show_more_tasks'); ?>",
       type:"post",
       data:{page_no:page_no},
       success: function(result)
       {
+        if(result == "")
+        {
+          $(".show_more_tasks").hide();
+          $(".load_all_tasks").hide();
+        }
         $("#tbody_show_tasks").append(result);
         var pageno = parseInt(page_no) + 1;
         $("#hidden_page_no").val(pageno);
@@ -665,6 +747,54 @@ $(window).click(function(e) {
         $("body").removeClass("loading");
       }
     })
+  }
+  if($(e.target).hasClass('load_all_tasks'))
+  {
+    $("body").addClass("loading_apply");
+    $('#table_administration').DataTable().destroy();
+    var page_no = $("#hidden_page_no").val();
+    var tasks_count = $("#hidden_tasks_count").val();
+    $("#apply_last").html(tasks_count);
+
+    var total_round = parseInt(tasks_count) / 500;
+    total_round = Math.round(total_round);
+
+    var count = 1;
+    var prev= parseInt(page_no) - 1;
+    var offset = parseInt(prev) * 500;
+    $("apply_first").html(offset);
+    if(count <= total_round)
+    {
+      $.ajax({
+        url:"<?php echo URL::to('user/show_more_tasks'); ?>",
+        type:"post",
+        data:{page_no:page_no},
+        success: function(result)
+        {
+          $("#tbody_show_tasks").append(result);
+          var pageno = parseInt(page_no) + 1;
+          $("#hidden_page_no").val(pageno);
+          load_all_tasks(count);
+        }
+      });
+    }
+    else{
+      $('#table_administration').DataTable({
+          fixedHeader: {
+            headerOffset: 75
+          },
+          autoWidth: true,
+          scrollX: false,
+          fixedColumns: false,
+          searching: false,
+          paging: false,
+          info: false,
+          aaSorting: [],
+      });
+      $(".show_more_tasks").hide();
+      $(".load_all_tasks").hide();
+      $("body").removeClass("loading_apply");
+    }
   }
   if($(e.target).hasClass('load_closed_jobs'))
   {

@@ -2,13 +2,14 @@
 @section('content')
 <style>
 .link_div{ cursor: pointer;margin-top:10px; }
-.highlight_group td{ background: green !important;color:#fff !important; }
+.highlight_group td{ background: #ffff00 !important; }
+
 
 .hide_group_div {display:none;}
 
 #group_tbody td{ cursor: pointer }
 
-#group_table th,#client_table th,#selected_table th{ background: #000;color:#fff; }
+/*#group_table th,#client_table th,#selected_table th{ background: #000;color:#fff; }*/
 
 .selected_donot_complete td{ color:blue !important; }
 .client_inactive td,.selected_inactive td {color:#f00 !important;}
@@ -201,13 +202,11 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="content_section">
-	<div id="fixed-header" style="width:100%;background: #fff;margin-top: -16px;">
-	  <div class="page_title" style="z-index:999;margin-top:20px">
-	  	<div class="row">
-		    <div class="col-md-12 padding_00" style="text-align: center">
-		      <label style="margin-left: 1%; text-align:center;font-size:20px">MessageUs - Central Client Messaging System</label>
-		    </div>
-		  </div>
+	<div id="fixed-header" style="width:100%;">
+	  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                MessageUs - Central Client Messaging System             
+            </h4>
 	  </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
@@ -228,16 +227,17 @@ input:checked + .slider:before {
   </div>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-      <div class="col-md-12" style="background: #c7c7c7;padding:20px;min-height:700px">
+      <div class="col-md-12" style="background: #fff;padding:20px;min-height:700px">
         <div class="col-md-5">
             <div class="col-md-12">
               <a href="javascript:" class="create_new_group common_black_button" style="float:right">Create New Group</a>
             </div>
             <div class="col-md-12">
-              <h5 style="font-weight:800">Groups on File:</h5>
+              <h5 style="font-weight:600">Groups on File:</h5>
             </div>
             <div class="col-md-12">
-                <table class="table" id="group_table" style="border: 1px solid #000;background: #fff">
+              
+                <table class="table display nowrap fullviewtablelist own_table_white2" id="group_table">
                   <thead>
                     <th style="text-align: left">Group Name</th>
                     <th style="text-align: left">Members</th>
@@ -257,7 +257,7 @@ input:checked + .slider:before {
                           $group_client_count = count($exp_group_clients);
                         }
                         echo '<tr class="group_tr" id="group_tr_'.$group->id.'" data-element="'.$group->id.'">
-                          <td class="group_td" style="border-right:1px solid #000;width:60%">'.$group->group_name.'</td>
+                          <td class="group_td" width:60%">'.$group->group_name.'</td>
                           <td class="group_td" style="width:40%;text-align:right">'.$group_client_count.'</td>
                         </tr>';
                       }
@@ -268,15 +268,15 @@ input:checked + .slider:before {
             </div>
         </div>
         <div class="col-md-12">
-          <div class="col-md-12 hide_group_div">
-            <label style="font-weight:600;font-size:18px"> Selected Group:</label>
-            <label style="font-weight:800;font-size:18px;text-decoration: underline" id="selected_grp_name"></label>
+          <div class="col-md-12 hide_group_div" style="margin-top: 30px;">
+            <label style="font-weight:600;"> Selected Group:</label>
+            <label style="font-weight:600;text-decoration: underline" id="selected_grp_name"></label>
             <a href="javascript:" class="common_black_button delete_group" data-element="" style="float:right;display:none">Delete Group</a>
             <a href="javascript:" class="common_black_button update_group" data-element="1" style="float:right">Update Group</a>
             <a href="javascript:" class="common_black_button remove_inactive remove_payroll_inactive" data-element="1" style="float:right">Remove Inactive Payroll Clients from Group</a>
           </div>
           <div class="col-md-5 hide_group_div" style="margin-top:10px;background: #fff;padding:10px;min-height:400px;max-height: 400px;overflow-y: scroll;">
-            <table class="table" id="client_table" style="border: 1px solid #000;">
+            <table class="table display nowrap fullviewtablelist own_table_white2" id="client_table" style="">
               <thead>
               	<th style="text-align: left"></th>
                 <th style="text-align: left">ClientID</th>
@@ -312,7 +312,7 @@ input:checked + .slider:before {
             <div class="common_black_button link_div remove_inactive" style="font-size:14px;width:100%"><i class="fa fa-arrow-left" aria-hidden="true"></i> Remove Inactive Members</div>
           </div>
           <div class="col-md-5 hide_group_div" style="margin-top:10px;background: #fff;padding:10px;min-height:400px;max-height: 400px;overflow-y: scroll;">
-            <table class="table" id="selected_table" style="border: 1px solid #000;">
+            <table class="table display nowrap fullviewtablelist own_table_white2" id="selected_table" style="">
               <thead>
               	<th style="text-align: left"></th>
                 <th style="text-align: left">ClientID</th>

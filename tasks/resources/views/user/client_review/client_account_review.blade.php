@@ -14,7 +14,9 @@
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 
 <style>
-
+#receipt_tbody > tr > td{
+  padding:12px !important;
+}
 .label_class{
   width:20%;
   float: left;
@@ -421,9 +423,12 @@ a:hover{text-decoration: underline;}
 
 <div class="content_section" style="margin-bottom:200px">
   	<div class="page_title">
+        <h4 class="col-lg-12 padding_00 new_main_title">
+                Client Account Review           
+            </h4>
         <div class="col-lg-3" style="padding-right: 0px;">
-        	<div class="col-lg-4">
-    				<h5>Enter Client Name: </h5>
+        	<div class="col-lg-4 padding_00">
+    				<h5 style="font-weight: 600">Enter Client Name: </h5>
     			</div>
     			<div class="col-lg-7" style="padding: 0px;">
     				<div class="form-group">
@@ -457,7 +462,7 @@ a:hover{text-decoration: underline;}
         	&nbsp;
         </div>
         <div class="col-lg-6" style="padding:0px 40px">
-        	<h5>CRO INFORMATION: </h5>
+        	<h3>CRO Information: </h3>
             <table class="table">
                 <tbody>
                   <tr>
@@ -481,75 +486,120 @@ a:hover{text-decoration: underline;}
               </table>
         </div>
 
-        <div class="col-md-6">
-        	<h4>Invoice List</h4>
+        <div class="col-md-4">
+        	<h3>Invoice List</h3>
         	<input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_1" value="1"><label for="invoice_date_option_1">Year</label>
         	<input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_2" value="2"><label for="invoice_date_option_2">All Invoice</label>
         	<input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_3" value="3"><label for="invoice_date_option_3">Custom Date</label>
-
+          <br/>
         	<input type="button" name="download_selected_pdf" class="common_black_button download_selected_pdf" value="Download Selected PDF" style="display:none">
         	<input type="button" name="email_selected_pdf" class="common_black_button email_selected_pdf" value="Email Selected PDF" style="display:none">
 
-        	<div class="col-md-12 invoice_year_div" style="margin-top: 20px;display:none">
-	    		<h5 class="col-md-2">Select Year:</h5>
-	    		<div class="col-md-3">
-	    			<select name="invoice_select_year" class="invoice_select_year form-control">
-	    				<option value="">Select Year</option>
-	    			</select>
-	    		</div>
-	    		<div class="col-md-2">
-	    			<input type="button" name="load_invoice_year" class="common_black_button load_all_cm_invoice" value="Load Invoice">
-	    		</div>
-	    	</div>
-	    	<div class="col-md-12 custom_date_div" style="margin-top: 20px;display:none">
-	    		<h5 class="col-md-1">From:</h5>
-	    		<div class="col-md-3">
-	    			<input type="text" name="from_invoice" class="form-control from_invoice" value="">
-	    		</div>
-	    		<h5 class="col-md-1">To:</h5>
-	    		<div class="col-md-3">
-	    			<input type="text" name="to_invoice" class="form-control to_invoice" value="">
-	    		</div>
-	    		<div class="col-md-2">
-	    			<input type="button" name="load_invoice_year" class="common_black_button load_all_cm_invoice" value="Load Invoice">
-	    		</div>
-	    	</div>
-	    	<div class="col-md-12 invoice_table_div" style="display: none">
-    		</div> 
+        	<div class="col-md-12 invoice_year_div padding_00" style="margin-top: 7px;display:none">
+  	    		<h5 class="col-md-1 padding_00" style="font-weight: 600; width: 80px;">Select Year:</h5>
+  	    		<div class="col-md-3">
+  	    			<select name="invoice_select_year" class="invoice_select_year form-control">
+  	    				<option value="">Select Year</option>
+  	    			</select>
+  	    		</div>
+  	    		<div class="col-md-2 padding_00">
+  	    			<input type="button" name="load_invoice_year" class="common_black_button load_all_cm_invoice" value="Load Invoice">
+  	    		</div>
+  	    	</div>
+  	    	<div class="col-md-12 custom_date_div" style="margin-top: 7px;display:none">
+  	    		<h5 class="col-md-1">From:</h5>
+  	    		<div class="col-md-3">
+  	    			<input type="text" name="from_invoice" class="form-control from_invoice" value="">
+  	    		</div>
+  	    		<h5 class="col-md-1">To:</h5>
+  	    		<div class="col-md-3">
+  	    			<input type="text" name="to_invoice" class="form-control to_invoice" value="">
+  	    		</div>
+  	    		<div class="col-md-2">
+  	    			<input type="button" name="load_invoice_year" class="common_black_button load_all_cm_invoice" value="Load Invoice">
+  	    		</div>
+  	    	</div>
+  	    	<div class="col-md-12 invoice_table_div padding_00" style="display: none; margin-top: 7px;">
+      		</div> 
         </div>
-        <div class="col-md-3">
-        	<h4>Receipt List</h4>
-	    	<div class="col-md-12 receipt_table_div">
-	    		<table class="table">
-	    			<thead>
-	    				<th>Receipt Id</th>
-	    				<th>Date</th>
-	    				<th>Amount</th>
-	    			</thead>
-	    			<tbody>
-	    				<tr>
-	    					<td colspan="3">No Data Found</td>
-	    				</tr>
-	    			</tbody>
-	    		</table>
-    		</div> 
+        <div class="col-md-4">
+          <h3>Receipt List</h3>
+          <input type="radio" name="receipt_date_option" class="receipt_date_option" id="receipt_date_option_1" value="1"><label for="receipt_date_option_1">Year</label>
+          <input type="radio" name="receipt_date_option" class="receipt_date_option" id="receipt_date_option_2" value="2"><label for="receipt_date_option_2">All Receipt</label>
+          <input type="radio" name="receipt_date_option" class="receipt_date_option" id="receipt_date_option_3" value="3"><label for="receipt_date_option_3">Custom Date</label>
+
+          <!-- <input type="button" name="download_selected_pdf" class="common_black_button download_selected_pdf" value="Download Selected PDF" style="display:none">
+          <input type="button" name="email_selected_pdf" class="common_black_button email_selected_pdf" value="Email Selected PDF" style="display:none"> -->
+
+          <div class="col-md-12 receipt_year_div padding_00" style="margin-top: 20px;display:none">
+            <h5 class="col-md-1 padding_00" style="font-weight: 600; width: 80px;">Select Year:</h5>
+            <div class="col-md-3">
+              <select name="receipt_select_year" class="receipt_select_year form-control">
+                <option value="">Select Year</option>
+              </select>
+            </div>
+            <div class="col-md-2 padding_00">
+              <input type="button" name="load_receipt_year" class="common_black_button load_all_cm_receipt" value="Load receipt">
+            </div>
+          </div>
+          <div class="col-md-12 custom_date_div_receipt" style="margin-top: 20px;display:none">
+            <h5 class="col-md-1">From:</h5>
+            <div class="col-md-3">
+              <input type="text" name="from_receipt" class="form-control from_receipt" value="">
+            </div>
+            <h5 class="col-md-1">To:</h5>
+            <div class="col-md-3">
+              <input type="text" name="to_receipt" class="form-control to_receipt" value="">
+            </div>
+            <div class="col-md-2">
+              <input type="button" name="load_receipt_year" class="common_black_button load_all_cm_receipt" value="Load receipt">
+            </div>
+          </div>
+          <div class="col-md-12 receipt_table_div padding_00" style="display: none; margin-top: 20px;">
+          </div> 
         </div>
-        <div class="col-md-3">
-        	<h4>Statement List</h4>
-	    	<div class="col-md-12 receipt_table_div">
-	    		<table class="table">
-	    			<thead>
-	    				<th>Statement Id</th>
-	    				<th>Date</th>
-	    				<th>Amount</th>
-	    			</thead>
-	    			<tbody>
-	    				<tr>
-	    					<td colspan="3">No Data Found</td>
-	    				</tr>
-	    			</tbody>
-	    		</table>
-    		</div> 
+        <div class="col-md-4">
+        	<h3>Transaction Listing</h3>
+  	    	<div class="col-md-12 transaction_table_div padding_00">
+  	    		<ul class="nav nav-tabs">
+              <li class="nav-item active">
+                <a class="nav-link active" href="javascript:" id="listing-tab" data-toggle="tab" data-target="#listing"  role="tab" aria-controls="home" aria-selected="true">Transaction Listing</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="javascript:" id="account-tab" data-toggle="tab" data-target="#account"  role="tab" aria-controls="home" aria-selected="true">Client Account</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent" style="position: absolute;width: 100%;top: 150px;">
+              <div class="tab-pane fade in active" id="listing" role="tabpanel" aria-labelledby="listing-tab">
+                <table class="table">
+                  <thead>
+                    <th>Date</th>
+                    <th>Transaction Detail</th>
+                    <th>€</th>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="3">No Records found</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+                <table class="table">
+                  <thead>
+                    <th>Date</th>
+                    <th>Transaction Detail</th>
+                    <th>€</th>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="3">No Records found</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+      		</div> 
         </div>
 	</div>
     <!-- End  -->
@@ -571,6 +621,12 @@ a:hover{text-decoration: underline;}
   <input type="hidden" name="net_sortoptions" id="net_sortoptions" value="asc">
   <input type="hidden" name="vat_sortoptions" id="vat_sortoptions" value="asc">
   <input type="hidden" name="gross_sortoptions" id="gross_sortoptions" value="asc">
+
+  <input type="hidden" name="receipt_sno_sortoptions" id="receipt_sno_sortoptions" value="asc">
+  <input type="hidden" name="debit_sortoptions" id="debit_sortoptions" value="asc">
+  <input type="hidden" name="credit_sortoptions" id="credit_sortoptions" value="asc">
+  <input type="hidden" name="receipt_date_sortoptions" id="receipt_date_sortoptions" value="asc">
+  <input type="hidden" name="amount_sortoptions" id="amount_sortoptions" value="asc">
 </div>
 
 <script>
@@ -598,12 +654,23 @@ $(document).ready(function() {
   	$(".from_invoice").datetimepicker({
        defaultDate: fullDate,       
        format: 'L',
-       format: 'YYYY-MM-DD',
+       format: 'DD/MM/YYYY',
     });
     $(".to_invoice").datetimepicker({
        defaultDate: fullDate,       
        format: 'L',
-       format: 'YYYY-MM-DD',
+       format: 'DD/MM/YYYY',
+    });
+
+    $(".from_receipt").datetimepicker({
+       defaultDate: fullDate,       
+       format: 'L',
+       format: 'DD/MM/YYYY',
+    });
+    $(".to_receipt").datetimepicker({
+       defaultDate: fullDate,       
+       format: 'L',
+       format: 'DD/MM/YYYY',
     });
 });
 $(function(){
@@ -654,6 +721,121 @@ $(window).click(function(e) {
     }
     ascending = ascending ? false : true;
     $('#invoice_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('sort_sno_receipt'))
+  {
+    var sort = $("#receipt_sno_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#receipt_sno_sortoptions").val('desc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.sno_sort_receipt_val').html()) <
+        convertToNumeric($(b).find('.sno_sort_receipt_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#receipt_sno_sortoptions").val('asc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.sno_sort_receipt_val').html()) <
+        convertToNumeric($(b).find('.sno_sort_receipt_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#receipt_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('sort_debit'))
+  {
+    var sort = $("#debit_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#debit_sortoptions").val('desc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.debit_sort_val').html()) <
+        convertToNumeric($(b).find('.debit_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#debit_sortoptions").val('asc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.debit_sort_val').html()) <
+        convertToNumeric($(b).find('.debit_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#receipt_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('sort_credit'))
+  {
+    var sort = $("#credit_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#credit_sortoptions").val('desc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.credit_sort_val').html()) <
+        convertToNumeric($(b).find('.credit_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#credit_sortoptions").val('asc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.credit_sort_val').html()) <
+        convertToNumeric($(b).find('.credit_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#receipt_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('sort_receipt_date'))
+  {
+    var sort = $("#receipt_date_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#receipt_date_sortoptions").val('desc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.receipt_date_sort_val').html()) <
+        convertToNumeric($(b).find('.receipt_date_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#receipt_date_sortoptions").val('asc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.receipt_date_sort_val').html()) <
+        convertToNumeric($(b).find('.receipt_date_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#receipt_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('sort_amount'))
+  {
+    var sort = $("#amount_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#amount_sortoptions").val('desc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.amount_sort_val').html()) <
+        convertToNumeric($(b).find('.amount_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#amount_sortoptions").val('asc');
+      var sorted = $('#receipt_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.amount_sort_val').html()) <
+        convertToNumeric($(b).find('.amount_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#receipt_tbody').html(sorted);
   }
   if($(e.target).hasClass('sort_invoice'))
   {
@@ -792,7 +974,7 @@ $(window).click(function(e) {
 			              dataType:"json",
 			              type:"post",
 			              success:function(result){
-			                $(".invoice_table_div").html('<p><input type="checkbox" name="select_all_invoice" class="select_all_invoice" id="select_all_invoice" value=""><label for="select_all_invoice">Select All</label></p>'+result['invoiceoutput']);
+			                $(".invoice_table_div").html(result['invoiceoutput']);
 			                $(".invoice_table_div").show();
 			                 $(".download_selected_pdf").show();
 			                $(".email_selected_pdf").show();
@@ -829,7 +1011,7 @@ $(window).click(function(e) {
 		              dataType:"json",
 		              type:"post",
 		              success:function(result){
-		                $(".invoice_table_div").html('<p><input type="checkbox" name="select_all_invoice" class="select_all_invoice" id="select_all_invoice" value=""><label for="select_all_invoice">Select All</label></p>'+result['invoiceoutput']);
+		                $(".invoice_table_div").html(result['invoiceoutput']);
 		                $(".invoice_table_div").show();
 		                 $(".download_selected_pdf").show();
 			                $(".email_selected_pdf").show();
@@ -849,6 +1031,75 @@ $(window).click(function(e) {
 			
 		}
 	}
+  if($(e.target).hasClass('load_all_cm_receipt')) {
+    var type = $(".receipt_date_option:checked").val();
+    if(type == "1")
+    {
+      var year = $(".receipt_select_year").val();
+      if(year == "")
+      {
+        alert("Please select the year to review the Receipt");
+      }
+      else{
+        $("body").addClass("loading");
+          setTimeout(function(){ 
+              var client_id = $("#client_search_hidden_infile").val();
+                $.ajax({
+                    url: "<?php echo URL::to('user/client_review_load_all_client_receipt') ?>",
+                    data:{client_id:client_id,year:year,type:"1"},
+                    dataType:"json",
+                    type:"post",
+                    success:function(result){
+                      $(".receipt_table_div").html(result['receiptoutput']);
+                      $(".receipt_table_div").show();
+                      $("body").removeClass("loading");
+                      $('#receipt_expand').DataTable({
+                          autoWidth: true,
+                          scrollX: false,
+                          fixedColumns: false,
+                          searching: false,
+                          paging: false,
+                          info: false,
+                          ordering: false
+                      });
+                     
+                }
+              });
+          }, 2000);
+      }
+      
+    }
+    else if(type == "3")
+    {
+      $("body").addClass("loading");
+        setTimeout(function(){ 
+            var client_id = $("#client_search_hidden_infile").val();
+            var from = $(".from_receipt").val();
+            var to = $(".to_receipt").val();
+              $.ajax({
+                  url: "<?php echo URL::to('user/client_review_load_all_client_receipt') ?>",
+                  data:{client_id:client_id,from:from,to:to,type:"3"},
+                  dataType:"json",
+                  type:"post",
+                  success:function(result){
+                    $(".receipt_table_div").html(result['receiptoutput']);
+                    $(".receipt_table_div").show();
+                    $("body").removeClass("loading");
+                    $('#receipt_expand').DataTable({
+                        autoWidth: true,
+                        scrollX: false,
+                        fixedColumns: false,
+                        searching: false,
+                        paging: false,
+                        info: false,
+                        ordering: false
+                    });
+              }
+            });
+        }, 2000);
+      
+    }
+  }
   if($(e.target).hasClass('select_all_invoice'))
   {
     if($(e.target).is(":checked"))
@@ -857,6 +1108,17 @@ $(window).click(function(e) {
     }
     else{
       $(".invoice_check").prop("checked",false);
+    }
+  }
+
+  if($(e.target).hasClass('select_all_receipt'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".receipt_check:visible").prop("checked",true);
+    }
+    else{
+      $(".receipt_check").prop("checked",false);
     }
   }
 	if($(e.target).hasClass('invoice_inside_class')){
@@ -959,7 +1221,7 @@ $(window).click(function(e) {
 			              dataType:"json",
 			              type:"post",
 			              success:function(result){
-			                $(".invoice_table_div").html('<p><input type="checkbox" name="select_all_invoice" class="select_all_invoice" id="select_all_invoice" value=""><label for="select_all_invoice">Select All</label></p>'+result['invoiceoutput']);
+			                $(".invoice_table_div").html(result['invoiceoutput']);
 			                $(".invoice_table_div").show();
 			                $(".download_selected_pdf").show();
 							$(".email_selected_pdf").show();
@@ -989,49 +1251,121 @@ $(window).click(function(e) {
 			}
 		}
 	}
+  if($(e.target).hasClass('receipt_date_option'))
+  {
+    var client_id = $("#client_search_hidden_infile").val();
+    if(client_id == "")
+    {
+      alert("Please select the Client and click on the Load Button");
+      $(".receipt_date_option").prop("checked",false);
+    }
+    else{
+      var value = $(e.target).val();
+      if(value == "1")
+      {
+        $(".receipt_year_div").show();
+        $(".custom_date_div_receipt").hide();
+        $(".receipt_table_div").html("");
+      }
+      else if(value == "2")
+      {
+        $(".receipt_year_div").hide();
+        $(".custom_date_div_receipt").hide();
+
+        $("body").addClass("loading");
+          setTimeout(function(){ 
+              var client_id = $("#client_search_hidden_infile").val();
+                $.ajax({
+                    url: "<?php echo URL::to('user/client_review_load_all_client_receipt') ?>",
+                    data:{client_id:client_id,type:"2"},
+                    dataType:"json",
+                    type:"post",
+                    success:function(result){
+                      $(".receipt_table_div").html(result['receiptoutput']);
+                      $(".receipt_table_div").show();
+                      $("body").removeClass("loading");
+                      $('#receipt_expand').DataTable({
+                          autoWidth: true,
+                          scrollX: false,
+                          fixedColumns: false,
+                          searching: false,
+                          paging: false,
+                          info: false,
+                          ordering: false
+                      });
+                }
+              });
+          }, 2000);
+      }
+      else if(value == "3")
+      {
+        $(".receipt_year_div").hide();
+        $(".custom_date_div_receipt").show();
+        $(".receipt_table_div").html("");
+      }
+    }
+  }
 	if($(e.target).hasClass('load_client_review'))
 	{
-		$("body").addClass("loading");
 		var client_id = $("#client_search_hidden_infile").val();
-		$.ajax({
-			url:"<?php echo URL::to('user/client_review_client_select'); ?>",
-			type:"get",
-			dataType:"json",
-			data:{client_id:client_id},
-			success:function(result)
-			{
-				console.log(result);
-				$(".company_name").val(result['company']);
-				$(".cro_number").val(result['cro']);
-				$(".cm_ard_date").val(result['ard']);
-				$(".cro_ard_date").val("");
-				$(".cro_type").val(result['type']);
+    if(client_id == "")
+    {
+      alert("Please select the Client and click on the Load Button");
+    }
+    else{
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/client_review_client_select'); ?>",
+        type:"get",
+        dataType:"json",
+        data:{client_id:client_id},
+        success:function(result)
+        {
+          console.log(result);
+          $(".company_name").val(result['company']);
+          $(".cro_number").val(result['cro']);
+          $(".cm_ard_date").val(result['ard']);
+          $(".cro_ard_date").val("");
+          $(".cro_type").val(result['type']);
 
-				$(".invoice_select_year").html(result['invoice_year']);
-				$(".client_details_div").html(result['client_details']);
-				$(".client_email").val(result['client_email']);
+          $(".invoice_select_year").html(result['invoice_year']);
+          $(".receipt_select_year").html(result['receipt_year']);
+          $(".client_details_div").html(result['client_details']);
+          $(".client_email").val(result['client_email']);
 
-				$(".cro_ard_date").css("color","#000 !important");
-				$(".company_name").css("color","#000 !important");
+          $(".cro_ard_date").css("color","#000 !important");
+          $(".company_name").css("color","#000 !important");
 
-				$(".update_ard").hide();
+          $(".update_ard").hide();
 
-				$(".invoice_year_div").hide();
-				$(".custom_date_div").hide();
+          $(".invoice_year_div").hide();
+          $(".custom_date_div").hide();
 
-        $(".download_selected_pdf").hide();
-        $(".email_selected_pdf").hide();
-        $(".invoice_table_div").hide();
+          $(".receipt_year_div").hide();
+          $(".custom_date_div_receipt").hide();
 
-        $(".receipt_table_div").hide();
+          $(".receipt_year_div").hide();
+          $(".custom_date_div_receipt").hide();
 
-        $(".from_invoice").val("");
-        $(".to_invoice").val("");
+          $(".download_selected_pdf").hide();
+          $(".email_selected_pdf").hide();
+          $(".invoice_table_div").hide();
+          $(".receipt_table_div").hide();
 
-				$(".invoice_date_option").prop("checked",false);
-				$("body").removeClass("loading");
-			}
-		})
+          /*$(".receipt_table_div").hide();*/
+
+          $(".from_invoice").val("");
+          $(".to_invoice").val("");
+
+          $(".from_receipt").val("");
+          $(".to_receipt").val("");
+
+          $(".invoice_date_option").prop("checked",false);
+          $(".receipt_date_option").prop("checked",false);
+          $("body").removeClass("loading");
+        }
+      })
+    }
 	}
 	if($(e.target).hasClass('refresh_cro'))
 	{

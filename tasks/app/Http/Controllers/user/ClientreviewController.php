@@ -98,9 +98,9 @@ class ClientreviewController extends Controller {
 				$croard_val = '';
 			}
 			$client_details = '<div class="col-md-4">Client Name: </div>
-			<div class="col-md-8">'.$cm_details->company.'</div>
+			<div class="col-md-8" style="font-weight:600">'.$cm_details->company.'</div>
 			<div class="col-md-4">Address: </div>
-			<div class="col-md-8">';
+			<div class="col-md-8" style="font-weight:600">';
 		        if($cm_details->address1 != ''){
 		          $client_details.=$cm_details->address1.'<br/>';
 		        }
@@ -118,7 +118,7 @@ class ClientreviewController extends Controller {
 		        }
 		    $client_details.='</div>
 		    <div class="col-md-4">Email: </div>
-			<div class="col-md-8">'.$cm_details->email.'</div>';
+			<div class="col-md-8" style="font-weight:600">'.$cm_details->email.'</div>';
 
 			$data['client_details'] = $client_details;
 			$data['client_email'] = $cm_details->email;
@@ -140,6 +140,17 @@ class ClientreviewController extends Controller {
 			}
 			$data['invoice_year'] = $output_year;
 
+			$receipt_year = DB::select('SELECT *,SUBSTR(`receipt_date`, 1, 4) as `receipt_year` from `receipts` WHERE `client_code` LIKE "%'.$client_id.'%" AND `credit_nominal` = "712" AND `imported` = "0" AND `status` = "0" GROUP BY SUBSTR(`receipt_date`, 1, 4) ORDER BY SUBSTR(`receipt_date`, 1, 4) ASC');
+			$output_receipt_year = '<option value="">Select Year</option>';
+			if(count($receipt_year))
+			{
+				foreach($receipt_year as $year)
+				{
+					$output_receipt_year.='<option value="'.$year->receipt_year.'">'.$year->receipt_year.'</option>';
+				}
+			}
+			$data['receipt_year'] = $output_receipt_year;
+
 			echo json_encode($data);
 		}
 	}
@@ -160,20 +171,30 @@ class ClientreviewController extends Controller {
 		{
 			$year = Input::get('year');
 			$invoicelist = DB::select('SELECT * from `invoice_system` WHERE client_id = "'.$client_id.'" AND `invoice_date` LIKE "'.$year.'%"');
+
+			$margin_top = 'margin-top:-3px !important;';
 		}
 		elseif($type == "2")
 		{
 			$invoicelist = DB::table('invoice_system')->where('client_id', $client_details->client_id)->get();
+			$margin_top = 'margin-top:40px !important;';
 		}
 		elseif($type == "3")
 		{
-			$from = Input::get('from');
-			$to = Input::get('to');
+			$exp_from = explode("/",Input::get('from'));
+			$exp_to = explode("/",Input::get('to'));
+
+			$from = $exp_from[2].'-'.$exp_from[1].'-'.$exp_from[0];
+			$to = $exp_to[2].'-'.$exp_to[1].'-'.$exp_to[0];
 
 			$invoicelist = DB::table('invoice_system')->where('client_id', $client_details->client_id)->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+
+			$margin_top = 'margin-top:-3px !important;';
 		}
 
-		$outputinvoice = '<table class="display nowrap fullviewtablelist" id="invoice_expand" width="100%">
+		$outputinvoice = '<div style="width:100%;position:absolute; '.$margin_top.'">
+			<p style="position: relative;bottom: 0px;"><input type="checkbox" name="select_all_invoice" class="select_all_invoice" id="select_all_invoice" value=""><label for="select_all_invoice">Select All</label></p>
+			<table class="display nowrap fullviewtablelist own_table_white" id="invoice_expand" width="100%">
                 <thead>
                   <tr style="background: #fff;">
                       <th style="text-align: left;">S.No <i class="fa fa-sort sort_sno"></i></th>
@@ -232,8 +253,8 @@ class ClientreviewController extends Controller {
           $outputinvoice.='<tr>
           	<td></td>
           	<td></td>
-          	<td></td>
-          	<td align="right">Empty</td>
+          	<td>Empty</td>
+          	<td align="right"></td>
           	<td></td>
           	<td></td>
           </tr>';
@@ -241,9 +262,87 @@ class ClientreviewController extends Controller {
 
         $outputinvoice.='                
                 </tbody>
-            </table>';
+            </table>
+            </div>';
 
         echo json_encode(array('invoiceoutput' => $outputinvoice));
+
+	}
+	public function client_review_load_all_client_receipt()
+	{
+		$client_id = Input::get('client_id');
+		$type = Input::get('type');
+		$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+		if($type == "1")
+		{
+			$year = Input::get('year');
+			$receiptlist = DB::select('SELECT * from `receipts` WHERE client_code LIKE "%'.$client_id.'%" AND credit_nominal = "712" AND imported = "0" AND status = "0" AND `receipt_date` LIKE "'.$year.'%"');
+			$margin_top = 'margin-top:48px !important;';
+		}
+		elseif($type == "2")
+		{
+			$receiptlist = DB::table('receipts')->where('client_code', 'like', '%'.$client_details->client_id.'%')->where('credit_nominal','712')->where('imported',0)->where('status',0)->get();
+			$margin_top = 'margin-top:102px !important;';
+		}
+		elseif($type == "3")
+		{
+			$exp_from = explode("/",Input::get('from'));
+			$exp_to = explode("/",Input::get('to'));
+
+			$from = $exp_from[2].'-'.$exp_from[1].'-'.$exp_from[0];
+			$to = $exp_to[2].'-'.$exp_to[1].'-'.$exp_to[0];
+
+			$receiptlist = DB::table('receipts')->where('client_code','like', '%'.$client_details->client_id.'%')->where('credit_nominal','712')->where('receipt_date','>=',$from)->where('receipt_date','<=',$to)->where('imported',0)->where('status',0)->get();
+			$margin_top = 'margin-top:45px !important;';
+		}
+
+		$outputreceipt = '<table class="display nowrap fullviewtablelist own_table_white" id="receipt_expand" width="100%" style="position:absolute; '.$margin_top.'">
+                <thead>
+                  <tr style="background: #fff;">
+                      <th style="text-align: left;">Date <i class="fa fa-sort sort_receipt_date"></i></th>
+                      <th style="text-align: right;">Amount <i class="fa fa-sort sort_amount"></i></th>                   
+                  </tr>
+                </thead>                            
+                <tbody id="receipt_tbody">';
+		$i=1;
+		$total_amount = 0;
+		if(count($receiptlist)){ 
+			foreach($receiptlist as $receipt){ 
+				$client_details = DB::table('cm_clients')->where('client_id', $receipt->client_code)->first();
+				
+
+				$outputreceipt.='
+					<tr>
+						<td align="left"><spam class="receipt_date_sort_val" style="display:none">'.strtotime($receipt->receipt_date).'</spam>'.date('d-M-Y', strtotime($receipt->receipt_date)).'</td>
+						<td align="right" class="amount_sort_val">'.number_format_invoice_empty($receipt->amount).'</td>
+					</tr>
+				';
+
+				$total_amount = $total_amount + $receipt->amount;
+				$i++;
+			}		
+			$outputreceipt.='
+			</tbody>
+			<tbody>
+			<tr>
+				<td>Total</td>
+				<td align="right">'.number_format_invoice_empty($total_amount).'</td>						
+			</tr>';		
+		}
+
+		if($i == 1)
+        {
+          $outputreceipt.='<tr>
+          	<td>Empty</td>
+          	<td align="right"></td>
+          </tr>';
+        }
+
+        $outputreceipt.='                
+                </tbody>
+            </table>';
+
+        echo json_encode(array('receiptoutput' => $outputreceipt));
 
 	}
 	public function invoice_email_selected_pdfs()

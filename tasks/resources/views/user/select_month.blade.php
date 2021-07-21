@@ -5,7 +5,7 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
-  
+  .header-copy{top: 200px !important;}
   .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
 
   .start_red { color:#ff0; }
@@ -16,7 +16,7 @@
 
   .fa-star-o { color:#000 !important; }
   .error{ color:#f00; }
-  .secret_button:focus { background: #fff;outline: none; }
+  .secret_button:focus { background: #f5f5f5;outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
       display:    none;
@@ -201,11 +201,12 @@ table{
 
 
 
-    width: 225%;
+    width: 213%;
 
 
 
     height: 200px !important;
+    position: relative;
 
 
 
@@ -402,7 +403,7 @@ table{
 
 
   padding:8px;
-
+  color:#000;
 
 
 }
@@ -463,7 +464,7 @@ table{
 
 .page_title{
 
-  height: 75px !important;
+  
 
   background: #fff !important;
 
@@ -533,12 +534,11 @@ table{
 
 
 
-    left:32%;
+     left:-70px;
 
 
 
-    width: 28%;
-
+    width: 300px;
 
 
     background: #ff0;
@@ -573,11 +573,11 @@ table{
 
 
 
-    left:39%;
+    left:-70px;
 
 
 
-    width: 28%;
+    width: 300px;
 
 
 
@@ -804,7 +804,7 @@ table{
 
 
 
-    padding: 5px;
+    
 
 
 
@@ -1449,7 +1449,7 @@ body.loading .modal_load {
 
       <div class="modal-body">
 
-          <table class="table">
+          <table class="table own_table_white">
 
             <tr>
 
@@ -1752,7 +1752,7 @@ body.loading .modal_load {
       </div>
       <div class="modal-footer">
         <div id="scheme_divbody">
-          <table class="table">
+          <table class="table own_table_white">
             <thead>
               <th style="text-align:left">#</th>
               <th style="text-align:left">Scheme Name</th>
@@ -2090,7 +2090,7 @@ body.loading .modal_load {
 
 
 
-        <input type="submit" class="btn btn-primary" value="Submit" style="background: #000; color:#fff">
+        <input type="submit" class="common_black_button" value="Submit" style="background: #000; color:#fff">
 
       </div>
 
@@ -2216,7 +2216,7 @@ body.loading .modal_load {
 
       <div class="modal-footer">
 
-        <input type="submit" class="btn btn-primary" value="Submit" style="background: #000; color:#fff">
+        <input type="submit" class="common_black_button" value="Submit" style="background: #000; color:#fff">
 
       </div>
 
@@ -3009,11 +3009,11 @@ body.loading .modal_load {
   </div>
 </div>
 
-<div class="content_section">
+<div class="content_section" style="margin-bottom:200px">
 
-  <div class="page_title" style="z-index:999">
-
-    <?php
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 new_main_title">
+                <?php
 
     if($monthid->month_closed == '0000-00-00 00:00:00')
 
@@ -3047,13 +3047,24 @@ body.loading .modal_load {
 
     }
 
-  ?>
+  ?>            
+  Task of <?php echo $yearname->year_name ?> &nbsp;&nbsp;&nbsp;&nbsp; Month : Month <?php echo $monthid->month ?> &nbsp;&nbsp;&nbsp;&nbsp; No of days : <?php echo $days; ?>
+            </h4>
+    </div>
 
-    <div class="col-lg-3 padding_00" style="margin-left: 1%;">Task of <?php echo $yearname->year_name ?> &nbsp;&nbsp;&nbsp;&nbsp; Month : Month <?php echo $monthid->month ?> &nbsp;&nbsp;&nbsp;&nbsp; No of days : <?php echo $days; ?></div>
+  <div class="row payroll_menu_section" style="z-index:999">
 
-    <div class="col-lg-8 padding_00 button_top_right" style="float:left">
+    
 
-      <ul style="margin-right: 13%;float:left">
+    <div class="col-lg-3">
+      <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->month_incomplete == 1) { $inc_checked = 'checked="checked"'; } else { $inc_checked = ''; } ?>
+
+      <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked; ?>><label for="show_incomplete">Show Incomplete Only</label> 
+    </div>
+
+    <div class="col-lg-7 padding_00" style="float:left">
+<div class="select_button">
+      <ul style="margin-right: 1%;float:right">
         <?php
         $this_month = $monthid->month_id;
         $prev_month = DB::table('month')->where('month_id','<',$this_month)->where('year',$monthid->year)->orderBy('month_id','desc')->first();
@@ -3092,27 +3103,30 @@ body.loading .modal_load {
 
         <li><a href="javascript:" id="email_report_button">Email Task Report</a></li>
 
-        <li class="dropdown_download"><a href="javascript:" id="download_reports" class="dropdown_download">DOWNLOAD <i class="fa fa-caret-down dropdown_download"></i></a></li>
+        <li class="dropdown_download" style="position: relative;"><a href="javascript:" id="download_reports" class="dropdown_download">DOWNLOAD <i class="fa fa-caret-down dropdown_download"></i></a>
 
-        <div class="download_div" style="display:none">
+          <div class="download_div" style="display:none">
 
-          <a href="javascript:" class="close_xmark">X</a>
+            <a href="javascript:" class="close_xmark">X</a>
 
-          <div class="row">
+            <div class="row">
 
-              <a href="javascript:" class="download_radio" id="all_tasks">All Tasks</a>
+                <a href="javascript:" class="download_radio" id="all_tasks">All Tasks</a>
 
-              <a href="javascript:" class="download_radio" id="task_completed">Tasks Completed</a>
+                <a href="javascript:" class="download_radio" id="task_completed">Tasks Completed</a>
 
-              <a href="javascript:" class="download_radio" id="task_incomplete">Tasks InComplete</a>
+                <a href="javascript:" class="download_radio" id="task_incomplete">Tasks InComplete</a>
+
+            </div>
 
           </div>
 
-        </div>
+        </li>
 
-        <li class="dropdown_notify"><a href="javascript:" id="notify_reports" class="dropdown_notify">NOTIFY ALL <i class="fa fa-caret-down dropdown_notify"></i></a></li>
+        
 
-        <div class="notify_div" style="display:none">
+        <li class="dropdown_notify" style="position: relative;"><a href="javascript:" id="notify_reports" class="dropdown_notify">NOTIFY ALL <i class="fa fa-caret-down dropdown_notify"></i></a>
+          <div class="notify_div" style="display:none">
 
           <a href="javascript:" class="close_xmark">X</a>
 
@@ -3127,14 +3141,14 @@ body.loading .modal_load {
           </div>
 
         </div>
+        </li>
+
+        
 
         <li><a href="javascript:"  data-toggle="modal" data-target=".createnewtask">Create a Task</a></li>
         <li><a href="javascript:" class="open_schemes">Schemes</a></li>
-
-        <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->month_incomplete == 1) { $inc_checked = 'checked="checked"'; } else { $inc_checked = ''; } ?>
-        <li>
-        <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked; ?>><label for="show_incomplete">Show Incomplete Only</label> </li>
       </ul>
+    </div>
 
     </div>
 
@@ -3170,15 +3184,15 @@ if(Session::has('error')) { ?>
 
     <?php if(count($resultlist_standard)){ ?>
 
-    <div class="table-responsive" style="max-width: 100%; float: left; margin-top:70px">
+    <div class="table-responsive" style="max-width: 100%; float: left; margin-top:130px">
 
-      <label class="label_task"> Standard Task</label>
+      <h3> Standard Task</h3>
 
-      <table class="table_bg table-fixed-header" style="width: 2000px; margin: 0px auto;margin-bottom:30px">
+      <table class="table_bg table-fixed-header own_table_white" style="width: 2000px; margin: 0px auto;margin-bottom:30px; background: #fff">
 
           <thead class="header">
 
-            <tr class="background_bg">
+            <tr>
 
                 <th width="80px">S.No <i class="fa fa-sort sno_sort_std" aria-hidden="true"></th>
 
@@ -3262,7 +3276,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_std_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -3625,7 +3639,7 @@ if(Session::has('error')) { ?>
                         <label style="margin-top: 6px;">Scheme: </label>
                       </div>
                       <div class="col-md-9">
-                        <select name="select_scheme" class="form-control select_scheme <?php if($monthid->month_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
+                        <select name="select_scheme" class="form-control select_scheme <?php if($monthid->month_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>" style="width:91%">
                           <option value="0"></option>
                           <?php
                           if(count($schemes))
@@ -3844,15 +3858,15 @@ if(Session::has('error')) { ?>
 
        <?php if(count($resultlist_enhanced)){ ?>
 
-      <div class="table-responsive" style="max-width: 100%; float: left; margin-bottom:30px; margin-top:55px">
+      <div class="table-responsive" style="max-width: 100%; float: left;">
 
-       <label class="label_task"> Enhanced Task</label>
+       <h3>Enhanced Task</h3>
 
-      <table class="table_bg table-fixed-header_1" style="width: 2000px; margin: 0px auto;">
+      <table class="table_bg table-fixed-header_1 own_table_white" style="width: 2000px; margin: 0px auto; background: #fff">
 
           <thead class="header">
 
-            <tr class="background_bg">
+            <tr>
 
                 <th width="80px">S.No <i class="fa fa-sort sno_sort_enh" aria-hidden="true"></th>
 
@@ -3939,7 +3953,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_enh_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -4301,7 +4315,7 @@ if(Session::has('error')) { ?>
                         <label style="margin-top: 6px;">Scheme: </label>
                       </div>
                       <div class="col-md-9">
-                        <select name="select_scheme" class="form-control select_scheme <?php if($monthid->month_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
+                        <select name="select_scheme" class="form-control select_scheme <?php if($monthid->month_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>" style="width:91%">
                           <option value="0"></option>
                           <?php
                           if(count($schemes))
@@ -4509,11 +4523,11 @@ if(Session::has('error')) { ?>
 
        <?php if(count($resultlist_complex)){ ?>
 
-       <div class="table-responsive" style="max-width: 100%; float: left;  margin-top:55px">
+       <div class="table-responsive" style="max-width: 100%; float: left;">
 
-       <label class="label_task"> Complex Task</label>
+       <h3>Complex Task</h3>
 
-      <table class="table_bg table-fixed-header_2" style="width: 2000px; margin: 0px auto;margin-bottom:30px">
+      <table class="table_bg table-fixed-header_2 own_table_white" style="width: 2000px; margin: 0px auto;margin-bottom:30px; background: #fff">
 
           <thead class="header">
 
@@ -4601,7 +4615,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_cmp_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -4950,7 +4964,7 @@ if(Session::has('error')) { ?>
                         <label style="margin-top: 6px;">Scheme: </label>
                       </div>
                       <div class="col-md-9">
-                        <select name="select_scheme" class="form-control select_scheme <?php if($monthid->month_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>">
+                        <select name="select_scheme" class="form-control select_scheme <?php if($monthid->month_closed == '0000-00-00 00:00:00') { echo ''; } else { echo 'disabled_scheme'; } ?>" data-element="<?php echo $result->task_id; ?>" id="select_scheme_<?php echo $result->task_id; ?>" style="width:91%">
                           <option value="0"></option>
                           <?php
                           if(count($schemes))
@@ -5579,7 +5593,7 @@ $(window).click(function(e) {
               $(".resendemailunsent").modal("hide");
             }
         }
-      }).submit();
+      });
     }
   }
   if($(e.target).hasClass('submit_dropzone'))

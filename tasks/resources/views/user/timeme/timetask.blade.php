@@ -12,9 +12,9 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-body{
+/*body{
   background: #f5f5f5 !important;
-}
+}*/
 
 .label_class{
   float:left ;
@@ -151,12 +151,12 @@ a:hover{text-decoration: underline;}
               <div class="col-lg-12 selectall class_selectall" style="margin:15px 0px;">
                 <div class="col-lg-2" style="padding: 5px 0px 0px 0px;">
                   <input type="checkbox" class="select_all_class" id="select_all_class" style="padding-top: 20px;" name="">
-                  <label for="select_all_class" style="font-size: 14px; font-weight: normal;">Select all</label>
+                  <label for="select_all_class">Select all</label>
                 </div>
               </div>
 
 
-              <table class="table client_list">
+              <table class="table client_list own_table_white">
                 <thead>
                 <tr style="background: #fff;">
                     <th width="5%" style="text-align: left;">S.No</th>
@@ -345,23 +345,18 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
+
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
                 Time Task                
             </h4>
-            <div class="col-lg-6 text-right" style="padding-right: 0px; line-height: 35px;">
-                
-            </div>
-            <div class="col-lg-3 text-right"  style="padding: 0px;" >
-              <div class="select_button" style=" margin-left: 10px;">
-                <ul>
-                <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="review_all">Review All Global Tasks</a></li>               
-                <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="add_new">Add a Task</a></li>               
-              </ul>
-            </div>                        
-  </div>
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
-  </div>
+    </div>
+
+  
+        
+            
+            
+<div class="row">
   <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
@@ -369,9 +364,22 @@ a:hover{text-decoration: underline;}
 
     
     <?php } ?>
-    </div> 
+    </div>
 
-<table class="display nowrap fullviewtablelist" id="time_task_expand" width="100%">
+    <div class="col-lg-12 text-right">
+              <div class="select_button">
+                <ul style="float: right;">
+                <li><a href="javascript:" class="review_all">Review All Global Tasks</a></li>               
+                <li><a href="javascript:" class="add_new">Add a Task</a></li>               
+              </ul>
+            </div>                        
+  </div>
+
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:30px">
+  </div>
+   
+
+<table class="display nowrap fullviewtablelist own_table_white" id="time_task_expand" width="100%">
                         <thead>
                         <tr style="background: #fff;">
                             <th width="2%" style="text-align: left;">S.No</th>
@@ -498,6 +506,7 @@ a:hover{text-decoration: underline;}
                         </tbody>
                     </table>
 </div>
+
     <!-- End  -->
 <div class="main-backdrop"><!-- --></div>
 

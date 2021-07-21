@@ -290,14 +290,26 @@ a:hover{text-decoration: underline;}
     </div>
 </div>
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
-                Client Request Manager              
-            </h4>
-            <div class="col-lg-4 text-right" style="padding-right: 0px; line-height: 35px;">
-                
-            </div>
-            <div class="col-lg-5">
+
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Client Request Manager
+        </h4>
+    </div>
+
+    <div style="clear: both;">
+   <?php
+    if(Session::has('message')) { ?>
+        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
+     <?php }   
+    ?>
+    </div> 
+
+
+  <div class="row">
+        
+            
+            <div class="col-lg-12">
               <div class="select_button">
                   <ul style="float: right;">                                    
                   <li><a href="<?php echo URL::to('user/client_request_system/')?>" style="font-size: 13px; font-weight: 500;">Back</a></li>
@@ -306,13 +318,7 @@ a:hover{text-decoration: underline;}
             </div>
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
   </div>
-  <div style="clear: both;">
-   <?php
-    if(Session::has('message')) { ?>
-        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
-     <?php }   
-    ?>
-    </div> 
+  
 
 <style type="text/css">
 .refresh_icon{margin-left: 10px;}
@@ -323,8 +329,9 @@ a:hover{text-decoration: underline;}
 .margin_top_10{margin-top: 10px;}
 </style>
 
-<div class="col-lg-12">
-  <div class="col-lg-2"><b>Client Id:</b></div>
+<div class="row" style="background: #fff; margin: 20px 15px; width: 98%; padding: 15px; float: left; height: auto;">
+<div class="col-lg-12 padding_00">
+  <div class="col-lg-2 padding_00"><b>Client Id:</b></div>
   <div class="col-lg-4"><span style="font-weight: normal;"><?php echo $client_details->client_id?></span></div>
   <div class="col-lg-6">
       <div>
@@ -333,8 +340,8 @@ a:hover{text-decoration: underline;}
       </div>
   </div>
 </div>
-<div class="col-lg-12 margin_top_10">
-  <div class="col-lg-2"><b>Company:</b></div>
+<div class="col-lg-12 padding_00 margin_top_10">
+  <div class="col-lg-2 padding_00"><b>Company:</b></div>
   <div class="col-lg-4"><span style="font-weight: normal;"><?php echo $client_details->company?></span></div>
   <div class="col-lg-6">
       <div>
@@ -344,8 +351,8 @@ a:hover{text-decoration: underline;}
       </div>
   </div>
 </div>
-<div class="col-lg-12 margin_top_10">
-  <div class="col-lg-2"><b>Name:</b></div>
+<div class="col-lg-12 padding_00 margin_top_10">
+  <div class="col-lg-2 padding_00"><b>Name:</b></div>
   <div class="col-lg-4"><span style="font-weight: normal;"><?php echo $client_details->firstname?> <?php echo $client_details->surname?></span></div>
   <div class="col-lg-6">
       <div>
@@ -354,13 +361,13 @@ a:hover{text-decoration: underline;}
       </div>
   </div>
 </div>
-<div class="col-lg-12 margin_top_10">
-  <div class="col-lg-2"><b>Primary Email:</b></div>
+<div class="col-lg-12 padding_00 margin_top_10">
+  <div class="col-lg-2 padding_00"><b>Primary Email:</b></div>
   <div class="col-lg-4"><span style="font-weight: normal;"><?php echo $client_details->email?></span></div>
   
 </div>
-<div class="col-lg-12 margin_top_10">
-  <div class="col-lg-2"><b>Secondary Email:</b></div>
+<div class="col-lg-12 padding_00 margin_top_10">
+  <div class="col-lg-2 padding_00"><b>Secondary Email:</b></div>
   <div class="col-lg-4"><span style="font-weight: normal;"><?php echo $client_details->email2?></span></div>
   <div class="col-lg-6">
       <div class="select_button">
@@ -370,14 +377,16 @@ a:hover{text-decoration: underline;}
       </div>
   </div>
 </div>
-<div class="col-lg-12 margin_top_10">
+</div>
+<div class="col-lg-12" style="margin-top: 20px !important">
 </div>
 
 
+<div class="row" style="margin: 0px 15px">
+  <div class="col-lg-12 padding_00">
+    
 
-
-
-<table class="display nowrap fullviewtablelist" id="crm_expand" width="100%" style="max-width: 100%;">
+<table class="display nowrap fullviewtablelist own_table_white" id="crm_expand" width="100%" style="max-width: 100%; background: #fff ">
                         <thead>
                         <tr style="background: #fff;">
                              <th width="2%" style="text-align: left;">S.No</th>
@@ -511,6 +520,10 @@ a:hover{text-decoration: underline;}
                             
                         </tbody>
                     </table>
+
+  </div>
+</div>
+
 </div>
     <!-- End  -->
 <div class="main-backdrop"><!-- --></div>

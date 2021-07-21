@@ -469,15 +469,16 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-4" style="padding: 0px;">
-                Make / View a Client Request              
+
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Make / View a Client Request               
+                
             </h4>
-            <div class="col-lg-4 text-right" style="padding-right: 0px; line-height: 35px;">
-                <a class="goback" href="<?php echo URL::to('user/client_request_manager/'.base64_encode($request_details->client_id)); ?>" style="font-size: 13px; font-weight: 500;">Go Back to Client Request Manager</a>
-            </div>
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
-  </div>
+    </div>
+
+
+  <div class="row">
   <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
@@ -485,6 +486,19 @@ a:hover{text-decoration: underline;}
      <?php }   
     ?>
     </div> 
+
+    <div class="col-lg-12">
+      <div class="select_button">
+        <ul style="float: right;">
+          <li><a class="goback" href="<?php echo URL::to('user/client_request_manager/'.base64_encode($request_details->client_id)); ?>">Go Back to Client Request Manager</a></li>
+        </ul>
+      </div>
+    </div>
+            <div class="col-lg-4 text-right" style="padding-right: 0px; line-height: 35px;">
+                
+            </div>
+
+
 
 <style type="text/css">
 .refresh_icon{margin-left: 10px;}
@@ -512,10 +526,10 @@ a:hover{text-decoration: underline;}
 
 
 
-<div class="col-lg-12 margin_top_10">
-  <div class="col-lg-9 padding_00">
-    <div class="col-lg-2 padding_00">Year</div>
-    <div class="col-lg-5">
+<div class="row">
+  <div class="col-lg-12" style="background: #fff; width: 98%; margin: 15px;">
+    <div class="col-lg-2" style="margin-top: 20px">Year</div>
+    <div class="col-lg-5" style="margin-top: 20px">
       <div class="form-group">
         <select class="form-control year_class" required data-element="<?php echo base64_encode($request_details->request_id)?>" <?php echo $disabled_input?> >   
         <?php
@@ -541,7 +555,7 @@ a:hover{text-decoration: underline;}
       </div>      
     </div>
     <div class="clearfix"></div>
-    <div class="col-lg-2 padding_00">Category:</div>
+    <div class="col-lg-2">Category:</div>
     <div class="col-lg-5">
       <div class="form-group">
         <select class="form-control accounts_class" required  <?php echo $disabled_input?>>
@@ -565,7 +579,7 @@ a:hover{text-decoration: underline;}
       </div>   
     </div>
     <div class="clearfix"></div>
-    <div class="col-lg-2 padding_00">Employee:</div>
+    <div class="col-lg-2">Employee:</div>
     <div class="col-lg-5">
       <div class="form-group">
         <select class="form-control user_class" required  <?php echo $disabled_input?>>
@@ -587,7 +601,7 @@ a:hover{text-decoration: underline;}
       </div>      
     </div>
     <div class="clearfix"></div>
-    <div class="col-lg-2 padding_00">Subject:</div>
+    <div class="col-lg-2">Subject:</div>
     <div class="col-lg-5">
       <div class="form-group">
         <?php
@@ -609,7 +623,7 @@ a:hover{text-decoration: underline;}
         
       </div>      
     </div>
-    <div class="col-lg-12 padding_00" style="margin-top: 25px; <?php echo $disabled_div?>">
+    <div class="col-lg-12" style="margin-top: 25px; <?php echo $disabled_div?>">
       <b>Request Item:</b><br/><br/>
 
       <div class="request_item_class">

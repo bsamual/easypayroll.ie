@@ -227,13 +227,11 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="content_section">
-	<div id="fixed-header" style="width:100%;background: #fff;margin-top: -16px;">
-	  <div class="page_title" style="z-index:999;margin-top:20px">
-	  	<div class="row">
-		    <div class="col-md-12 padding_00" style="text-align: center">
-		      <label style="margin-left: 1%; text-align:center;font-size:20px">MessageUs - Central Client Messaging System</label>
-		    </div>
-		  </div>
+	<div id="fixed-header" style="width:100%;">
+	  <div class="page_title" style="z-index:999;">
+	  	<h4 class="col-lg-12 padding_00 new_main_title">
+                MessageUs - Central Client Messaging System             
+            </h4>
 	  </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light active" style="width:20%;text-align: center">
@@ -254,17 +252,17 @@ input:checked + .slider:before {
   </div>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-      <div class="row" style="background: #c7c7c7;">
+      <div class="row" style="background: #fff;">
         <div class="col-md-6" style="padding:20px">
           <div class="col-md-12">
-            <h5 style="font-weight:800">Message Summary:</h5>
+            <h5 style="font-weight:600">Message Summary:</h5>
           </div>
           <div class="col-md-12" style="margin-top:10px">
-            <h5 style="font-weight:800">Message Subject: </h5>
+            <h5 style="font-weight:600">Message Subject: </h5>
             <input type="text" name="message_subject" class="form-control message_subject" value="<?php echo $message_details->subject; ?>" disabled style="background: #fff !important">
           </div>
           <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Message Body: </h5>
+            <h5 style="font-weight:600">Message Body: </h5>
             <div style="width:100%;background: #fff;min-height:500px;padding:10px">
               <?php echo $message_details->message; ?>
             </div>
@@ -272,7 +270,7 @@ input:checked + .slider:before {
         </div>
         <div class="col-md-6" style="padding:20px">
           <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Attached Files: </h5>
+            <h5 style="font-weight:600">Attached Files: </h5>
             <?php
             $fileoutput = '';
             $files = DB::table('messageus_files')->where('message_id',$_GET['message_id'])->get();
@@ -287,9 +285,9 @@ input:checked + .slider:before {
             ?>
           </div>
           <div class="col-md-12" style="margin-top:20px">
-            <h5 style="font-weight:800">Selected Clients: </h5>
+            <h5 style="font-weight:600">Selected Clients: </h5>
             <div class="table-responsive" id="table_responsive_div" style="max-height: 500px;">
-              <table class="table" id="client_table">
+              <table class="table display nowrap fullviewtablelist own_table_white2" id="client_table">
                 <thead>
                   <tr>
                     <th>Code</th>

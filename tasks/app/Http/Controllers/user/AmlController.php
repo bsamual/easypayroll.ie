@@ -624,10 +624,10 @@ class AmlController extends Controller {
 	public function notify_tasks_aml()
 	{
 		$clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id','email','email2')->orderBy('id','asc')->get();
-		$output = '<table class="table" style="width:100%">';
+		$output = '<table class="table own_table_white" style="width:100%">';
 		if(count($clientlist))
 		{
-			$output.= '<tr class="background_bg"><td>Task Name</td><td>Notify</td><td>Primary Email</td><td>Secondary Email</td></tr>';
+			$output.= '<thead><tr><th>Task Name</th><th>Notify</th><th>Primary Email</th><th>Secondary Email</th></tr></thead>';
 			foreach($clientlist as $client)
 			{
 				$disabled='';

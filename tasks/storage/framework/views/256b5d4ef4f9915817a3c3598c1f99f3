@@ -10,9 +10,9 @@
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
 .client_inactive td,.selected_inactive td {color:#f00 !important;}
-body{
+/*body{
   background: #2fd9ff !important;
-}
+}*/
 .modal-header{
 	cursor:move;
 }
@@ -740,7 +740,7 @@ body #coupon {
                   $output_default.='</select><spam style="float:right;margin-top: 8px;">Select Default TaskType: </spam>';
                   echo $output_default;
                  ?>
-                <table class="table" id="client_table" style="border: 1px solid #000;">
+                <table class="table own_table_white" id="client_table" style="border: 1px solid #000;">
                   <thead>
                     <th style="text-align: left"></th>
                     <th style="text-align: left">ClientID</th>
@@ -1818,6 +1818,15 @@ body #coupon {
 
 <div class="content_section">
 
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Time Me Manager                
+            </h4>
+    </div>
+
+  
+    
+
   <div style="clear: both;">
 
    <?php
@@ -1846,19 +1855,12 @@ body #coupon {
 
     </div>
 
-  <div class="page_title">
+  
 
-    <h4 class="col-lg-12 text-center" style="padding: 0px; font-size: 25px; font-weight: bold; margin-bottom: 20px;">
-
-                TimeMe Manager
-
-                <a href="<?php echo URL::to('user/time_me_overview'); ?>" class="ok_button" style="float:right;font-size:14px;padding:10px">TimeMe Overview</a>
-
-            </h4>
-
-  </div>
-
-    <div class="row">      
+    <div class="row">
+      <div class="col-lg-12">
+      <a href="<?php echo URL::to('user/time_me_overview'); ?>" class="common_black_button" style="float:right;font-size:14px;font-weight: bold;">TimeMe Overview</a>
+    </div>      
 
       
 
@@ -1872,11 +1874,11 @@ body #coupon {
 
       
 
-      <div class="col-lg-12" style="background: #fff; padding:25px 15px !important; ">        
+      <div class="col-lg-12" style="background: #fff; padding:25px 15px !important; margin-top:23px;  ">        
 
-        <h4 class="col-lg-2" style="padding: 0px; font-weight: 600">Active Job</h4>
+        <h3 class="col-lg-2" style="margin: 0px 0px 0px 0px;">Active Job</h3>
 
-        <div class="col-lg-6"></div>
+        <div class="col-lg-5"></div>
 
         <div class="col-lg-2">
 
@@ -1920,7 +1922,7 @@ body #coupon {
 
         </div>
 
-        <div class="col-lg-2" style="padding: 0px;">
+        <div class="col-lg-3" style="padding: 7px 0px 0px 0px;">
         <?php
         if(Session::has('task_job_user') && Session::get('task_job_user') != "")
         {
@@ -1952,8 +1954,8 @@ body #coupon {
 
         ?>
 
-          <a href="javascript:" class="ok_button create_new <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px;">Create an Active Job</a> 
-          <a href="javascript:" class="ok_button create_bulk_job <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px;">Create an Even Bulk Job</a>           
+          <a href="javascript:" class="common_black_button create_new <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px; font-weight: bold;">Create an Active Job</a> 
+          <a href="javascript:" class="common_black_button create_bulk_job <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px; font-weight: bold;">Create an Even Bulk Job</a>           
 
         </div>
 
@@ -1963,7 +1965,7 @@ body #coupon {
 
 
 
-        <table class="display nowrap fullviewtablelist" id="active_job" width="100%">
+        <table class="display nowrap fullviewtablelist own_table_white" id="active_job" width="100%">
 
           <thead>
 
@@ -2487,11 +2489,11 @@ body #coupon {
 
         
 
-         <h4 class="col-lg-12" style="padding: 0px; font-weight: 600">Job of the Day / Closed Job</h4>
+         <h3 class="col-lg-12" style="margin: 0px 0px 20px 0px;">Job of the Day / Closed Job</h3>
 
 
 
-        <table class="display nowrap fullviewtablelist" id="closed_job" width="100%">
+        <table class="display nowrap own_table_white fullviewtablelist" id="closed_job" width="100%">
 
           <thead>
 
@@ -2925,7 +2927,7 @@ body #coupon {
       </div>
 
       <div class="col-lg-12 summary_div" style="margin-top: 50px; background: #fff; padding: 25px 15px;<?php if(Session::has('task_job_user') && Session::get('task_job_user') != "") { echo 'display:block'; } else{ echo 'display:none'; } ?>">
-         <h4 class="col-lg-12" style="padding: 0px; font-weight: 600">Summary</h4>
+         <h3 class="col-lg-12" style="margin: 0px 0px 20px 0px;">Summary</h3>
          <?php
 
           if(Session::has('task_job_user') && Session::get('task_job_user') != "")
@@ -3060,7 +3062,7 @@ body #coupon {
               $summary_quick_jobs_time = floor($h).':'.floor($m).' Hours';
             }
 
-            echo '<div class="col-lg-12 user_details_div" style="margin-top: 30px;">        
+            echo '<div class="col-lg-12 user_details_div">        
               <div class="col-lg-5 col-md-5 col-sm-5" style="border:1px solid #000;">
                 <h5 style="padding: 0px; font-weight: 600">Total Time on the Primary Active Job : </h5>
               </div>

@@ -16,17 +16,20 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/css/bootstrap-multiselect.css'); ?>" type="text/css"/>
 
 <style>
+.select_internal .btn-group{width: 100%;}
+.user_section .btn-group{width: 100%;}
 .multiselect-container > li > a > label.checkbox
     {
         min-width: 180px;
     }
     .btn-group > .btn:first-child
     {
-        min-width: 180px;
+        /*min-width: 180px;*/
+        width: 100%;
     }
-body{
+/*body{
   background: #2fd9ff !important;
-}
+}*/
 .col-md-2{
       padding-right: 5px;
     padding-left: 5px;
@@ -143,6 +146,7 @@ body.loading .modal_load {
         display: block;
       }
     }
+.dropdown-menu{width: 300px !important;}
 </style>
 <script>
 function popitup(url) {
@@ -161,99 +165,109 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-1" style="padding: 0px;">
-                Client Review
-            </h4>
-            <div class="col-lg-11 text-right" style="padding-right: 0px; line-height: 35px;">
-                <form action="post">
-                  <div class="col-lg-12" style="padding: 0px;">
-                    <div class="col-md-2">
-                      <div class="form-group">
-                         
-                              <input type="text" class="form-control" id="search_clientid" placeholder="Client Id" name="clientid" style="font-weight: 500;" required />
-                          
-                      </div>    
-                    </div> 
-                    <div class="col-md-1" style="width: 11%; text-align: left; padding-top: 7px;">
-                      <input type="checkbox" class="select_all_search" id="select_all_search" value="1" style="padding-top: 20px;"><label for="select_all_search" style="font-size: 14px; font-weight: normal;">Select All & Search</label>
-                    </div>
 
-                    <div class="col-md-2" style="width: 12%; text-align: left">
-                      <div class="form-group">
-                              <select id="select_tasks" class="form-control select_tasks" multiple="multiple">
-                                  
-                              </select>
-                      </div>    
-                    </div>
-                    <div class="col-md-2">
-                      <div class="form-group date_group">
-                          <label class="input-group datepicker-only-init">
-                              <input type="text" class="form-control" id="start_date" placeholder="Select Start Date" name="start_date" style="font-weight: 500;" required />
-                              <span class="input-group-addon">
-                                  <i class="glyphicon glyphicon-calendar"></i>
-                              </span>
-                          </label>
-                      </div>    
-                    </div> 
-                    <div class="col-md-2">
-                      <div class="form-group date_group">
-                          <label class="input-group datepicker-stoponly-init">
-                              <input type="text" class="form-control" id="stop_date" placeholder="Select End Date" name="end_date" style="font-weight: 500;" required />
-                              <span class="input-group-addon">
-                                  <i class="glyphicon glyphicon-calendar"></i>
-                              </span>
-                          </label>
-                      </div>     
-                    </div>  
-                    <div class="col-md-1" style="width: 12%">
-                      <div class="form-group">
-                              <select id="select_users" class="form-control select_users" multiple="multiple">
-                                  
-                                  <?php
-                                  if(count($userlist))
-                                  {
-                                    foreach($userlist as $user)
-                                    {
-                                      echo '<option value="'.$user->user_id.'">'.$user->lastname.' '.$user->firstname.'</option>';
-                                    }
-                                  }
-                                  ?>
-                              </select>
-                      </div>    
-                    </div>
-                    <div class="col-md-1" style="width: 7%; text-align: left; padding-top: 7px;">
-                      <input type="checkbox" class="all_date_search" id="all_date_search" value="1" style="padding-top: 20px;"><label for="all_date_search" style="font-size: 14px; font-weight: normal;">All Date</label>
-                    </div>
-                    <div class="col-lg-1" style="width: 7%">
-                      <input type="hidden" id="client_search" class="client_search" value="">
-                      <input type="button" class="btn btn-primary btn-sm search_button" value="Search"  name="">
-                      <input type="hidden" value="0" class="search_checkbox" style="width: 100px;" name="">
-                      
-                    </div>            
-                  </div>
-                </form>
-            </div>
-            <div class="col-lg-3 text-right" style="padding: 0px;float:right">
-              <div class="select_button" style=" margin-left: 10px;">
-                <ul>
-                  <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="review_all report_csv">Report CSV</a></li>               
-                  <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="add_new report_pdf">Report PDF</a></li>  
-                  <li><a href="<?php echo URL::to('user/time_track'); ?>" style="font-size: 13px; font-weight: 500;">TimeMe Manager</a></li> 
-                </ul>
-              </div>                        
-            </div>
-  <div style="clear: both;">
-   <?php
-    if(Session::has('message')) { ?>
-        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
-    <?php } ?>
-    </div> 
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Client Review                
+            </h4>
+    </div>
+
+
+  <div class="page_title">
+        
+            
+  
 
 
 </div>
 
 <div class="row">
+  <div style="clear: both;">
+   <?php
+    if(Session::has('message')) { ?>
+        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
+    <?php } ?>
+  </div> 
+  <div class="col-lg-9 text-right" style="padding-right: 0px; line-height: 35px;">
+    <form action="post">
+      <div class="col-lg-12" style="padding: 0px;">
+        <div class="col-md-2">
+          <div class="form-group">
+             
+                  <input type="text" class="form-control" id="search_clientid" placeholder="Client Id" name="clientid" style="font-weight: 500;" required />
+              
+          </div>    
+        </div> 
+        <div class="col-md-1" style="width: 13%; text-align: left; padding-top: 7px; padding-right: 0px;">
+          <input type="checkbox" class="select_all_search" id="select_all_search" value="1" style="padding-top: 20px;"><label for="select_all_search">Select All & Search</label>
+        </div>
+
+        <div class="col-md-2 select_internal" style="width: 12%; text-align: left">
+          <div class="form-group">
+                  <select id="select_tasks" class="form-control select_tasks" multiple="multiple">
+                      
+                  </select>
+          </div>    
+        </div>
+        <div class="col-md-2" style="width: 15%">
+          <div class="form-group date_group">
+              <label class="input-group datepicker-only-init">
+                  <input type="text" class="form-control" id="start_date" placeholder="Select Start Date" name="start_date" style="font-weight: 500;" required />
+                  <span class="input-group-addon">
+                      <i class="glyphicon glyphicon-calendar"></i>
+                  </span>
+              </label>
+          </div>    
+        </div> 
+        <div class="col-md-2" style="width: 15%">
+          <div class="form-group date_group">
+              <label class="input-group datepicker-stoponly-init">
+                  <input type="text" class="form-control" id="stop_date" placeholder="Select End Date" name="end_date" style="font-weight: 500;" required />
+                  <span class="input-group-addon">
+                      <i class="glyphicon glyphicon-calendar"></i>
+                  </span>
+              </label>
+          </div>     
+        </div>  
+        <div class="col-md-1 user_section" style="width: 12%">
+          <div class="form-group">
+                  <select id="select_users" class="form-control select_users" multiple="multiple">
+                      
+                      <?php
+                      if(count($userlist))
+                      {
+                        foreach($userlist as $user)
+                        {
+                          echo '<option value="'.$user->user_id.'">'.$user->lastname.' '.$user->firstname.'</option>';
+                        }
+                      }
+                      ?>
+                  </select>
+          </div>    
+        </div>
+        <div class="col-md-1" style="width: 8%; text-align: left; padding-top: 7px;">
+          <input type="checkbox" class="all_date_search" id="all_date_search" value="1" style="padding-top: 20px;"><label for="all_date_search">All Date</label>
+        </div>
+        <div class="col-lg-1" style="width: 7%">
+          <input type="hidden" id="client_search" class="client_search" value="">
+          <input type="button" class="common_black_button search_button" value="Search"  name="">
+          <input type="hidden" value="0" class="search_checkbox" style="width: 100px;" name="">
+          
+        </div>            
+      </div>
+    </form>
+</div>
+<div class="col-lg-3 text-right" style="float:right">
+  <div class="select_button">
+    <ul style="float: right;">
+      <li><a href="javascript:" class="review_all report_csv">Report CSV</a></li>               
+      <li><a href="javascript:" class="add_new report_pdf">Report PDF</a></li>  
+      <li><a href="<?php echo URL::to('user/time_track'); ?>">TimeMe Manager</a></li> 
+    </ul>
+  </div>                        
+</div>
+
+
   <div class="col-lg-12">
      <ul class="nav nav-tabs" role="tablist">
         <li role="presentation"><a href="<?php echo URL::to('user/time_me_overview')?>">Active Job</a></li>
@@ -266,8 +280,8 @@ a:hover{text-decoration: underline;}
        <div class="tab-content" style="background: #fff; padding-top: 25px; padding-bottom: 15px;">
           <div class="filter_text" style="width: 100%; text-align: center; font-size: 15px; font-weight: bold;">Use the filter option to get the desired search results to Export as CSV / PDF</div>
           <div class="table_selectall" style="display: none;">
-            <div class="col-lg-2" style="padding: 0px;"><input type="checkbox" class="select_all_class" id="select_all_class" value="1" style="padding-top: 20px;"><label for="select_all_class" style="font-size: 14px; font-weight: normal;">Select all</label></div>
-            <table class="display nowrap fullviewtablelist" id="job_oftheday" width="100%">
+            <div class="col-lg-2" style="padding: 0px 0px 0px 10px;"><input type="checkbox" class="select_all_class" id="select_all_class" value="1" style="padding-top: 20px;"><label for="select_all_class">Select all</label></div>
+            <table class="display nowrap fullviewtablelist own_table_white" id="job_oftheday" width="100%">
               <thead>
                 <tr style="background: #fff;">
                   <th width="2%"></th>

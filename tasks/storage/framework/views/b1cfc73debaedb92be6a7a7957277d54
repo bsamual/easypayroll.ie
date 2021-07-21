@@ -19,6 +19,9 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+.own_table_white tr th{
+  color:#000;
+}
 
 /* Firefox */
 input[type=number] {
@@ -172,48 +175,40 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title" style="margin-bottom: 2px;">
-          <div class="col-lg-3" style="padding: 0px;">
-              <?php echo $yearid; ?> YEAR END MANAGER - Liability Assessment
-              <input type="hidden" value="<?php echo $yearid; ?>" id="year_id" name="">
-            </div>
-            <div class="col-lg-3" ></div>
-            <div class="col-lg-2">
-              <select class="form-control setting_class">
-                <option value="">Select Settings</option>
-                <?php echo $setting_list; ?>
-              </select>
-            </div>
-            <div class="col-lg-4 text-right"  style="padding: 0px;" >
-              <div class="select_button" style=" margin-left: 10px;">
-                <ul style="float: right;">            
-                         
-                  <li><input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" class="show_incomplete_label"><label for="show_incomplete" class="show_incomplete_label">Hide / Show Active Clients</label> </li>     
-                  <li><a href="<?php echo URL::to('user/year_end_manager'); ?>" style="font-size: 13px; font-weight: 500;">Back to Select Year Screen</a></li>
-                  <li><a href="javascript:" class="export_button" style="font-size: 13px; font-weight: 500;">Export CSV</a></li>
-                  
-
-
-                  
-              </ul>
-            </div>                        
-  </div>
-
-  <div style="clear: both;">
-   <?php
-    if(Session::has('message')) { ?>
-        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
-
-    
-    <?php } ?>
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                <?php echo $yearid; ?> YEAR END MANAGER - Liability Assessment
+            </h4>
+    </div>
+    <div style="clear: both;">
+     <?php
+      if(Session::has('message')) { ?>
+          <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
+      <?php } ?>
     </div> 
-
-
-</div>
+  <div class="row" style="margin-bottom: 2px;">
+    <div class="col-lg-8">
+      <input type="hidden" value="<?php echo $yearid; ?>" id="year_id" name="">
+      <b style="font-size: 14px;float:left;margin-top: 8px;margin-right: 10px;">Please Select Document Type:</b>
+      <select class="form-control setting_class" style="width:20%;float:left">
+        <option value="">Select Settings</option>
+        <?php echo $setting_list; ?>
+      </select>
+      <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" class="show_incomplete_label"><label for="show_incomplete" class="show_incomplete_label" style="margin-left: 0px;margin-top: 8px;">Hide / Show Active Clients</label> 
+    </div>
+    <div class="col-lg-4 text-right">
+        <div class="select_button" style=" margin-left: 10px;">
+          <ul style="float: right;">     
+            <li><a href="<?php echo URL::to('user/year_end_manager'); ?>" style="font-size: 13px; font-weight: 500;">Back to Select Year Screen</a></li>
+            <li><a href="javascript:" class="export_button" style="font-size: 13px; font-weight: 500;">Export CSV</a></li>
+          </ul>
+        </div>                        
+    </div>
+  </div>
 
 <div class="table-responsive table_result">
       
-<div class="col-lg-12 text-center"><b style="font-size: 20px; margin-top:30px; ">Please Select Document Type.</b></div>
+<div class="col-lg-12 text-center"></div>
    
 </div>
     <!-- End  -->
@@ -236,6 +231,7 @@ a:hover{text-decoration: underline;}
 <input type="hidden" name="liability_sortoptions" id="liability_sortoptions" value="asc">
 <input type="hidden" name="payment_sortoptions" id="payment_sortoptions" value="asc">
 <input type="hidden" name="prelim_sortoptions" id="prelim_sortoptions" value="asc">
+<input type="hidden" name="progress_sortoptions" id="progress_sortoptions" value="asc">
 <input type="hidden" name="date_sortoptions" id="date_sortoptions" value="asc">
 <input type="hidden" name="file_sortoptions" id="file_sortoptions" value="asc">
 
@@ -542,6 +538,29 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#task_body').html(sorted);
   }
+  if($(e.target).hasClass('sort_progress'))
+  {
+    var sort = $("#progress_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#progress_sortoptions").val('desc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.progress_sort_val').html()) <
+        convertToNumber($(b).find('.progress_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#progress_sortoptions").val('asc');
+      var sorted = $('#task_body').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.progress_sort_val').html()) <
+        convertToNumber($(b).find('.progress_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#task_body').html(sorted);
+  }
   if($(e.target).hasClass('sort_file'))
   {
     var sort = $("#file_sortoptions").val();
@@ -694,7 +713,7 @@ $(function(){
     $('#liability_expand').DataTable({
         columnDefs: [
             { "width": "100px", "targets": [0] },
-            { "width": "80px", "targets": [6] },
+            { "width": "100px", "targets": [6] },
             { "width": "80px", "targets": [7] }
         ],
         fixedHeader: {
@@ -725,7 +744,7 @@ $(".setting_class").change(function(){
           $('#liability_expand').DataTable({
               columnDefs: [
                   { "width": "100px", "targets": [0] },
-                  { "width": "80px", "targets": [6] },
+                  { "width": "100px", "targets": [6] },
                   { "width": "80px", "targets": [7] }
               ],
               fixedHeader: {

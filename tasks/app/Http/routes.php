@@ -281,6 +281,40 @@ Route::post('/user/update_incomplete_status_month', 'user\UserController@update_
 
 Route::get('/user/vat_clients', 'user\UserController@vatclients');
 
+Route::get('/user/vat_review', 'user\UserController@vat_review');
+
+Route::post('/user/load_all_vat_clients', 'user\UserController@load_all_vat_clients');
+
+Route::post('/user/show_prev_month', 'user\UserController@show_prev_month');
+
+Route::post('/user/show_next_month', 'user\UserController@show_next_month');
+
+Route::post('/user/change_period_vat_reviews', 'user\UserController@change_period_vat_reviews');
+
+Route::post('/user/check_submitted_date_vat_reviews', 'user\UserController@check_submitted_date_vat_reviews');
+
+
+
+Route::post('/user/vat_upload_images', 'user\UserController@vat_upload_images');
+
+Route::post('/user/vat_upload_csv', 'user\UserController@vat_upload_csv');
+
+Route::get('/user/remove_vat_csv/{id?}', 'user\UserController@remove_vat_csv');
+
+Route::post('/user/delete_submitted_vat_review', 'user\UserController@delete_submitted_vat_review');
+
+Route::post('/user/check_valid_ros_due', 'user\UserController@check_valid_ros_due');
+
+Route::post('/user/save_vat_review_date', 'user\UserController@save_vat_review_date');
+
+Route::post('/user/save_textval_review', 'user\UserController@save_textval_review');
+
+Route::post('/user/delete_vat_files', 'user\UserController@delete_vat_files');
+
+Route::get('/user/process_vat_reviews/{id?}', 'user\UserController@process_vat_reviews');
+
+Route::get('/user/process_vat_reviews_one/{id?}', 'user\UserController@process_vat_reviews_one');
+
 Route::get('/user/deactive_vat_clients/{id?}', 'user\UserController@deactivevatclients');
 
 Route::get('/user/active_vat_clients/{id?}', 'user\UserController@activevatclients');
@@ -798,19 +832,9 @@ Route::get('/user/invoice_management','user\UserController@unavailable');
 
 Route::get('/user/client_statements','user\UserController@unavailable');
 
-Route::get('/user/receipt_management','user\UserController@unavailable');
-
 Route::get('/user/time_management','user\UserController@unavailable');
 
-
-
-
-
-
-
 Route::get('/user/time_me','user\UserController@unavailable');
-
-
 
 Route::get('/user/vat_client_search', 'user\UserController@vat_client_search');
 
@@ -853,7 +877,8 @@ Route::post('/user/invoices_print_view', 'user\InvoiceController@invoicesprintvi
 Route::post('/user/invoice_saveas_pdf', 'user\InvoiceController@invoice_saveas_pdf');
 Route::post('/user/invoice_print_pdf', 'user\InvoiceController@invoice_print_pdf');
 
-
+Route::post('/user/get_loaded_client_inv_year', 'user\InvoiceController@get_loaded_client_inv_year');
+Route::post('/user/load_all_client_invoice', 'user\InvoiceController@load_all_client_invoice');
 
 
 
@@ -962,7 +987,9 @@ Route::get('/user/task_client_search', 'user\UserController@task_client_search')
 
 Route::get('/user/task_client_search_select', 'user\UserController@task_clientsearchselect');
 
+Route::post('/user/load_dashboard_tiles', 'user\UserController@load_dashboard_tiles');
 
+Route::post('/user/load_all_dashboard_tiles', 'user\UserController@load_all_dashboard_tiles');
 
 
 /*----------------------CM START----------------------*/
@@ -1676,6 +1703,7 @@ Route::get('/user/update_percent_one_infile_attachment', 'user\InfileController@
 Route::get('/user/update_percent_two_infile_attachment', 'user\InfileController@update_percent_two_infile_attachment');
 Route::get('/user/update_percent_three_infile_attachment', 'user\InfileController@update_percent_three_infile_attachment');
 Route::get('/user/update_percent_four_infile_attachment', 'user\InfileController@update_percent_four_infile_attachment');
+Route::get('/user/update_percent_five_infile_attachment', 'user\InfileController@update_percent_five_infile_attachment');
 Route::post('/user/infile_attachment_date_filled', 'user\InfileController@infile_attachment_date_filled');
 Route::post('/user/infile_attachment_code_filled', 'user\InfileController@infile_attachment_code_filled');
 
@@ -1761,6 +1789,9 @@ Route::get('/user/client_review_client_select', 'user\ClientreviewController@cli
 Route::post('/user/update_cro_ard_date', 'user\ClientreviewController@update_cro_ard_date');
 
 Route::post('/user/client_review_load_all_client_invoice', 'user\ClientreviewController@client_review_load_all_client_invoice');
+
+Route::post('/user/client_review_load_all_client_receipt', 'user\ClientreviewController@client_review_load_all_client_receipt');
+
 Route::post('/user/invoice_download_selected_pdfs', 'user\ClientreviewController@invoice_download_selected_pdfs');
 Route::post('/user/invoice_email_selected_pdfs', 'user\ClientreviewController@invoice_email_selected_pdfs');
 Route::post('/user/client_review_email_selected_pdf', 'user\ClientreviewController@client_review_email_selected_pdf');
@@ -1788,4 +1819,39 @@ Route::post('/user/save_debit_credit_finance_client', 'user\FinancialController@
 
 Route::post('/user/build_supplier_names_for_client_id', 'user\InfileController@build_supplier_names_for_client_id');
 Route::post('/user/update_infile_textvalue_item', 'user\InfileController@update_infile_textvalue_item');
+Route::post('/user/renumber_infile_textvalue_item', 'user\InfileController@renumber_infile_textvalue_item');
+Route::post('/user/check_secondary_line_has_value', 'user\InfileController@check_secondary_line_has_value');
+Route::post('/user/load_all_clients_infile_advanced', 'user\InfileController@load_all_clients_infile_advanced');
+Route::post('/user/load_single_client_infile_advanced', 'user\InfileController@load_single_client_infile_advanced');
+Route::post('/user/infile_edit_description', 'user\InfileController@infile_edit_description');
+Route::post('/user/update_edit_description', 'user\InfileController@update_edit_description');
+
+
 Route::post('/user/load_journals_financials', 'user\FinancialController@load_journals_financials');
+
+Route::get('/user/receipt_management','user\ReceiptController@receipt_management');
+Route::get('/user/receipt_settings','user\ReceiptController@receipt_settings');
+Route::post('/user/move_to_allowable_list','user\ReceiptController@move_to_allowable_list');
+Route::post('/user/get_nominal_code_description','user\ReceiptController@get_nominal_code_description');
+Route::get('/user/receipt_common_client_search', 'user\ReceiptController@receipt_commonclient_search');
+Route::post('/user/save_receipt_details','user\ReceiptController@save_receipt_details');
+Route::post('/user/update_receipt_details','user\ReceiptController@update_receipt_details');
+
+Route::post('/user/import_new_receipts','user\ReceiptController@import_new_receipts');
+Route::get('/user/import_new_receipts_one', 'user\ReceiptController@import_new_receipts_one');
+Route::post('/user/change_receipt_status', 'user\ReceiptController@change_receipt_status');
+Route::post('/user/load_receipt', 'user\ReceiptController@load_receipt');
+Route::post('/user/change_to_unhold', 'user\ReceiptController@change_to_unhold');
+Route::post('/user/add_receipt_export_csv', 'user\ReceiptController@add_receipt_export_csv');
+Route::post('/user/export_load_receipt', 'user\ReceiptController@export_load_receipt');
+
+Route::post('/user/check_import_csv','user\ReceiptController@check_import_csv');
+Route::get('/user/check_import_csv_one/{id?}','user\ReceiptController@check_import_csv_one');
+
+Route::post('/user/update_records_received','user\UserController@update_records_received');
+Route::post('/user/show_month_in_overlay','user\UserController@show_month_in_overlay');
+Route::post('/user/export_month_in_overlay','user\UserController@export_month_in_overlay');
+
+Route::post('/user/export_csv_client_opening','user\FinancialController@export_csv_client_opening');
+Route::post('/user/check_financial_opening_bal_date','user\InvoiceController@check_financial_opening_bal_date');
+

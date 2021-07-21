@@ -94,8 +94,11 @@ a:hover{text-decoration: underline;}
 ?>
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-      <h4 class="col-md-6" style="padding: 0px;font-weight:700;">Client Opening Balance Manager</h4>
-      <div class="col-md-6">
+        <h4 class="col-lg-12 padding_00 new_main_title">
+                Client Opening Balance Manager
+            </h4>
+      
+      <div class="col-md-12">
         <a href="<?php echo URL::to('user/opening_balance_manager'); ?>" class="common_black_button" style="float:right">Back To Opening Balance Manager</a>
       </div>
       <div style="clear: both;">
@@ -106,47 +109,47 @@ a:hover{text-decoration: underline;}
         ?>
       </div>
   </div>
-  <div class="row">
+  <div class="row" style="background: #fff; padding-top: 50px; padding-bottom: 100px;">
     <div class="col-md-1">&nbsp;</div>
     <div class="col-md-5">
       <div class="col-md-12">
         <div class="col-md-5">
-          <h4 style="font-weight:700">Client ID:</h4>
+          <label>Client ID:</label>          
         </div>
         <div class="col-md-7">
-          <h4><?php echo $client_details->client_id; ?></h4>
+          <label style="font-weight: 600;"><?php echo $client_details->client_id; ?></label>           
         </div>
       </div>
-      <div class="col-md-12">
+      <div class="col-md-12" style="margin-top:10px">
         <div class="col-md-5">
-          <h4 style="font-weight:700">Company:</h4>
+          <label>Company:</label>          
         </div>
         <div class="col-md-7">
-          <h4><?php echo $client_details->company; ?></h4>
+          <label style="font-weight: 600;"><?php echo $client_details->company; ?></label>          
         </div>
       </div>
-      <div class="col-md-12">
+      <div class="col-md-12" style="margin-top:10px">
         <div class="col-md-5">
-          <h4 style="font-weight:700">Name:</h4>
+          <label>Name:</label>          
         </div>
         <div class="col-md-7">
-          <h4><?php echo $client_details->firstname.' & '.$client_details->surname; ?></h4>
+          <label style="font-weight: 600;"><?php echo $client_details->firstname.' & '.$client_details->surname; ?></label>          
         </div>
       </div>
-      <div class="col-md-12">
+      <div class="col-md-12" style="margin-top:10px">
         <div class="col-md-5">
-          <h4 style="font-weight:700">Primary Email:</h4>
+          <label>Primary Email:</label>          
         </div>
         <div class="col-md-7">
-          <h4><?php echo $client_details->email; ?></h4>
+          <label style="font-weight: 600;"><?php echo $client_details->email; ?></label>          
         </div>
       </div>
-      <div class="col-md-12">
+      <div class="col-md-12" style="margin-top:10px">
         <div class="col-md-5">
-          <h4 style="font-weight:700">Secondary Email:</h4>
+          <label>Secondary Email:</label>          
         </div>
         <div class="col-md-7">
-          <h4><?php echo ($client_details->email2 == "")?"-":$client_details->email2; ?></h4>
+          <label style="font-weight: 600;"><?php echo ($client_details->email2 == "")?"-":$client_details->email2; ?></label>          
         </div>
       </div>
       <?php
@@ -187,9 +190,10 @@ a:hover{text-decoration: underline;}
       }
 
       ?>
-      <div class="col-md-12" style="margin-top:40px">
+      <div class="col-md-12" style="margin-top:10px">
         <div class="col-md-5">
-          <h4 style="font-weight:700">Opening Balance:</h4>
+          <label>Opening Balance:</label>
+          
         </div>
         <div class="col-md-7">
           <input type="text" name="opening_balance" class="form-control opening_balance" style="<?php echo $color; ?>" value="<?php echo number_format_invoice($balance); ?>" pattern="[0-9]*" onkeypress="preventNonNumericalInput(event)" <?php echo $disabled; ?>>
@@ -200,12 +204,13 @@ a:hover{text-decoration: underline;}
           &nbsp;
         </div>
         <div class="col-md-7">
-          <h4 style="line-height: 27px;">Note: Negative Balance on the opening Balance shows clients who have an overpaid account.</h4>
+          <label style="font-weight: 600;">Note: Negative Balance on the opening Balance shows clients who have an overpaid account.</label>
+          
         </div>
       </div>
       <div class="col-md-12" style="margin-top:10px">
         <div class="col-md-5">
-          <h4 style="font-weight:700">Opening Balance Date:</h4>
+          <label>Opening Balance Date:</label>          
         </div>
         <div class="col-md-7">
           <input type="text" name="opening_balance_date" class="form-control opening_balance_date" value="<?php echo $date; ?>" <?php echo $disabled; ?> style="cursor:pointer">
@@ -213,11 +218,9 @@ a:hover{text-decoration: underline;}
       </div>
     </div>
     <div class="col-md-5">
-      <table class="table" style="border:2px solid #ddd">
-        <thead>
-          <tr>
-            <th colspan="5">Balance Break Down</th>
-          </tr>
+      <h3 style="margin-top: 0px; margin-bottom: 20px;">Balance Break Down</h3>
+      <table class="table own_table_white " style="background: #fff">
+        <thead>          
           <tr>
             <th style="text-align: left">Invoice No</th>
             <th style="text-align: left">Invoice Date</th>

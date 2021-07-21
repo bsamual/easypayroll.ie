@@ -11,9 +11,9 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-body{
+/*body{
   background: #2fd9ff !important;
-}
+}*/
 
 .label_class{
   float:left ;
@@ -131,23 +131,12 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
-                Active Job                
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Active Job               
             </h4>
-            <div class="col-lg-7 text-right" style="padding-right: 0px; line-height: 35px;">
-                
-            </div>
-            <div class="col-lg-3 text-right" style="padding: 0px;float:right">
-              <div class="select_button" style=" margin-left: 10px;">
-                <ul>
-                <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="report_csv">Report CSV</a></li>               
-                <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="report_pdf">Report PDF</a></li>   
-                <li><a href="<?php echo URL::to('user/time_track'); ?>" style="font-size: 13px; font-weight: 500;">TimeMe Manager</a></li>               
-              </ul>
-            </div>                        
-          </div>
-              
+    </div>
+<div class="row">
   <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
@@ -156,11 +145,15 @@ a:hover{text-decoration: underline;}
     
     <?php } ?>
     </div> 
-
-
-</div>
-
-<div class="row">
+  <div class="col-lg-12 text-right">
+      <div class="select_button">
+        <ul style="float: right;">
+        <li><a href="javascript:" class="report_csv">Report CSV</a></li>               
+        <li><a href="javascript:" class="report_pdf">Report PDF</a></li>   
+        <li><a href="<?php echo URL::to('user/time_track'); ?>">TimeMe Manager</a></li>               
+      </ul>
+    </div>                        
+  </div>
   <div class="col-lg-12">
      <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="<?php echo URL::to('user/time_me_overview')?>">Active Job</a></li>
@@ -171,8 +164,8 @@ a:hover{text-decoration: underline;}
       </ul>
 
        <div class="tab-content" style="background: #fff; padding-top: 25px; padding-bottom:15px;">
-        <div class="col-lg-2" style="padding: 0px;"><input type="checkbox" class="select_all_class" id="select_all_class" value="1" style="padding-top: 20px;"><label for="select_all_class" style="font-size: 14px; font-weight: normal;">Select all</label></div>
-        <table class="display nowrap fullviewtablelist" id="active_job" width="100%">
+        <div class="col-lg-2" style="padding: 0px 0px 0px 10px;"><input type="checkbox" class="select_all_class" id="select_all_class" value="1" style="padding-top: 20px;"><label for="select_all_class">Select all</label></div>
+        <table class="display nowrap fullviewtablelist own_table_white" id="active_job" width="100%">
           <thead>
             <tr style="background: #fff;">
               <th></th>

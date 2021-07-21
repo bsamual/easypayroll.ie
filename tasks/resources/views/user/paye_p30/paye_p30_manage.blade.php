@@ -88,6 +88,7 @@
 .table_bg>thead>tr>th
 {
     text-align:left;
+    border-top:1px solid #000;
 }
 .select_button table tbody tr td a{
     background: #000;
@@ -117,7 +118,7 @@
 }
 .table_bg tbody tr td{
   padding:1px;
-  border-bottom:1px solid #000;
+  border-bottom:1px solid #000 !important;
   font-weight: 600; font-size: 15px;
   color: #000 !important;
 }
@@ -379,19 +380,23 @@ body.loading_apply .modal_load_apply {
 <div class="arrow_right" style="height: auto; padding: 15px; position: fixed; bottom: 10px; background:  #ff0; z-index: 9999999; right: 15px;font-size:34px;display:none">
   <a href="javascript:" class="arrow_right_scroll"><i class="fa fa-arrow-circle-o-up arrow_right_scroll" aria-hidden="true"></i></a>
 </div>
-  <div class="page_title" style="position:fixed;margin-top: -17px;">
-    <div class="col-lg-7 padding_00" style="line-height: 30px; font-size: 20px">
-      PAYE M.R.S <?php echo $year->year_name?>  
-      <input type="hidden" value="<?php echo $year->year_id?>" class="year_id" name="">
+  <div class="row" style="position:fixed;margin-top: -17px; background: #fff; z-index: 999;">
+    <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                PAYE M.R.S <?php echo $year->year_name?>   
+                <input type="hidden" value="<?php echo $year->year_id?>" class="year_id" name="">           
+            </h4>
     </div>
-    <div class="col-lg-5 padding_00 button_top_right" style="float:left;">
+    
+    <div class="col-lg-5 button_top_right" style="float:left;">
           <ul style="float:none">
             
           </ul>
     </div>
-    <div class="col-lg-12 padding_00">
+    <div class="col-lg-12">
         <div class="row">
-          <div class="col-lg-9" style="padding: 10px; border:5px solid #000;margin-top: 15px;">
+          <div class="col-lg-9" style="">
+            <div style="width: 100%; float: left; height: auto; padding: 10px; border:5px solid #000;margin-top: 15px;">
             <div class="col-lg-12" style="line-height: 30px;">Active Week Periods for all:</div>
               <div class="col-lg-12 padding_00" style="margin-bottom: 0px;">
                   <div class="col-lg-2"></div>
@@ -493,6 +498,7 @@ body.loading_apply .modal_load_apply {
                     </ul>
                 </div>
               </div>
+            </div>
           </div>
           <div class="col-lg-3" style="margin-top:-32px">
             <style type="text/css">

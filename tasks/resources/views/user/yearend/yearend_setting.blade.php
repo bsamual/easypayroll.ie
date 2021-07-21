@@ -277,15 +277,12 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title" style="margin-bottom: 2px;">
-            <div class="col-lg-12 col-md-12 col-sm-12 select_button" style="padding-right: 0px;text-align: center">
-                Year End Document Type Management
-                <ul style="float: right;">                                
-                  <li><a href="javascript:" class="add_new" style="font-size: 13px; font-weight: 500;">Create Year End Document Type</a></li>                
-              </ul>
-            </div>
-
-  <div style="clear: both;">
+   <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Year End Document Type Management            
+            </h4>
+    </div>
+    <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
@@ -293,15 +290,25 @@ a:hover{text-decoration: underline;}
     
     <?php } ?>
     </div> 
+  <div class="row" style="margin-bottom: 2px;">
+            <div class="col-lg-12 col-md-12 col-sm-12 select_button" style="padding-right: 0px;text-align: center">
+                
+                <ul style="float: right;">                                
+                  <li><a href="javascript:" class="add_new">Create Year End Document Type</a></li>                
+              </ul>
+            </div>
+
+  
 
 
 </div>
 <style type="text/css">
 .table tr td, tr th{font-size: 15px;}
 </style>
+<div class="row">
 <div class="col-lg-12">
   <div class="table-responsive">
-    <table class="table" style="font-size: 15px;">
+    <table class="table own_table_white" style="background: #fff">
       <thead>
         <tr>
           <th width="50px" style="text-align: left">S.No</th>
@@ -381,6 +388,7 @@ a:hover{text-decoration: underline;}
       </tbody>
     </table>
   </div>
+</div>
 </div>
 
     <!-- End  -->

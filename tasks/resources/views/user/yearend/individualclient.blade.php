@@ -694,26 +694,34 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title" style="margin-bottom: 2px;">
-          <div class="col-lg-3" style="padding: 0px;">
-                Client Year End Manager for the year - <?php echo $year_details->year; ?>                
+
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+               Client Year End Manager for the year - <?php echo $year_details->year; ?> &nbsp;| &nbsp;<?php echo $client_details->client_id.'&nbsp;&nbsp;&nbsp;'.$client_details->company?>
                 <input type="hidden" class="year_id" value="<?php echo $year_details->year;?>" name="">
                 <input type="hidden" class="row_id" value="<?php echo $year_details->id;?>" name="">
                 <input type="hidden" class="client_id" value="<?php echo $year_details->client_id;?>" name="">
+        </h4>
+    </div>
+
+
+  <div class="page_title" style="margin-bottom: 2px;">
+            <div class="col-lg-8 text-right"  style="padding: 0px;" >
+              <div class="select_button" style=" margin-left: 10px;">
+                  <ul style="float: right;">                  
+                    <li></li>              
+                    <li><a href="<?php echo URL::to('user/yeadend_clients/'.base64_encode($year_details->year)); ?>" style="font-size: 13px; font-weight: 500;">Back to Year End Manager</a></li>    
+                    <li><a href="javascript:" class="setting_class" style="font-size: 13px; font-weight: 500;">Settings</a></li>                
+                </ul>
+              </div>                   
             </div>
-            <div class="col-lg-2" style="padding-right: 0px; line-height: 35px;">
-                
-            </div>
-            <div class="col-lg-4 text-right"  style="padding: 0px;" >
-            <div class="select_button" style=" margin-left: 10px;">
-                <ul style="float: right;">                  
-                  <li><input type="checkbox" name="checkbox_disable" class="checkbox_disable" id="checkbox_disable" value="1" <?php if($year_details->disabled == 1) { echo 'checked'; } else { echo ''; } ?>><label for="checkbox_disable" class="checkbox_disable_label" style="margin-top: 4px;margin-right: 26px;">Mark this Complete</label></li>              
-                  <li><a href="<?php echo URL::to('user/yeadend_clients/'.base64_encode($year_details->year)); ?>" style="font-size: 13px; font-weight: 500;">Back to Year End Manager</a></li>    
-                  <li><a href="javascript:" class="setting_class" style="font-size: 13px; font-weight: 500;">Settings</a></li>                
+            <div class="col-lg-8 text-right"  style="padding: 0px;" >
+              <div class="select_button" style=" margin-right: 200px;">
+                <ul style="float: right;">   
+                <input type="checkbox" name="checkbox_disable" class="checkbox_disable" id="checkbox_disable" value="1" <?php if($year_details->disabled == 1) { echo 'checked'; } else { echo ''; } ?>><label for="checkbox_disable" class="checkbox_disable_label" style="margin-top: 4px;margin-right: 126px;">Mark this Complete</label>
               </ul>
+              </div>                   
             </div>
-                                    
-  </div>
 
   <div style="clear: both;">
    <?php
@@ -729,7 +737,7 @@ a:hover{text-decoration: underline;}
 
 <div class="table-responsive">
 
-  <div class="col-lg-12" style="font-size: 15px; text-align: center; margin-bottom: 20px;"><b style="font-size:25px; color:blue"><?php echo $client_details->client_id.'&nbsp;&nbsp;&nbsp;'.$client_details->company?></b></div>
+  <div class="col-lg-12" style="font-size: 15px; text-align: center; margin-bottom: 20px;"><b style="font-size:25px; color:blue"></b></div>
   <input type="hidden" class="id_class" value="<?php echo $year_details->id?>" name="">
   <!-- <div class="col-lg-3" style="font-size: 15px; line-height: 25px;">
     <div class="col-lg-3">Address:</div>
@@ -758,7 +766,7 @@ a:hover{text-decoration: underline;}
   </div> -->
   
 
-    <div class="col-lg-12">
+    <div class="col-lg-12" style="background: #fff">
       <div style="width: 100%; height:auto; margin: 0px auto; margin-top: 20px;">
         <?php 
         $year_setting_details = DB::table('year_setting')->count();
@@ -768,8 +776,8 @@ a:hover{text-decoration: underline;}
         <table class="table" style="max-width: 2300px;" >
           <tr class="table_tr" style="font-weight: bold;">
             <td colspan="3" style="border-top: 0px solid">
-            	<div class="col-lg-3">Address:</div>
-			    <div class="col-lg-9">
+            	<div class="col-lg-3 padding_00">Address:</div>
+			    <div class="col-lg-9" style="font-weight: normal;">
 			      <?php 
 			        if($client_details->address1 != ''){
 			          echo $client_details->address1.'<br/>';
@@ -789,8 +797,8 @@ a:hover{text-decoration: underline;}
 			        ?>
 			    </div> 
 
-			    <div class="col-lg-3">Email:</div>
-			    <div class="col-lg-9"><?php echo $client_details->email?></div>
+			    <div class="col-lg-3 padding_00">Email:</div>
+			    <div class="col-lg-9" style="font-weight: normal;"><?php echo $client_details->email?></div>
             </td>
             <td colspan="3" rowspan="2" style="border-top: 0px solid;">
             	<h4 style="font-weight:700;margin-top:0px;margin-bottom:4px"><?php echo $year_details->year; ?> AML Review Document</h4>

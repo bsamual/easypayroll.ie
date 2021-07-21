@@ -168,13 +168,11 @@ input:checked + .slider:before {
 <link rel="stylesheet" href="<?php echo URL::to('ckeditor/samples/toolbarconfigurator/lib/codemirror/neo.css'); ?> ">
 
 <div class="content_section">
-	<div id="fixed-header" style="width:100%;background: #fff;margin-top: -16px;">
-	  <div class="page_title" style="z-index:999;margin-top:20px">
-	  	<div class="row">
-		    <div class="col-md-12 padding_00" style="text-align: center">
-		      <label style="margin-left: 1%; text-align:center;font-size:20px">MessageUs - Central Client Messaging System</label>
-		    </div>
-		  </div>
+	<div id="fixed-header" style="width:100%;">
+	  <div class="page_title" style="z-index:999;">
+	  	<h4 class="col-lg-12 padding_00 new_main_title">
+                MessageUs - Central Client Messaging System             
+            </h4>
 	  </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light active" style="width:20%;text-align: center">
@@ -195,7 +193,7 @@ input:checked + .slider:before {
   </div>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-      <div class="col-md-12" style="background: #c7c7c7;padding:20px">
+      <div class="col-md-12" style="background: #fff;padding:20px">
         <div class="col-md-12">
           <h5>Send Message To:</h5>
           <?php
@@ -226,19 +224,15 @@ input:checked + .slider:before {
             </select>
           </div>
         </div>
-        <div class="col-md-12" style="margin-top:20px">
-          <h5 style="font-weight:800">List of Clients to Send this Message to: <spam class="error error_subject"></spam> </h5>
+        <div class="col-md-12" style="margin-top:20px; ">
+          <h5 style="font-weight:600; ">List of Clients to Send this Message to: <spam class="error error_subject"></spam> </h5>
           <div class="table-responsive" style="min-height:400px;max-height: 300px;overflow-y: scroll;">
-          <table class="table" id="client_table">
-            <thead>
-              <tr>
-                <th colspan="3">
-                  <input type="checkbox" name="select_all_client" class="select_all_client" value="1" id="select_all_client" ><label for="select_all_client">Select All Clients</label>
+            <input type="checkbox" name="select_all_client" class="select_all_client" value="1" id="select_all_client" ><label for="select_all_client">Select All Clients</label>
 
                   <input type="checkbox" name="deselect_all_inactive_client" class="deselect_all_inactive_client" value="1" id="deselect_all_inactive_client" ><label for="deselect_all_inactive_client">Deselect all Inactive Clients</label>
-                </th>
-                <th colspan="2" style="text-align: center !important">Email Address</th>
-              </tr>
+          <table class="table display nowrap fullviewtablelist own_table_white2" id="client_table" style="margin-top: 30px;">
+            <thead>
+              
               <tr>
                 <th style=""></th>
                 <th>Code</th>

@@ -4295,7 +4295,7 @@ class TaskmanagerController extends Controller {
 				    </tr>
 				  </table>
 				</td>
-				<td style="vertical-align: baseline;background: #dcdcdc;width:30%">
+				<td style="vertical-align: baseline;background: #f5f5f5 ;width:30%">
 				  <table class="table">
 				    <tr>
 				      <td style="width:25%;font-weight:700;text-decoration: underline;">Author:</td>
@@ -4344,7 +4344,7 @@ class TaskmanagerController extends Controller {
 				    </tr>
 				  </table>
 				</td>
-				<td style="vertical-align: baseline;background: #dcdcdc;width:20%">
+				<td style="vertical-align: baseline;background: #f5f5f5;width:20%">
 				  <table class="table">
 				    <tr>
 				      <td><spam style="font-weight:700;text-decoration: underline;">Progress Files:</spam></td>
@@ -4642,7 +4642,7 @@ class TaskmanagerController extends Controller {
 				</tr>';
 
 				$layout.= '<tr class="hidden_tasks_tr" id="hidden_tasks_tr_'.$task->id.'" data-element="'.$task->id.'" style="display:none">
-					<td style="background: #dcdcdc;padding:0px;">
+					<td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 						<table style="width:100%">
 					    	<tr>';
 					    	$statusi = 0;
@@ -4655,7 +4655,7 @@ class TaskmanagerController extends Controller {
 					    	</tr>
 					    </table>
 					</td>
-					<td style="background: #dcdcdc;padding:0px;">
+					<td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 						<table style="width:100%">
 					    	<tr>
 					    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800;" class="author_sort_val">'.$author->lastname.' '.$author->firstname.'</td>
@@ -4663,7 +4663,7 @@ class TaskmanagerController extends Controller {
 					    	</tr>
 						</table>
 					</td>
-					<td style="background: #dcdcdc;padding:0px;">
+					<td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 						<table style="width:100%">
 					    	<tr>
 					    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800;" class="duedate_sort_val">
@@ -4677,7 +4677,7 @@ class TaskmanagerController extends Controller {
 					    	</tr>
 					    </table>
 					</td>
-					<td style="background: #dcdcdc;padding:0px;">
+					<td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 						<table style="width:100%">
 					    	<tr>
 					    		<td style="width:40%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>

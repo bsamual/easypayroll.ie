@@ -3,6 +3,12 @@
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
+body{
+  color: #000 !important;
+}
+.select_invoice:hover,.select_invoice:focus,.select_invoice:active {
+    text-decoration: underline;
+}
 .fa-check { color:green; }
 .fa-times { color:#f00; }
 .fa { font-size:20px; }
@@ -324,13 +330,16 @@ input:checked + .slider:before {
 </div>
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title" style="z-index:999">
+    <h4 class="col-lg-12 padding_00 new_main_title">
+                2Bill Manager
+            </h4>
     <div class="col-lg-12 padding_00" style="text-align:center;font-size:20px">
-      2Bill Manager
+      
       <a href="javascript:" class="show_billed_items common_black_button" style="float:right;font-size:14px">Show Billed Items Also</a>
       <input type="hidden" name="hidden_billed_items" id="hidden_billed_items" value="0"> 
     </div>
   </div>
-  <div style="width:100%;float:left; margin-top: 20px;">
+  <div style="width:100%;float:left; margin-top: 0px;">
   <?php
   if(Session::has('message')) { ?>
       <p class="alert alert-info"><?php echo Session::get('message'); ?></p>
@@ -340,20 +349,20 @@ input:checked + .slider:before {
   <?php }
   ?>
   </div>
-    <div class="table-responsive" style="width: 100%; float: left;margin-top:10px">
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <table class="table" id="table_administration" style="width:100%;">
-                <thead style="background: #0a0a0a;color: #fff;">
+    <div class="table-responsive" style="width: 100%; float: left;margin-top:23px">
+      
+        
+            <table class="table display nowrap fullviewtablelist own_table_white" id="table_administration" style="width:102%; background: #fff">
+                <thead>
                   <tr>
-                    <td>Task ID</td>
-                    <td>Client Name</td>
-                    <td>Task Subject</td>
-                    <td>PDF</td>
-                    <td>Task Status</td>
-                    <td>Billing Status</td>
-                    <td>Invoice</td>
-                    <td>Action</td>
+                    <th>Task ID</th>
+                    <th>Client Name</th>
+                    <th>Task Subject</th>
+                    <th>PDF</th>
+                    <th>Task Status</th>
+                    <th>Billing Status</th>
+                    <th>Invoice</th>
+                    <th style="text-align:center">Action</th>
                   </tr>
                 </thead>
                 <tbody id="tbody_show_tasks">
@@ -411,8 +420,10 @@ input:checked + .slider:before {
                         <td class="task_status_val">'.$task_status.'</td>
                         <td class="billing_status_val" style="font-weight:800;'.$color.'">'.$billing_status.'</td>
                         <td class="invoice_val">'.$invoice_no.'</td>
-                        <td>
-                          <a href="javascript:" class="fa fa-trash remove_two_bill" data-element="'.$task->id.'" title="Remove 2Bill Status"></a>
+                        <td style="text-align:center">
+                          <a href="javascript:" class="remove_two_bill" data-element="'.$task->id.'" title="Remove 2Bill Status">
+                          <img src="'.URL::to('assets/images/remove_2bill.png').'" class="remove_two_bill" data-element="'.$task->id.'" style="width:27px">
+                          </a>
                         </td>
                       </tr>';
                     }
@@ -424,8 +435,7 @@ input:checked + .slider:before {
                   ?>
                 </tbody>
             </table>
-        </div>
-      </div>
+        
     </div>
 </div>
 <div class="modal_load"></div>

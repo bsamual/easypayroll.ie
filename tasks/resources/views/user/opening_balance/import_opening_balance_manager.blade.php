@@ -121,8 +121,11 @@ a:hover{text-decoration: underline;}
 
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-      <h4 class="col-md-6" style="padding: 0px;font-weight:700;">Opening Balance Manager - Import Balances</h4>
-      <div class="col-md-6">
+    <h4 class="col-lg-12 padding_00 new_main_title">
+               Opening Balance Manager - Import Balances
+            </h4>
+      
+      <div class="col-md-12">
         <a href="<?php echo URL::to('user/opening_balance_manager'); ?>" class="common_black_button" style="float:right">Back To Opening Balance Manager</a>
       </div>
       <div style="clear: both;">
@@ -133,7 +136,7 @@ a:hover{text-decoration: underline;}
         ?>
       </div>
   </div>
-  <div class="row">
+  <div class="row" style="background: #fff; padding-top: 50px; padding-bottom: 100px;">
     <div class="col-md-1">&nbsp;</div>
     <div class="col-md-5">
       <form id="import_balance_form" action="<?php echo URL::to('user/import_opening_balance'); ?>" method="post" enctype="multipart/form-data">
@@ -192,10 +195,10 @@ a:hover{text-decoration: underline;}
       <div class="col-md-12" style="margin-bottom: 20px">
         <input type="button" class="common_black_button start_import" id="activate_file" value="Start Import" style="width:100%;display:none">
       </div>
-      <table class="table import_table" style="border:2px solid #ddd;display:none">
+      <table class="table own_table_white import_table" style="display:none;">
         <thead>
-          <tr>
-            <th colspan="6">File Content</th>
+          <tr >
+            <th colspan="6" style="border-bottom:3px solid #fff !important;" >File Content</th>
           </tr>
           <tr>
             <th style="text-align: left">Client ID</th>
@@ -207,7 +210,7 @@ a:hover{text-decoration: underline;}
           </tr>
         </thead>
         <tbody id="import_tbody_list">
-          
+         
         </tbody>
       </table>
     </div>

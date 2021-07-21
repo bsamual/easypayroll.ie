@@ -609,7 +609,7 @@ if(!empty($_GET['import_type_existing']))
   </div>
 </div>
 <div class="modal fade notify_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-  <div class="modal-dialog" role="document" style="width:50%">
+  <div class="modal-dialog" role="document" style="width:80%">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -700,7 +700,7 @@ if(!empty($_GET['import_type_existing']))
             
         </div>
         <div class="modal-body" style="height: 400px; overflow-y: scroll;">          
-            <table class="table">
+            <table class="table own_table_white">
               <thead>
               <tr style="background: #fff;">
                   <th width="5%" style="text-align: left;">S.No</th>                   
@@ -755,12 +755,14 @@ if(!empty($_GET['import_type_existing']))
 
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
-                AML System                
-            </h4>
-            <div class="col-lg-4 text-right" style="padding-right: 0px; line-height: 35px;">
-                
-            </div>
+    <h4 class="col-lg-12 padding_00 new_main_title">
+                AML System                  
+            </h4>        
+            <div class="col-lg-2 padding_00">
+            
+            <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->aml_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
+                <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked?> ><label for="show_incomplete">Hide Deactivated Accounts</label>
+              </div>
             
             
             <div class="col-lg-3 text-right"  style="padding: 0px;text-align: right" >
@@ -772,12 +774,8 @@ if(!empty($_GET['import_type_existing']))
                 </ul>
               </div>
             </div>
-          <div class="col-lg-2" style="padding-top: 7px">
-            
-            <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->aml_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
-                <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked?> style="margin-right:10px"><label for="show_incomplete">Hide Deactivated Accounts</label>
-              </div>
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
+          
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:5px; margin-top:55px">
   </div>
   <div style="clear: both;">
    <?php
@@ -795,7 +793,7 @@ if(!empty($_GET['import_type_existing']))
 .image_div_attachments P{width: 100%; height: auto; font-size: 13px; font-weight: normal; color: #000;}
 </style>
 
-<table class="display nowrap fullviewtablelist" id="aml_expand" width="100%" style="max-width: 100%;">
+<table class="display nowrap fullviewtablelist own_table_white " id="aml_expand" width="100%" style="max-width: 100%;">
                         <thead>
                         <tr style="background: #fff;">
                              <th width="2%" style="text-align: left;">S.No</th>

@@ -80,17 +80,27 @@ class InvoiceController extends Controller {
 							else{
 								$textcolor="color:#00751a";
 							}
+							$company = str_replace("Company Limited By Guarantee","",$company);
+                            $company = str_replace("company Limited by Guarantee","",$company);
 							$output.='
 								<tr>
 									<td>'.$i.'</td>
-									<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="<?php echo $invoice->invoice_number; ?>" style="<?php echo $textcolor?>">'.$invoice->invoice_number.'</a></td>
+									<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'" style="'.$textcolor.'">'.$invoice->invoice_number.'</a></td>
 									<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
 									<td align="left" style="'.$textcolor.'">'.$invoice->client_id.'</td>
-									<td align="left" style="'.$textcolor.'">'.$company.'</td>
+									<td align="left" style="'.$textcolor.'">'.$company.'</td>';
+									$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
+		                            $jids = '';
+		                            if(count($get_journal_ids))
+		                            {
+		                              $jids = $get_journal_ids->connecting_journal_reference;
+		                            }
+	                                $output.='
 									<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
 									<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 									<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 									<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
+									<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
 								</tr>
 							';
 							$i++;
@@ -100,12 +110,34 @@ class InvoiceController extends Controller {
 			}	
 			if($i == 1)
 		        {
-		          $output.='<tr><td colspan="9" align="center">Empty</td></tr>';
+		          $output.='<tr>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center">Empty</td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          </tr>';
 		        }
 				echo $output;				
 		}
 		else{
-			$invoicelist = DB::select('SELECT *,Replace('.$select.', ",", "") AS netval from `invoice_system` WHERE Replace('.$select.', ",", "") LIKE "%'.$input.'%" OR '.$select.' LIKE "%'.$input.'%"');
+			if($select == "inv_net" || $select == "vat_value" || $select == "gross")
+			{
+				$invoicelist = DB::select('SELECT * from `invoice_system` WHERE ROUND(Replace('.$select.', ",", ""),2) LIKE "%'.$input.'%"');
+			}
+			else{
+				if($select == "invoice_date")
+				{
+					$input = date('Y-m-d',strtotime($input));
+				}
+				$invoicelist = DB::select('SELECT * from `invoice_system` WHERE '.$select.' LIKE "%'.$input.'%"');
+			}
+
 			$output = '';
 			$i=1;
 			if(count($invoicelist)){ 
@@ -130,17 +162,27 @@ class InvoiceController extends Controller {
 					else{
 						$textcolor="color:#00751a";
 					}
+					$company = str_replace("Company Limited By Guarantee","",$company);
+                    $company = str_replace("company Limited by Guarantee","",$company);
 					$output.='
 						<tr>
 							<td>'.$i.'</td>
-							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="<?php echo $invoice->invoice_number; ?>" style="<?php echo $textcolor?>">'.$invoice->invoice_number.'</a></td>
+							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'" style="'.$textcolor.'">'.$invoice->invoice_number.'</a></td>
 							<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
 							<td align="left" style="'.$textcolor.'">'.$invoice->client_id.'</td>
-							<td align="left" style="'.$textcolor.'">'.$company.'</td>
+							<td align="left" style="'.$textcolor.'">'.$company.'</td>';
+							$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
+		                            $jids = '';
+                            if(count($get_journal_ids))
+                            {
+                              $jids = $get_journal_ids->connecting_journal_reference;
+                            }
+                            $output.='
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
 						</tr>
 					';
 					$i++;
@@ -148,7 +190,18 @@ class InvoiceController extends Controller {
 			}
 			if($i == 1)
 	        {
-	          $output.='<tr><td colspan="9" align="center">Empty</td></tr>';
+	          $output.='<tr>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center">Empty</td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          </tr>';
 	        }
 			echo $output;
 		}
@@ -196,6 +249,9 @@ class InvoiceController extends Controller {
 	                    $textcolor="color:#00751a";
 	                  }
 	                  if($key == 999) { $class_load = 'class="load_more"'; } else { $class_load = ''; }
+
+	                  $company = str_replace("Company Limited By Guarantee","",$company);
+                      $company = str_replace("company Limited by Guarantee","",$company);
 					$output.='
 						<tr>
                                 <td>'.$i.'</td>
@@ -214,7 +270,18 @@ class InvoiceController extends Controller {
 			}
         if($i == 1)
         {
-          $output.='<tr><td colspan="9" align="center">Empty</td></tr>';
+          $output.='<tr>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center">Empty</td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          </tr>';
         }
 		echo $output;
 	}
@@ -253,17 +320,28 @@ class InvoiceController extends Controller {
 					else{
 						$textcolor="color:#00751a";
 					}
+
+					$companyname = str_replace("Company Limited By Guarantee","",$companyname);
+                            $companyname = str_replace("company Limited by Guarantee","",$companyname);
 					$output.='
 						<tr>
 							<td>'.$i.'</td>
-							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="<?php echo $invoice->invoice_number; ?>" style="<?php echo $textcolor?>">'.$invoice->invoice_number.'</a></td>
+							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'" style="'.$textcolor.'">'.$invoice->invoice_number.'</a></td>
 							<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
 							<td align="left" style="'.$textcolor.'">'.$invoice->client_id.'</td>
-							<td align="left" style="'.$textcolor.'">'.$companyname.'</td>
+							<td align="left" style="'.$textcolor.'">'.$companyname.'</td>';
+							$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
+		                            $jids = '';
+                            if(count($get_journal_ids))
+                            {
+                              $jids = $get_journal_ids->connecting_journal_reference;
+                            }
+                            $output.='
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'.$statementtext.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
 						</tr>
 					';
 					$i++;
@@ -271,7 +349,18 @@ class InvoiceController extends Controller {
 			}
 			else
 	        {
-	          $output.='<tr><td colspan="9" align="center">Empty</td></tr>';
+	          $output.='<tr>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center">Empty</td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          </tr>';
 	        }
 			echo $output;			
 		}
@@ -307,17 +396,27 @@ class InvoiceController extends Controller {
 					else{
 						$textcolor="color:#00751a";
 					}
+					$companyname = str_replace("Company Limited By Guarantee","",$companyname);
+                            $companyname = str_replace("company Limited by Guarantee","",$companyname);
 					$output.='
 						<tr>
 							<td>'.$i.'</td>
-							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="<?php echo $invoice->invoice_number; ?>" style="<?php echo $textcolor?>">'.$invoice->invoice_number.'</a></td>
+							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'" style="'.$textcolor.'">'.$invoice->invoice_number.'</a></td>
 							<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
 							<td align="left" style="'.$textcolor.'">'.$invoice->client_id.'</td>
-							<td align="left" style="'.$textcolor.'">'.$companyname.'</td>
+							<td align="left" style="'.$textcolor.'">'.$companyname.'</td>';
+							$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
+		                            $jids = '';
+                            if(count($get_journal_ids))
+                            {
+                              $jids = $get_journal_ids->connecting_journal_reference;
+                            }
+                            $output.='
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'. $statementtext.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
 						</tr>
 					';
 					$i++;
@@ -325,7 +424,18 @@ class InvoiceController extends Controller {
 			}
 			else
 	        {
-	          $output.='<tr><td colspan="9" align="center">Empty</td></tr>';
+	          $output.='<tr>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center">Empty</td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          </tr>';
 	        }
 			echo $output;
 		}		
@@ -415,7 +525,7 @@ class InvoiceController extends Controller {
 	        "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
 	        "Expires" => "0"
 	    );
-		$columns = array('#', 'Invoice Number', 'Invoice Date', 'Client ID', 'Company Name', 'Net', 'VAT', 'Gross');
+		$columns = array('#', 'Invoice Number', 'Invoice Date', 'Client ID', 'Company Name', 'Net', 'VAT', 'Gross','Journal Id');
 		$callback = function() use ($invoice, $columns)
     	{
 	       	$file = fopen('papers/CM_Report.csv', 'w');
@@ -430,7 +540,13 @@ class InvoiceController extends Controller {
 	              else{
 	                $company = $company_details->firstname.' & '.$company_details->surname;
 	              }
-		      	$columns_2 = array($i, $single->invoice_number, date('d-M-Y', strtotime($single->invoice_date)), $single->client_id, $company, number_format_invoice($single->inv_net), $single->vat_value,  number_format_invoice($single->gross) );
+	            $get_journal_ids = DB::table('journals')->where('reference',$single->invoice_number)->first();
+		                            $jids = '';
+                if(count($get_journal_ids))
+                {
+                  $jids = $get_journal_ids->connecting_journal_reference;
+                }
+		      	$columns_2 = array($i, $single->invoice_number, date('d-M-Y', strtotime($single->invoice_date)), $single->client_id, $company, number_format_invoice($single->inv_net), $single->vat_value,  number_format_invoice($single->gross),$jids);
 				fputcsv($file, $columns_2);
 				$i++;
 			}
@@ -496,15 +612,24 @@ class InvoiceController extends Controller {
 					else{
 						$company = '';
 					}
+					$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
+		                            $jids = '';
+	                if(count($get_journal_ids))
+	                {
+	                  $jids = $get_journal_ids->connecting_journal_reference;
+	                }
+
 					$output.='<tr>
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">'.$i.'</td>
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.$invoice->invoice_number.'</td>
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.$invoice->client_id.'</td>
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.$company.'</td>
+									
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="right">'.number_format_invoice($invoice->inv_net).'</td>
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="right">'.number_format_invoice($invoice->vat_value).'</td>
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="right">'.number_format_invoice($invoice->gross).'</td>
+									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.$jids.'</td>
 								</tr>';
 								$i++;
 				}
@@ -1649,50 +1774,289 @@ class InvoiceController extends Controller {
 	{
 		$inv_id = Input::get('inv_id');
 		$invoice_details = DB::table('invoice_system')->where('invoice_number',$inv_id)->first();
-		$check_invoice = DB::table('invoice_journals')->where('reference',$inv_id)->first();
+
+		$check_invoice = DB::table('journals')->where('reference',$inv_id)->first();
 		if(count($check_invoice))
 		{
 			$data['journal_date'] = $invoice_details->invoice_date;
 			$data['description'] = 'Sales Invoice '.$inv_id;
+			$data['journal_source'] = 'SI';
+
 			$data['dr_value'] = '0.00';
 			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->inv_net);
-			DB::table('invoice_journals')->where('reference',$check_invoice->reference)->where('nominal_code','001')->update($data);
+			DB::table('journals')->where('reference',$check_invoice->reference)->where('nominal_code','001')->update($data);
 
 			$data['dr_value'] = '0.00';
 			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->vat_value);
-			DB::table('invoice_journals')->where('reference',$check_invoice->reference)->where('nominal_code','845')->update($data);
+			DB::table('journals')->where('reference',$check_invoice->reference)->where('nominal_code','845')->update($data);
 
 			$data['dr_value'] = number_format_invoice_without_comma($invoice_details->gross);
 			$data['cr_value'] = '0.00';
-			DB::table('invoice_journals')->where('reference',$check_invoice->reference)->where('nominal_code','712')->update($data);
+			DB::table('journals')->where('reference',$check_invoice->reference)->where('nominal_code','712')->update($data);
 
-			
+			echo $check_invoice->connecting_journal_reference;
 		}
 		else{
-			$count_total_journals = DB::table('invoice_journals')->groupBy('reference')->get();
+			$count_total_journals = DB::table('journals')->groupBy('reference')->get();
 			$next_connecting_journal = count($count_total_journals) + 1;
 
 			$data['journal_date'] = $invoice_details->invoice_date;
 			$data['description'] = 'Sales Invoice '.$inv_id;
 			$data['reference'] = $inv_id;
+			$data['journal_source'] = 'SI';
 
 			$data['nominal_code'] = '001';
 			$data['connecting_journal_reference'] = $next_connecting_journal;
 			$data['dr_value'] = '0.00';
 			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->inv_net);
-			DB::table('invoice_journals')->insert($data);
+			DB::table('journals')->insert($data);
 
 			$data['nominal_code'] = '845';
 			$data['connecting_journal_reference'] = $next_connecting_journal.'.01';
 			$data['dr_value'] = '0.00';
 			$data['cr_value'] = number_format_invoice_without_comma($invoice_details->vat_value);
-			DB::table('invoice_journals')->insert($data);
+			DB::table('journals')->insert($data);
 
 			$data['nominal_code'] = '712';
 			$data['connecting_journal_reference'] = $next_connecting_journal.'.02';
 			$data['dr_value'] = number_format_invoice_without_comma($invoice_details->gross);
 			$data['cr_value'] = '0.00';
-			DB::table('invoice_journals')->insert($data);
+			DB::table('journals')->insert($data);
+
+			echo $next_connecting_journal;
 		}
+		
+	}
+	public function get_loaded_client_inv_year()
+	{
+		$client_id = Input::get('client_id');
+		$invoice_year = DB::select('SELECT *,SUBSTR(`invoice_date`, 1, 4) as `invoice_year` from `invoice_system` WHERE client_id = "'.$client_id.'" GROUP BY SUBSTR(`invoice_date`, 1, 4) ORDER BY SUBSTR(`invoice_date`, 1, 4) ASC');
+		$output_year = '<option value="">Select Year</option>';
+		if(count($invoice_year))
+		{
+			foreach($invoice_year as $year)
+			{
+				$output_year.='<option value="'.$year->invoice_year.'">'.$year->invoice_year.'</option>';
+			}
+		}
+		echo $output_year;
+	}
+	public function load_all_client_invoice()
+	{
+		$client_id = Input::get('client_id');
+
+		$user_details = DB::table('user_login')->where('userid',Session::get('userid'))->first();
+		$opening_date = '';
+		if(count($user_details))
+		{
+			if($user_details->opening_balance_date != "")
+			{
+				$opening_date = strtotime($user_details->opening_balance_date);
+			}
+		}
+
+
+
+		if($client_id == "all")
+		{
+			$type = Input::get('type');
+			if($type == "1")
+			{
+				$year = Input::get('year');
+				$invoicelist = DB::select('SELECT * from `invoice_system` WHERE `invoice_date` LIKE "'.$year.'%"');
+			}
+			elseif($type == "2")
+			{
+				$invoicelist = DB::table('invoice_system')->get();
+			}
+			elseif($type == "3")
+			{
+				$from = date('Y-m-d', strtotime(Input::get('from')));
+				$to = date('Y-m-d', strtotime(Input::get('to')));
+
+				$invoicelist = DB::table('invoice_system')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+			}
+			$i = 1;
+			$output = '';
+			if(count($invoicelist)){ 
+				foreach($invoicelist as $key => $invoice){ 
+					$inv_date_str = strtotime($invoice->invoice_date);
+					if($opening_date == "")
+					{
+						$tr_cls = '';
+					}
+					elseif($inv_date_str == $opening_date)
+					{
+						$tr_cls = 'include_tr';
+					}
+					elseif($inv_date_str > $opening_date)
+					{
+						$tr_cls = 'include_tr after_tr';
+					}
+					else{
+						$tr_cls = '';
+					}
+
+					$client_details = DB::table('cm_clients')->where('client_id', $invoice->client_id)->first();
+					if(count($client_details))
+					{
+					  if($client_details->company !== "")
+                      {
+                        $company = $client_details->company;
+                      }
+                      else{
+                        $company = $client_details->firstname.' & '.$client_details->surname;
+                      }
+					}
+					else{
+						$company = '';
+					}
+					if($invoice->statement == "No"){
+						$textcolor="color:#f00";
+					}
+					else{
+						$textcolor="color:#00751a";
+					}
+					$company = str_replace("Company Limited By Guarantee","",$company);
+                    $company = str_replace("company Limited by Guarantee","",$company);
+
+					$output.='<tr class="'.$tr_cls.'">
+							<td>'.$i.'</td>
+							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'" style="'.$textcolor.'">'.$invoice->invoice_number.'</a></td>
+							<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+							<td align="left" style="'.$textcolor.'">'.$invoice->client_id.'</td>
+							<td align="left" style="'.$textcolor.'">'.$company.'</td>';
+							$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
+                            $jids = '';
+                            if(count($get_journal_ids))
+                            {
+                              $jids = $get_journal_ids->connecting_journal_reference;
+                            }
+                            $output.='
+							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
+							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
+							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
+							<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+						</tr>
+					';
+					$i++;
+				}
+			}
+			if($i == 1)
+	        {
+	          $output.='<tr>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center">Empty</td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          </tr>';
+	        }
+	        echo $output;
+		}
+		else{
+			$type = Input::get('type');
+			$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+			if($type == "1")
+			{
+				$year = Input::get('year');
+				$invoicelist = DB::select('SELECT * from `invoice_system` WHERE client_id = "'.$client_id.'" AND `invoice_date` LIKE "'.$year.'%"');
+			}
+			elseif($type == "2")
+			{
+				$invoicelist = DB::table('invoice_system')->where('client_id', $client_details->client_id)->get();
+			}
+			elseif($type == "3")
+			{
+				$from = date('Y-m-d', strtotime(Input::get('from')));
+				$to = date('Y-m-d', strtotime(Input::get('to')));
+
+				$invoicelist = DB::table('invoice_system')->where('client_id', $client_details->client_id)->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+			}
+			$i = 1;
+			$output = '';
+			if(count($invoicelist)){ 
+				foreach($invoicelist as $key => $invoice){ 
+					$client_details = DB::table('cm_clients')->where('client_id', $invoice->client_id)->first();
+					if(count($client_details))
+					{
+						if($client_details->company !== "")
+                      {
+                        $company = $client_details->company;
+                      }
+                      else{
+                        $company = $client_details->firstname.' & '.$client_details->surname;
+                      }
+					}
+					else{
+						$company = '';
+					}
+					if($invoice->statement == "No"){
+						$textcolor="color:#f00";
+					}
+					else{
+						$textcolor="color:#00751a";
+					}
+					$company = str_replace("Company Limited By Guarantee","",$company);
+                    $company = str_replace("company Limited by Guarantee","",$company);
+					$output.='
+						<tr>
+							<td>'.$i.'</td>
+							<td align="left" style="'.$textcolor.'"><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'" style="'.$textcolor.'">'.$invoice->invoice_number.'</a></td>
+							<td align="left" style="'.$textcolor.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+							<td align="left" style="'.$textcolor.'">'.$invoice->client_id.'</td>
+							<td align="left" style="'.$textcolor.'">'.$company.'</td>';
+							$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
+                            $jids = '';
+                            if(count($get_journal_ids))
+                            {
+                              $jids = $get_journal_ids->connecting_journal_reference;
+                            }
+                            $output.='
+							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
+							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
+							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
+							<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+						</tr>
+					';
+					$i++;
+				}
+			}
+			if($i == 1)
+	        {
+	          $output.='<tr>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center">Empty</td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          	<td align="center"></td>
+		          </tr>';
+	        }
+	        echo $output;
+		}
+	}
+	public function check_financial_opening_bal_date()
+	{
+		$user_details = DB::table('user_login')->where('userid',Session::get('userid'))->first();
+		$opening_date_formatted = '';
+		$opening_date = '';
+		if(count($user_details))
+		{
+			$opening_date = $user_details->opening_balance_date;
+			$opening_date_formatted = date('d/M/Y', strtotime($user_details->opening_balance_date));
+		}
+		echo json_encode(array("opening_date" => $opening_date, "date_formatted" => $opening_date));
 	}
 }

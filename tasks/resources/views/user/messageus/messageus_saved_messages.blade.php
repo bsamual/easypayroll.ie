@@ -200,13 +200,11 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="content_section">
-	<div id="fixed-header" style="width:100%;background: #fff;margin-top: -16px;">
-	  <div class="page_title" style="z-index:999;margin-top:20px">
-	  	<div class="row">
-		    <div class="col-md-12 padding_00" style="text-align: center">
-		      <label style="margin-left: 1%; text-align:center;font-size:20px">MessageUs - Central Client Messaging System</label>
-		    </div>
-		  </div>
+	<div id="fixed-header" style="width:100%;">
+	  <div class="page_title" style="z-index:999;">
+	  	<h4 class="col-lg-12 padding_00 new_main_title">
+                MessageUs - Central Client Messaging System             
+            </h4>
 	  </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
@@ -226,13 +224,13 @@ input:checked + .slider:before {
     </ul>
   </div>
   <div class="tab-content" id="myTabContent">
-    <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
-      <div class="col-md-12" style="padding:20px">
+    <div class="tab-pane active in"  id="home" role="tabpanel" aria-labelledby="home-tab">
+      <div class="col-md-12" style="padding:20px; background: #fff">
         <div class="col-md-12">
           <h5 style="font-weight:800">Saved Messages</h5>
         </div>
         <div class="col-md-12">
-            <table class="table" style="border: 1px solid #000;background: #fff">
+            <table class="table display nowrap fullviewtablelist own_table_white2" id="table_saved_message">
               <thead>
                 <tr>
                   <th style="text-align: left">Date Saved</th>
@@ -807,5 +805,19 @@ Dropzone.options.imageUpload1 = {
         });
     },
 };
+
+$(function(){
+$('#table_saved_message').DataTable({
+      fixedHeader: {
+        headerOffset: 75
+      },
+      autoWidth: true,
+      scrollX: false,
+      fixedColumns: false,
+      searching: false,
+      paging: false,
+      info: false
+  });
+})
 </script>
 @stop

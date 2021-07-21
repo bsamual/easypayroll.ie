@@ -166,23 +166,12 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;">
-                Supplementary Note Manager              
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Supplementary Note Manager                 
             </h4>
-            <div class="col-lg-6 text-right" style="padding-right: 0px; line-height: 35px;">
-                
-            </div>
-            <div class="col-lg-3 text-right"  style="padding: 0px;" >
-              <div class="select_button" style=" margin-left: 10px;">
-                <ul style="float: right">                
-                <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" class="add_new">Create New</a></li>               
-              </ul>
-            </div>                        
-  </div>
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:55px">
-  </div>
-  <div style="clear: both;">
+    </div>
+    <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
@@ -190,8 +179,22 @@ a:hover{text-decoration: underline;}
     
     <?php } ?>
     </div> 
+  <div class="row">
+        
+            
+            <div class="col-lg-12 text-right">
+              <div class="select_button" style=" margin-left: 10px;">
+                <ul style="float: right">                
+                <li><a href="javascript:" class="add_new">Create New</a></li>               
+              </ul>
+            </div>                        
+  </div>
+  <div class="col-lg-12">
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-top:15px">
+  </div>
+  
 
-<table class="display nowrap fullviewtablelist" id="supply_expand" width="100%">
+<table class="display nowrap fullviewtablelist own_table_white " id="supply_expand" width="100%">
                         <thead>
                         <tr style="background: #fff;">
                             <th width="2%" style="text-align: left;">S.No</th>
@@ -221,6 +224,7 @@ a:hover{text-decoration: underline;}
                             
                         </tbody>
                     </table>
+                  </div>
 </div>
     <!-- End  -->
 

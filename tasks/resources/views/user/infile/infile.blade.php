@@ -16,6 +16,17 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+.table-fixed-header {
+  text-align: left;
+  position: relative;
+  border-collapse: collapse; 
+}
+.table-fixed-header thead tr th {
+  background: white;
+  position: sticky;
+  top: 84; /* Don't forget this, required for the stickiness */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
 .imported_date{
   margin-left: 10px;
     padding: 5px;
@@ -137,6 +148,11 @@ body.loading_import .modal_load_import {
 .flag_gray{ color:gray; cursor: pointer }
 .flag_orange{ color:orange; cursor: pointer }
 .flag_red{ color:red; cursor: pointer }
+
+.flag_gray_sub{ color:gray; cursor: pointer }
+.flag_orange_sub{ color:orange; cursor: pointer }
+.flag_red_sub{ color:red; cursor: pointer }
+
 #colorbox { z-index:99999999999999999999 !important; }
 .pdf_multipage {
 float:right;
@@ -285,25 +301,14 @@ font-size: 18px;
     display:none;
 
 }
-
-
-
-
-
+table.dataTable.row-border tbody tr:first-child th, table.dataTable.row-border tbody tr:first-child td, table.dataTable.display tbody tr:first-child th, table.dataTable.display tbody tr:first-child td{ z-index:9; }
 .notepad_div_notes_add,.notepad_div_notes_task {
-
     border: 1px solid #000;
-
     width: 280px;
-
     position: absolute;
-
     height: 250px;
-
     background: #dfdfdf;
-
     display: none;
-
 }
 
 .notepad_div_notes_add textarea,.notepad_div_notes_task textarea{
@@ -312,11 +317,6 @@ font-size: 18px;
 
 }
 
-body{
-
-  background: #03d4b7 !important;
-
-}
 
 
 
@@ -450,7 +450,7 @@ body{
 
     position: absolute;
 
-    top: 91%; left: 25%;
+    top: 35px; right: 15px;
 
     padding: 15px;
 
@@ -532,6 +532,20 @@ body.loading .modal_load {
 
 </style>
 
+<?php
+if(isset($_GET['client_id']))
+{
+  $client_id = $_GET['client_id'];
+  $companydetails_val = DB::table('cm_clients')->where('client_id',$client_id)->first();
+  $companyname_val = $companydetails_val->company.'-'.$client_id;
+  $hiddenval = $_GET['client_id'];
+}
+else{
+  $companyname_val = '';
+  $hiddenval = '';
+}
+?>
+
 <script>
 
 function popitup(url) {
@@ -560,9 +574,9 @@ a:hover{text-decoration: underline;}
 
 
 
-.submit_button{background: #000; text-align: center; padding: 8px 12px; color: #fff; float: left; border: none; font-size: 13px; font-weight: normal;}
+.submit_button{background: #000; text-align: center; padding: 8px 12px; color: #fff; float: left; border: none; font-size: 14px; font-weight: normal; transition: 0.3s; opacity: 0.6;}
 
-.submit_button:hover{background: #5f5f5f; text-decoration: none;}
+.submit_button:hover{background: #000; opacity: 1;}
 
 </style>
 <?php 
@@ -603,6 +617,24 @@ elseif(Session::has('countupdated'))
           </div>
           <div class="modal-footer">  
             <input type="button" class="common_black_button" id="link_infile_button" value="Submit">
+          </div>
+        </div>
+  </div>
+</div>
+<div class="modal fade edit_description_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">Edit Description</h4>
+          </div>
+          <div class="modal-body">  
+            <h5>Description Text:</h5>
+            <textarea name="description_edit_text" class="description_edit_text form-control" id="description_edit_text"> </textarea>
+          </div>
+          <div class="modal-footer">  
+            <input type="hidden" name="edit_description_infile_id" class="edit_description_infile_id" value="">
+            <input type="button" class="common_black_button edit_description_btn" id="edit_description_btn" value="Submit">
           </div>
         </div>
   </div>
@@ -691,7 +723,7 @@ elseif(Session::has('countupdated'))
         </div>
   </div>
 </div>
-<div class="modal fade supplier_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;z-index:99999999999">
+<div class="modal fade supplier_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
         <div class="modal-content">
           <div class="modal-header">
@@ -710,7 +742,7 @@ elseif(Session::has('countupdated'))
         </div>
   </div>
 </div>
-<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
+<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_task_form">
         <div class="modal-content">
@@ -941,7 +973,7 @@ elseif(Session::has('countupdated'))
     </form>
   </div>
 </div>
-<div class="modal fade model_notify" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+<div class="modal fade model_notify" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog" role="document" style="width:25%">
     <form action="" method="post" >
     <div class="modal-content">
@@ -991,7 +1023,7 @@ elseif(Session::has('countupdated'))
 </div>
 
 
-<div class="modal fade report_infile_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+<div class="modal fade report_infile_model" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -1049,7 +1081,7 @@ elseif(Session::has('countupdated'))
 
 
 
-<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
 
   <div class="modal-dialog modal-sm" role="document">
 
@@ -1073,9 +1105,9 @@ elseif(Session::has('countupdated'))
 
 "></i></span></div>
 
-                <input  type="text" class="form-control client_search_class" name="client_name" placeholder="Enter Client Name / Client ID" required>
+                <input  type="text" class="form-control client_search_class" name="client_name" placeholder="Enter Client Name / Client ID" required value="<?php echo $companydetails_val->company.'-'.$client_id?>">
 
-                <input type="hidden" id="client_search" name="clientid" />
+                <input type="hidden" value="<?php echo $client_id?>" id="client_search" name="clientid" />
 
             </div>
 
@@ -1214,7 +1246,7 @@ elseif(Session::has('countupdated'))
           <div class="modal-footer">           
             <p class="accepted_files_main" style="display:none"><strong> </strong><span class="accepted_files">0</span> Files are Ready to Upload.</p> 
             <input type="hidden" name="total_count_files" id="total_count_files" value="">
-            <input type="submit" class="common_black_button job_button_name create_new_class" style="display: none" value="Create New">
+            <input type="submit" class="common_black_button job_button_name create_new_class"  value="Create New">
 
           </div>
 
@@ -1231,13 +1263,9 @@ elseif(Session::has('countupdated'))
 <div class="content_section" style="margin-bottom:200px">
 
   <div class="page_title">
-
-          <h4 class="col-lg-4" style="padding: 0px;">
-
-                In Files System: Incoming File Management
-
-            </h4>
-
+        
+        <h4 class="col-lg-12 padding_00 new_main_title">Soft File Management System for <?php echo $companydetails_val->company.'('.$client_id.')'?></h4>
+          
             <div class="col-lg-3 text-right" style="padding-right: 0px;">
 
                 <form action="<?php echo URL::to('user/infile_search')?>" method="get">
@@ -1245,19 +1273,7 @@ elseif(Session::has('countupdated'))
                   <div class="col-lg-6" style="padding: 0px;">
 
                     <div class="form-group">
-                        <?php
-                        if(isset($_GET['client_id']))
-                        {
-                          $client_id = $_GET['client_id'];
-                          $companydetails_val = DB::table('cm_clients')->where('client_id',$client_id)->first();
-                          $companyname_val = $companydetails_val->company.'-'.$client_id;
-                          $hiddenval = $_GET['client_id'];
-                        }
-                        else{
-                          $companyname_val = '';
-                          $hiddenval = '';
-                        }
-                        ?>
+                        
                         <input type="text" class="form-control client_common_search" placeholder="Enter Client Name" style="font-weight: 500;" value="<?php echo $companyname_val; ?>" required />                      
 
                       <input type="hidden" class="client_search_common" id="client_search_hidden_infile" value="<?php echo $hiddenval; ?>" name="client_id">                                          
@@ -1272,9 +1288,7 @@ elseif(Session::has('countupdated'))
 
                         <ul>
 
-                        <li><input type="submit" value="Submit" class="submit_button" id="client_search_infile"  name=""></li>
-
-                        <li><a href="<?php echo URL::to('user/in_file')?>" style="font-size: 13px; font-weight: 500;">Reset</a></li>
+                        <li><input type="submit" value="Load" class="submit_button" id="client_search_infile"  name=""></li>
 
                       </ul>
 
@@ -1288,37 +1302,51 @@ elseif(Session::has('countupdated'))
 
             </div>
 
-            <div class="col-lg-5" style="padding:5px 0px 0px 0px; ">
+            <div class="col-lg-9" style="padding:0px 0px 0px 0px; ">
 
-              <div style="float: left;">
+              <div class="row">
+                
+                <div class="col-lg-12">
 
-                <?php
+            <div class="dropdown" style="float: right;">
+                <button class="btn btn-default dropdown-toggle own_drop_down" style="float: right;" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  <i class="fa fa-bars" aria-hidden="true"></i>
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" style="right: 0px; left: unset; width: 250px;" aria-labelledby="dropdownMenu1" style="width: 250px;">
+                  <li><a href="javascript:" class="create_new">Add New File Batch</a></li>
+                  <li><a href="javascript:" class="reportclassdiv">Report</a></li>
+                  <li><a href="javascript:" class="integrity_check_for_all">Integrity Check</a></li>
+                  <li><a href="<?php echo URL::to('user/in_file_advance'); ?>" >Return to Infiles Main Screen</a></li>
+                  
+                  
+                </ul>
+              </div>
+              <div style="float: right; margin-top: 13px; margin-right: 20px;">
+                  <?php
                   $user_details = DB::table('user_login')->where('id',1)->first();
                   ?>
 
                 <input type="checkbox" id="show_incomplete" <?php if($user_details->infile_incomplete == 1) { echo 'checked'; } else{echo '';}?> ><label for="show_incomplete">Show Incomplete Files</label>
-
+                </div>
+              <div class="report_div" style="display: none">
+                      <label>Please select following report type</label><br>
+                      <input type="radio" name="report_infile" id="singleclient" class="class_invoice" value="1"><label for="singleclient">Individual Client</label>
+                      <br/>
+                      <input type="radio" name="report_infile" id="allclient" class="class_invoice" value="2"><label for="allclient">All Clients</label>
+                      <br/>
+                      <input type="hidden" class="report_type">
+                      <input type="submit" name="invoce_report_but" class="report_ok_button ok_button" value="OK">
+                  </div>
+                  
+                </div>
+                
               </div>
 
-              <div class="select_button" style=" margin-left: 10px; width: 500px;">
+             
+              
 
-                <ul>
-
-                <li><a href="javascript:" class="create_new" style="font-size: 13px; font-weight: 500;">Add New File Batch</a></li>
-                <li><a href="javascript:" class="reportclassdiv" style="font-size: 13px; font-weight: 500;">Report</a></li>
-                <li><a href="<?php echo URL::to('user/in_file_advance'); ?>" style="font-size: 13px; font-weight: 500;">Advance View</a></li>
-                <li><a href="javascript:" class="integrity_check_for_all" style="font-size: 13px; font-weight: 500;">Integrity Check</a></li>
-                <div class="report_div" style="display: none">
-                    <label>Please select following report type</label><br>
-                    <input type="radio" name="report_infile" id="singleclient" class="class_invoice" value="1"><label for="singleclient">Individual Client</label>
-                    <br/>
-                    <input type="radio" name="report_infile" id="allclient" class="class_invoice" value="2"><label for="allclient">All Clients</label>
-                    <br/>
-                    <input type="hidden" class="report_type">
-                    <input type="submit" name="invoce_report_but" class="report_ok_button ok_button" value="OK">
-                </div>
-              </ul>
-            </div>
+              
             </div>
   <div style="clear: both;">
    <?php
@@ -1513,7 +1541,8 @@ elseif(Session::has('countupdated'))
 				<td '.$color.' valign="top">Received:'.date('d-M-Y', strtotime($file->data_received)).'<br/>Added: '.date('d-M-Y', strtotime($file->date_added)).'</td>
 				<td '.$color.'>
 					<span style="color: #0300c1;">Description: </span>         
-					<span style="color: #0300c1;">'.$file->description.'</span>
+          <span style="color: #0300c1;" class="des_'.$file->id.'">'.$file->description.'</span>
+          <span style="color: #0300c1;"><a href="javascript:" class="fa fa-pencil edit_description" title="Edit Description" data-element="'.$file->id.'"></a></span>
 					<div style="clear:both"></div>
               	</td>
               	<td '.$color.' colspan="2">';
@@ -1747,6 +1776,16 @@ elseif(Session::has('countupdated'))
 <input type="hidden" name="hidden_p_all_download" id="hidden_p_all_download" value="">
 <input type="hidden" name="hidden_s_all_download" id="hidden_s_all_download" value="">
 
+<input type="hidden" name="hidden_re_no_file_id" id="hidden_re_no_file_id" value="">
+<input type="hidden" name="hidden_re_no_value" id="hidden_re_no_value" value="">
+<input type="hidden" name="hidden_re_no_inc" id="hidden_re_no_inc" value="">
+<input type="hidden" name="hidden_re_no_radio" id="hidden_re_no_radio" value="">
+
+<input type="hidden" name="hidden_no_file_id" id="hidden_no_file_id" value="">
+<input type="hidden" name="hidden_no_value" id="hidden_no_value" value="">
+<input type="hidden" name="hidden_no_inc" id="hidden_no_inc" value="">
+<input type="hidden" name="hidden_no_radio" id="hidden_no_radio" value="">
+
 
 <script>
 //on keyup, start the countdown
@@ -1758,6 +1797,7 @@ var $input2 = $('.percent_one_value');
 var $input3 = $('.percent_two_value');
 var $input4 = $('.percent_three_value');
 var $input5 = $('.percent_four_value');
+var $input10 = $('.percent_five_value');
 var $input6 = $('.date_attachment');
 var $input7 = $('.code_attachment');
 
@@ -1840,13 +1880,26 @@ $input5.on('keydown', function () {
   clearTimeout(typingTimer);
 });
 
+$input10.on('keyup', function () {
+  var input_val = $(this).val();
+  var attachmentid = $(this).attr('data-element');
+  var fileid = $(this).attr('data-file');
+  var that = $(this);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(doneTyping_percent_five, doneTypingInterval,input_val,attachmentid,fileid,that);
+});
+//on keydown, clear the countdown 
+$input10.on('keydown', function () {
+  clearTimeout(typingTimer);
+});
+
 $input6.on('keyup', function () {
   var input_val = $(this).val();
   var attachmentid = $(this).attr('data-element');
   var fileid = $(this).attr('data-file');
   var that = $(this);
   clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping_date_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+  typingTimer = setTimeout(doneTyping_date_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
 });
 //on keydown, clear the countdown 
 $input6.on('keydown', function () {
@@ -1859,7 +1912,7 @@ $input7.on('keyup', function () {
   var fileid = $(this).attr('data-file');
   var that = $(this);
   clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping_code_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+  typingTimer = setTimeout(doneTyping_code_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
 });
 //on keydown, clear the countdown 
 $input7.on('keydown', function () {
@@ -1872,7 +1925,7 @@ $input8.on('keyup', function () {
   var fileid = $(this).attr('data-file');
   var that = $(this);
   clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping_currency_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+  typingTimer = setTimeout(doneTyping_currency_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
 });
 //on keydown, clear the countdown 
 $input8.on('keydown', function () {
@@ -1885,7 +1938,7 @@ $input9.on('keyup', function () {
   var fileid = $(this).attr('data-file');
   var that = $(this);
   clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping_value_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+  typingTimer = setTimeout(doneTyping_value_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
 });
 //on keydown, clear the countdown 
 $input9.on('keydown', function () {
@@ -2000,6 +2053,27 @@ function doneTyping_percent_four (input,attachmentid,fileid,that) {
     });
   }
 }
+function doneTyping_percent_five (input,attachmentid,fileid,that) {
+  if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+  {
+    $.ajax({
+        url:"<?php echo URL::to('user/update_percent_five_infile_attachment'); ?>",
+        type:"get",
+        dataType:"json",
+        data:{input:input,attachmentid:attachmentid,fileid:fileid},
+        success: function(result) {
+          $(".net_value_"+attachmentid).val(result['net']);
+          $(".vat_value_"+attachmentid).val(result['vat']);
+          $(".gross_value_"+attachmentid).val(result['gross']);
+
+          $(".net_value_"+attachmentid).attr("data-value",result['net']);
+          $(".vat_value_"+attachmentid).attr("data-value",result['vat']);
+          $(".gross_value_"+attachmentid).attr("data-value",result['gross']);
+          that.attr("data-value",input);
+        }
+    });
+  }
+}
 function doneTyping_date_attachment (input,attachmentid,fileid,that) {
   if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
   {
@@ -2054,21 +2128,35 @@ function doneTyping_value_attachment (input,attachmentid,fileid,that) {
     });
   }
 }
-$(".supplier").blur(function() {
-	var input_val = $(this).val();
-	var attachmentid = $(this).attr('data-element');
-	var fileid = $(this).attr('data-file');
-	if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
-  {
-    $.ajax({
-        url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
+$(".add_text").blur(function() {
+  var input = $(this).val();
+  var id = $(this).attr('data-element');
+  $.ajax({
+        url:"<?php echo URL::to('user/update_fileattachment_textval'); ?>",
         type:"get",
-        data:{input:input_val,attachmentid:attachmentid,fileid:fileid,type:"1"},
+        data:{input:input,id:id},
         success: function(result) {
-          $(this).attr("data-value",input_val);
+
         }
-    });
-  }
+  });
+});
+$(".supplier").blur(function() {
+  $(this).delay(300).queue(function(){
+  	var input_val = $(this).val();
+  	var attachmentid = $(this).attr('data-element');
+  	var fileid = $(this).attr('data-file');
+  	if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+    {
+      $.ajax({
+          url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
+          type:"get",
+          data:{input:input_val,attachmentid:attachmentid,fileid:fileid,type:"1"},
+          success: function(result) {
+            $(this).attr("data-value",input_val);
+          }
+      });
+    }
+  });
 });
 $(".percent_one_value").blur(function() {
 	var input_val = $(this).val();
@@ -2178,6 +2266,33 @@ $(".percent_four_value").blur(function() {
       });
    }
 });
+$(".percent_five_value").blur(function() {
+  var input_val = $(this).val();
+  var attachmentid = $(this).attr('data-element');
+  var fileid = $(this).attr('data-file');
+  var that = $(this);
+  if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+  {
+    $(this).attr("data-value",input_val);
+     $.ajax({
+        url:"<?php echo URL::to('user/update_percent_five_infile_attachment'); ?>",
+        type:"get",
+        dataType:"json",
+        data:{input:input_val,attachmentid:attachmentid,fileid:fileid},
+        success: function(result) {
+          $(".net_value_"+attachmentid).val(result['net']);
+          $(".vat_value_"+attachmentid).val(result['vat']);
+          $(".gross_value_"+attachmentid).val(result['gross']);
+
+          $(".net_value_"+attachmentid).attr("data-value",result['net']);
+          $(".vat_value_"+attachmentid).attr("data-value",result['vat']);
+          $(".gross_value_"+attachmentid).attr("data-value",result['gross']);
+          that.val(result['value']);
+          $(this).attr("data-value",input_val);
+        }
+      });
+   }
+});
 
 function add_secondary_function()
 {
@@ -2205,6 +2320,7 @@ function add_secondary_function()
   var $input3 = $('.percent_two_value');
   var $input4 = $('.percent_three_value');
   var $input5 = $('.percent_four_value');
+  var $input10 = $('.percent_five_value');
   var $input6 = $('.date_attachment');
   var $input7 = $('.code_attachment');
 
@@ -2287,13 +2403,26 @@ function add_secondary_function()
     clearTimeout(typingTimer);
   });
 
+  $input10.on('keyup', function () {
+    var input_val = $(this).val();
+    var attachmentid = $(this).attr('data-element');
+    var fileid = $(this).attr('data-file');
+    var that = $(this);
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(doneTyping_percent_five, doneTypingInterval,input_val,attachmentid,fileid,that);
+  });
+  //on keydown, clear the countdown 
+  $input10.on('keydown', function () {
+    clearTimeout(typingTimer);
+  });
+
   $input6.on('keyup', function () {
     var input_val = $(this).val();
     var attachmentid = $(this).attr('data-element');
     var fileid = $(this).attr('data-file');
     var that = $(this);
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping_date_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+    typingTimer = setTimeout(doneTyping_date_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
   });
   //on keydown, clear the countdown 
   $input6.on('keydown', function () {
@@ -2306,7 +2435,7 @@ function add_secondary_function()
     var fileid = $(this).attr('data-file');
     var that = $(this);
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping_code_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+    typingTimer = setTimeout(doneTyping_code_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
   });
   //on keydown, clear the countdown 
   $input7.on('keydown', function () {
@@ -2319,7 +2448,7 @@ function add_secondary_function()
     var fileid = $(this).attr('data-file');
     var that = $(this);
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping_currency_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+    typingTimer = setTimeout(doneTyping_currency_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
   });
   //on keydown, clear the countdown 
   $input8.on('keydown', function () {
@@ -2332,7 +2461,7 @@ function add_secondary_function()
     var fileid = $(this).attr('data-file');
     var that = $(this);
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(doneTyping_value_attachment, doneTypingInterval,input_val,attachmentid,fileid);
+    typingTimer = setTimeout(doneTyping_value_attachment, doneTypingInterval,input_val,attachmentid,fileid,that);
   });
   //on keydown, clear the countdown 
   $input9.on('keydown', function () {
@@ -2366,22 +2495,35 @@ function add_secondary_function()
         })
       }
   });
-  
-  $(".supplier").blur(function() {
-    var input_val = $(this).val();
-    var attachmentid = $(this).attr('data-element');
-    var fileid = $(this).attr('data-file');
-    if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
-    {
-      $.ajax({
-          url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
+  $(".add_text").blur(function() {
+    var input = $(this).val();
+    var id = $(this).attr('data-element');
+    $.ajax({
+          url:"<?php echo URL::to('user/update_fileattachment_textval'); ?>",
           type:"get",
-          data:{input:input_val,attachmentid:attachmentid,fileid:fileid,type:"1"},
+          data:{input:input,id:id},
           success: function(result) {
-            $(this).attr("data-value",input_val);
+
           }
-      });
-    }
+    });
+  });
+  $(".supplier").blur(function() {
+    $(this).delay(300).queue(function(){
+      var input_val = $(this).val();
+      var attachmentid = $(this).attr('data-element');
+      var fileid = $(this).attr('data-file');
+      if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+      {
+        $.ajax({
+            url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
+            type:"get",
+            data:{input:input_val,attachmentid:attachmentid,fileid:fileid,type:"1"},
+            success: function(result) {
+              $(this).attr("data-value",input_val);
+            }
+        });
+      }
+    });
   });
   $(".percent_one_value").blur(function() {
     var input_val = $(this).val();
@@ -2491,6 +2633,33 @@ function add_secondary_function()
         });
      }
   });
+  $(".percent_five_value").blur(function() {
+    var input_val = $(this).val();
+    var attachmentid = $(this).attr('data-element');
+    var fileid = $(this).attr('data-file');
+    var that = $(this);
+    if($(".infile_tr_body_"+fileid).find(".show_previous").hasClass('disabled_prev_btn'))
+    {
+      $(this).attr("data-value",input_val);
+       $.ajax({
+          url:"<?php echo URL::to('user/update_percent_five_infile_attachment'); ?>",
+          type:"get",
+          dataType:"json",
+          data:{input:input_val,attachmentid:attachmentid,fileid:fileid},
+          success: function(result) {
+            $(".net_value_"+attachmentid).val(result['net']);
+            $(".vat_value_"+attachmentid).val(result['vat']);
+            $(".gross_value_"+attachmentid).val(result['gross']);
+
+            $(".net_value_"+attachmentid).attr("data-value",result['net']);
+            $(".vat_value_"+attachmentid).attr("data-value",result['vat']);
+            $(".gross_value_"+attachmentid).attr("data-value",result['gross']);
+            that.val(result['value']);
+            $(this).attr("data-value",input_val);
+          }
+        });
+     }
+  });
   $(".date_attachment").on("dp.hide", function (e) {
     var attachment_id = $(this).attr("data-element");
     var file_id = $(this).attr("data-file");
@@ -2503,7 +2672,7 @@ function add_secondary_function()
         data:{id:attachment_id,dateval:dateval},
         success: function(result)
         {
-
+          $(this).attr("data-value",dateval);
         }
       })
     }
@@ -2954,6 +3123,42 @@ $(window).dblclick(function(e) {
       $(e.target).parents('.td_percent_four').find(".percent_four_div").find(".change_percent_four").val(value);
     }
 	}
+  if($(e.target).parents('.td_percent_five').length > 0)
+  {
+    if(!$(e.target).hasClass('change_percent_five'))
+    {
+      $(e.target).parents('.td_percent_five').find(".percent_five_div").show();
+      var value = $(e.target).parents('.td_percent_five').find(".percent_five_text").html();
+      $(e.target).parents('.td_percent_five').find(".percent_five_div").find(".change_percent_five").val(value);
+    }
+  }
+  if($(e.target).hasClass('supplier'))
+  {
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      if($(e.target).parents("tr").hasClass('attachment_tr_main'))
+      {
+
+      }
+      else{
+        var input_val = $(e.target).parents("tr").prev().find(".supplier").val();
+        var attachment_id = $(e.target).attr("data-element");
+        var fileid = $(this).attr('data-file');
+
+        $.ajax({
+            url:"<?php echo URL::to('user/update_supplier_infile_attachment'); ?>",
+            type:"get",
+            data:{input:input_val,attachmentid:attachment_id,fileid:fileid,type:"0"},
+            success: function(result) {
+              $(e.target).val(input_val);
+              $(e.target).attr("data-value",input_val);
+            }
+        });
+
+      }
+    }
+  }
 });
 
 $('body').on('click', function (e) {
@@ -3075,6 +3280,42 @@ function next_available_check_div(count)
     });
 }
 $(window).click(function(e) {
+  if($(e.target).hasClass('edit_description'))
+  {
+    var fileid = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/infile_edit_description'); ?>",
+      type:"post",
+      data:{fileid:fileid},
+      success:function(result)
+      {
+        $(".edit_description_modal").modal("show");
+        $(".edit_description_infile_id").val(fileid);
+        $(".description_edit_text").val(result);
+      }
+    })
+  }
+  if($(e.target).hasClass('edit_description_btn'))
+  {
+    var fileid = $(".edit_description_infile_id").val();
+    var value = $(".description_edit_text").val();
+    if(value == "")
+    {
+      alert("Please enter the description and then proceed with submit button.");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/update_edit_description'); ?>",
+        type:"post",
+        data:{fileid:fileid,value:value},
+        success:function(result)
+        {
+          $(".edit_description_modal").modal("hide");
+          $(".des_"+fileid).html(value);
+        }
+      });
+    }
+  }
   if($(e.target).hasClass('auto_increment'))
   {
     $(e.target).popover("toggle");
@@ -3133,53 +3374,268 @@ $(window).click(function(e) {
     }
     else{
       $.ajax({
-        url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
+        url:"<?php echo URL::to('user/check_secondary_line_has_value'); ?>",
         type:"post",
-        data:{file_id:file_id,value:value,inc:inc,radio:radio},
+        data:{file_id:file_id,radio:radio},
         success:function(result)
         {
-          $("[data-toggle='popover']").popover('hide');
-          var place = inc.split(".");
-          var get_place_length = place.length;
-          if(get_place_length > 1)
+          if(result == 0)
           {
-            var places = place[1].length;
+            $.ajax({
+              url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
+              type:"post",
+              data:{file_id:file_id,value:value,inc:inc,radio:radio},
+              success:function(result)
+              {
+                $("[data-toggle='popover']").popover('hide');
+                var place = inc.split(".");
+                var get_place_length = place.length;
+                if(get_place_length > 1)
+                {
+                  var places = place[1].length;
+                }
+                else{
+                  var places = 0;
+                }
+                var alert_value = 1;
+                if(radio == "1")
+                {
+                  $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
+                     var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+                     if(textval == "")
+                     {
+                      $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                      var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                      var subvalue = value;
+                      $(".attachment_tr_"+attachment_id).each(function() {
+                        subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                        $(this).find(".add_text").val(subvalue);
+                      });
+                      value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                      alert_value = alert_value + 1;
+                     }
+                  });
+                }
+                else
+                {
+                  $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
+                     var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+                     if(textval == "")
+                     {
+                      $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                      var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                      var subvalue = value;
+                      $(".attachment_tr_"+attachment_id).each(function() {
+                        subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                        $(this).find(".add_text").val(subvalue);
+                      });
+                      value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                      alert_value = alert_value + 1;
+                     }
+                  });
+                }
+                if(alert_value == 1)
+                {
+                  alert("All Infile items are already numbered. No changes made.");
+                }
+              }
+            })
           }
           else{
-            var places = 0;
-          }
-          var alert_value = 1;
-          if(radio == "1")
-          {
-            $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
-               var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
-               if(textval == "")
-               {
-                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-                alert_value = alert_value + 1;
-               }
-            });
-          }
-          else
-          {
-            $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
-               var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
-               if(textval == "")
-               {
-                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-                alert_value = alert_value + 1;
-               }
-            });
-          }
-          if(alert_value == 1)
-          {
-            alert("All Infile items are already numbered. No changes made.");
+            $("#hidden_no_file_id").val(file_id);
+            $("#hidden_no_value").val(value);
+            $("#hidden_no_inc").val(inc);
+            $("#hidden_no_radio").val(radio);
+            $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">We find that some of the Secondary lines are already numbered. Hence, we are about to Remove the Current Numbering, and Re-number based on your Entry above. </p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><input type="button" class="common_black_button yes_number" value="Yes"> <input type="button" class="common_black_button no_number" value="No"></p>',fixed:true,width:"800px"});
           }
         }
-      })
+      });
     }
+  }
+  if($(e.target).hasClass('yes_number'))
+  {
+    var file_id = $("#hidden_no_file_id").val();
+    var value = $("#hidden_no_value").val();
+    var inc = $("#hidden_no_inc").val();
+    var radio = $("#hidden_no_radio").val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
+      type:"post",
+      data:{file_id:file_id,value:value,inc:inc,radio:radio},
+      success:function(result)
+      {
+        $("[data-toggle='popover']").popover('hide');
+        var place = inc.split(".");
+        var get_place_length = place.length;
+        if(get_place_length > 1)
+        {
+          var places = place[1].length;
+        }
+        else{
+          var places = 0;
+        }
+        var alert_value = 1;
+        if(radio == "1")
+        {
+          $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
+             var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+             if(textval == "")
+             {
+              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+              var subvalue = value;
+              $(".attachment_tr_"+attachment_id).each(function() {
+                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                $(this).find(".add_text").val(subvalue);
+              });
+              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+              alert_value = alert_value + 1;
+             }
+          });
+        }
+        else
+        {
+          $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
+             var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+             if(textval == "")
+             {
+              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+              var subvalue = value;
+              $(".attachment_tr_"+attachment_id).each(function() {
+                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                $(this).find(".add_text").val(subvalue);
+              });
+              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+              alert_value = alert_value + 1;
+             }
+          });
+        }
+        if(alert_value == 1)
+        {
+          alert("All Infile items are already numbered. No changes made.");
+        }
+        $("#hidden_no_file_id").val("");
+        $("#hidden_no_value").val("");
+        $("#hidden_no_inc").val("");
+        $("#hidden_no_radio").val("");
+        $.colorbox.close();
+      }
+    })
+  }
+  if($(e.target).hasClass('no_number'))
+  {
+    $("#hidden_no_file_id").val("");
+    $("#hidden_no_value").val("");
+    $("#hidden_no_inc").val("");
+    $("#hidden_no_radio").val("");
+    $.colorbox.close();
+  }
+  if($(e.target).hasClass('submit_re_number'))
+  {
+    var file_id = $(e.target).attr("data-element");
+    var value = $(e.target).parents(".form-data").find(".auto_number_value_"+file_id).val();
+    var inc = $(e.target).parents(".form-data").find(".inc_number_value_"+file_id).val();
+    var radio = $(e.target).parents(".popover-content").find(".item_auto_num_"+file_id+":checked").val();
+    var pchecked = $("#bspo_id_"+file_id).find(".p_check:checked").length;
+    var schecked = $("#bspo_id_"+file_id).find(".s_check:checked").length;
+
+    if(value == "")
+    {
+      alert("Please Enter the Value");
+    }
+    else if(inc == "")
+    {
+      alert("Please Enter the Increment Value");
+    }
+    else if(typeof radio === "undefined" || radio == "")
+    {
+      alert("Please Select the Item");
+    }
+    else if(radio == "1" && pchecked == 0)
+    {
+      alert("Sorry, can't number the infile items as none of the items are specified as Purchase.")
+    }
+    else if(radio == "2" && schecked == 0)
+    {
+      alert("Sorry, can't number the infile items as none of the items are specified as Sales.")
+    }
+    else{
+      $("#hidden_re_no_file_id").val(file_id);
+      $("#hidden_re_no_value").val(value);
+      $("#hidden_re_no_inc").val(inc);
+      $("#hidden_re_no_radio").val(radio);
+
+      $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">We are about to Remove the Current Numbering, and ReNumber based on your Entry above</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><input type="button" class="common_black_button yes_renumber" value="Yes"> <input type="button" class="common_black_button no_renumber" value="No"></p>',fixed:true,width:"800px"});
+    }
+  }
+  if($(e.target).hasClass('yes_renumber'))
+  {
+    var file_id = $("#hidden_re_no_file_id").val();
+    var value = $("#hidden_re_no_value").val();
+    var inc = $("#hidden_re_no_inc").val();
+    var radio = $("#hidden_re_no_radio").val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/renumber_infile_textvalue_item'); ?>",
+      type:"post",
+      data:{file_id:file_id,value:value,inc:inc,radio:radio},
+      success:function(result)
+      {
+        $("[data-toggle='popover']").popover('hide');
+        var place = inc.split(".");
+        var get_place_length = place.length;
+        if(get_place_length > 1)
+        {
+          var places = place[1].length;
+        }
+        else{
+          var places = 0;
+        }
+        if(radio == "1")
+        {
+          $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
+              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+              var subvalue = value;
+              $(".attachment_tr_"+attachment_id).each(function() {
+                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                $(this).find(".add_text").val(subvalue);
+              });
+
+              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+          });
+        }
+        else
+        {
+          $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
+              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+              var subvalue = value;
+              $(".attachment_tr_"+attachment_id).each(function() {
+                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                $(this).find(".add_text").val(subvalue);
+              });
+
+              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+          });
+        }
+        $("#hidden_re_no_file_id").val("");
+        $("#hidden_re_no_value").val("");
+        $("#hidden_re_no_inc").val("");
+        $("#hidden_re_no_radio").val("");
+        $.colorbox.close();
+      }
+    })
+  }
+  if($(e.target).hasClass('no_renumber'))
+  {
+    $("#hidden_re_no_file_id").val("");
+    $("#hidden_re_no_value").val("");
+    $("#hidden_re_no_inc").val("");
+    $("#hidden_re_no_radio").val("");
+    $.colorbox.close();
   }
   if($(e.target).hasClass('location_path'))
   {
@@ -3293,7 +3749,6 @@ $(window).click(function(e) {
             $(".show_previous_"+fileid).parents("td:first").append(result['ps_data_btn']);
             $(e.target).val("Hide Attachments");
             $('[data-toggle="tooltip"]').tooltip();
-
             $("[data-toggle=popover]").each(function(i, obj) {
 
               $(this).popover({
@@ -3472,23 +3927,49 @@ $(window).click(function(e) {
       data:{attach_id:attach_id},
       success:function(result)
       {
-        $(e.target).parents("tr:first").after(result);
-
-        $('.date_attachment').datetimepicker({
-            widgetPositioning: {
-                horizontal: 'left'
-            },
-            icons: {
-                time: "fa fa-clock-o",
-                date: "fa fa-calendar",
-                up: "fa fa-arrow-up",
-                down: "fa fa-arrow-down"
-            },
-            format: 'L',
-            format: 'DD/MM/YYYY',
-            defaultDate:'',   
-        });
+        if($(e.target).parents("tr").nextAll(".attachment_tr_main").length == 0)
+        {
+          $(e.target).parents("tbody:first").find("tr:last").before(result);
+          $('.date_attachment').datetimepicker({
+              widgetPositioning: {
+                  horizontal: 'left'
+              },
+              icons: {
+                  time: "fa fa-clock-o",
+                  date: "fa fa-calendar",
+                  up: "fa fa-arrow-up",
+                  down: "fa fa-arrow-down"
+              },
+              format: 'L',
+              format: 'DD/MM/YYYY',
+              defaultDate:'',   
+          });
           add_secondary_function();
+        }
+        else{
+          $(e.target).parents("tr").nextUntil().each(function() {
+            if($(this).hasClass('attachment_tr_main'))
+            {
+              $(this).prev().before(result);
+              $('.date_attachment').datetimepicker({
+                  widgetPositioning: {
+                      horizontal: 'left'
+                  },
+                  icons: {
+                      time: "fa fa-clock-o",
+                      date: "fa fa-calendar",
+                      up: "fa fa-arrow-up",
+                      down: "fa fa-arrow-down"
+                  },
+                  format: 'L',
+                  format: 'DD/MM/YYYY',
+                  defaultDate:'',   
+              });
+              add_secondary_function();
+              return false;
+            }
+          });
+        }
       }
     })
   }
@@ -3520,7 +4001,7 @@ $(window).click(function(e) {
 	if($(e.target).hasClass('show_iframe_next'))
 	{
     $(e.target).parents(".show_iframe").slideRow("up",1000);
-		var html = $(e.target).parents(".show_iframe").nextAll(".show_iframe:first").prevAll(".attachment_tr:first").find(".fileattachment").trigger("click");
+		var html = $(e.target).parents(".show_iframe").nextAll(".show_iframe:first").prevAll(".attachment_tr_main:first").find(".fileattachment").trigger("click");
     $('html, body').animate({
        scrollTop: ($(e.target).parents(".show_iframe").nextAll(".show_iframe:first").offset().top - 135)
      }, 2000);
@@ -3528,7 +4009,7 @@ $(window).click(function(e) {
 	if($(e.target).hasClass('show_iframe_prev'))
 	{
 		$(e.target).parents(".show_iframe").slideRow("up",1000);
-    var html = $(e.target).parents(".show_iframe").prevAll(".show_iframe:first").prevAll(".attachment_tr:first").find(".fileattachment").trigger("click");
+    var html = $(e.target).parents(".show_iframe").prevAll(".show_iframe:first").prevAll(".attachment_tr_main:first").find(".fileattachment").trigger("click");
     $('html, body').animate({
        scrollTop: ($(e.target).parents(".show_iframe").prevAll(".show_iframe:first").offset().top - 135)
      }, 2000);
@@ -3588,6 +4069,13 @@ $(window).click(function(e) {
 	else{
 		$(".percent_four_div").hide();
 	}
+  if($(e.target).parents('.percent_five_div').length > 0)
+  {
+    $(e.target).parents(".percent_five_div").show();
+  }
+  else{
+    $(".percent_five_div").hide();
+  }
 	if($(e.target).hasClass('submit_percent_one'))
 	{
 		var value = $(e.target).parents(".percent_one_div").find(".change_percent_one").val();
@@ -3716,6 +4204,38 @@ $(window).click(function(e) {
 			}
 		}
 	}
+  if($(e.target).hasClass('submit_percent_five'))
+  {
+    var value = $(e.target).parents(".percent_five_div").find(".change_percent_five").val();
+    var fileid = $(e.target).attr("data-element");
+    if(value == "")
+    {
+      alert("Please enter the Value and then press submit button.");
+    }
+    else{
+      var ival = 0;
+      $(".percent_five_value_"+fileid).each(function() {
+        var value = $(this).attr("data-value");
+        if(value != "") { ival++; }
+      })
+      if(ival == 0)
+      {
+        $.ajax({
+          url:"<?php echo URL::to('user/change_percent_value'); ?>",
+          type:"post",
+          data:{fileid:fileid,value:value,type:"five"},
+          success: function(result)
+          {
+            $(e.target).parents(".td_percent_five").find(".percent_five_text").html(result);
+            $(".percent_five_div").hide();
+          }
+        })
+      }
+      else{
+        alert("Sorry you cannot make a change if there is an entry for the infiles batch for that given column.");
+      }
+    }
+  }
 	if($(e.target).hasClass('td_supplier'))
 	{
 		var fileid = $(e.target).attr("data-element");
@@ -3994,6 +4514,7 @@ $(window).click(function(e) {
   if($(e.target).hasClass("create_task_manager"))
   {
   	var fileid = $(e.target).attr("data-element");
+    var description = $(".des_"+fileid).html();
   	$("#hidden_infiles_id").val(fileid);
   	
     $(".create_new_task_model").find(".job_title").html("New Task Creator");
@@ -4026,7 +4547,7 @@ $(window).click(function(e) {
     $("#action_type").val("1");
     $(".allocate_user_add").val("");
     $(".task-choose_internal").html("Select Task");
-    $(".subject_class").val("");
+    $(".subject_class").val(description);
     $(".task_specifics_add").show();
     CKEDITOR.instances['editor_2'].setData("");
     
@@ -4073,6 +4594,7 @@ $(window).click(function(e) {
         $("body").removeClass("loading");
         $("#attachments_infiles").show();
         $("#add_infiles_attachments_div").html(result);
+        window.history.replaceState(null, null, "<?php echo URL::to('user/infile_search?client_id='.$_GET['client_id'].'&infile_item='); ?>"+fileid);
       }
     })
   }
@@ -4136,6 +4658,7 @@ $(window).click(function(e) {
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_four_value").prop("disabled",true);
+        $(e.target).parents("tr:first").find(".percent_five_value").prop("disabled",true);
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",true);
@@ -4148,6 +4671,7 @@ $(window).click(function(e) {
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_four_value").prop("disabled",true);
+        $(".attachment_tr_"+attachment_id).find(".percent_five_value").prop("disabled",true);
 
 
       }
@@ -4180,6 +4704,7 @@ $(window).click(function(e) {
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_four_value").prop("disabled",false);
+        $(e.target).parents("tr:first").find(".percent_five_value").prop("disabled",false);
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",false);
@@ -4192,6 +4717,7 @@ $(window).click(function(e) {
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_four_value").prop("disabled",false);
+        $(".attachment_tr_"+attachment_id).find(".percent_five_value").prop("disabled",false);
       }
     });
   }
@@ -4222,6 +4748,7 @@ $(window).click(function(e) {
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",false);
       	$(e.target).parents("tr:first").find(".percent_four_value").prop("disabled",false);
+        $(e.target).parents("tr:first").find(".percent_five_value").prop("disabled",false);
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",false);
@@ -4234,6 +4761,7 @@ $(window).click(function(e) {
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",false);
         $(".attachment_tr_"+attachment_id).find(".percent_four_value").prop("disabled",false);
+        $(".attachment_tr_"+attachment_id).find(".percent_five_value").prop("disabled",false);
       }
     });
   }
@@ -4264,6 +4792,7 @@ $(window).click(function(e) {
       	$(e.target).parents("tr:first").find(".percent_two_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_three_value").prop("disabled",true);
       	$(e.target).parents("tr:first").find(".percent_four_value").prop("disabled",true);
+        $(e.target).parents("tr:first").find(".percent_five_value").prop("disabled",true);
 
         $(".attachment_tr_"+attachment_id).find(".supplier").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".date_attachment").prop("disabled",true);
@@ -4276,6 +4805,7 @@ $(window).click(function(e) {
         $(".attachment_tr_"+attachment_id).find(".percent_two_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_three_value").prop("disabled",true);
         $(".attachment_tr_"+attachment_id).find(".percent_four_value").prop("disabled",true);
+        $(".attachment_tr_"+attachment_id).find(".percent_five_value").prop("disabled",true);
       }
     });
   }
@@ -5242,6 +5772,7 @@ $(window).click(function(e) {
       var exttype = ext[ext.length-1];
       $(".show_iframe").hide();
       $(".fa-circle").hide();
+      $('[data-toggle="tooltip"]').tooltip("hide");
       if(exttype == "pdf")
       {
         src = src.replace("uploads/","");
@@ -5342,6 +5873,51 @@ $(window).click(function(e) {
         {
           $(e.target).removeClass('flag_red');
           $(e.target).addClass('flag_gray');
+        }
+      });
+    }
+    else if($(e.target).hasClass('flag_gray_sub'))
+    {
+      var fileid = $(e.target).parents(".sub_attachment").attr("data-value");
+      var flag_status = '1';
+      $.ajax({
+        url:"<?php echo URL::to('user/change_flag_status'); ?>",
+        type:"post",
+        data:{fileid:fileid,flag_status:flag_status},
+        success:function(result)
+        {
+          $(e.target).removeClass('flag_gray_sub');
+          $(e.target).addClass('flag_orange_sub');
+        }
+      });
+    }
+    else if($(e.target).hasClass('flag_orange_sub'))
+    {
+      var fileid = $(e.target).parents(".sub_attachment").attr("data-value");
+      var flag_status = '2';
+      $.ajax({
+        url:"<?php echo URL::to('user/change_flag_status'); ?>",
+        type:"post",
+        data:{fileid:fileid,flag_status:flag_status},
+        success:function(result)
+        {
+          $(e.target).removeClass('flag_orange_sub');
+          $(e.target).addClass('flag_red_sub');
+        }
+      });
+    }
+    else if($(e.target).hasClass('flag_red_sub'))
+    {
+      var fileid = $(e.target).parents(".sub_attachment").attr("data-value");
+      var flag_status = '0';
+      $.ajax({
+        url:"<?php echo URL::to('user/change_flag_status'); ?>",
+        type:"post",
+        data:{fileid:fileid,flag_status:flag_status},
+        success:function(result)
+        {
+          $(e.target).removeClass('flag_red_sub');
+          $(e.target).addClass('flag_gray_sub');
         }
       });
     }
@@ -5944,7 +6520,17 @@ if($(e.target).hasClass('bpso_all_check')){
         success:function(result){
           $(e.target).parents(".infile_inner_table_row").html(result);
           $("body").removeClass("loading");
+          
           $('[data-toggle="tooltip"]').tooltip();
+          $("[data-toggle=popover]").each(function(i, obj) {
+            $(this).popover({
+              html: true,
+              content: function() {
+                var id = $(this).attr('id')
+                return $('#popover-content-' + id).html();
+              }
+            });
+          });
           add_secondary_function();         
     }
   });
@@ -6138,9 +6724,19 @@ if($(e.target).hasClass('bpso_all_check')){
 
   if($(e.target).hasClass('reportclassdiv'))
   {
-    $(".report_div").toggle();
+    $(".report_div").show();
   }
-
+  else if($(e.target).hasClass('report_div'))
+  {
+    $(".report_div").show();
+  }
+  else if($(e.target).parents(".report_div").length > 0)
+  {
+    $(".report_div").show();
+  }
+  else{
+      $(".report_div").hide();
+  }
   if($(e.target).hasClass('ok_button'))
   {
     var check_option = $(".class_invoice:checked").val();
@@ -6472,7 +7068,7 @@ $(function () {
       	data:{id:attachment_id,dateval:dateval},
       	success: function(result)
       	{
-
+          $(this).attr("data-value",dateval);
       	}
       })
     }
@@ -6521,37 +7117,18 @@ else{
 
 
  $('[data-toggle="tooltip"]').tooltip(); 
-
-
-
-
-
-
-
   $(".client_search_class").autocomplete({
-
       source: function(request, response) {
-
           $.ajax({
-
               url:"<?php echo URL::to('user/task_client_search'); ?>",
-
               dataType: "json",
-
               data: {
-
                   term : request.term
-
               },
-
               success: function(data) {
-
                   response(data);
-
               }
-
           });
-
       },
 
       minLength: 1,
@@ -6583,95 +7160,24 @@ else{
   });
 
   $(".client_common_search").autocomplete({
-
       source: function(request, response) {        
-
           $.ajax({
-
               url:"<?php echo URL::to('user/task_client_common_search'); ?>",
-
               dataType: "json",
-
               data: {
-
                   term : request.term
-
               },
-
               success: function(data) {
-
                   response(data);
-
               }
-
           });
-
       },
-
       minLength: 1,
-
       select: function( event, ui ) {
-
-        $("body").addClass("loading");
-
         $("#client_search").val(ui.item.id);
-
-        //$("#in_file").dataTable().fnDestroy();
-
-        $.ajax({
-
-          dataType: "json",
-
-          url:"<?php echo URL::to('user/task_client_common_search_select'); ?>",
-
-          data:{value:ui.item.id},
-
-          success: function(result){   
-
-            $("body").removeClass("loading");
-
-            $(".client_search_common").val(ui.item.id);          
-
-
-
-
-
-            /*
-
-
-
-            $("#in_file_tbody").html(result['result_row']);   
-
-            $('#in_file').DataTable({            
-
-              fixedHeader: {
-
-                headerOffset: 75
-
-              },
-
-              autoWidth: true,
-
-              scrollX: false,
-
-              fixedColumns: false,
-
-              searching: false,
-
-              paging: false,
-
-              info: false,            
-
-          });*/
-
-          }
-
-        })
-
+        $(".client_search_common").val(ui.item.id); 
       }
-
   });
-
 });
 
 

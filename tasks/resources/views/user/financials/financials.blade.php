@@ -3,7 +3,6 @@
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
-
 <script src="<?php echo URL::to('assets/js/jquery.dataTables.min.js'); ?>"></script>
 <script src="<?php echo URL::to('assets/js/dataTables.fixedHeader.min.js'); ?>"></script>
 
@@ -212,27 +211,34 @@ a:hover{text-decoration: underline;}
 <div class="modal fade client_finance_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog" role="document" style="width:80%">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header" style="padding-bottom: 0px;border-bottom:0px">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">
           Client Account Opening Balance Manager
           <div style="float:right;margin-right: 24px;font-size: 16px;margin-top: 5px;">
-            <label>Opening Balance Date: </label> <spam class="opening_balance_date_spam"></spam>
+            <input type="button" name="export_csv_client_opening" class="common_black_button export_csv_client_opening" value="Export Csv">
+            <label>Client Account Opening Balance Date: </label> <spam class="opening_balance_date_spam"></spam>
           </div>
         </h4>
-      </div>
-      <div class="modal-body" style="min-height:700px;max-height: 700px;overflow-y:scroll">
-        <table class="table">
+
+         <table class="table own_table_white" style="margin-bottom: 0px;margin-top:40px">
             <thead>
-              <th style="text-align: left">Client Code <i class="fa fa-sort client_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
-              <th style="text-align: left">Surname <i class="fa fa-sort surname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
-              <th style="text-align: left">Firstname <i class="fa fa-sort firstname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
-              <th style="text-align: left">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
-              <th style="text-align: left">Debit <i class="fa fa-sort debit_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
-              <th style="text-align: left">Credit <i class="fa fa-sort credit_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
-              <th style="text-align: left">Balance <i class="fa fa-sort balance_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
-              <th style="text-align: left">Commit</th>
+              <tr>
+                <th style="text-align: left;width:8%">Client Code <i class="fa fa-sort client_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                <th style="text-align: left;width:12%">Surname <i class="fa fa-sort surname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                <th style="text-align: left;width:12%">Firstname <i class="fa fa-sort firstname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                <th style="text-align: left;width:32%">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                <th style="text-align: left;width:9%">Debit <i class="fa fa-sort debit_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                <th style="text-align: left;width:9%">Credit <i class="fa fa-sort credit_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                <th style="text-align: left;width:9%">Balance <i class="fa fa-sort balance_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                <th style="text-align: left;width:9%">Commit</th>
+              </tr>
             </thead>
+          </table>
+      </div>
+      <div class="modal-body" style="min-height:700px;max-height: 700px;overflow-y:scroll;padding-top: 0px;">
+
+        <table class="table table-fixed" id="client_financial">
             <tbody id="client_tbody">
             <?php 
               $clients = DB::table('cm_clients')->get();
@@ -257,11 +263,11 @@ a:hover{text-decoration: underline;}
                       $bal_style = 'color:#f00;font-weight:600';
                     }
                     else{
-                      $balance = ($finance_client->balance != "")?$finance_client->balance:"0.00";
+                      $balance = ($finance_client->balance != "")?number_format_invoice_empty($finance_client->balance):"0.00";
                       $bal_style = '';
                       if($balance != "0.00" && $balance != "" && $balance != "0")
                       {
-                        if($balance >= 0) { $owed_text = '<spam style="color:green;font-size:12px;font-weight:600">Client Owes Back</spam>'; }
+                        if($finance_client->balance >= 0) { $owed_text = '<spam style="color:green;font-size:12px;font-weight:600">Client Owes Back</spam>'; }
                         else { $owed_text = '<spam style="color:#f00;font-size:12px;font-weight:600">Client Is Owed</spam>'; }
 
                         $commit_style = 'display:block'; 
@@ -269,17 +275,17 @@ a:hover{text-decoration: underline;}
                     }
                   }
                   echo '<tr class="client_tr_'.$client->client_id.'">
-                      <td class="client_sort_val">'.$client->client_id.'</td>
-                      <td class="surname_sort_val">'.$client->surname.'</td>
-                      <td class="firstname_sort_val">'.$client->firstname.'</td>
-                      <td class="company_sort_val">'.$client->company.'</td>
-                      <td><input type="text" class="form-control debit_fin_sort_val debit_fin_sort_val_'.$client->client_id.'" id="debit_fin_sort_val" value="'.number_format_invoice($debit).'" data-element="'.$client->client_id.'"></td>
-                      <td><input type="text" class="form-control credit_fin_sort_val credit_fin_sort_val_'.$client->client_id.'" id="credit_fin_sort_val" value="'.number_format_invoice($credit).'" data-element="'.$client->client_id.'"></td>
-                      <td>
+                      <td class="client_sort_val" style="width:8%">'.$client->client_id.'</td>
+                      <td class="surname_sort_val" style="width:12%">'.$client->surname.'</td>
+                      <td class="firstname_sort_val" style="width:12%">'.$client->firstname.'</td>
+                      <td class="company_sort_val" style="width:32%">'.$client->company.'</td>
+                      <td style="width:9%"><input type="text" class="form-control debit_fin_sort_val debit_fin_sort_val_'.$client->client_id.'" id="debit_fin_sort_val" value="'.number_format_invoice($debit).'" data-element="'.$client->client_id.'"></td>
+                      <td style="width:9%"><input type="text" class="form-control credit_fin_sort_val credit_fin_sort_val_'.$client->client_id.'" id="credit_fin_sort_val" value="'.number_format_invoice($credit).'" data-element="'.$client->client_id.'"></td>
+                      <td style="width:9%">
                         <input type="text" class="form-control balance_fin_sort_val balance_fin_sort_val_'.$client->client_id.'" id="balance_fin_sort_val" value="'.$balance.'" style="'.$bal_style.'" disabled>
                         '.$owed_text.'
                       </td>
-                      <td><input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" style="'.$commit_style.'"></td>
+                      <td style="width:9%"><input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" style="'.$commit_style.'"></td>
                     </tr>';
                 }
               }
@@ -300,7 +306,7 @@ a:hover{text-decoration: underline;}
         <h4 class="modal-title" id="myModalLabel">Financial Setup <input type="button" class="common_black_button add_nominal" value="Add a Nominal" style="float:right;margin-right:15px"></h4>
       </div>
       <div class="modal-body" style="min-height:500px;max-height: 600px;overflow-y:scroll">
-        <table class="table">
+        <table class="table own_table_white">
             <thead>
               <th style="text-align: left">Code <i class="fa fa-sort code_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
               <th style="text-align: left">Description <i class="fa fa-sort des_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></th>
@@ -341,6 +347,13 @@ a:hover{text-decoration: underline;}
           </table>
       </div>
       <div class="modal-footer">
+        <label style="margin-top:5px;float:left">Opening Financial Date:</label>&nbsp;&nbsp;
+        <?php 
+        $date = DB::table('user_login')->where('id',1)->first();
+        ?>
+        <spam class="opening_date_spam" style="text-align: left;line-height: 32px;float:left"><?php echo date('d-M-Y', strtotime($date->opening_balance_date)); ?></spam><a href="javascript:" class="common_black_button edit_opening_balance_btn" style="float:left">...</a>
+          <input type="text" name="opening_financial_date" class="opening_financial_date" value="<?php echo date('d-M-Y', strtotime($date->opening_balance_date)); ?>" style="display:none;width: 12%;padding: 7px;outline: none;float:left">
+          <a href="javascript:" class="common_black_button save_opening_balance_btn" style="display:none;line-height: 32px;float:left">Save</a>
         <input type="hidden" name="request_id_email_client" id="request_id_email_client" value="">
         <input type="button" class="common_black_button bank_account_manager" value="Bank Account Manager" style="float:right">
       </div>
@@ -395,7 +408,7 @@ a:hover{text-decoration: underline;}
       </div>
       <div class="modal-body" style="min-height:500px;max-height: 500px;overflow-y:scroll">
         <h4 style="text-align: right"><a href="javascript:" class="common_black_button add_bank">Add a Bank</a></h4>
-        <table class="table">
+        <table class="table own_table_white" style="margin-top: 30px;">
           <thead>
             <th style="text-align: left">Bank Name</th>
             <th style="text-align: left">Account Name</th>
@@ -460,7 +473,7 @@ a:hover{text-decoration: underline;}
         </form>
       </div>
       <div class="modal-footer">
-        <input type="submit" class="btn btn-primary add_bank_btn" value="Add Bank">
+        <input type="submit" class="common_black_button add_bank_btn" value="Add Bank">
       </div>
     </div>
   </div>
@@ -493,21 +506,24 @@ a:hover{text-decoration: underline;}
 </div>
 <div class="content_section" style="margin-bottom:200px">
     <div class="page_title">
-        <h4 style="text-align: center;font-weight:600;font-size:20px">Financials <input type="button" class="common_black_button client_finance_account_btn" value="Client Finance Account" style="float:right;font-size: 14px;margin-bottom: 10px;"></h4>
-        <div class="col-md-6">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Financials               
+            </h4>
+        
+        <div class="col-md-6 padding_00">
           <div class="col-md-12" style="padding: 0px">
-            <div class="col-md-8">
+            <div class="col-md-8 padding_00">
               <input type="radio" name="date_selection" class="date_selection" id="curr_year" value="1"><label for="curr_year">Current Year</label>
               <input type="radio" name="date_selection" class="date_selection" id="prev_year" value="2"><label for="prev_year">Previous Year</label>
               <input type="radio" name="date_selection" class="date_selection" id="curr_month" value="3" checked><label for="curr_month">Current Month</label>
               <input type="radio" name="date_selection" class="date_selection" id="custom" value="4"><label for="custom">Custom</label>
             </div>
             <div class="col-md-4">
-              <a href="javascript:" class="common_black_button load_journals" style="position: absolute;top: 10px;z-index: 9999;">Load <br/> Journals</a>
+              <a href="javascript:" class="common_black_button load_journals" style="position: absolute;top: 10px;z-index: 9999;height: 74px;padding-top: 16px;width: 122px;">Load <br/> Journals</a>
             </div>
           </div>
-          <div class="col-md-12" style="padding: 0px">
-            <label class="col-md-1" style="margin-top: 6px;text-align: right;">From:</label>
+          <div class="col-md-12" style="padding: 0px; margin-top: 20px;" >
+            <label class="col-md-1 padding_00" style="margin-top: 6px;text-align: left;">From:</label>
             <div class="col-md-3">
               <input type="text" name="from_custom_date" class="form-control from_custom_date" value="" disabled>
             </div>
@@ -520,19 +536,14 @@ a:hover{text-decoration: underline;}
           <div class="col-md-12" style="margin-top:5px">
             
           </div>
-          <div class="col-md-12 load_journal_div" style="margin-top:10px;background: #dfdfdf; height:800px;max-height: 800px;overflow-y: scroll">
+          <div class="col-md-12 load_journal_div" style="margin-top:30px;background: #fff; height:800px;max-height: 800px;overflow-y: scroll">
 
           </div>
         </div>
         <div class="col-md-6" style="text-align: right">
-            <label style="margin-top:5px">Opening Financial Date:</label>&nbsp;&nbsp;
-            <?php 
-            $date = DB::table('user_login')->where('id',1)->first();
-            ?>
-            <spam class="opening_date_spam" style="text-align: left;line-height: 32px"><?php echo date('d-M-Y', strtotime($date->opening_balance_date)); ?></spam><a href="javascript:" class="common_black_button edit_opening_balance_btn">...</a>
-              <input type="text" name="opening_financial_date" class="opening_financial_date" value="<?php echo date('d-M-Y', strtotime($date->opening_balance_date)); ?>" style="display:none;width: 12%;padding: 7px;outline: none;">
-              <a href="javascript:" class="common_black_button save_opening_balance_btn" style="display:none;line-height: 32px;">Save</a>
+            
               <input type="button" name="financial_setup" class="common_black_button financial_setup" value="Financial Setup">
+              <input type="button" class="common_black_button client_finance_account_btn" value="Client Finance Account" style="float:right;font-size: 14px;margin-bottom: 10px;">
         </div>
     </div>
     <!-- End  -->
@@ -559,7 +570,20 @@ a:hover{text-decoration: underline;}
 </div>
 
 <script>
+
 $(document).ready(function() {
+//   $('#client_financial').DataTable({
+//     fixedHeader: {
+//       header: true,
+//       headerOffset: 500,
+//     },
+//     autoWidth: false,
+//     scrollX: false,
+//     searching: false,
+//     paging: false,
+//     info: false,
+//     ordering: false,
+// });
   $(".opening_financial_date").datetimepicker({     
      format: 'L',
      format: 'DD-MMM-YYYY',
@@ -988,6 +1012,19 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#client_tbody').html(sorted);
   }
+  if($(e.target).hasClass('export_csv_client_opening'))
+  {
+    $("body").addClass("loading");
+    $.ajax({
+      url:"<?php echo URL::to('user/export_csv_client_opening'); ?>",
+      type:"post",
+      success:function(result)
+      {
+        SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    })
+  }
   if($(e.target).hasClass('client_finance_account_btn'))
   {
     var date = $(".opening_date_spam").html();
@@ -1216,10 +1253,22 @@ $(window).click(function(e) {
         $("#acc_no").html(result['account_no']);
         $(".debit_balance_add").val(result['debit_balance']);
         $(".credit_balance_add").val(result['credit_balance']);
+        
+        if(result['debit_balance'] == "" || result['debit_balance'] == "0.00" || result['debit_balance'] == "0") { 
+          $(".debit_balance_add").prop("disabled",true); 
+          $(".credit_balance_add").prop("disabled",false); 
+        }
 
-        if(result['debit_balance'] == "" || result['debit_balance'] == "0.00" || result['debit_balance'] == "0") { $(".debit_balance_add").prop("disabled",true); $(".credit_balance_add").prop("disabled",false); }
+        if(result['credit_balance'] == "" || result['credit_balance'] == "0.00" || result['credit_balance'] == "0") { 
+          $(".debit_balance_add").prop("disabled",false); 
+          $(".credit_balance_add").prop("disabled",true); 
+        }
 
-        if(result['credit_balance'] == "" || result['credit_balance'] == "0.00" || result['credit_balance'] == "0") { $(".debit_balance_add").prop("disabled",false); $(".credit_balance_add").prop("disabled",true); }
+        if(result['debit_balance'] == "" && result['credit_balance'] == ""){
+          $(".debit_balance_add").prop("disabled",false); 
+          $(".credit_balance_add").prop("disabled",false);
+        }
+
         $(".opening_financial_date_val").val(result['opening_balance_date']);
         $("#hidden_bank_id").val(id);
       }
@@ -1360,7 +1409,7 @@ $(document).ready(function () {
 
 $(".debit_fin_sort_val").blur(function() {
   var debit = $(this).val();
-  var client_id = $(e.target).attr("data-element");
+  var client_id = $(this).attr("data-element");
   var credit = $(".credit_fin_sort_val_"+client_id).val();
   $.ajax({
     url:"<?php echo URL::to('user/save_debit_credit_finance_client'); ?>",
@@ -1384,7 +1433,7 @@ $(".debit_fin_sort_val").blur(function() {
 });
 $(".credit_fin_sort_val").blur(function() {
   var credit = $(this).val();
-  var client_id = $(e.target).attr("data-element");
+  var client_id = $(this).attr("data-element");
   var debit = $(".debit_fin_sort_val_"+client_id).val();
   $.ajax({
     url:"<?php echo URL::to('user/save_debit_credit_finance_client'); ?>",

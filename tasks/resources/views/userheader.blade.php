@@ -12,6 +12,7 @@
  elseif($page_segment == "invoice_management") { $title = 'Invoice Management System'; }
  elseif($page_segment == "client_statements") { $title = 'Client Statements'; }
  elseif($page_segment == "receipt_management") { $title = 'Receipt Management System'; }
+  elseif($page_segment == "receipt_settings") { $title = 'Receipt Management System'; }
  elseif($page_segment == "time_management") { $title = 'Time Management System'; }
  elseif($page_segment == "manage_week") { $title = 'Weekly Payroll Management'; }
  elseif($page_segment == "week_manage") { $title = 'Weekly Payroll Management'; }
@@ -25,7 +26,8 @@
  elseif($page_segment == "paye_p30_manage") { $title = 'PAYE M.R.S'; }
  elseif($page_segment == "paye_p30_ros_liabilities") { $title = 'PAYE M.R.S'; }
  elseif($page_segment == "vat_clients") { $title = 'VAT Management System'; }
- elseif($page_segment == "vat_notifications") { $title = 'VAT Management System'; }
+  elseif($page_segment == "vat_review") { $title = 'VAT Management Review'; }
+ elseif($page_segment == "vat_notifications") { $title = 'VAT Notification'; }
 
  elseif($page_segment == "rct_system") { $title = 'RCT Manager'; }
  elseif($page_segment == "rct_client_manager") { $title = 'RCT Manager'; }
@@ -134,8 +136,9 @@
 <link href="<?php echo URL::to('assets/common/css/jquery.ui.autocomplete.css')?>" rel="stylesheet">
 <script src="<?php echo URL::to('assets/ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main.js'); ?>"></script>
-
-
+<link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/new_style.css')?>">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
 <style>
 <?php
@@ -313,7 +316,7 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right menu" style="margin-right: 25.5%;">
-            <li class="dropdown <?php if($segment1 == "client_management" || $segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "time_management" || $segment1 == "aml_system" || $segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages" || $segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager" || $segment1 == "two_bill_manager" || $segment1 == "client_account_review" || $segment1 == "financials") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Practice Functions</a>
+            <li class="dropdown <?php if($segment1 == "client_management" || $segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "receipt_settings" || $segment1 == "time_management" || $segment1 == "aml_system" || $segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages" || $segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager" || $segment1 == "two_bill_manager" || $segment1 == "client_account_review" || $segment1 == "financials") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Practice Functions</a>
                 <ul class="dropdown-menu dropdown-menu-right text-right">
                     <li class="<?php if($segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/task_manager')?>">Task Manager</a></li>
                     <li class="<?php if($segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/directmessaging')?>">MessageUs System</a></li>
@@ -326,7 +329,7 @@
                     </li>
                     <li role="separator" class="divider"></li>
                     <li class="<?php if(($segment1 == "client_statements")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/client_statements'); ?>">Client Statements</a></li>
-                    <li class="<?php if(($segment1 == "receipt_management")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/receipt_management'); ?>">Receipt Management</a></li>
+                    <li class="<?php if(($segment1 == "receipt_management" || $segment1 == "receipt_settings")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/receipt_management'); ?>">Receipt Management</a></li>
                     <li class="<?php if(($segment1 == "invoice_management")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/invoice_management'); ?>">Invoice Management</a></li>
                     <li class="<?php if(($segment1 == "financials")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/financials'); ?>">Financials</a></li>
                     <li class="<?php if(($segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/opening_balance_manager'); ?>">Opening Balances</a></li>

@@ -76,7 +76,7 @@ table{
   text-align: left;
   font-weight:600;
   padding: 6px 10px;
-  background: #dcdcdc;
+  background: #f5f5f5;
   font-size:15px;
 }
 .ui-widget{z-index: 999999999}
@@ -854,12 +854,13 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="content_section">
-	<div id="fixed-header" style="width:100%;position: fixed;background: #fff;margin-top: -16px;">
-	  <div class="page_title" style="z-index:999;margin-top:20px">
+	<div id="fixed-header" style="width:100%;position: fixed; background: #f5f5f5 !important">
+	  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">Task Manager</h4>
 	  	<div class="row">
-		    <div class="col-md-5 padding_00">
-		      <label class="col-md-1" style="text-align: right">User:</label>
-		      <div class="col-md-5">
+		    <div class="col-lg-2 padding_00">
+		      <label class="col-md-2" style="text-align: right; line-height: 35px;">User:</label>
+		      <div class="col-md-8">
 		        <select name="select_user" class="form-control select_user_home">
 		          <option value="">Select User</option>        
 		            <?php
@@ -881,17 +882,18 @@ input:checked + .slider:before {
 		      </div>
 		      <label class="col-md-1"><a href="javascript:" class="fa fa-refresh refresh_task" title="Refresh Tasks for this user" style="padding:10px;background: #dfdfdf"></a></label>
 		    </div>
-		    <div class="col-md-2 padding_00" style="text-align: center">
-		      <label style="margin-left: 1%; text-align:center;font-size:20px">Task Manager</label>
-		    </div>
-		    <div class="col-md-5 padding_00">
-		    	<div class="compressed_layout_div" style="float:right;width:31%;margin-right: 80px;">
-			      <label >Compressed Layout:</label>
+        <div class="col-lg-2 padding_00">
+        </div>
+		    
+		    <div class="col-lg-7" style="width: 1035px">
+		    	<div class="compressed_layout_div" style="float:right;width:33%;margin-right: 0px;">
+			      
 	              <label class="switch" style="margin-right: 10px; float:right !important">
 	                <input type="checkbox" class="compressed_layout" value="1" checked>
 	                <span class="slider round"></span>
 	              </label>
 	              <input type="hidden" id="hidden_compressed_layout" value="1">
+                <label style="float: right; margin-right: 10px; line-height: 30px;">Compressed Layout:</label>
           		</div>
 		    </div>
 		</div>
@@ -939,7 +941,7 @@ input:checked + .slider:before {
         </li>
       </ul>
     </div>
-      <div class="table-responsive" style="width: 100%; float: left;margin-top:120px;">
+      <div class="table-responsive" style="width: 100%; float: left;margin-top:250px;">
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
           <div style="width:100%;float:left; margin-top: 20px;">
@@ -953,7 +955,7 @@ input:checked + .slider:before {
 		  ?>
 		  </div>
 <style type="text/css">
-.open_layout_div{width:99%;margin: 0px auto;}
+.open_layout_div{width:99%;margin: 0px auto; top:274px}
 .open_layout_div_change::before{width: 100%; height: 30px; content: ""; position: fixed; background: #fff; margin-top: 300px; z-index: 99}
 </style>
 		    <div class="open_layout_div">
@@ -1153,7 +1155,7 @@ input:checked + .slider:before {
 	                        </tr>
 	                      </table>
 	                    </td>
-	                    <td style="vertical-align: baseline;background: #dcdcdc;width:30%">
+	                    <td style="vertical-align: baseline;background:#f5f5f5;width:30%">
 	                      <table class="table">
 	                        <tr>
 	                          <td style="width:25%;font-weight:700;text-decoration: underline;">Author:</td>
@@ -1210,7 +1212,7 @@ input:checked + .slider:before {
 	                        </tr>
 	                      </table>
 	                    </td>
-	                    <td style="vertical-align: baseline;background: #dcdcdc;width:20%">
+	                    <td style="vertical-align: baseline;background: #f5f5f5;width:20%">
 	                      <table class="table">
 	                        <tr>
 	                          <td style="font-weight:700;text-decoration: underline;">Progress Files:</td>
@@ -1532,7 +1534,7 @@ input:checked + .slider:before {
 	                  
 	                  <?php
 	                  $layout.= '<tr class="hidden_tasks_tr '.$hidden_author_cls.'" id="hidden_tasks_tr_'.$task->id.'" data-element="'.$task->id.'" style="display:none">
-	                    <td style="background: #dcdcdc;padding:0px;">
+	                    <td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 	                    	<table style="width:100%">
 		                    	<tr>';
 		                    	$statusi = 0;
@@ -1573,7 +1575,7 @@ input:checked + .slider:before {
 		                    	</tr>
 		                    </table>
 	                    </td>
-	                    <td style="background: #dcdcdc;padding:0px;">
+	                    <td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 	                    	<table style="width:100%">
 		                    	<tr>
 		                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800;" class="author_sort_val">'.$author->lastname.' '.$author->firstname.'</td>
@@ -1581,17 +1583,17 @@ input:checked + .slider:before {
 		                    	</tr>
 	                    	</table>
 	                    </td>
-	                    <td style="background: #dcdcdc;padding:0px;">
+	                    <td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 	                    	<table style="width:100%">
 		                    	<tr>
-		                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800;" class="duedate_sort_val">
+		                    		<td style="width:80px;padding:10px; font-size:14px; font-weight:800;" class="duedate_sort_val">
 		                    			<spam class="hidden_due_date_layout" style="display:none">'.strtotime($task->due_date).'</spam>
 		                    			<spam class="layout_due_date_task" style="color:'.$due_color.' !important;font-weight:800" id="layout_due_date_task_'.$task->id.'">'.date('d-M-Y', strtotime($task->due_date)).'</spam>
 		                    		</td>
-                            <td style="width:50%;padding:10px; font-size:14px; font-weight:800;">
+                            <td style="width:80px;padding:10px; font-size:14px; font-weight:800;">
                               '.date('d-M-Y', strtotime($task->park_date)).'
                             </td>
-                            <td style="width:50%;padding:10px; font-size:14px; font-weight:800;">';
+                            <td style="width:70px;padding:10px; font-size:14px; font-weight:800;">';
                               if(strtotime(date('Y-m-d')) >= strtotime($task->park_date))
                               {
                                 $layout.='Will Park';
@@ -1600,14 +1602,14 @@ input:checked + .slider:before {
                                 $layout.='Not Park';
                               }
                             $layout.='</td>
-		                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800" class="createddate_sort_val">
+		                    		<td style="width:100px;padding:10px; font-size:14px; font-weight:800" class="createddate_sort_val">
 		                    		<spam class="hidden_created_date_layout" style="display:none">'.strtotime($task->creation_date).'</spam>
 		                    		'.date('d-M-Y', strtotime($task->creation_date)).'
 		                    		</td>
 		                    	</tr>
 		                    </table>
 	                    </td>
-	                    <td style="background: #dcdcdc;padding:0px;">
+	                    <td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 	                    	<table style="width:100%">
 		                    	<tr>
 		                    		<td style="width:40%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>
@@ -1634,43 +1636,44 @@ input:checked + .slider:before {
 	      </div>
           <?php 
           if($open_task_count == 0 && $authored_task_count == 0) {  } else { ?>
-          <table class="table_bg table-fixed-header table_layout" style="width:100%;float:left;display:none">
+          <div style="width: 100%; float: left; overflow: scroll; overflow-y: hidden">
+          <table class="table_bg table-fixed-header table_layout" style="width:120%;float:left;display:none; border:0px;">
           	<thead>
           		<tr class="hidden_tasks_th" id="menulist">
-                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
                     	<table style="width:100%">
 	                    	<tr>
-	                    		<td style="color:#fff;width:5%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686"><i class="fa fa-sort redlight_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#fff;width:45%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Client/Task Name<i class="fa fa-sort taskname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-                            <td style="color:#fff;width:5%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686"></td>
-	                    		<td style="color:#fff;width:45%;padding:10px; font-size:14px; font-weight:800">Subject<i class="fa fa-sort subject_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:5%;padding:10px; font-size:15px; font-weight:600;"><i class="fa fa-sort redlight_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:45%;padding:10px; font-size:15px; font-weight:600;">Client/Task Name<i class="fa fa-sort taskname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+                            <td style="color:#000;width:5%;padding:10px; font-size:15px; font-weight:600;"></td>
+	                    		<td style="color:#000;width:45%;padding:10px; font-size:15px; font-weight:600">Subject<i class="fa fa-sort subject_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    	</tr>
 	                    </table>
                     </td>
-                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
                     	<table style="width:100%">
 	                    	<tr>
-	                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Author Name<i class="fa fa-sort author_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Allocated Name<i class="fa fa-sort allocated_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:50%;padding:10px; font-size:15px; font-weight:600;">Author Name<i class="fa fa-sort author_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:50%;padding:10px; font-size:15px; font-weight:600">Allocated Name<i class="fa fa-sort allocated_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    	</tr>
                     	</table>
                     </td>
-                    <td style="background: #000;padding:0px;border:1px solid #868686;border-right: 0px solid">
+                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
                     	<table style="width:100%">
 	                    	<tr>
-	                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Due Date<i class="fa fa-sort duedate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-                          <td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Parked until<i class="fa fa-sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-                          <td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Status<i class="fa fa-sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#fff;width:50%;padding:10px; font-size:14px; font-weight:800">Created Date<i class="fa fa-sort createddate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:80px;padding:10px; font-size:15px; font-weight:600;">Due Date<i class="fa fa-sort duedate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+                          <td style="color:#000;width:80px;padding:10px; font-size:15px; font-weight:600;">Parked until<i class="fa fa-sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+                          <td style="color:#000;width:70px;padding:10px; font-size:15px; font-weight:600;">Status<i class="fa fa-sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:100px;padding:10px; font-size:15px; font-weight:600">Created Date<i class="fa fa-sort createddate_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    	</tr>
 	                    </table>
                     </td>
-                    <td style="background: #000;padding:0px;border:1px solid #868686">
+                    <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
                     	<table style="width:100%">
 	                    	<tr>
-	                    		<td style="color:#fff;width:40%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Task ID<i class="fa fa-sort taskid_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#fff;width:40%;padding:10px; font-size:14px; font-weight:800;border-right: 1px solid #868686">Progress<i class="fa fa-sort progress_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#fff;width:20%;padding:10px; font-size:14px; font-weight:800">
+	                    		<td style="color:#000;width:40%;padding:10px; font-size:15px; font-weight:600;">Task ID<i class="fa fa-sort taskid_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:40%;padding:10px; font-size:15px; font-weight:600;">Progress<i class="fa fa-sort progress_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:20%;padding:10px; font-size:15px; font-weight:600">
 	                    			Action
 	                    		</td>
 	                    	</tr>
@@ -1684,6 +1687,7 @@ input:checked + .slider:before {
           		?>
           	</tbody>
           </table>
+          </div>
       		<?php } ?>
         </div>
       </div>
@@ -1840,7 +1844,7 @@ $(function(){
     		$(".table_layout").css("margin-top","20px");
     	}
         else{
-        	$(".table_layout").css("margin-top","335px");
+        	$(".table_layout").css("margin-top","250px");
         }
     }
     else{
@@ -2347,7 +2351,7 @@ $(window).click(function(e) {
                       $(".table_layout").css("margin-top","20px");
                     }
                       else{
-                        $(".table_layout").css("margin-top","335px");
+                        $(".table_layout").css("margin-top","250px");
                       }
                   }
                   else{
@@ -2544,7 +2548,7 @@ $(window).click(function(e) {
           $(".table_layout").css("margin-top","20px");
         }
           else{
-            $(".table_layout").css("margin-top","335px");
+            $(".table_layout").css("margin-top","250px");
           }
       }
       else{
@@ -2678,7 +2682,7 @@ $(window).click(function(e) {
   
   if($(e.target).parents(".hidden_tasks_tr").length > 0)
   {
-  	$(".hidden_tasks_tr").find("td").css("background","#dcdcdc");
+  	$(".hidden_tasks_tr").find("td").css("background","#fff");
   	$(e.target).parents(".hidden_tasks_tr").find("td").css("background","#2fd9ff");
 
   	var taskid = $(e.target).parents(".hidden_tasks_tr").attr("data-element");
@@ -2705,7 +2709,7 @@ $(window).click(function(e) {
         $(".table_layout").css("margin-top","20px");
       }
         else{
-          $(".table_layout").css("margin-top","335px");
+          $(".table_layout").css("margin-top","250px");
         }
     }
     else{
@@ -2950,7 +2954,7 @@ $(window).click(function(e) {
                       $(".table_layout").css("margin-top","20px");
                     }
                       else{
-                        $(".table_layout").css("margin-top","335px");
+                        $(".table_layout").css("margin-top","250px");
                       }
                   }
                   else{
@@ -3172,7 +3176,7 @@ $(window).click(function(e) {
                     $(".table_layout").css("margin-top","20px");
                   }
                     else{
-                      $(".table_layout").css("margin-top","335px");
+                      $(".table_layout").css("margin-top","250px");
                     }
                 }
                 else{
@@ -3394,7 +3398,7 @@ $(window).click(function(e) {
                     $(".table_layout").css("margin-top","20px");
                   }
                     else{
-                      $(".table_layout").css("margin-top","335px");
+                      $(".table_layout").css("margin-top","250px");
                     }
                 }
                 else{
@@ -3635,7 +3639,7 @@ $(window).click(function(e) {
                       $(".table_layout").css("margin-top","20px");
                     }
                       else{
-                        $(".table_layout").css("margin-top","335px");
+                        $(".table_layout").css("margin-top","250px");
                       }
                   }
                   else{
@@ -3828,7 +3832,7 @@ $(window).click(function(e) {
               $(".table_layout").css("margin-top","20px");
             }
               else{
-                $(".table_layout").css("margin-top","335px");
+                $(".table_layout").css("margin-top","250px");
               }
           }
           else{
@@ -4340,7 +4344,7 @@ $(window).click(function(e) {
                                 $(".table_layout").css("margin-top","20px");
                               }
                                 else{
-                                  $(".table_layout").css("margin-top","335px");
+                                  $(".table_layout").css("margin-top","250px");
                                 }
                             }
                             else{
@@ -4597,7 +4601,7 @@ $(window).click(function(e) {
                             $(".table_layout").css("margin-top","20px");
                           }
                             else{
-                              $(".table_layout").css("margin-top","335px");
+                              $(".table_layout").css("margin-top","250px");
                             }
                         }
                         else{
@@ -4853,7 +4857,7 @@ $(window).click(function(e) {
                             $(".table_layout").css("margin-top","20px");
                           }
                             else{
-                              $(".table_layout").css("margin-top","335px");
+                              $(".table_layout").css("margin-top","250px");
                             }
                         }
                         else{
@@ -5118,7 +5122,7 @@ $(window).click(function(e) {
                                 $(".table_layout").css("margin-top","20px");
                               }
                                 else{
-                                  $(".table_layout").css("margin-top","335px");
+                                  $(".table_layout").css("margin-top","250px");
                                 }
                             }
                             else{
@@ -5510,7 +5514,7 @@ $(window).click(function(e) {
                           $(".table_layout").css("margin-top","20px");
                         }
                           else{
-                            $(".table_layout").css("margin-top","335px");
+                            $(".table_layout").css("margin-top","250px");
                           }
                       }
                       else{
@@ -5764,7 +5768,7 @@ $(window).click(function(e) {
                           $(".table_layout").css("margin-top","20px");
                         }
                           else{
-                            $(".table_layout").css("margin-top","335px");
+                            $(".table_layout").css("margin-top","250px");
                           }
                       }
                       else{
@@ -6019,7 +6023,7 @@ $(window).click(function(e) {
                           $(".table_layout").css("margin-top","20px");
                         }
                           else{
-                            $(".table_layout").css("margin-top","335px");
+                            $(".table_layout").css("margin-top","250px");
                           }
                       }
                       else{
@@ -7985,7 +7989,7 @@ $(window).change(function(e) {
         $(".table_layout").css("margin-top","20px");
       }
         else{
-          $(".table_layout").css("margin-top","335px");
+          $(".table_layout").css("margin-top","250px");
         }
     }
     else{

@@ -19,9 +19,9 @@
 	background: #000;
 	color:#fff;
 }
-body{
+/*body{
   background: #2fd9ff !important;
-}
+}*/
 .ui-autocomplete{
   z-index:9999999;
 }
@@ -141,56 +141,17 @@ a:hover{text-decoration: underline;}
 
 <!--*************************************************************************-->
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-2" style="padding: 0px;">
-                Staff Review 
+
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                Staff Review                
             </h4>
-            <div class="col-lg-2 text-right">
-            	<select class="form-control" id="user_select">
-		            <option value="">Select Staff</option>        
-		            <?php
-		            $selected = '';
-		            if(count($userlist)){
-		              foreach ($userlist as $user) {
-		            ?>
-		              <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
-		            <?php
-		              }
-		            }
-		            ?>
-		       	</select>
-            </div>
-            <div class="col-md-2">
-              <div class="form-group date_group">
-                  <label class="input-group datepicker-only-init">
-                      <input type="text" class="form-control" id="start_date" placeholder="Select Start Date" name="start_date" style="font-weight: 500;" required />
-                      <span class="input-group-addon">
-                          <i class="glyphicon glyphicon-calendar"></i>
-                      </span>
-                  </label>
-              </div>    
-            </div> 
-            <div class="col-md-2">
-              <div class="form-group date_group">
-                  <label class="input-group datepicker-only-init">
-                      <input type="text" class="form-control" id="stop_date" placeholder="Select End Date" name="end_date" style="font-weight: 500;" required />
-                      <span class="input-group-addon">
-                          <i class="glyphicon glyphicon-calendar"></i>
-                      </span>
-                  </label>
-              </div>     
-            </div>   
-            <div class="col-lg-4 text-right" style="padding: 0px;float:right">
-              <div class="select_button" style=" margin-left: 10px;">
-                <ul>
-                <li><a href="javascript:" class="search_staff_review" style="font-size: 13px; font-weight: 500;">Search</a></li>
-                
-                <li style="float:right"><a href="<?php echo URL::to('user/time_track'); ?>" style="font-size: 13px; font-weight: 500;">TimeMe Manager</a></li>  
-                <li style="float:right"><a href="javascript:" class="download_as_pdf" style="font-size: 13px; font-weight: 500;">Download as Pdf</a></li>
-              </ul>
-            </div>                        
-          </div>
-              
+    </div>
+
+
+
+
+<div class="row">
   <div style="clear: both;">
    <?php
     if(Session::has('message')) { ?>
@@ -200,10 +161,54 @@ a:hover{text-decoration: underline;}
     <?php } ?>
     </div> 
 
+    <div class="col-lg-2 text-right">
+      <select class="form-control" id="user_select">
+        <option value="">Select Staff</option>        
+        <?php
+        $selected = '';
+        if(count($userlist)){
+          foreach ($userlist as $user) {
+        ?>
+          <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+        <?php
+          }
+        }
+        ?>
+    </select>
+    </div>
+    <div class="col-md-2">
+      <div class="form-group date_group">
+          <label class="input-group datepicker-only-init">
+              <input type="text" class="form-control" id="start_date" placeholder="Select Start Date" name="start_date" style="font-weight: 500;" required />
+              <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-calendar"></i>
+              </span>
+          </label>
+      </div>    
+    </div> 
+    <div class="col-md-2">
+      <div class="form-group date_group">
+          <label class="input-group datepicker-only-init">
+              <input type="text" class="form-control" id="stop_date" placeholder="Select End Date" name="end_date" style="font-weight: 500;" required />
+              <span class="input-group-addon">
+                  <i class="glyphicon glyphicon-calendar"></i>
+              </span>
+          </label>
+      </div>     
+    </div>
+    <div class="col-lg-1" style="padding-top: 9px;">
+      <a href="javascript:" class="common_black_button search_staff_review">Search</a>
+    </div>   
+    <div class="col-lg-5 text-right">
+      <div class="select_button" >
+        <ul style="float: right;">        
+        <li style="float:right"><a href="<?php echo URL::to('user/time_track'); ?>">TimeMe Manager</a></li>  
+        <li style="float:right"><a href="javascript:" class="download_as_pdf">Download as Pdf</a></li>
+      </ul>
+    </div>                        
+  </div>
 
-</div>
 
-<div class="row">
   <div class="col-lg-12">
      <ul class="nav nav-tabs" role="tablist">
         <li role="presentation"><a href="<?php echo URL::to('user/time_me_overview')?>">Active Job</a></li>
@@ -216,7 +221,7 @@ a:hover{text-decoration: underline;}
        <div class="tab-content" style="background: #fff; padding-top: 25px; padding-bottom: 15px;">
           <div class="table_selectall"><!-- 
             <div class="col-lg-2" style="padding: 0px;"><input type="checkbox" class="select_all_class" id="select_all_class" value="1" style="padding-top: 20px;"><label for="select_all_class" style="font-size: 14px; font-weight: normal;">Select all</label></div> -->
-            <table class="display nowrap fullviewtablelist" id="job_oftheday" width="90%">
+            <table class="display nowrap fullviewtablelist own_table_white" id="job_oftheday" width="90%">
               <thead>
                 <tr style="background: #fff;">
                   <th width="2%" style="text-align: left;">S.No</th>
