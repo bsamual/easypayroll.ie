@@ -3,7 +3,7 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
-.header-copy{top: 200px !important;}
+.header-copy{top: 200px !important;background: #fff;z-index:9999999;}
   .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
 
   .start_red { color:#f0ff00; }
@@ -14,7 +14,7 @@
   .fa-star-o { color:#000 !important; }
 
   .error{ color:#f00; }
-  .secret_button:focus { background: #f5f5f5;outline: none; }
+  .secret_button:focus { outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
       display:    none;
@@ -386,7 +386,7 @@ table{
 
   padding:8px;
   color:#000;
-
+  background: #fff;
 
 }
 
@@ -4453,7 +4453,7 @@ if(Session::has('error')) { ?>
 
 
 
-      <table class="table_bg table-fixed-header own_table_white" style="width: 2000px; margin: 0px auto; background: #fff">
+      <table class="table_bg table-fixed-header" style="width: 2000px; margin: 0px auto; background: #fff">
 
 
 
@@ -4635,7 +4635,7 @@ if(Session::has('error')) { ?>
 
                     ?>
 
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -5516,7 +5516,7 @@ if(Session::has('error')) { ?>
 
 
 
-      <table class="table_bg table-fixed-header_1 own_table_white" style="width: 2000px; margin: 0px auto;  background: #fff">
+      <table class="table_bg table-fixed-header_1" style="width: 2000px; margin: 0px auto;  background: #fff">
 
 
 
@@ -5698,7 +5698,7 @@ if(Session::has('error')) { ?>
 
                     ?>
 
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 
@@ -6647,7 +6647,7 @@ if(Session::has('error')) { ?>
 
 
 
-      <table class="table_bg table-fixed-header_2 own_table_white" style="width: 2000px; margin: 0px auto;  background: #fff">
+      <table class="table_bg table-fixed-header_2" style="width: 2000px; margin: 0px auto;  background: #fff">
 
 
 
@@ -6829,7 +6829,7 @@ if(Session::has('error')) { ?>
 
                     ?>
                     
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
 
                   </td>
 

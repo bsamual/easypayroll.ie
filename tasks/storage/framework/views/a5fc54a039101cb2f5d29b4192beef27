@@ -498,43 +498,48 @@ input:checked + .slider:before {
   </div>
 </div>
 <div class="content_section" style="margin-bottom:200px">
-  	<div class="page_title" style="z-index:999">
-	    <div class="col-lg-12 padding_00" style="text-align:center;font-size:20px">
-	      CRO - ARD Manager
-	    </div>
-  	</div>
-    <div class="table-responsive" style="width: 100%; float: left;margin-top:10px">
-      <div class="col-md-12" style="float:right">
-          <div class="col-md-5">&nbsp;
-          </div>
-          <div class="col-md-2" style="text-align: right">
-            <label style="margin-top: 5px;">CRO Api Username:</label>
-          </div>
-          <div class="col-md-2" style="padding:0px">
-            <input type="text" name="cro_username" class="form-control cro_username" id="cro_username" value="<?php echo $cro->username; ?>" disabled>
-          </div>
-          <div class="col-md-1" style="text-align: right">
-            <label style="margin-top: 5px;">CRO Api Key:</label>
-          </div>
-          <div class="col-md-2" style="padding:0px">
-            <input type="text" name="cro_api" class="form-control cro_api" id="cro_api" value="<?php echo $cro->api_key; ?>" disabled>
-          </div>
+
+<div class="page_title" style="z-index:999;">
+  <h4 class="col-lg-12 padding_00 new_main_title">
+            CRO - ARD Manager               
+        </h4>
+</div>
+<div class="row">
+  <div class="col-lg-12" style="padding-right: 0px;">
+<div class="col-md-2 padding_00">
+  <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete">Hide Deactivated Accounts</label>
+</div>
+
+      <div class="col-lg-2" style="text-align: left; width: 9%;">
+        <label style="margin-top: 5px;">CRO Api Username:</label>
       </div>
-      <div class="col-md-12" style="margin-top:10px;">
-        <div class="col-md-6">&nbsp;
-        </div>
-        <div class="col-md-2">
-          <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete" style="margin-top: 9px;">Hide Deactivated Accounts</label>
-        </div>
-        <div class="col-md-4">
+      <div class="col-lg-2" style="padding:0px">
+        <input type="text" name="cro_username" class="form-control cro_username" id="cro_username" value="<?php echo $cro->username; ?>" disabled>
+      </div>
+      <div class="col-lg-1" style="text-align: left; width: 7%;">
+        <label style="margin-top: 5px;">CRO Api Key:</label>
+      </div>
+      <div class="col-lg-2" style="padding:0px">
+        <input type="text" name="cro_api" class="form-control cro_api" id="cro_api" value="<?php echo $cro->api_key; ?>" disabled>
+      </div>
+      <div class="col-md-4 text-right padding_00">
           <input type="button" name="check_company" class="common_black_button check_company" value="Check Company" data-toggle="modal" data-target=".search_company_modal">
           <input type="button" name="global_core_call" class="common_black_button global_core_call" value="Global Core Call"> 
           <input type="button" name="show_ltd" id="show_ltd" class="common_black_button show_ltd" value="Show Active Ltd Clients Only">
         </div>
+  </div>
+</div>
+    <div class="table-responsive" style="width: 100%; float: left;margin-top:10px">
+      
+      <div class="col-md-12" style="margin-top:0px;">
+        <div class="col-md-6">&nbsp;
+        </div>
+        
+        
       </div>
-      	<table class="table table-fixed-header" style="width:100%;margin-top:92px">
+      	<table class="table table-fixed-header own_table_white" style="width:100%;margin-top:0px; background: #fff">
 	        <thead class="header">
-	            <th style="width:3%;text-align: left;">S.No <i class="fa fa-sort sno_sort" aria-hidden="true" style="float: right;"></i></th>
+	            <th style="width:3.5%;text-align: left;">S.No <i class="fa fa-sort sno_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:6%;text-align: left;">Client Code <i class="fa fa-sort clientid_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:25%;text-align: left;">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:7%;text-align: left;">CRO Number <i class="fa fa-sort cro_sort" aria-hidden="true" style="float: right;"></i></th>
@@ -579,7 +584,12 @@ input:checked + .slider:before {
 	              	}
 	              	if($cro_ard_details->cro_ard != "")
 	              	{
-	              		$api_date_month = date('d/m',strtotime($cro_ard_details->cro_ard));
+                    $exp_api_date_month = explode("/",$cro_ard_details->cro_ard);
+                    $api_date_month = '';
+                    if(count($exp_api_date_month))
+                    {
+                      $api_date_month = $exp_api_date_month[0].'/'.$exp_api_date_month[1];
+                    }
 		              	$ard = explode("/",$client->ard);
 		              	if(count($ard) > 1)
 		              	{
@@ -588,6 +598,7 @@ input:checked + .slider:before {
         						else{
         							$ard_date_month = '';
         						}
+
 		              	if($ard_date_month == $api_date_month)
 		              	{
 		              		$cr_ard_date = $cro_ard_details->cro_ard;
@@ -753,53 +764,6 @@ function refresh_all_function(ival)
   		}
   	}
 }
-var convertToNumber = function(value){
-       return value.toLowerCase();
-}
-var convertToNumeric = function(value){
-      value = value.replace(',','');
-      value = value.replace(',','');
-      value = value.replace(',','');
-      value = value.replace(',','');
-
-       return parseInt(value.toLowerCase());
-}
-$(".cro_notes").blur(function() {
-  var input_val = $(this).val();
-  var clientid = $(this).attr('data-element');
-  
-    $.ajax({
-        url:"<?php echo URL::to('user/update_cro_notes'); ?>",
-        type:"post",
-        data:{input_val:input_val,clientid:clientid},
-        success: function(result) {
-
-        }
-    });
-});
-var $input1 = $('.cro_notes');
-$input1.on('keyup', function () {
-  var input_val = $(this).val();
-  var clientid = $(this).attr('data-element');
-  var that = $(this);
-  clearTimeout(typingTimer);
-  typingTimer = setTimeout(doneTyping_cro, doneTypingInterval,input_val,clientid,that);
-});
-//on keydown, clear the countdown 
-$input1.on('keydown', function () {
-  clearTimeout(typingTimer);
-});
-
-function doneTyping_cro (input,clientid,that) {
-  $.ajax({
-      url:"<?php echo URL::to('user/update_cro_notes'); ?>",
-      type:"post",
-      data:{input_val:input,clientid:clientid},
-      success: function(result) {
-
-      }
-  });
-}
 $(window).click(function(e) {
   var ascending = false;
   if($(e.target).hasClass('sno_sort'))
@@ -856,16 +820,16 @@ $(window).click(function(e) {
       $("#company_sortoptions").val('desc');
       var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
         return (ascending ==
-             (convertToNumber($(a).find('.company_sort_val').html()) <
-        convertToNumber($(b).find('.company_sort_val').html()))) ? 1 : -1;
+             (convertToNumber($.trim($(a).find('.company_sort_val').html())) <
+        convertToNumber($.trim($(b).find('.company_sort_val').html())))) ? 1 : -1;
       });
     }
     else{
       $("#company_sortoptions").val('asc');
       var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
         return (ascending ==
-             (convertToNumber($(a).find('.company_sort_val').html()) <
-        convertToNumber($(b).find('.company_sort_val').html()))) ? -1 : 1;
+             (convertToNumber($.trim($(a).find('.company_sort_val').html())) <
+        convertToNumber($.trim($(b).find('.company_sort_val').html())))) ? -1 : 1;
       });
     }
     ascending = ascending ? false : true;
@@ -963,26 +927,26 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#clients_tbody').html(sorted);
   }
-  	if($(e.target).hasClass('show_ltd'))
-  	{
-  		if($(e.target).hasClass('show_all'))
-  		{
-  			$(".type_sort_val").parents("tr").show();
-  			$(e.target).removeClass("show_all");
-  			$(e.target).val("Show Active Ltd Clients Only");
-  		}
-  		else{
-  			$(".type_sort_val").parents("tr").hide();
-  			$(".type_sort_val:contains(Ltd)").parents("tr").show();
-  			$(".type_sort_val").parents(".disabled_tr").hide();
-  			$(e.target).addClass("show_all");
-  			$(e.target).val("Show all Clients");
-  		}
-  	}
-	if($(e.target).hasClass('global_core_call'))
-	{
+    if($(e.target).hasClass('show_ltd'))
+    {
+      if($(e.target).hasClass('show_all'))
+      {
+        $(".type_sort_val").parents("tr").show();
+        $(e.target).removeClass("show_all");
+        $(e.target).val("Show Active Ltd Clients Only");
+      }
+      else{
+        $(".type_sort_val").parents("tr").hide();
+        $(".type_sort_val:contains(Ltd)").parents("tr").show();
+        $(".type_sort_val").parents(".disabled_tr").hide();
+        $(e.target).addClass("show_all");
+        $(e.target).val("Show all Clients");
+      }
+    }
+  if($(e.target).hasClass('global_core_call'))
+  {
     $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});
-	}
+  }
   if($(e.target).hasClass('yes_proceed'))
   {
     $("body").addClass("loading_content");
@@ -1058,28 +1022,28 @@ $(window).click(function(e) {
       
     },1000);
   }
-	if(e.target.id == 'show_incomplete')
-	{
-	    if($(e.target).is(':checked'))
-	    {
-	      $(".edit_task").each(function() {
-	          if($(this).hasClass('disabled_tr'))
-	          {
-	            $(this).hide();
-	          }
-	      });
-	    }
-	    else{
-	      $(".edit_task").each(function() {
-	          if($(this).hasClass('disabled_tr'))
-	          {
-	            $(this).show();
-	          }
-	      });
-	    }
-	}
-	if($(e.target).hasClass('search_company_btn'))
-	{
+  if(e.target.id == 'show_incomplete')
+  {
+      if($(e.target).is(':checked'))
+      {
+        $(".edit_task").each(function() {
+            if($(this).hasClass('disabled_tr'))
+            {
+              $(this).hide();
+            }
+        });
+      }
+      else{
+        $(".edit_task").each(function() {
+            if($(this).hasClass('disabled_tr'))
+            {
+              $(this).show();
+            }
+        });
+      }
+  }
+  if($(e.target).hasClass('search_company_btn'))
+  {
     var checked = $(".indicator:checked").length;
     var company_number = $(".company_number").val();
     var indicator = $(".indicator:checked").val();
@@ -1105,27 +1069,27 @@ $(window).click(function(e) {
         }
       });
     }
-	}
-	if($(e.target).hasClass('refresh_croard'))
-	{
-		var clientid = $(e.target).attr("data-element");
-		var cro = $(e.target).attr("data-cro");
-		var type = $(e.target).attr("data-type");
-		if(cro == "")
-		{
-			alert("Sorry you cant fetch the details from api because the CRO Number for this client is empty.")
-		}
-		else 
-  	{	
-  		if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
-  		{
+  }
+  if($(e.target).hasClass('refresh_croard'))
+  {
+    var clientid = $(e.target).attr("data-element");
+    var cro = $(e.target).attr("data-cro");
+    var type = $(e.target).attr("data-type");
+    if(cro == "")
+    {
+      alert("Sorry you cant fetch the details from api because the CRO Number for this client is empty.")
+    }
+    else 
+    { 
+      if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
+      {
         $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed_single" data-element="'+clientid+'" data-cro="'+cro+'">Yes</a><a href="javascript:" class="common_black_button no_proceed_single">No</a></p>',fixed:true,width:"800px"});
-  		}
-  		else{
-  			alert("Sorry you cant fetch the details from api because the type should be 'Ltd' or 'Limited'.")
-  		}
-  	}
-	}
+      }
+      else{
+        alert("Sorry you cant fetch the details from api because the type should be 'Ltd' or 'Limited'.")
+      }
+    }
+  }
   if($(e.target).hasClass('yes_proceed_single'))
   {
     $("body").addClass("loading");
@@ -1166,7 +1130,60 @@ $(window).click(function(e) {
   {
     $.colorbox.close();
   }
+
+  $(".cro_notes").blur(function() {
+    var input_val = $(this).val();
+    var clientid = $(this).attr('data-element');
+    
+      $.ajax({
+          url:"<?php echo URL::to('user/update_cro_notes'); ?>",
+          type:"post",
+          data:{input_val:input_val,clientid:clientid},
+          success: function(result) {
+
+          }
+      });
+  });
+
+  var typingTimer;                //timer identifier
+  var doneTypingInterval = 1000;  //time in ms, 5 second for example
+  var $input1 = $('.cro_notes');
+  $input1.on('keyup', function () {
+    var input_val = $(this).val();
+    var clientid = $(this).attr('data-element');
+    var that = $(this);
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(doneTyping_cro, doneTypingInterval,input_val,clientid,that);
+  });
+  //on keydown, clear the countdown 
+  $input1.on('keydown', function () {
+    clearTimeout(typingTimer);
+  });
 })
+var convertToNumber = function(value){
+       return value.toLowerCase();
+}
+var convertToNumeric = function(value){
+      value = value.replace(',','');
+      value = value.replace(',','');
+      value = value.replace(',','');
+      value = value.replace(',','');
+
+       return parseInt(value.toLowerCase());
+}
+
+
+function doneTyping_cro (input,clientid,that) {
+  $.ajax({
+      url:"<?php echo URL::to('user/update_cro_notes'); ?>",
+      type:"post",
+      data:{input_val:input,clientid:clientid},
+      success: function(result) {
+
+      }
+  });
+}
+
 
 </script>
 <?php $__env->stopSection(); ?>

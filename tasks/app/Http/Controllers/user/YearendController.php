@@ -545,119 +545,54 @@ class YearendController extends Controller {
       }
 
       public function review_get_clients()
-
-      {            
-
-            $yearid = Input::get('yearid');            
-
-
-
+      {
+            $yearid = Input::get('yearid');
             /*$year_details = Db::table('year_end_year')->where('year',$yearid)->first();
-
             $time = strtotime($year_details->updatetime);
-
             $time = $time + (1 * 60);
-
-			$date = date("Y-m-d H:i:s", $time);
-
-
-
-			$time = strtotime($date);*/
-
-            $output = '
-
-            <input type="checkbox" class="hide_deactivate_clients" id="hide_deactivate_clients"><label for="hide_deactivate_clients" style="float: right;">Hide Deactivated Clients</label><br/>
-
-
-
+		$date = date("Y-m-d H:i:s", $time);
+		$time = strtotime($date);*/
+            $output = '<input type="checkbox" class="hide_deactivate_clients" id="hide_deactivate_clients"><label for="hide_deactivate_clients" style="float: right;">Hide Deactivated Clients</label><br/>
             <table class="table table_bg">
-
                   <thead>
-
                         <tr class="background_bg">
-
                               <th style="width:133px"><input type="checkbox" name="select_all_clients" class="select_all_clients" id="select_all_clients" value="1"> <label for="select_all_clients">Select All</label></th>
-
-                              <th style="width:128px"><i class="fa fa-sort review_sort_clientid"></i>Client Id</th>
-
-                              <th><i class="fa fa-sort review_sort_company"></i>Company Name</th>
-
+                              <th style="width:128px">Client Id <i class="fa fa-sort review_sort_clientid"></i></th>
+                              <th style="text-align:left">Company Name <i class="fa fa-sort review_sort_company"></i></th>
                               <th>Status</th>
-
                         <tr>
-
                   </thead>
-
                   <tbody id="review_task_body">';
-
-            $check_clients = DB::table('cm_clients')->get();
-
-
-
-            
-
-
-
-            
-
-            if(count($check_clients)){              
-
-                  foreach ($check_clients as $clients) {
-
-                        $check_db = DB::table('year_client')->where('client_id',$clients->client_id)->where('year',$yearid)->count();
-
-                        if($check_db == 0)
-
-                        {
-
-                              if($clients->active == 2) { $status = 'Deactive'; } else { $status = 'Active'; }
-
-                              if($clients->active == 2){ $hide = 'hidden_tr'; $color = 'color:#f00 !important'; } else{ $hide =''; $color = 'color:#000 !important'; }
-
-                              $output.='<tr class="review_task_tr '.$hide.'">
-
-                                    <td><input type="checkbox" name="review_clients_checkbox[]" class="review_clients_checkbox" id="review_clients_checkbox_'.$clients->id.'" value="'.$clients->id.'"> <label for="review_clients_checkbox_'.$clients->id.'">&nbsp;</label></td>
-
-                                    <td class="review_clientid_sort_val" style="'.$color.'">'.$clients->client_id.'</td>
-
-                                    <td class="review_company_sort_val" style="'.$color.'">'.$clients->company.'</td>
-
-                                    <td style="'.$color.'">'.$status.'</td>
-
-                              </tr>';
-
+                        $check_clients = DB::table('cm_clients')->get();
+                        if(count($check_clients)){              
+                              foreach ($check_clients as $clients) {
+                                    $check_db = DB::table('year_client')->where('client_id',$clients->client_id)->where('year',$yearid)->count();
+                                    if($check_db == 0)
+                                    {
+                                          if($clients->active == 2) { $status = 'Deactive'; } else { $status = 'Active'; }
+                                          if($clients->active == 2){ $hide = 'hidden_tr'; $color = 'color:#f00 !important'; } else{ $hide =''; $color = 'color:#000 !important'; }
+                                          $output.='<tr class="review_task_tr '.$hide.'">
+                                                <td><input type="checkbox" name="review_clients_checkbox[]" class="review_clients_checkbox" id="review_clients_checkbox_'.$clients->id.'" value="'.$clients->id.'"> <label for="review_clients_checkbox_'.$clients->id.'">&nbsp;</label></td>
+                                                <td class="review_clientid_sort_val" style="'.$color.'">'.$clients->client_id.'</td>
+                                                <td class="review_company_sort_val" style="text-align:left; '.$color.'">'.$clients->company.'</td>
+                                                <td style="'.$color.'">'.$status.'</td>
+                                          </tr>';
+                                    }
+                              }
                         }
-
-                  }
-
-            }
-
-            else{
-
-                  $output.='<tr>
-
-                        <td></td>
-
-                        <td style="color:#000 !important">No New Clients Found since this year was created</td>
-
-                        <td></td>
-
-                        <td></td>
-
-                  </tr>';
-
-            }
-
-            $output.='</tbody>
-
+                        else{
+                              $output.='<tr>
+                                    <td></td>
+                                    <td style="color:#000 !important">No New Clients Found since this year was created</td>
+                                    <td></td>
+                                    <td></td>
+                              </tr>';
+                        }
+                  $output.='</tbody>
             </table>
-
             <input type="hidden" name="hidden_yearid" id="hidden_yearid" value="'.$yearid.'">
-
             <input type="submit" class="common_black_button submit_review_clients" value="Add Clients to this year">';
-
             echo $output;
-
       }
 
       /*public function review_get_clients()
@@ -5541,5 +5476,20 @@ class YearendController extends Controller {
             DB::table('year_client')->where('year',$year_id)->where('client_id',$client_id)->update($data);
 
       }
-
+      public function remove_client_from_year()
+      {
+            $id = Input::get('client_id');
+            $details = DB::table('year_client')->where('id',$id)->first();
+            if(count($details))
+            {
+                  $client_id = $details->client_id;
+                  $year = $details->year;
+                  DB::table('year_client_liability')->where('client_id',$client_id)->where('year_id',$year)->delete();
+                  DB::table('yearend_aml_attachments')->where('client_id',$id)->delete();
+                  DB::table('yearend_distribution_attachments')->where('client_id',$id)->delete();
+                  DB::table('yearend_notes_attachments')->where('client_id',$id)->delete();
+                  DB::table('year_client')->where('id',$id)->delete();
+                  //return Redirect::back()->with('message', 'Client Removed from this year successfully');
+            }
+      }
 }

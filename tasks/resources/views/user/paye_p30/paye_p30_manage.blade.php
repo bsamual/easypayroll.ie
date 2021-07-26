@@ -545,7 +545,7 @@ body.loading_apply .modal_load_apply {
         </div>
     </div>
   </div>
-  <div class="col-lg-12" style="clear: both;  margin-top:240px">
+  <div class="col-lg-12" style="clear: both;  margin-top:300px">
     <div style="width:100%;float:left;">
         <?php
         if(isset($_GET['status']) && $_GET['status'] == "apply")

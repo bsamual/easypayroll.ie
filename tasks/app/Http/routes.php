@@ -1855,3 +1855,4 @@ Route::post('/user/export_month_in_overlay','user\UserController@export_month_in
 Route::post('/user/export_csv_client_opening','user\FinancialController@export_csv_client_opening');
 Route::post('/user/check_financial_opening_bal_date','user\InvoiceController@check_financial_opening_bal_date');
 
+Route::post('/user/remove_client_from_year','user\YearendController@remove_client_from_year');

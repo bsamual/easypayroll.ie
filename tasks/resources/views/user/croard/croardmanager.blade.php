@@ -585,7 +585,12 @@ input:checked + .slider:before {
 	              	}
 	              	if($cro_ard_details->cro_ard != "")
 	              	{
-	              		$api_date_month = date('d/m',strtotime($cro_ard_details->cro_ard));
+                    $exp_api_date_month = explode("/",$cro_ard_details->cro_ard);
+                    $api_date_month = '';
+                    if(count($exp_api_date_month))
+                    {
+                      $api_date_month = $exp_api_date_month[0].'/'.$exp_api_date_month[1];
+                    }
 		              	$ard = explode("/",$client->ard);
 		              	if(count($ard) > 1)
 		              	{
@@ -594,6 +599,7 @@ input:checked + .slider:before {
         						else{
         							$ard_date_month = '';
         						}
+
 		              	if($ard_date_month == $api_date_month)
 		              	{
 		              		$cr_ard_date = $cro_ard_details->cro_ard;

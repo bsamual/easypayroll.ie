@@ -5,7 +5,7 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
-  .header-copy{top: 200px !important;}
+  .header-copy{top: 200px !important;background: #fff; z-index:9999999;}
   .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
 
   .start_red { color:#ff0; }
@@ -16,7 +16,7 @@
 
   .fa-star-o { color:#000 !important; }
   .error{ color:#f00; }
-  .secret_button:focus { background: #f5f5f5;outline: none; }
+  .secret_button:focus { outline: none; }
   #colorbox { z-index:99999999999999999999 !important; }
   .modal_load_content {
       display:    none;
@@ -404,7 +404,7 @@ table{
 
   padding:8px;
   color:#000;
-
+  background: #fff;
 
 }
 
@@ -3188,7 +3188,7 @@ if(Session::has('error')) { ?>
 
       <h3> Standard Task</h3>
 
-      <table class="table_bg table-fixed-header own_table_white" style="width: 2000px; margin: 0px auto;margin-bottom:30px; background: #fff">
+      <table class="table_bg table-fixed-header" style="width: 2000px; margin: 0px auto;margin-bottom:30px; background: #fff">
 
           <thead class="header">
 
@@ -3276,7 +3276,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_std_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -3862,7 +3862,7 @@ if(Session::has('error')) { ?>
 
        <h3>Enhanced Task</h3>
 
-      <table class="table_bg table-fixed-header_1 own_table_white" style="width: 2000px; margin: 0px auto; background: #fff">
+      <table class="table_bg table-fixed-header_1" style="width: 2000px; margin: 0px auto; background: #fff">
 
           <thead class="header">
 
@@ -3953,7 +3953,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_enh_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
@@ -4527,11 +4527,11 @@ if(Session::has('error')) { ?>
 
        <h3>Complex Task</h3>
 
-      <table class="table_bg table-fixed-header_2 own_table_white" style="width: 2000px; margin: 0px auto;margin-bottom:30px; background: #fff">
+      <table class="table_bg table-fixed-header_2" style="width: 2000px; margin: 0px auto;margin-bottom:30px; background: #fff">
 
           <thead class="header">
 
-            <tr class="background_bg">
+            <tr>
 
                 <th width="80px">S.No <i class="fa fa-sort sno_sort_cmp" aria-hidden="true"></th>
 
@@ -4615,7 +4615,7 @@ if(Session::has('error')) { ?>
                       }
 
                     ?>
-                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #f5f5f5 !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
+                    <input type="button" class="common_black_button secret_button" value="&nbsp;" style="width:60px;background: #fff !important;margin-top:63px" data-element="<?php echo $result->task_id; ?>">
                   </td>
 
                   <td class="task_sort_cmp_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>

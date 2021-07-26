@@ -6,7 +6,6 @@
 <script src="<?php echo URL::to('assets/js/dataTables.fixedHeader.min.js'); ?>"></script>
 
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
-<script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <style>
 .modal {
   overflow-y:auto;

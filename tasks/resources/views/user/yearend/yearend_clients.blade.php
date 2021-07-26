@@ -222,10 +222,11 @@ a:hover{text-decoration: underline;}
     
     <?php } ?>
     </div> 
-          <div class="col-lg-3">
+          <div class="col-lg-5">
               <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" class="show_incomplete_label"><label for="show_incomplete" class="show_incomplete_label">Hide / Unhide Completed Clients</label> 
+              <input type="checkbox" name="show_active_clients" id="show_active_clients" value="1" class="show_active_label"><label for="show_active_clients" class="show_active_label">Show Active Client for this Year</label> 
             </div>
-            <div class="col-lg-9 text-right"  >
+            <div class="col-lg-7 text-right"  >
               <div class="select_button" style=" margin-left: 10px;">
                 <ul style="float: right;">            
                          
@@ -296,6 +297,7 @@ a:hover{text-decoration: underline;}
         <th style="text-align:left">Requests</th>
 
         <th style="text-align:left"><i class="fa fa-sort sort_status"></i> Status </th>
+        <th style="text-align:left"> Action </th>
       </tr>   
     </thead>
     <tbody id="task_body">    
@@ -383,12 +385,16 @@ a:hover{text-decoration: underline;}
               {
                 $i = '0'.$i;
               }
-              
-              if($client->status == 0) { if($client_details->active == "2") { $stausval = 'Inactive & Not Started'; } else { $stausval = 'Not Started'; } }
+              $remove_link = '';
+              $deactive_client = '';
+              if($client->status == 0) { 
+              	if($client_details->active == "2") { $stausval = 'Inactive & Not Started'; $deactive_client = 'deactivate_tr'; } else { $stausval = 'Not Started'; } 
+              	$remove_link = '<a href="javascript:" class="common_black_button remove_from_year" data-client="'.$client->id.'">Remove From Year</a>';
+              }
               elseif($client->status == 1) { $stausval = 'Inprogress'; }
               elseif($client->status == 2) { $stausval = 'Completed'; }
               $output.='
-              <tr class="task_tr client_'.$client->status.'">
+              <tr class="task_tr client_'.$client->status.' '.$deactive_client.'">
                 <td class="sno_sort_val" style="'.$color.'text-align:left;font-weight:600">'.$i.'</td>
                 <td class="clientid_sort_val" style="'.$color.'text-align:left;font-weight:600"><a style="'.$color.'" href="'.URL::to('user/yearend_individualclient/'.base64_encode($client->id)).'">'.$clientid.'</a></td>
                 <td class="firstname_sort_val" style="'.$color.'text-align:left;font-weight:600"><a style="'.$color.'" href="'.URL::to('user/yearend_individualclient/'.base64_encode($client->id)).'">'.$firstname.'</a></td>
@@ -404,6 +410,7 @@ a:hover{text-decoration: underline;}
 
 
                 <td class="status_sort_val" style="'.$color.'text-align:left;font-weight:600">'.$stausval.'</td>
+                <td style="'.$color.'text-align:left;font-weight:600">'.$remove_link.'</td>
               </tr>';
               $i++;
             }
@@ -649,6 +656,24 @@ if($(e.target).hasClass('sort_status'))
   ascending = ascending ? false : true;
   $('#task_body').html(sorted);
 }
+if($(e.target).hasClass('remove_from_year'))
+{
+	var client_id = $(e.target).attr("data-client");
+	var r = confirm("Are you sure you want to remove this client from this year?");
+	if(r)
+	{
+    $.ajax({
+      url:"<?php echo URL::to('user/remove_client_from_year'); ?>",
+      type:"post",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        $(e.target).parents("tr").detach();
+        $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Client Removed from this Year</p>',fixed:true,width:"800px"});
+      }
+    })
+	}
+}
 if($(e.target).hasClass('export_to_csv'))
 {
   $("body").addClass("loading");
@@ -671,12 +696,26 @@ if($(e.target).hasClass('update_documents'))
 }
 if(e.target.id == 'show_incomplete')
 {
+	$(".task_tr").show();
   if($(e.target).is(":checked"))
   {
     $(".client_2").hide();
+    $("#show_active_clients").prop("checked",false);
   }
   else{
     $(".client_2").show();
+  }
+}
+if(e.target.id == "show_active_clients")
+{
+  $(".task_tr").show();
+  if($(e.target).is(":checked"))
+  {
+    $(".deactivate_tr").hide();
+    $("#show_incomplete").prop("checked",false);
+  }
+  else{
+    $(".deactivate_tr").show();
   }
 }
 if($(e.target).hasClass("submit_review_clients"))
