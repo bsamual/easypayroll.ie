@@ -413,8 +413,8 @@ class ReceiptController extends Controller {
 					<td class="client_sort_val" style="'.$font_color.'">'.$receipt->client_code.'</td>	
 					<td class="des_sort_val" style="'.$font_color.'">'.$receipt->credit_description.'</td>
 					<td class="comment_sort_val" style="'.$font_color.'">'.$receipt->comment.'</td>	
-					<td style="'.$font_color.'"><spam class="amount_sort_val" style="display:none">'.$receipt->amount.'</spam>'.number_format_invoice_empty($receipt->amount).'</td>	
-					<td style="'.$font_color.'"></td>	
+					<td style="'.$font_color.';text-align:right"><spam class="amount_sort_val" style="display:none">'.$receipt->amount.'</spam>'.number_format_invoice_empty($receipt->amount).'</td>	
+					<td style="'.$font_color.';text-align:right"></td>	
 					<td>'.$hold_status.'</td>	
 					<td>
 						<a href="javascript:" class="fa fa-edit edit_receipt" title="Edit Receipt"></a>&nbsp;&nbsp;
@@ -574,8 +574,8 @@ class ReceiptController extends Controller {
 					$debit_header = $worksheet->getCellByColumnAndRow(1, 1); $debit_header = trim($debit_header->getValue());
 					$credit_header = $worksheet->getCellByColumnAndRow(2, 1); $credit_header = trim($credit_header->getValue());
 					$client_header = $worksheet->getCellByColumnAndRow(3, 1); $client_header = trim($client_header->getValue());
-					$comment_header = $worksheet->getCellByColumnAndRow(4, 1); $comment_header = trim($comment_header->getValue());
-					$amount_header = $worksheet->getCellByColumnAndRow(5, 1); $amount_header = trim($amount_header->getValue());
+					$comment_header = $worksheet->getCellByColumnAndRow(5, 1); $comment_header = trim($comment_header->getValue());
+					$amount_header = $worksheet->getCellByColumnAndRow(6, 1); $amount_header = trim($amount_header->getValue());
 					if($date_header == "Date" && $debit_header == "Debit Nominal" && $credit_header == "Credit Nominal" && $client_header == "Client Code" && $comment_header == "Comment")
 					{
 						for ($row = 2; $row <= $height; $row++) {
@@ -583,8 +583,9 @@ class ReceiptController extends Controller {
 							$debit = $worksheet->getCellByColumnAndRow(1, $row); $debit = trim($debit->getValue());
 							$credit = $worksheet->getCellByColumnAndRow(2, $row); $credit = trim($credit->getValue());
 							$client = $worksheet->getCellByColumnAndRow(3, $row); $client = trim($client->getValue());
-							$comment = $worksheet->getCellByColumnAndRow(4, $row); $comment = trim($comment->getValue());
-							$amount = $worksheet->getCellByColumnAndRow(5, $row); $amount = trim($amount->getValue());
+							$credit_description = $worksheet->getCellByColumnAndRow(4, $row); $credit_description = trim($credit_description->getValue());
+							$comment = $worksheet->getCellByColumnAndRow(5, $row); $comment = trim($comment->getValue());
+							$amount = $worksheet->getCellByColumnAndRow(6, $row); $amount = trim($amount->getValue());
 
 							$amount = str_replace(",","",$amount);
 							$amount = str_replace(",","",$amount);
@@ -624,7 +625,7 @@ class ReceiptController extends Controller {
 							$data['debit_nominal'] = $debit;
 							$data['credit_nominal'] = $credit;
 							$data['client_code'] = $client;
-							$data['credit_description'] = $description;
+							$data['credit_description'] = $credit_description;
 							$data['comment'] = $comment;
 							$data['amount'] = $amount;
 							$data['imported'] = 1;
@@ -701,7 +702,7 @@ class ReceiptController extends Controller {
 								<td style="'.$font_color.'">'.$debit.'</td>
 								<td style="'.$font_color.'">'.$credit.'</td>
 								<td style="'.$font_color.'">'.$client.'</td>  
-								<td style="'.$font_color.'">'.$description.'</td>
+								<td style="'.$font_color.'">'.$credit_description.'</td>
 								<td style="'.$font_color.'">'.$comment.'</td>  
 								<td style="'.$font_color.'">'.number_format_invoice_empty($amount).'</td>
 							</tr>';
@@ -757,8 +758,9 @@ class ReceiptController extends Controller {
 				$debit = $worksheet->getCellByColumnAndRow(1, $row); $debit = trim($debit->getValue());
 				$credit = $worksheet->getCellByColumnAndRow(2, $row); $credit = trim($credit->getValue());
 				$client = $worksheet->getCellByColumnAndRow(3, $row); $client = trim($client->getValue());
-				$comment = $worksheet->getCellByColumnAndRow(4, $row); $comment = trim($comment->getValue());
-				$amount = $worksheet->getCellByColumnAndRow(5, $row); $amount = trim($amount->getValue());
+				$credit_description = $worksheet->getCellByColumnAndRow(4, $row); $credit_description = trim($credit_description->getValue());
+				$comment = $worksheet->getCellByColumnAndRow(5, $row); $comment = trim($comment->getValue());
+				$amount = $worksheet->getCellByColumnAndRow(6, $row); $amount = trim($amount->getValue());
 
 				$amount = str_replace(",","",$amount);
 				$amount = str_replace(",","",$amount);
@@ -799,7 +801,7 @@ class ReceiptController extends Controller {
 				$data['debit_nominal'] = $debit;
 				$data['credit_nominal'] = $credit;
 				$data['client_code'] = $client;
-				$data['credit_description'] = $description;
+				$data['credit_description'] = $credit_description;
 				$data['comment'] = $comment;
 				$data['amount'] = $amount;
 				$data['imported'] = 1;
@@ -877,7 +879,7 @@ class ReceiptController extends Controller {
 					<td style="'.$font_color.'">'.$debit.'</td>
 					<td style="'.$font_color.'">'.$credit.'</td>
 					<td style="'.$font_color.'">'.$client.'</td>  
-					<td style="'.$font_color.'">'.$description.'</td>
+					<td style="'.$font_color.'">'.$credit_description.'</td>
 					<td style="'.$font_color.'">'.$comment.'</td>  
 					<td style="'.$font_color.'">'.number_format_invoice_empty($amount).'</td>
 				</tr>';

@@ -139,6 +139,107 @@ body #coupon {
   top: 7px;
 }
 </style>
+<div class="modal fade email_settings_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
+        <div class="modal-content">
+          <form id="form-validation-email" name="form-validation" method="POST" action="<?php echo URL::to('user/update_email_setting'); ?>">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Email Settings</h4>
+          </div>
+          <div class="modal-body" style="min-height: 100px;">  
+            <div class="col-lg-12 text-left padding_00">
+                
+                              <div class="col-lg-12" style="padding: 25px;">
+                                <div>
+                                  <?php
+                                  if(Session::has('emailmessage')) { ?>
+                                      <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('emailmessage'); ?></p>
+                                  <?php }
+                                  ?>
+                                </div>
+                                  <div class="form-group">
+                                      <label>Admin Email ID</label>
+                                       <input id="validation-email"
+                                             class="form-control"
+                                             placeholder="Enter Email"
+                                             value="<?php echo $admin_details->email; ?>"
+                                             name="email"
+                                             type="text"
+                                             required >                                
+                                  </div> 
+                                  <div class="form-group">
+                                      <label>Rct Item Delete Email ID</label>
+                                      <input id="validation-cc-email"
+                                             class="form-control"
+                                             placeholder="Enter Delete Email ID"
+                                             value="<?php echo $admin_details->delete_email; ?>"
+                                             name="deleteemail"
+                                             type="text"
+                                             required>                                
+                                  </div>  
+                                  <div class="form-group">
+                                      <label>RCT CC Email ID</label>
+                                      <input id="validation-cc-email"
+                                             class="form-control"
+                                             placeholder="Enter RCT CC Email ID"
+                                             value="<?php echo $admin_details->cc_email; ?>"
+                                             name="ccemail"
+                                             type="text"
+                                             required>                                 
+                                  </div>
+                                  <div class="form-group">
+                                      <label>Taskmanager CC Email ID</label>
+                                      <input id="validation-cc-email"
+                                             class="form-control"
+                                             placeholder="Enter Taskmanager CC Email ID"
+                                             value="<?php echo $admin_details->task_cc_email; ?>"
+                                             name="taskccemail"
+                                             type="text"
+                                             required>                                 
+                                  </div>
+                                  <div class="form-group">
+                                      <label>P30 CC Email ID</label>
+                                      <input id="validation-cc-email"
+                                             class="form-control"
+                                             placeholder="Enter Taskmanager CC Email ID"
+                                             value="<?php echo $admin_details->p30_cc_email; ?>"
+                                             name="p30ccemail"
+                                             type="text"
+                                             required>                                 
+                                  </div>
+                                  <div class="form-group">
+                                      <label>Client Management CC Email ID</label>
+                                      <input id="validation-cc-email"
+                                             class="form-control"
+                                             placeholder="Enter Taskmanager CC Email ID"
+                                             value="<?php echo $admin_details->cm_cc_email; ?>"
+                                             name="cmccemail"
+                                             type="text"
+                                             required>                                 
+                                  </div>
+                                  <div class="form-group">
+                                      <label>VAT CC Email ID</label>
+                                      <input id="validation-cc-email"
+                                             class="form-control"
+                                             placeholder="Enter VAT CC Email ID"
+                                             value="<?php echo $admin_details->vat_cc_email; ?>"
+                                             name="vatccemail"
+                                             type="text"
+                                             required>                                 
+                                  </div>
+                              </div>
+                            
+              </div>
+          </div>
+          <div class="modal-footer">
+            <input type="button" class="common_black_button" data-dismiss="modal" aria-label="Close" value="Cancel">
+            <input type="submit" class="common_black_button" id="park_submit" value="Submit">
+          </div>
+          </form>
+        </div>
+  </div>
+</div>
 <div class="content_section">
   <div style="clear: both;">
    <?php
@@ -353,6 +454,7 @@ body #coupon {
       </div>
     </div>
     <input type="button" class="common_black_button load_all_dashboard_tiles" value="Load All System Data"  style="position: fixed;right:25px;bottom:74px;">
+    <input type="button" class="common_black_button settings_email" value="Settings"  style="position: fixed;right:210px;bottom:74px;">
 </div>
 <div class="modal_load"></div>
 <script>
@@ -371,6 +473,10 @@ $(window).click(function(e) {
         $("body").removeClass("loading");
       }
     }); 
+  }
+  if($(e.target).hasClass('settings_email'))
+  {
+    $(".email_settings_modal").modal("show");
   }
   if($(e.target).hasClass('load_all_dashboard_tiles'))
   {

@@ -1,16 +1,2 @@
----TASK CREATED - 04-Sep-2020 BY Guilfoyle Ciaran AND ALLOCATED TO Bob Samual DUE BY 04-Sep-2020---
-Sam
-how much would it cost in hours for your developer to sit down and assess the PAYE MRS system to see if there is a better more efficient way the code could be done to speed up the PAYE MRS system...
-&nbsp;
-####Bob Samual has added the following comment to this Task on 05 Sep 2020#### Hi Ciaran, we would like to have a logmein session in order to inspect with PAYE MRS system directly on your computer so we can exactly know the issue you are facing. Please send us the invitation email to access your server.
-++++Bob Samual has allocated this task to Guilfoyle Ciaran on 05-Sep-2020++++
-####Guilfoyle Ciaran has added the following comment to this Task on 05 Sep 2020#### we dont use it on our server - ill give you access to my pc we could do it while we speak on skype!
-&nbsp;
-++++Guilfoyle Ciaran has allocated this task to Bob Samual on 05-Sep-2020++++
-####Bob Samual has added the following comment to this Task on 07 Sep 2020#### Hi Ciaran, actually I would like my developer to check the website on your computer so he can get better understanding on the lagging issue you are experiencing on PAYE MRS system. Maybe when we are on Skype call I will have my developer access your computer via Logmein or Anydesk. Please let me know your availability for this next week.
-++++Bob Samual has allocated this task to Guilfoyle Ciaran on 07-Sep-2020++++
-####Guilfoyle Ciaran has added the following comment to this Task on 07 Sep 2020#### log me in - can he do it today?
-++++Guilfoyle Ciaran has allocated this task to Bob Samual on 07-Sep-2020++++
-####Bob Samual has parked this task 21-Sep-2020 until 01-Oct-2020####
-####Bob Samual has activated this task on 12-Nov-2020####
-@@@Bob Samual has stated they have Finished with the task on 02-Mar-2021 and reallocated it to Guilfoyle Ciaran@@@
+Sample Test
+---TASK CREATED - 19-Aug-2021 BY Guilfoyle Ciaran AND ALLOCATED TO Bob Samual DUE BY 19-Aug-2021---

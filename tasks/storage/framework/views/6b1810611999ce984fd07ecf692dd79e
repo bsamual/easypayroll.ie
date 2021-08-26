@@ -1,4 +1,4 @@
- <html>
+﻿ <html>
 <head>
 <meta charset="UTF-8">
 <?php
@@ -295,11 +295,92 @@
 .dropdown-header{
   font-size: 16px;
 }
+.modal_load_apply, .modal_load, .modal_load_content, .modal_load_available, .modal_load_browse, .modal_load_review, .modal_load_import {z-index: 999999999999999999999999999999999999 !important;}
+.modal{ margin-top:4%; }
+.dropdown-toggle:hover, .dropdown-toggle:active, .dropdown-toggle:focus { text-decoration: underline !important; }
 </style>
 </head>
 <body class="body_bg">
+<div class="modal fade journal_source_viewer_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top:13%">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Journal Source</h4>
+      </div>
+      <div class="modal-body">
+          <table class="table own_table_white">
+            <thead class="header">
+                <th>Code</th>
+                <th>Journal Source</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>BOB</td>
+                <td>BANK OPENING BALANCE</td>
+              </tr>
+              <tr>
+                <td>CFA</td>
+                <td>CLIENT FINANCE ACCOUNT</td>
+              </tr>
+              <tr>
+                <td>GJ</td>
+                <td>GENERAL JOURNAL</td>
+              </tr>
+              <tr>
+                <td>SI</td>
+                <td>SALES INVOICE</td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade journal_viewer_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 9999999 !important;">
+  <div class="modal-dialog modal-sm" role="document" style="width:70%;">
+    <div class="modal-content">          
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" style="font-weight:700;font-size:20px">Journal Viewer</h4>
+      </div>
+      <div class="modal-body" style="min-height: 100px;">  
+        <div class="col-md-12">
+          <label style="float:left;margin-top:10px;margin-right:10px">Enter Journal ID:</label>
+          <input type="text" name="journal_viewer_text_id" class="form-control journal_viewer_text_id" id="journal_viewer_text_id" placeholder="Enter Journal ID" value="" style="width:15%;float:left;">
+          <input type="button" class="common_black_button journal_viewer_btn" value="Load">
+          <input type="button" class="common_black_button load_journal_viewer_pdf" value="Download PDF" style="float:right">
+        </div>
+        <table class="table own_table_white" style="margin-top:55px">
+          <thead>
+            <th>Journal ID</th>
+            <th>Date</th>
+            <th>Journal Description</th>
+            <th>Journal Source</th>
+            <th>Nominal Code</th>
+            <th>Nominal Description</th>
+            <th style="text-align: right;">Debit Value</th>
+            <th style="text-align: right;">Credit Value</th>
+          </thead>
+          <tbody id="journal_viewer_tbody">
 
-<div class="top_row" style="z-index: 99999">
+          </tbody>
+          <tr>
+            <td colspan="6" style="text-align: right;font-weight:800">Total:</td>
+            <td class="journal_viewer_debit_total" style="text-align: right;font-weight:800"></td>
+            <td class="journal_viewer_credit_total" style="text-align: right;font-weight:800"></td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <input type="button" class="common_black_button" data-dismiss="modal" aria-label="Close" value="Cancel">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="top_row" style="z-index: 999999999999999999999999999999999">
   <div class="col-lg-12 padding_00" style="height:84px">
     <nav class="navbar navbar-default">
       <div class="container-fluid">
@@ -316,27 +397,33 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right menu" style="margin-right: 25.5%;">
-            <li class="dropdown <?php if($segment1 == "client_management" || $segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "receipt_settings" || $segment1 == "time_management" || $segment1 == "aml_system" || $segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages" || $segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager" || $segment1 == "two_bill_manager" || $segment1 == "client_account_review" || $segment1 == "financials") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Practice Functions</a>
+            <li class="dropdown <?php if($segment1 == "client_management" || $segment1 == "invoice_management" || $segment1 == "client_statements" || $segment1 == "receipt_management" || $segment1 == "receipt_settings" || $segment1 == "time_management" || $segment1 == "aml_system" || $segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager" || $segment1 == "two_bill_manager" || $segment1 == "client_account_review" || $segment1 == "financials") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Practice Functions <i class="fa fa-caret-down" aria-hidden="true"></i>
+</a>
                 <ul class="dropdown-menu dropdown-menu-right text-right">
-                    <li class="<?php if($segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/task_manager')?>">Task Manager</a></li>
-                    <li class="<?php if($segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/directmessaging')?>">MessageUs System</a></li>
-                    <li class="<?php if(($segment1 == "client_management")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_management'); ?>">Client Mangement</a></li>
-                    <li class="<?php if(($segment1 == "aml_system")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/aml_system'); ?>">AML System</a></li>
-                    <li class="<?php if(($segment1 == "client_account_review")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_account_review'); ?>">Client Account Review</a></li>
+                    <li class="dropdown-header">
+                      Clients
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li class="<?php if(($segment1 == "client_management")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/client_management'); ?>">Client Mangement</a></li>
+                    <li class="<?php if(($segment1 == "client_account_review")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/client_account_review'); ?>">Client Account Review</a></li>
+                    <li class="<?php if(($segment1 == "aml_system")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/aml_system'); ?>">AML System</a></li>
+                    
+
                     <li role="separator" class="divider"></li>
                     <li class="dropdown-header">
                       Accounts
                     </li>
                     <li role="separator" class="divider"></li>
-                    <li class="<?php if(($segment1 == "client_statements")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/client_statements'); ?>">Client Statements</a></li>
-                    <li class="<?php if(($segment1 == "receipt_management" || $segment1 == "receipt_settings")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/receipt_management'); ?>">Receipt Management</a></li>
                     <li class="<?php if(($segment1 == "invoice_management")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/invoice_management'); ?>">Invoice Management</a></li>
-                    <li class="<?php if(($segment1 == "financials")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/financials'); ?>">Financials</a></li>
-                    <li class="<?php if(($segment1 == "opening_balance_manager" || $segment1 == "client_opening_balance_manager" || $segment1 == "import_opening_balance_manager")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/opening_balance_manager'); ?>">Opening Balances</a></li>
+                    <li class="<?php if(($segment1 == "receipt_management" || $segment1 == "receipt_settings")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/receipt_management'); ?>">Receipt Management</a></li>
+		    <li class="<?php if(($segment1 == "payment_management" || $segment1 == "payment_settings")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/payment_management'); ?>">Payment Management</a></li>
                     <li class="<?php if(($segment1 == "two_bill_manager")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/two_bill_manager'); ?>">2Bill Manager</a></li>
+                    <li class="<?php if(($segment1 == "financials")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/financials'); ?>">Practice Financials</a></li>
+                    <li class="<?php if(($segment1 == "client_statements")) { echo "active"; } else { echo ""; } ?>" style="padding-left: 14px;"><a href="<?php echo URL::to('user/client_statements'); ?>">Client Statements</a></li>
                 </ul>
             </li>
-            <li class="dropdown <?php if($segment1 == "manage_week" || $segment1 == "week_manage" || $segment1 == "select_week" || $segment1 == "manage_month" || $segment1 == "month_manage" || $segment1 == "select_month" || $segment1 == "p30" || $segment1 == "p30month_manage" || $segment1 == "p30_select_month" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage" || $segment1 == "paye_p30_ros_liabilities") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payroll Functions</a>
+            <li class="dropdown <?php if($segment1 == "manage_week" || $segment1 == "week_manage" || $segment1 == "select_week" || $segment1 == "manage_month" || $segment1 == "month_manage" || $segment1 == "select_month" || $segment1 == "p30" || $segment1 == "p30month_manage" || $segment1 == "p30_select_month" || $segment1 == "paye_p30month_manage" || $segment1 == "paye_p30_select_month" || $segment1 == "paye_p30_manage" || $segment1 == "paye_p30_ros_liabilities") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payroll Functions <i class="fa fa-caret-down" aria-hidden="true"></i>
+</a>
                 <ul class="dropdown-menu">
                     <li class="<?php if(($segment1 == "manage_week") || ($segment1 == "week_manage") || ($segment1 == "select_week")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/manage_week')?>">Weekly Payroll</a></li>
                     <li class="<?php if(($segment1 == "manage_month") || ($segment1 == "month_manage") || ($segment1 == "select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/manage_month')?>">Monthly Payroll</a></li>
@@ -344,19 +431,20 @@
                 </ul>
             </li>
 
-            <li class="dropdown <?php if($segment1 == "vat_clients" || $segment1 == "rct_system" || $segment1 == "rct_liability_assessment" || $segment1 == "rct_client_manager" || $segment1 == "gbs_p30" || $segment1 == "gbs_p30month_manage" || $segment1 == "gbs_p30_select_month" || $segment1 == "year_end_manager" || $segment1 == "yearend_setting" || $segment1 == "supplementary_manager" || $segment1 == "yeadend_clients" || $segment1 == "yearend_individualclient" || $segment1 == "supplementary_note_create" || $segment1 == "gbs_paye_p30month_manage" || $segment1 == "gbs_paye_p30_select_month" || $segment1 == "yeadend_liability" || $segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_edit" || $segment1 == "client_request_view" || $segment1 == "manage_croard") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Client Functions</a>
+            <li class="dropdown <?php if($segment1 == "vat_clients" || $segment1 == "vat_review" || $segment1 == "rct_system" || $segment1 == "rct_liability_assessment" || $segment1 == "rct_client_manager" || $segment1 == "gbs_p30" || $segment1 == "gbs_p30month_manage" || $segment1 == "gbs_p30_select_month" || $segment1 == "year_end_manager" || $segment1 == "yearend_setting" || $segment1 == "supplementary_manager" || $segment1 == "yeadend_clients" || $segment1 == "yearend_individualclient" || $segment1 == "supplementary_note_create" || $segment1 == "gbs_paye_p30month_manage" || $segment1 == "gbs_paye_p30_select_month" || $segment1 == "yeadend_liability" || $segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_edit" || $segment1 == "client_request_view" || $segment1 == "manage_croard" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Client Functions <i class="fa fa-caret-down" aria-hidden="true"></i>
+</a>
                 <ul class="dropdown-menu">
+                    <li class="<?php if(($segment1 == "year_end_manager"  || $segment1 == "yeadend_clients"  || $segment1 == "yearend_individualclient"  || $segment1 == "yeadend_liability")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/year_end_manager'); ?>">Year End Manager</a></li>
+                    <li class="<?php if(($segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_view" || $segment1 == "client_request_edit")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/client_request_system'); ?>">Client Request System</a></li>
+                    <li class="<?php if($segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/directmessaging')?>">MessageUs System</a></li>
                     <li class="<?php if(($segment1 == "vat_clients")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/vat_clients')?>">VAT Management</a></li>
                     <li class="<?php if(($segment1 == "rct_system") || ($segment1 == "rct_liability_assessment") || ($segment1 == "rct_client_manager")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/rct_system')?>">RCT System</a></li>
-                    <!-- <li class="<?php if(($segment1 == "gbs_p30") || ($segment1 == "gbs_p30month_manage") || ($segment1 == "gbs_p30_select_month") || ($segment1 == "gbs_paye_p30month_manage") || ($segment1 == "gbs_paye_p30_select_month")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/gbs_p30'); ?>">P30 System</a></li> -->
-                    <li class="<?php if(($segment1 == "year_end_manager"  || $segment1 == "yeadend_clients"  || $segment1 == "yearend_individualclient"  || $segment1 == "yeadend_liability")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/year_end_manager'); ?>">Year End Manager</a></li>
-                    <li class="<?php if(($segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_view" || $segment1 == "client_request_edit")) { echo "active"; } else { echo ""; } ?>"><a 
-                      href="<?php echo URL::to('user/client_request_system'); ?>">Client Request System</a></li>
-                      <li class="<?php if(($segment1 == "manage_croard")) { echo "active"; } else { echo ""; } ?>"><a 
+                    <li class="<?php if(($segment1 == "manage_croard")) { echo "active"; } else { echo ""; } ?>"><a 
                       href="<?php echo URL::to('user/manage_croard'); ?>">CRO ARD</a></li>
                 </ul>
             </li>
-            <li class="<?php if(($segment1 == "time_me" || $segment1 == "time_task" || $segment1 == "time_me_overview" || $segment1 == "time_me_joboftheday" || $segment1 == "time_me_client_review" || $segment1 == "time_me_all_job" || $segment1 == "time_track" || $segment1 == "ta_system" || $segment1 == "ta_allocation")) { echo "active"; } else { echo ""; } ?>"><a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Time Me</a>
+            <li class="<?php if(($segment1 == "time_me" || $segment1 == "time_task" || $segment1 == "time_me_overview" || $segment1 == "time_me_joboftheday" || $segment1 == "time_me_client_review" || $segment1 == "time_me_all_job" || $segment1 == "time_track" || $segment1 == "ta_system" || $segment1 == "ta_allocation")) { echo "active"; } else { echo ""; } ?>"><a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Time Me <i class="fa fa-caret-down" aria-hidden="true"></i>
+</a>
               <ul class="dropdown-menu">
                 <li class="<?php if(($segment1 == "time_track")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/time_track')?>">TimeMe Manager</a></li>
                 <li class="<?php if(($segment1 == "time_me_overview" || $segment1 == "time_me_joboftheday" || $segment1 == "time_me_client_review" || $segment1 == "time_me_all_job")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/time_me_overview')?>">TimeMe Overview</a></li>
@@ -364,12 +452,8 @@
                 <li class="<?php if(($segment1 == "ta_system" || $segment1 == "ta_allocation")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/ta_system')?>">TA System</a></li>
               </ul>
             </li>
-
+            <li class="<?php if($segment1 == "task_manager" || $segment1 == "taskmanager_search" || $segment1 == "task_administration" || $segment1 == "park_task") { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/task_manager')?>">Task Manager</a></li>
             <li class="<?php if(($segment1 == "in_file" || $segment1 == "in_file_advance" || $segment1 == "infile_search")) { echo "active"; } else { echo ""; } ?>"><a href="<?php echo URL::to('user/in_file_advance')?>">InFiles</a>
-
-
-            
-              
             </li>
 
             
@@ -478,6 +562,86 @@ $(document).ready(function() {
 //     }
 // });
 $(window).click(function(e) {
+  if($(e.target).hasClass('load_journal_viewer_pdf'))
+  {
+    var journal_id = $(".journal_viewer_text_id").val();
+    if(journal_id == "")
+    {
+      alert("Please Enter the Journal Reference id to Download the PDF");
+    }
+    else{
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/download_journal_viewer_by_journal_id'); ?>",
+        type:"post",
+        data:{journal_id:journal_id},
+        success:function(result)
+        {
+          SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+          $("body").removeClass("loading");
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('journal_id_viewer'))
+  {
+    $("body").addClass("loading");
+    var journal_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/show_journal_viewer_by_journal_id'); ?>",
+      type:"post",
+      data:{journal_id:journal_id},
+      dataType:"json",
+      success:function(result)
+      {
+        var split_journal = journal_id.split(".");
+        $("#journal_viewer_tbody").html(result['output']);
+        $(".journal_viewer_debit_total").html(result['total_debit']);
+        $(".journal_viewer_credit_total").html(result['total_credit']);
+        $(".journal_viewer_text_id").val(split_journal[0]);
+        $(".journal_viewer_modal").modal("show");
+        $("body").removeClass("loading");
+      }
+    })
+  }
+  if($(e.target).hasClass('journal_viewer_btn'))
+  {
+    var journal_id = $(".journal_viewer_text_id").val();
+    if(journal_id == "")
+    {
+      alert("Please Enter the Journal Reference id to Load");
+    }
+    else{
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/show_journal_viewer_by_journal_id'); ?>",
+        type:"post",
+        data:{journal_id:journal_id},
+        dataType:"json",
+        success:function(result)
+        {
+          $("#journal_viewer_tbody").html(result['output']);
+          $(".journal_viewer_debit_total").html(result['total_debit']);
+          $(".journal_viewer_credit_total").html(result['total_credit']);
+          $(".journal_viewer_text_id").val(journal_id);
+          $(".journal_viewer_modal").modal("show");
+          $("body").removeClass("loading");
+        },
+        error: function(data)
+        {
+          $("body").removeClass("loading");
+          if(data.status == "500")
+          {
+            $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Journal ID doesnt exists, please check the Journal ID and then click on the Load Button.</p>',fixed:true,width:"800px"});
+          }
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('journal_source_link'))
+  {
+    $(".journal_source_viewer_modal").modal("show");
+  }
 	if($(e.target).hasClass('set_global_opening_bal_date_now'))
 	{
 		var global_date = $(".global_opening_date").val();

@@ -19,6 +19,7 @@ use Response;
 use PHPExcel; 
 use PHPExcel_IOFactory;
 use PHPExcel_Cell;
+use ZipArchive;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 class UserController extends Controller {
@@ -62,7 +63,9 @@ class UserController extends Controller {
 		$time_job = DB::table('task_job')->get();
 		$tasks = DB::table('time_task')->where('task_type', 0)->get();
 		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
-		return view('user/dashboad', array('title' => 'Easypayroll - Dashboard', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
+		$admin_details = DB::table('admin')->where('id',1)->first();
+		$user_details = DB::table('user_login')->where('userid',1)->first();
+		return view('user/dashboad', array('title' => 'Easypayroll - Dashboard', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks,'admin_details' => $admin_details,'user_details' => $user_details));
 	}
 	public function time_track()
 	{
@@ -5647,6 +5650,9 @@ class UserController extends Controller {
 	{
 		$clients = DB::table('vat_clients')->get();
 		$output = '';
+		$prev_no_sub_due = 0;
+		$curr_no_sub_due = 0;
+		$next_no_sub_due = 0;
 		if(count($clients))
 		{
 			foreach($clients as $client)
@@ -5669,9 +5675,9 @@ class UserController extends Controller {
                 elseif($client->status == 0 && $client->self_manage == 'yes') { $fontcolor = 'purple'; }
                 else{$fontcolor = '#fff';}
 
-                $prev_month = date('m-Y', strtotime('last month'));
+                $prev_month = date('m-Y', strtotime('first day of previous month'));
                 $curr_month = date('m-Y');
-                $next_month = date('m-Y', strtotime('next month'));
+                $next_month = date('m-Y', strtotime('first day of next month'));
 
                 $prev_attachment_div = '';
 				$prev_text_one = 'No Period';
@@ -5683,6 +5689,7 @@ class UserController extends Controller {
 				$prev_color_text = '';
 				$prev_check_box_color = 'blacK_td';
 				$prev_checked = '';
+				
 
 				$curr_attachment_div = '';
 				$curr_text_one = 'No Period';
@@ -5705,6 +5712,7 @@ class UserController extends Controller {
 				$next_color_text = '';
 				$next_check_box_color = 'blacK_td';
 				$next_checked = '';
+
 				$latest_import_id = '';
 
 				$get_latest_import_file_id = DB::table('vat_reviews_import_attachment')->where('status',1)->orderBy('id','desc')->first();
@@ -5719,7 +5727,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;
                 	foreach($check_reviews_prev as $prev)
                 	{
-                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments">'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prev_month.'"></a></p>'; }
+                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" download>'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prev_month.'"></a></p>'; }
 
                 		if($prev->type == 2){ $prev_text_one = $prev->from_period.' to '.$prev->to_period; }
 
@@ -5754,6 +5762,7 @@ class UserController extends Controller {
                 			$prev_color_status = 'red_import'; 
                 			$prev_color_text = 'Submission O/S';
                 			$prev_check_box_color = 'os_td';
+                			$prev_no_sub_due = $prev_no_sub_due + 1;
                 		}
                 		else{
                 			$prev_color_status = 'blue_import'; 
@@ -5769,7 +5778,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments">'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$curr_month.'"></a></p>'; }
+                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$curr_month.'"></a></p>'; }
 
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
@@ -5805,6 +5814,7 @@ class UserController extends Controller {
                 			$curr_color_status = 'orange_import'; 
                 			$curr_color_text = 'Submission Due';
                 			$curr_check_box_color = 'due_td';
+                			$curr_no_sub_due = $curr_no_sub_due + 1;
                 		}
                 		else{
                 			$curr_color_status = 'blue_import'; 
@@ -5819,7 +5829,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;
                 	foreach($check_reviews_next as $next)
                 	{
-                		if($next->type == 1){ $next_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments">'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$next_month.'"></a></p>'; }
+                		if($next->type == 1){ $next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" download>'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$next_month.'"></a></p>'; }
 
                 		if($next->type == 2){ $next_text_one = $next->from_period.' to '.$next->to_period; }
 
@@ -5863,8 +5873,8 @@ class UserController extends Controller {
                 }
 
 				$output.='<tr class="tasks_tr tasks_tr_'.$client->client_id.' '.$deactivated_client.'">
-					<td style="color:'.$fontcolor.'" class="sno_sort_val">'.$client->cm_client_id.'</td>
-					<td style="color:'.$fontcolor.'" class="client_sort_val">'.$client->name.'</td>
+					<td style="color:'.$fontcolor.'" class="sno_sort_val"><a href="javascript:" class="vat_client_class" data-element="'.$client->client_id.'">'.$client->cm_client_id.'</a></td>
+					<td style="color:'.$fontcolor.'" class="client_sort_val"><a href="javascript:" class="vat_client_class" data-element="'.$client->client_id.'">'.$client->name.'</a></td>
 					<td style="color:'.$fontcolor.'" class="tax_sort_val">'.$client->taxnumber.'</td>
 					<td id="add_files_vat_client_'.$prev_month.'">
 						<p style="text-align:center"><label class="import_icon '.$prev_color_status.'">'.$prev_color_text.'</label></p>
@@ -5893,7 +5903,7 @@ class UserController extends Controller {
 				</tr>';
 			}
 		}
-		echo $output;
+		echo json_encode(array("output" => $output,"prev_no_sub_due" => $prev_no_sub_due,"curr_no_sub_due" => $curr_no_sub_due,"next_no_sub_due" => $next_no_sub_due));
 	}
 	public function show_prev_month()
 	{
@@ -5911,9 +5921,9 @@ class UserController extends Controller {
 		$curr_str = strtotime($get_full_date);
 		$next_str = strtotime($get_full_date.' +1 month');
 
-		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a>';
-		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a>';
-		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a>';
+		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$prevv_month.'">0</spam></label>';
+		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$currr_month.'">0</spam></label>';
+		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$nextt_month.'">0</spam></label>';
 
 		$prev_cell = array();
 		array_push($prev_cell, $prev_month);
@@ -5975,7 +5985,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_prev as $prev)
                 	{
-                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments">'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; }
+                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" download>'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; }
                 		if($prev->type == 2){ $prev_text_one = $prev->from_period.' to '.$prev->to_period; }
 
                 		if($prev->type == 3){ 
@@ -6041,7 +6051,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments">'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
+                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
                 		if($curr->type == 3){ 
@@ -6107,7 +6117,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_next as $next)
                 	{
-                		if($next->type == 1){ $next_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments">'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; }
+                		if($next->type == 1){ $next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" download>'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; }
                 		if($next->type == 2){ $next_text_one = $next->from_period.' to '.$next->to_period; }
 
                 		if($next->type == 3){ 
@@ -6214,9 +6224,9 @@ class UserController extends Controller {
 		$curr_str = strtotime($get_full_date);
 		$next_str = strtotime($get_full_date.' +1 month');
 
-		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a>';
-		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a>';
-		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a>';
+		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$prevv_month.'">0</spam></label>';
+		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$currr_month.'">0</spam></label>';
+		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$nextt_month.'">0</spam></label>';
 
 		$prev_cell = array();
 		array_push($prev_cell, $prev_month);
@@ -6278,7 +6288,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_prev as $prev)
                 	{
-                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments">'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; }
+                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" download>'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; }
                 		if($prev->type == 2){ $prev_text_one = $prev->from_period.' to '.$prev->to_period; }
 
                 		if($prev->type == 3){ 
@@ -6344,7 +6354,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments">'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
+                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
                 		if($curr->type == 3){ 
@@ -6410,7 +6420,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_next as $next)
                 	{
-                		if($next->type == 1){ $next_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments">'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; }
+                		if($next->type == 1){ $next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" download>'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; }
                 		if($next->type == 2){ $next_text_one = $next->from_period.' to '.$next->to_period; }
 
                 		if($next->type == 3){ 
@@ -6518,9 +6528,10 @@ class UserController extends Controller {
 			<tr>
 				<th>Client Code <i class="fa fa-sort code_sort"></i></th>
 				<th>Client Name <i class="fa fa-sort client_overlay_sort"></i></th>
+				<th>Create Task</th>
 				<th style="width: 12%;">Status <i class="fa fa-sort status_sort"></i></th>
 				<th>File ID <i class="fa fa-sort id_sort"></i></th>
-				<th>Records Received <i class="fa fa-sort record_sort"></i></th>
+				<th style="width: 15%;">Records Received <i class="fa fa-sort record_sort"></i></th>
 				<th style="width: 10%;">Submitted Date <i class="fa fa-sort date_sort"></i></th>
 				<th>Attachments</th>
 			</tr>
@@ -6530,6 +6541,16 @@ class UserController extends Controller {
 		{
 			foreach($clients as $client)
 			{
+				if($client->cm_client_id != "")
+				{
+					$client_details = DB::table('cm_clients')->where('client_id',$client->cm_client_id)->first();
+					$company_name = $client_details->company.' - '.$client_details->client_id;
+					$cm_client_id = $client_details->client_id;
+				}
+				else{
+					$company_name = '';
+					$cm_client_id = '';
+				}
 				$curr_attachment_div = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
@@ -6553,7 +6574,7 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="javascript:" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments">'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
+                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
                 		if($curr->type == 3){ 
@@ -6622,6 +6643,18 @@ class UserController extends Controller {
 				$output.='<tr class="shown_tr shown_tr_'.$client->client_id.'_'.$currr_month.'">
 					<td class="code_sort_val">'.$client->cm_client_id.'</td>
 					<td class="client_overlay_sort_val">'.$client->name.'</td>
+					<td>
+						<a href="javascript:" class="common_black_button create_task_manager" data-client="'.$client->client_id.'" data-month="'.$currr_month.'" data-cmclient="'.$client->cm_client_id.'" data-element="'.$company_name.'" style="clear: both; float: left";>Create Task</a><br/>';
+						$get_task_details = DB::table("taskmanager_vat")->where('client_id',$client->client_id)->where('month',$currr_month)->get();
+						if(count($get_task_details))
+						{
+							foreach($get_task_details as $task_detail)
+							{
+								$taskmanager = DB::table('taskmanager')->where('id',$task_detail->task_id)->first();
+								$output.='<p style="float: left;margin-top: 10px;font-weight: 600;">Task : '.$taskmanager->taskid.' - '.$taskmanager->subject.'</p>';
+							}
+						}
+					$output.='</td>
 					<td><label class="import_icon_overlay '.$curr_color_status.'">'.$curr_color_text.'</label></td>
 					<td class="id_sort_val">'.$curr_text_three.'</td>
 					<td><input type="checkbox" class="check_records_received_overlay" id="check_records_received_overlay" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label_overlay '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label>
@@ -9180,6 +9213,307 @@ class UserController extends Controller {
 		}
 		else{
 			DB::table('vat_reviews')->where('client_id',$client)->where('month_year',$month)->where('type',6)->delete();
+		}
+	}
+	public function update_email_setting()
+	{
+		$email = Input::get('email');
+		$ccemail = Input::get('ccemail');
+
+		$taskccemail = Input::get('taskccemail');
+		$p30ccemail = Input::get('p30ccemail');
+		$cmccemail = Input::get('cmccemail');
+		$vatccemail = Input::get('vatccemail');
+
+		$deleteemail = Input::get('deleteemail');
+		
+		DB::table('admin')->where('id',1)->update(['email' =>$email, 'cc_email' =>$ccemail,'task_cc_email' =>$taskccemail,'p30_cc_email' =>$p30ccemail,'cm_cc_email' =>$cmccemail,'vat_cc_email' =>$vatccemail,'delete_email' =>$deleteemail]);
+		return Redirect::back()->with('message', 'Email Settings Updated Successfully');
+	}
+	public function show_journal_viewer_by_journal_id()
+	{
+		$journal_id = Input::get('journal_id');
+		$details = DB::table('journals')->where('connecting_journal_reference',$journal_id)->first();
+		$get_details = DB::table('journals')->where('reference',$details->reference)->get();
+		$output = '';
+		$total_debit_value = 0;
+		$total_credit_value = 0;
+		if(count($get_details))
+		{
+			foreach($get_details as $detail)
+			{
+				$nominal_des = DB::table('nominal_codes')->where('code',$detail->nominal_code)->first();
+				$output.='<tr>
+					<td>'.$detail->connecting_journal_reference.'</td>
+					<td>'.date('d-M-Y', strtotime($detail->journal_date)).'</td>
+					<td>'.$detail->description.'</td>
+					<td><a href="javascript:" class="journal_source_link">'.$detail->journal_source.'</a></td>
+					<td>'.$detail->nominal_code.'</td>
+					<td>'.$nominal_des->description.'</td>
+					<td style="text-align: right;">'.number_format_invoice_empty($detail->dr_value).'</td>
+					<td style="text-align: right;">'.number_format_invoice_empty($detail->cr_value).'</td>
+				</tr>';
+				$total_debit_value = $total_debit_value + number_format_invoice_without_comma($detail->dr_value);
+				$total_credit_value = $total_credit_value + number_format_invoice_without_comma($detail->cr_value);
+			}
+		}
+
+		echo json_encode(array("output" => $output, "total_debit" => number_format_invoice_empty($total_debit_value), "total_credit" => number_format_invoice_empty($total_credit_value)));
+	}
+	public function download_journal_viewer_by_journal_id()
+	{
+		$journal_id = Input::get('journal_id');
+		$details = DB::table('journals')->where('connecting_journal_reference',$journal_id)->first();
+		$get_details = DB::table('journals')->where('reference',$details->reference)->get();
+		$exp_journal = explode(".",$journal_id);
+		$output = '
+		<h5 style="text-align:center">Journal Viewer for Journal Reference ID - '.$exp_journal[0].'</h5>
+		<table style="width: 100%;border-collapse:collapse">
+          <tr>
+            <td style="text-align: left;border:1px solid #000;padding:5px">Journal ID</td>
+            <td style="text-align: left;border:1px solid #000;padding:5px">Date</td>
+            <td style="text-align: left;border:1px solid #000;padding:5px">Journal Description</td>
+            <td style="text-align: left;border:1px solid #000;padding:5px">Journal Source</td>
+            <td style="text-align: left;border:1px solid #000;padding:5px">Nominal Code</td>
+            <td style="text-align: left;border:1px solid #000;padding:5px">Nominal Description</td>
+            <td style="text-align: right;border:1px solid #000;padding:5px">Debit Value</td>
+            <td style="text-align: right;border:1px solid #000;padding:5px">Credit Value</td>
+          </tr>';
+		$total_debit_value = 0;
+		$total_credit_value = 0;
+		if(count($get_details))
+		{
+			foreach($get_details as $detail)
+			{
+				$nominal_des = DB::table('nominal_codes')->where('code',$detail->nominal_code)->first();
+				$output.='<tr>
+					<td style="text-align: left;border:1px solid #000;padding:5px">'.$detail->connecting_journal_reference.'</td>
+					<td style="text-align: left;border:1px solid #000;padding:5px">'.date('d-M-Y', strtotime($detail->journal_date)).'</td>
+					<td style="text-align: left;border:1px solid #000;padding:5px">'.$detail->description.'</td>
+					<td style="text-align: left;border:1px solid #000;padding:5px">'.$detail->journal_source.'</td>
+					<td style="text-align: left;border:1px solid #000;padding:5px">'.$detail->nominal_code.'</td>
+					<td style="text-align: left;border:1px solid #000;padding:5px">'.$nominal_des->description.'</td>
+					<td style="text-align: right;border:1px solid #000;padding:5px">'.number_format_invoice_empty($detail->dr_value).'</td>
+					<td style="text-align: right;border:1px solid #000;padding:5px">'.number_format_invoice_empty($detail->cr_value).'</td>
+				</tr>';
+				$total_debit_value = $total_debit_value + number_format_invoice_without_comma($detail->dr_value);
+				$total_credit_value = $total_credit_value + number_format_invoice_without_comma($detail->cr_value);
+			}
+		}
+		$output.='<tr>
+			<td style="text-align: left;border:1px solid #000;padding:5px"></td>
+			<td style="text-align: left;border:1px solid #000;padding:5px"></td>
+			<td style="text-align: left;border:1px solid #000;padding:5px"></td>
+			<td style="text-align: left;border:1px solid #000;padding:5px"></td>
+			<td style="text-align: left;border:1px solid #000;padding:5px"></td>
+			<td style="text-align: left;border:1px solid #000;font-weight:800;padding:5px">TOTAL</td>
+			<td style="text-align: right;border:1px solid #000;font-weight:800;padding:5px">'.number_format_invoice_empty($total_debit_value).'</td>
+			<td style="text-align: right;border:1px solid #000;font-weight:800;padding:5px">'.number_format_invoice_empty($total_credit_value).'</td>
+		</tr>';
+
+		$pdf = PDF::loadHTML($output);
+		$pdf->save('papers/Journal Viewer for Journal reference ID '.$journal_id.'.pdf');
+		echo 'Journal Viewer for Journal reference ID '.$journal_id.'.pdf';
+	}
+	public function get_client_review_for_year()
+	{
+		$year = Input::get('year');
+		$prev_year = $year - 1;
+		$next_year = $year + 1;
+		$client_id = Input::get('client_id');
+		$output ='';
+		$client = DB::table('vat_clients')->where('client_id',$client_id)->first();
+		for($ival = 0; $ival <= 13; $ival++)
+		{
+			$month_year_val = '';
+			if($ival == 0) { $month = '12-'.$prev_year; $month_year_val = 'Dec - '.$prev_year; }
+			elseif($ival == 13) { $month = '01-'.$next_year; $month_year_val = 'Jan - '.$next_year; }
+			else{ 
+				if($ival == 1) { $month_year_val = 'Jan - '.$year; }
+				elseif($ival == 2) { $month_year_val = 'Feb - '.$year; }
+				elseif($ival == 3) { $month_year_val = 'Mar - '.$year; }
+				elseif($ival == 4) { $month_year_val = 'Apr - '.$year; }
+				elseif($ival == 5) { $month_year_val = 'May - '.$year; }
+				elseif($ival == 6) { $month_year_val = 'Jun - '.$year; }
+				elseif($ival == 7) { $month_year_val = 'Jul - '.$year; }
+				elseif($ival == 8) { $month_year_val = 'Aug - '.$year; }
+				elseif($ival == 9) { $month_year_val = 'Sep - '.$year; }
+				elseif($ival == 10) { $month_year_val = 'Oct - '.$year; }
+				elseif($ival == 11) { $month_year_val = 'Nov - '.$year; }
+				elseif($ival == 12) { $month_year_val = 'Dec - '.$year; }
+
+				if($ival < 10) { $ivali = '0'.$ival; }
+				else { $ivali = $ival; }
+				$month = $ivali.'-'.$year;
+			}
+			$get_date = '01';
+			$month_year = explode("-",$month);
+			$get_full_date = $month_year[1].'-'.$month_year[0].'-'.$get_date;
+
+			$currr_month = date('m-Y',strtotime($get_full_date));
+			$current_str = strtotime(date('Y-m-01'));
+			$curr_str = strtotime($get_full_date);
+
+			$curr_attachment_div = '';
+			$curr_text_one = 'No Period';
+			$curr_text_two = '';
+			$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:left;display:none"></a>';
+			$curr_text_three = '';
+			$currr_text_three = '';
+			$curr_color_status = '';
+			$curr_color_text = '';
+			$curr_check_box_color = 'black_td';
+			$curr_checked = '';
+			$class_tr = 'non_returning';
+
+			$get_latest_import_file_id = DB::table('vat_reviews_import_attachment')->where('status',1)->orderBy('id','desc')->first();
+        	if(count($get_latest_import_file_id))
+        	{
+        		$latest_import_id = $get_latest_import_file_id->import_id;
+        	}
+
+        	$check_reviews_curr = DB::table('vat_reviews')->where('client_id',$client->client_id)->where('month_year',$currr_month)->get();
+            if(count($check_reviews_curr))
+            {
+            	$i= 0; $j=0;$k=0;
+            	foreach($check_reviews_curr as $curr)
+            	{
+            		if($curr->type == 1){ 
+            			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; 
+            		}
+            		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
+
+            		if($curr->type == 3){ 
+            			$curr_text_two = $curr->textval; 
+            			$curr_color_status = 'green_import_overlay'; 
+            			$curr_color_text = 'Submitted';
+            			$class_tr = ''; 
+            			$curr_check_box_color = 'submitted_td_overlay';
+            			$i = $i + 1; 
+            			$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:left"></a>';
+            		}
+
+            		if($curr->type == 4){ 
+            			$get_attachment_download = DB::table('vat_reviews_import_attachment')->where('import_id',$curr->textval)->first();
+            			if(count($get_attachment_download))
+            			{
+            				$currr_text_three = $curr->textval;
+            				$curr_text_three = '<a class="import_file_attachment_id_overlay" href="'.URL::to($get_attachment_download->url.'/'.$get_attachment_download->filename).'" style="float:right" download>'.$curr->textval.'</a>'; 
+            			}
+            			
+            			$j = $j + 1;
+            		}
+            		if($curr->type == 6)
+            		{
+            			$curr_checked = 'checked';
+            			$k = $k + 1;
+            		}
+            	}
+            	if($j > 0 && $i == 0)
+            	{
+            		if($latest_import_id == $currr_text_three)
+            		{
+            			if($current_str > $curr_str)
+            			{
+            				$curr_color_status = 'red_import_overlay'; 
+            				$curr_color_text = 'Submission O/S';
+            				$curr_check_box_color = 'os_td_overlay';
+            			}
+            			else if($current_str == $curr_str)
+            			{
+            				$curr_color_status = 'orange_import_overlay'; 
+            				$curr_color_text = 'Submission Due';
+            				$class_tr = ''; 
+            				$curr_check_box_color = 'due_td_overlay';
+            			}
+            			else if($current_str < $curr_str)
+            			{
+            				$curr_color_status = 'white_import_overlay'; 
+            				$curr_color_text = 'Not Due';
+            				$curr_check_box_color = 'not_due_td_overlay';
+            			}
+            		}
+            		else{
+            			$curr_color_status = 'blue_import_overlay'; 
+            			$curr_color_text = 'Potentially Submitted';
+            			$curr_check_box_color = 'ps_td_overlay';
+            		}
+            	}
+            }
+            
+            if($client->status == 1) { $fontcolor = 'red'; }
+            elseif($client->status == 0 && $client->pemail != '' && $client->self_manage == 'no') { $fontcolor = 'green'; }
+            elseif($client->status == 0 && $client->pemail == '' && $client->self_manage == 'no') { $fontcolor = '#bd510a'; }
+            elseif($client->status == 0 && $client->self_manage == 'yes') { $fontcolor = 'purple'; }
+            else{$fontcolor = '#fff';}
+            if($curr_attachment_div == "")
+            {
+            	$attach_disabled = 'disabled';
+            }
+            else{
+            	$attach_disabled = '';
+            }
+
+			$output.='<tr class="shownn_tr shown_tr shown_tr_'.$client->client_id.'_'.$currr_month.' '.$class_tr.'">
+				<td><input type="checkbox" name="month_download_checkbox" class="month_download_checkbox" id="cli_review_'.$client->client_id.'_'.$currr_month.'" data-client="'.$client->client_id.'" data-month="'.$currr_month.'" '.$attach_disabled.'><label for="cli_review_'.$client->client_id.'_'.$currr_month.'">'.$month_year_val.'</label><input type="hidden" name="month_year_sort_val" class="month_year_sort_val" value="'.strtotime($get_full_date).'"></td>
+				<td><label class="import_icon_overlay '.$curr_color_status.'">'.$curr_color_text.'</label></td>
+				<td class="period_sort_val">'.$curr_text_one.'</td>
+				<td>'.$curr_remove_two.'<input type="text" class="form-control submitted_import_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'">
+					<input type="hidden" name="date_sort_val" class="date_sort_val" value="'.$curr_text_two.'">
+				</td>
+				<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div_overlay">'.$curr_attachment_div.'</div></td>
+				<td><input type="checkbox" class="check_records_received_overlay" id="check_records_received_overlay" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label_overlay '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label>
+					<input type="hidden" name="record_sort_val" class="record_sort_val" value="'.$curr_checked.'">
+				</td>
+			</tr>';
+		}
+		echo $output;
+	}
+	public function download_selected_periods_vat_attachments()
+	{
+		$client_id = Input::get('client_id');
+		$months = explode(",",Input::get('months'));
+		$client_details = DB::table('vat_clients')->where('client_id',$client_id)->first();
+		$files = DB::table('vat_reviews')->whereIn('month_year',$months)->where('client_id',$client_id)->where('type',1)->get();
+		if(count($files))
+		{
+			$company_name = str_replace("/", "", $client_details->name);
+			$company_name = str_replace("/", "", $company_name);
+			$company_name = str_replace("/", "", $company_name);
+
+			$company_name = str_replace("(", "", $company_name);
+			$company_name = str_replace("(", "", $company_name);
+			$company_name = str_replace("(", "", $company_name);
+			$company_name = str_replace("(", "", $company_name);
+
+			$company_name = str_replace(")", "", $company_name);
+			$company_name = str_replace(")", "", $company_name);
+			$company_name = str_replace(")", "", $company_name);
+			$company_name = str_replace(")", "", $company_name);
+
+			$company_name = str_replace("&", "", $company_name);
+			$company_name = str_replace("&", "", $company_name);
+			$company_name = str_replace("&", "", $company_name);
+			$company_name = str_replace("&", "", $company_name);
+
+			$company_name = str_replace("?", "", $company_name);
+			$company_name = str_replace("?", "", $company_name);
+			$company_name = str_replace("?", "", $company_name);
+			$company_name = str_replace("?", "", $company_name);
+
+			$public_dir=public_path();
+			$zipFileName = 'Client Review Attachments for '.$company_name.'_'.time().'.zip';
+			foreach($files as $file)
+			{
+	            $zip = new ZipArchive;
+	            if ($zip->open($public_dir . '/' . $zipFileName, ZipArchive::CREATE) === TRUE) {
+	            	// Add File in ZipArchive
+	                $zip->addFile($file->url.'/'.$file->filename,$file->filename);
+	                // Close ZipArchive     
+	                $zip->close();
+	            }
+			}
+			echo $zipFileName;
 		}
 	}
 }

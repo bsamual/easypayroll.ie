@@ -214,7 +214,7 @@ font-size: 18px;
 
   color:#000 !important;
 
-    float: left;
+  float: left;
 
   clear: both;
 
@@ -235,10 +235,6 @@ font-size: 18px;
 }
 
 .delete_all_image, .delete_all_notes_only, .delete_all_notes, .download_all_image, .download_rename_all_image, .download_all_notes_only, .download_all_notes{cursor: pointer;}
-
-
-
-
 
 .notepad_div {
 

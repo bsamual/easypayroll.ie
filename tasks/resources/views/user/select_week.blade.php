@@ -3,7 +3,7 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
-.header-copy{top: 200px !important;background: #fff;z-index:9999999;}
+.header-copy{top: 200px !important;background: #fff;z-index:99;}
   .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
 
   .start_red { color:#f0ff00; }

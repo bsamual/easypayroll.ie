@@ -12,9 +12,9 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
-body{
+/*body{
   background: #f5f5f5 !important;
-}
+}*/
 .form-control[readonly]{
       background-color: #fff !important
 }
@@ -202,14 +202,23 @@ a:hover{text-decoration: underline;}
 
 
 <div class="content_section" style="margin-bottom:200px">
-  <div class="page_title">
-        <h4 class="col-lg-3" style="padding: 0px;font-size:22px;font-weight:600">
-                RCT Manager              
+  <div class="page_title" style="z-index:999;">
+      <h4 class="col-lg-12 padding_00 new_main_title">
+                RCT Manager               
             </h4>
-            <div class="col-lg-1 text-right" style="padding-right: 0px; line-height: 35px;">
+    </div>
+  <div class="row">
+        <div style="clear: both;">
+   <?php
+    if(Session::has('message')) { ?>
+        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
+     <?php }   
+    ?>
+    </div> 
+            <div class="col-lg-1" style="padding-right: 0px; line-height: 35px; width: 120px;">
                 Active Month
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-2 padding_00">
               <select class="form-control select_active_month_rct">
                 <?php
                   $current_month = date('Y-m');
@@ -234,15 +243,9 @@ a:hover{text-decoration: underline;}
 </div>
 
 <div class="col-lg-12 padding_00">
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:30px">
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:15px">
   
-  <div style="clear: both;">
-   <?php
-    if(Session::has('message')) { ?>
-        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
-     <?php }   
-    ?>
-    </div> 
+  
 
 <style type="text/css">
 .refresh_icon{margin-left: 10px;}
@@ -252,7 +255,7 @@ a:hover{text-decoration: underline;}
 .image_div_attachments P{width: 100%; height: auto; font-size: 13px; font-weight: normal; color: #000;}
 </style>
 
-<table class="display nowrap fullviewtablelist" id="ta_expand" width="100%" style="max-width: 100%;">
+<table class="display nowrap fullviewtablelist own_table_white" id="ta_expand" width="100%" style="max-width: 100%;">
                         <thead>
                         <tr style="background: #fff;">
                              <th width="2%" style="text-align: left;">S.No</th>

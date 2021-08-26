@@ -1,0 +1,4 @@
+Date,"Debit Nominal","Credit Nominal","Client Code","Credit Nominal Description",Comment,Amount,"Journal Id",Status
+11/08/2021,771,112,,"Direct Costs","Sample est",100.00,,"On Hold"
+12/08/2021,112,712,"Wkc Land Transports Activities Limited - GBS001","Wkc Land Transports Activities Limited - GBS001","Sample test 2",200.00,,"On Hold"
+13/08/2021,121,771.34,,"Current Account","Sample test 3",300.00,,"On Hold"

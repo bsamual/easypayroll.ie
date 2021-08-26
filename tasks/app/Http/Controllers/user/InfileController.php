@@ -1254,10 +1254,10 @@ class InfileController extends Controller {
 		if(Session::has('file_attach_add'))
 		{
 			$countupdated = Db::table('in_file_attachment')->where('file_id',$file_id)->where('notes_type',0)->count();
-			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Successfully and saved the Selection.')->with('countupdated', $countupdated)->with('total_count', $total_count)->with('client_session_id', $clientid)->with('file_id', $file_id)->with('view_button', '<a href="'.URL::to('user/infile_search').'?client_id='.$clientid.'" class="common_black_button" style="margin-right:13px;margin-top:-9px">View</a>')->with('search_type',$search_type);
+			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Sucessfully.')->with('countupdated', $countupdated)->with('total_count', $total_count)->with('client_session_id', $clientid)->with('file_id', $file_id)->with('view_button', '<a href="'.URL::to('user/infile_search').'?client_id='.$clientid.'" class="fa fa-eye common_black_button" style="margin-right:13px;margin-top:-9px" title="View Client Infiles"></a>')->with('search_type',$search_type);
 		}
 		else{
-			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Successfully and saved the Selection.')->with('client_session_id', $clientid)->with('view_button', '<a href="'.URL::to('user/infile_search').'?client_id='.$clientid.'" class="common_black_button" style="margin-right:13px;margin-top:-9px">View</a>')->with('search_type',$search_type);
+			return redirect::back()->with('message', 'InFiles for "'.$client_details->company.'" is Created Sucessfully.')->with('client_session_id', $clientid)->with('view_button', '<a href="'.URL::to('user/infile_search').'?client_id='.$clientid.'" class="fa fa-eye common_black_button" style="margin-right:13px;margin-top:-9px" title="View Client Infiles"></a>')->with('search_type',$search_type);
 		}
 	}
 	public function clear_session_attachments()

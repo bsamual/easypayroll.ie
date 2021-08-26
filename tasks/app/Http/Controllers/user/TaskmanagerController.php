@@ -20,6 +20,7 @@ use Response;
 use PHPExcel;
 use PHPExcel_IOFactory;
 use PHPExcel_Cell;
+use ZipArchive;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 class TaskmanagerController extends Controller {
@@ -1172,7 +1173,7 @@ class TaskmanagerController extends Controller {
 				$email->Send();		
 			}
 
-			return redirect::back()->with('message', 'Task Created successfully');
+			return redirect::back()->with('message', 'Task Created successfully')->with('message_client_id',$clientid);
 		}
 		else{
 			$specific_type = Input::get('hidden_specific_type');
@@ -1498,7 +1499,613 @@ class TaskmanagerController extends Controller {
 				$email->AddAttachment( $uploads , 'task_specifics.txt' );
 				$email->Send();		
 			}
-			return redirect::back()->with('message', 'Task Created successfully');
+			return redirect::back()->with('message', 'Task Created successfully')->with('message_client_id',$clientid);;
+		}
+	}
+	public function create_new_taskmanager_task_vat()
+	{
+		$action_type = Input::get('action_type');
+		$month = Input::get('hidden_vat_month');
+		$vat_client = Input::get('hidden_vat_client_id');
+		if($action_type == "1")
+		{
+			$author = Input::get('select_user');
+			$creation_date = Input::get('created_date');
+			$allocate_user = Input::get('allocate_user');
+			$internal_checkbox = Input::get('internal_checkbox');
+			$task_type = Input::get('idtask');
+			$clientid = Input::get('clientid');
+			$subject_class = Input::get('subject_class');
+			$task_specifics = Input::get('task_specifics');
+			$due_date = Input::get('due_date');
+			$recurring = Input::get('recurring_checkbox');
+			$accept_recurring = Input::get('accept_recurring');
+			
+
+			$task_specifics_val = strip_tags($task_specifics);
+			if($subject_class == "")
+			{
+				$subject_cls = substr($task_specifics_val,0,30);
+			}
+			else{
+				$subject_cls = $subject_class;
+			}
+
+			if($recurring == "1"){ $days = '30'; }
+			elseif($recurring == "2"){ $days = '7'; }
+			elseif($recurring == "3"){ $days = '1'; }
+			else{ $days = Input::get('specific_recurring'); }
+
+			$creation_date_change = DateTime::createFromFormat('d-M-Y', $creation_date);
+			$creation_date_change = $creation_date_change->format('Y-m-d');
+
+			$due_date_change = DateTime::createFromFormat('d-M-Y', $due_date);
+			$due_date_change = $due_date_change->format('Y-m-d');
+
+			$data['author'] = $author;
+			$data['creation_date'] = $creation_date_change;
+			$data['allocated_to'] = $allocate_user;
+			$data['internal'] = ($internal_checkbox=="")?0:$internal_checkbox;
+			$data['task_type'] = ($task_type=="")?0:$task_type;
+			$data['client_id'] = $clientid;
+			$data['subject'] = $subject_class;
+			$data['task_specifics'] = $task_specifics;
+			$data['due_date'] = $due_date_change;
+			$auto_close = Input::get('auto_close_task');
+			$two_bill = Input::get('2_bill_task');
+
+			if($auto_close == "1")
+			{
+				$data['auto_close'] = 1;
+			}
+			else{
+				$data['auto_close'] = 0;
+			}
+
+			if($two_bill == "1")
+			{
+				$data['two_bill'] = 1;
+			}
+			else{
+				$data['two_bill'] = 0;
+			}
+			
+			if($accept_recurring == "1")
+			{
+				$data['recurring_task'] = $recurring;
+				$data['recurring_days'] = $days;
+			}
+			else{
+				$data['recurring_task'] = 0;
+				$data['recurring_days'] = 0;
+			}
+
+			$task_id = DB::table('taskmanager')->insertGetid($data);
+
+			$taskids = 'A'.sprintf("%04d", $task_id);
+			$dataupdate['taskid'] = $taskids;
+			DB::table('taskmanager')->where('id',$task_id)->update($dataupdate);
+
+			if(Session::has('task_file_attach_add'))
+			{
+				$files = Session::get('task_file_attach_add');
+				$upload_dir = 'uploads/taskmanager_image';
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+				$upload_dir = $upload_dir.'/'.base64_encode($task_id);
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+	     		$dir = "uploads/taskmanager_image/temp";
+			    $dirNew = $upload_dir;
+
+			    if (is_dir($dir)) {
+			        if ($dh = opendir($dir)) {
+			            while (($file = readdir($dh)) !== false) {
+				            if ($file==".") continue;
+				            if ($file=="..")continue;
+				            if(file_exists($dir.'/'.$file)){
+				            	rename($dir.'/'.$file,$dirNew.'/'.$file);
+				            }
+			            }
+			            closedir($dh);
+			        }
+			    }
+
+				foreach($files as $file)
+				{
+					$dataval['task_id'] = $task_id;
+	     			$dataval['url'] = $upload_dir;
+					$dataval['filename'] = $file['attachment'];
+
+					DB::table('taskmanager_files')->insert($dataval);
+				}
+			}
+			if(Session::has('notepad_attach_task_add'))
+			{
+				$files = Session::get('notepad_attach_task_add');
+				foreach($files as $file)
+				{
+					$upload_dir = 'uploads/taskmanager_image';
+					if (!file_exists($upload_dir)) {
+						mkdir($upload_dir);
+					}
+					$upload_dir = $upload_dir.'/'.base64_encode($task_id);
+					if (!file_exists($upload_dir)) {
+						mkdir($upload_dir);
+					}
+					if(file_exists("uploads/taskmanager_image/temp/".$file['attachment']))
+					{
+						rename("uploads/taskmanager_image/temp/".$file['attachment'], $upload_dir.'/'.$file['attachment']);
+					}
+
+					$dataval_notepad['task_id'] = $task_id;
+					$dataval_notepad['filename'] = $file['attachment'];
+					$dataval_notepad['url'] = $upload_dir;
+
+					DB::table('taskmanager_notepad')->insert($dataval_notepad);
+				}
+			}
+			$infiles = explode(",",Input::get('hidden_infiles_id'));
+			if(count($infiles))
+			{
+				foreach($infiles as $infile)
+				{
+					if($infile != "" && $infile != "0")
+					{
+						$dataval_infile['task_id'] = $task_id;
+						$dataval_infile['infile_id'] = $infile;
+						DB::table('taskmanager_infiles')->insert($dataval_infile);
+					}
+				}
+			}
+
+			$dataupdate_spec_status['author_spec_status'] = 0;
+			$dataupdate_spec_status['allocated_spec_status'] = 1;
+			DB::table('taskmanager')->where('id',$task_id)->update($dataupdate_spec_status);
+			
+			$author = $author;
+			$user_details = DB::table('user')->where('user_id',$author)->first();
+			$task_specifics = $task_specifics.PHP_EOL;
+			if($allocate_user != "")
+			{
+				$allocated_user = DB::table('user')->where('user_id',$allocate_user)->first();
+				$message = '<spam style="color:#006bc7">---TASK CREATED - <strong>'.$creation_date.'</strong> BY <strong>'.$user_details->lastname.' '.$user_details->firstname.'</strong> AND ALLOCATED TO <strong>'.$allocated_user->lastname.' '.$allocated_user->firstname.'</strong> DUE BY <strong>'.$due_date.'</strong>---</spam>';
+
+				$task_specifics.=$message;
+				$data_specifics['to_user'] = $allocate_user;
+				$data_specifics['allocated_date'] = date('Y-m-d H:i:s');
+
+				$dataemail['author_name'] = $user_details->lastname.' '.$user_details->firstname;
+				$dataemail['allocated_name'] = $allocated_user->lastname.' '.$allocated_user->firstname;
+				$dataemail['creation_date'] = $creation_date;
+				$dataemail['due_date'] = $due_date;
+
+				$author_email = $user_details->email;
+				$allocated_email = $allocated_user->email;
+			}
+			else{
+				$message = '<spam style="color:#006bc7">---TASK CREATED - <strong>'.$creation_date.'</strong> BY <strong>'.$user_details->lastname.' '.$user_details->firstname.'</strong> DUE BY <strong>'.$due_date.'</strong>---</spam>';
+				$task_specifics.=$message;
+				$dataemail['author_name'] = $user_details->lastname.' '.$user_details->firstname;
+				$dataemail['allocated_name'] = '';
+				$dataemail['creation_date'] = $creation_date;
+				$dataemail['due_date'] = $due_date;
+
+				$author_email = $user_details->email;
+				$allocated_email = '';
+			}
+
+			$datavat['task_id'] = $task_id;
+			$datavat['client_id'] = $vat_client;
+			$datavat['month'] = $month;
+			$datavat['status'] = 0;
+			DB::table('taskmanager_vat')->insert($datavat);
+
+			$data_specifics['task_id'] = $task_id;
+			$data_specifics['message'] = $message;
+			$data_specifics['from_user'] = $author;
+			$data_specifics['created_date'] = $creation_date_change;
+			$data_specifics['due_date'] = $due_date;
+			$data_specifics['status'] = 1;
+
+			DB::table('taskmanager_specifics')->insert($data_specifics);
+
+			$task_specifics = strip_tags($task_specifics);
+
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+			$task_specifics = str_replace("&amp;", "&", $task_specifics);
+
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+
+			$uploads = 'papers/task_specifics.txt';
+			$myfile = fopen($uploads, "w") or die("Unable to open file!");
+			fwrite($myfile, $task_specifics);
+			fclose($myfile);
+
+			$dataemail['logo'] = URL::to('assets/images/easy_payroll_logo.png');
+			$dataemail['subject'] = $subject_cls;
+
+			$subject_email = 'Task Manager: New Task has been created: '.$subject_cls;	
+
+			if($allocate_user != "")
+			{
+				$contentmessage2 = view('emails/task_manager/create_new_task_email_allocated', $dataemail)->render();
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+
+				$email = new PHPMailer();
+				$email->SetFrom('info@gbsco.ie');
+				$email->Subject   = $subject_email;
+				$email->Body      = $contentmessage2;
+				$email->IsHTML(true);
+				$email->AddAddress( $allocated_email );
+				$email->AddAttachment( $uploads , 'task_specifics.txt' );
+				$email->Send();		
+			}
+
+			return redirect::back()->with('task_message', 'Task Created successfully')->with('vat_client_id', $vat_client);
+		}
+		else{
+			$specific_type = Input::get('hidden_specific_type');
+			$attachment_type = Input::get('hidden_attachment_type');
+			$taskidval = Input::get('hidden_task_id_copy_task');
+
+			$task_details = DB::table('taskmanager')->where('id',$taskidval)->first();
+
+			if($specific_type == "1")
+			{
+				$task_specifics = $task_details->task_specifics;
+			}
+			else{
+				$task_specifics = Input::get('task_specifics');
+			}
+
+			$author = Input::get('select_user');
+			$creation_date = Input::get('created_date');
+			$allocate_user = Input::get('allocate_user');
+			$internal_checkbox = Input::get('internal_checkbox');
+			$task_type = Input::get('idtask');
+			$clientid = Input::get('clientid');
+			$subject_class = Input::get('subject_class');
+			$due_date = Input::get('due_date');
+			$recurring = Input::get('recurring_checkbox');
+
+			$task_specifics_val = strip_tags($task_specifics);
+			
+			if($subject_class == "")
+			{
+				$subject_cls = substr($task_specifics_val,0,30);
+			}
+			else{
+				$subject_cls = $subject_class;
+			}
+
+			if($recurring == "1"){ $days = '30'; }
+			elseif($recurring == "2"){ $days = '7'; }
+			elseif($recurring == "3"){ $days = '1'; }
+			else{ $days = Input::get('specific_recurring'); }
+
+			$creation_date_change = DateTime::createFromFormat('d-M-Y', $creation_date);
+			$creation_date_change = $creation_date_change->format('Y-m-d');
+
+			$due_date_change = DateTime::createFromFormat('d-M-Y', $due_date);
+			$due_date_change = $due_date_change->format('Y-m-d');
+
+			$data['author'] = $author;
+			$data['creation_date'] = $creation_date_change;
+			$data['allocated_to'] = $allocate_user;
+			$data['internal'] = ($internal_checkbox=="")?0:$internal_checkbox;
+			$data['task_type'] = ($task_type=="")?0:$task_type;
+			$data['client_id'] = $clientid;
+			$data['subject'] = $subject_class;
+			$data['task_specifics'] = $task_specifics;
+			$data['due_date'] = $due_date_change;
+			$data['recurring_task'] = $recurring;
+			$data['recurring_days'] = $days;
+			$auto_close = Input::get('auto_close_task');
+			$two_bill = Input::get('2_bill_task');
+			if($auto_close == "1")
+			{
+				$data['auto_close'] = 1;
+			}
+			else{
+				$data['auto_close'] = 0;
+			}
+
+			if($two_bill == "1")
+			{
+				$data['two_bill'] = 1;
+			}
+			else{
+				$data['two_bill'] = 0;
+			}
+
+			$task_id = DB::table('taskmanager')->insertGetid($data);
+
+			$taskids = 'A'.sprintf("%04d", $task_id);
+			$dataupdate['taskid'] = $taskids;
+			DB::table('taskmanager')->where('id',$task_id)->update($dataupdate);
+
+			if(Session::has('task_file_attach_add'))
+			{
+				$files = Session::get('task_file_attach_add');
+				$upload_dir = 'uploads/taskmanager_image';
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+				$upload_dir = $upload_dir.'/'.base64_encode($task_id);
+				if (!file_exists($upload_dir)) {
+					mkdir($upload_dir);
+				}
+	     		$dir = "uploads/taskmanager_image/temp";
+			    $dirNew = $upload_dir;
+
+			    if (is_dir($dir)) {
+			        if ($dh = opendir($dir)) {
+			            while (($file = readdir($dh)) !== false) {
+				            if ($file==".") continue;
+				            if ($file=="..")continue;
+				            if(file_exists($dir.'/'.$file)){
+				            	rename($dir.'/'.$file,$dirNew.'/'.$file);
+				            }
+			            }
+			            closedir($dh);
+			        }
+			    }
+
+				foreach($files as $file)
+				{
+					$dataval['task_id'] = $task_id;
+	     			$dataval['url'] = $upload_dir;
+					$dataval['filename'] = $file['attachment'];
+
+					DB::table('taskmanager_files')->insert($dataval);
+				}
+			}
+			if(Session::has('notepad_attach_task_add'))
+			{
+				$files = Session::get('notepad_attach_task_add');
+				foreach($files as $file)
+				{
+					$upload_dir = 'uploads/taskmanager_image';
+					if (!file_exists($upload_dir)) {
+						mkdir($upload_dir);
+					}
+					$upload_dir = $upload_dir.'/'.base64_encode($task_id);
+					if (!file_exists($upload_dir)) {
+						mkdir($upload_dir);
+					}
+					if(file_exists("uploads/taskmanager_image/temp/".$file['attachment']))
+					{
+						rename("uploads/taskmanager_image/temp/".$file['attachment'], $upload_dir.'/'.$file['attachment']);
+					}
+
+					$dataval_notepad['task_id'] = $task_id;
+					$dataval_notepad['filename'] = $file['attachment'];
+					$dataval_notepad['url'] = $upload_dir;
+
+					DB::table('taskmanager_notepad')->insert($dataval_notepad);
+				}
+			}
+			$infiles = explode(",",Input::get('hidden_infiles_id'));
+			if(count($infiles))
+			{
+				foreach($infiles as $infile)
+				{
+					if($infile != "" && $infile != "0")
+					{
+						$dataval_infile['task_id'] = $task_id;
+						$dataval_infile['infile_id'] = $infile;
+						DB::table('taskmanager_infiles')->insert($dataval_infile);
+					}
+				}
+			}
+
+			if($specific_type == "1")
+			{
+				$task_details = DB::table('taskmanager')->where('id',$taskidval)->first();
+
+				$specifics = DB::table('taskmanager_specifics')->where('task_id',$taskidval)->get();
+				if(count($specifics))
+				{
+					foreach($specifics as $specific)
+					{
+						$datacopyspec['task_id'] = $task_id;
+						$datacopyspec['message'] = $specific->message;
+						$datacopyspec['from_user'] = $specific->from_user;
+						$datacopyspec['to_user'] = $specific->to_user;
+						$datacopyspec['created_date'] = $specific->created_date;
+						$datacopyspec['allocated_date'] = $specific->allocated_date;
+						$datacopyspec['due_date'] = $specific->due_date;
+						$datacopyspec['status'] = $specific->status;
+
+						DB::table('taskmanager_specifics')->insert($datacopyspec);
+					}
+				}
+			}
+
+			if($attachment_type == "1")
+			{
+				$copied_files = Input::get('copy_files');
+				$copied_notes = Input::get('copy_notes');
+				$copied_infiles = Input::get('copy_infiles');
+				if(count($copied_files))
+				{
+					foreach($copied_files as $file)
+					{
+						$detailsval = DB::table('taskmanager_files')->where('id',$file)->first();
+						$datafile['task_id'] = $task_id;
+						$datafile['url'] = $detailsval->url;
+						$datafile['filename'] = $detailsval->filename;
+						$datafile['status'] = $detailsval->status;
+						DB::table('taskmanager_files')->insert($datafile);
+					}
+				}
+
+				if(count($copied_notes))
+				{
+					foreach($copied_notes as $note)
+					{
+						$detailsval = DB::table('taskmanager_notepad')->where('id',$note)->first();
+						$datanote['task_id'] = $task_id;
+						$datanote['url'] = $detailsval->url;
+						$datanote['filename'] = $detailsval->filename;
+						$datanote['status'] = $detailsval->status;
+
+						DB::table('taskmanager_notepad')->insert($datanote);
+					}
+				}
+
+				if(count($copied_infiles))
+				{
+					foreach($copied_infiles as $infile)
+					{
+						$detailsval = DB::table('taskmanager_infiles')->where('id',$infile)->first();
+						$datainfile['task_id'] = $task_id;
+						$datainfile['infile_id'] = $detailsval->infile_id;
+						$datainfile['status'] = $detailsval->status;
+
+						DB::table('taskmanager_infiles')->insert($datainfile);
+					}
+				}
+			}
+
+			$dataupdate_spec_status['author_spec_status'] = 0;
+			$dataupdate_spec_status['allocated_spec_status'] = 1;
+			DB::table('taskmanager')->where('id',$task_id)->update($dataupdate_spec_status);
+
+			$author = $author;
+			$user_details = DB::table('user')->where('user_id',$author)->first();
+
+			$task_specifics = $task_specifics.PHP_EOL;
+			
+			if($allocate_user != "")
+			{
+				$allocated_user = DB::table('user')->where('user_id',$allocate_user)->first();
+				$message = '<spam style="color:#006bc7">---TASK CREATED - <strong>'.$creation_date.'</strong> BY <strong>'.$user_details->lastname.' '.$user_details->firstname.'</strong> AND ALLOCATED TO <strong>'.$allocated_user->lastname.' '.$allocated_user->firstname.'</strong> DUE BY <strong>'.$due_date.'</strong>---</spam>';
+				$task_specifics.=$message;
+				$data_specifics['to_user'] = $allocate_user;
+				$data_specifics['allocated_date'] = date('Y-m-d H:i:s');
+
+				$dataemail['author_name'] = $user_details->lastname.' '.$user_details->firstname;
+				$dataemail['allocated_name'] = $allocated_user->lastname.' '.$allocated_user->firstname;
+				$dataemail['creation_date'] = $creation_date;
+				$dataemail['due_date'] = $due_date;
+
+				$author_email = $user_details->email;
+				$allocated_email = $allocated_user->email;
+			}
+			else{
+				$message = '<spam style="color:#006bc7">---TASK CREATED - <strong>'.$creation_date.'</strong> BY <strong>'.$user_details->lastname.' '.$user_details->firstname.'</strong> DUE BY <strong>'.$due_date.'</strong>---</spam>';
+				$task_specifics.=$message;
+				$dataemail['author_name'] = $user_details->lastname.' '.$user_details->firstname;
+				$dataemail['allocated_name'] = '';
+				$dataemail['creation_date'] = $creation_date;
+				$dataemail['due_date'] = $due_date;
+				$author_email = $user_details->email;
+				$allocated_email = '';
+			}
+
+			$data_specifics['task_id'] = $task_id;
+			$data_specifics['message'] = $message;
+			$data_specifics['from_user'] = $author;
+			$data_specifics['created_date'] = $creation_date_change;
+			$data_specifics['due_date'] = $due_date;
+			$data_specifics['status'] = 1;
+
+			DB::table('taskmanager_specifics')->insert($data_specifics);
+
+			$task_specifics = strip_tags($task_specifics);
+
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			$task_specifics = str_replace("&nbsp;", " ", $task_specifics);
+			
+			$uploads = 'papers/task_specifics.txt';
+			$myfile = fopen($uploads, "w") or die("Unable to open file!");
+			fwrite($myfile, $task_specifics);
+			fclose($myfile);
+
+			$dataemail['logo'] = URL::to('assets/images/easy_payroll_logo.png');
+			$dataemail['subject'] = $subject_cls;
+
+			$subject_email = 'Task Manager: New Task has been created: '.$subject_cls;
+			if($allocate_user != "")
+			{
+				$contentmessage2 = view('emails/task_manager/create_new_task_email_allocated', $dataemail)->render();
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+				$contentmessage2 = str_replace("â€“", "-", $contentmessage2);
+
+				$email = new PHPMailer();
+				$email->SetFrom('info@gbsco.ie');
+				$email->Subject   = $subject_email;
+				$email->Body      = $contentmessage2;
+				$email->IsHTML(true);
+				$email->AddAddress( $allocated_email );
+				$email->AddAttachment( $uploads , 'task_specifics.txt' );
+				$email->Send();		
+			}
+			return redirect::back()->with('task_message', 'Task Created successfully')->with('vat_client_id', $vat_client);
 		}
 	}
 	public function change_taskmanager_user()
@@ -2746,8 +3353,9 @@ class TaskmanagerController extends Controller {
 	                </tr>
 	                <tr>
 	                  <td class="'.$disabled_icon.'">
-	                    <a href="javascript:" class="fa fa-plus faplus_progress '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;"></a>
-	                    <a href="javascript:" class="fa fa-edit fanotepad_progress '.$disabled.'" style="padding:5px;background: #dfdfdf;"></a>';
+	                    <a href="javascript:" class="fa fa-plus faplus_progress '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;" title="Insert Files"></a>
+	                    <a href="javascript:" class="fa fa-edit fanotepad_progress '.$disabled.'" style="padding:5px;background: #dfdfdf;" title="Create Notes"></a>
+	                    <a href="javascript:" class="fa fa-download faprogress_download_all '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;" title="Download All Progress FIles"></a>';
 	                    if($task->client_id != "")
 	                    {
 	                      $open_tasks.='<a href="javascript:" class="infiles_link_progress '.$disabled.'" data-element="'.$task->id.'">Infiles</a>';
@@ -3378,8 +3986,9 @@ class TaskmanagerController extends Controller {
 	                </tr>
 	                <tr>
 	                  <td class="'.$disabled_icon.'">
-	                    <a href="javascript:" class="fa fa-plus faplus_progress '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;"></a>
-	                    <a href="javascript:" class="fa fa-edit fanotepad_progress '.$disabled.'" style="padding:5px;background: #dfdfdf;"></a>';
+	                    <a href="javascript:" class="fa fa-plus faplus_progress '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;" title="Insert Files"></a>
+	                    <a href="javascript:" class="fa fa-edit fanotepad_progress '.$disabled.'" style="padding:5px;background: #dfdfdf;" title="Create Notes"></a>
+	                    <a href="javascript:" class="fa fa-download faprogress_download_all '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;" title="Download All Progress FIles"></a>';
 	                    if($task->client_id != "")
 	                    {
 	                      $open_tasks.='<a href="javascript:" class="infiles_link_progress '.$disabled.'" data-element="'.$task->id.'">Infiles</a>';
@@ -4352,8 +4961,9 @@ class TaskmanagerController extends Controller {
 				    </tr>
 				    <tr>
 				      <td class="'.$disabled_icon.'">
-				        <a href="javascript:" class="fa fa-plus faplus_progress '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;"></a>
-				        <a href="javascript:" class="fa fa-edit fanotepad_progress '.$disabled.'" style="padding:5px;background: #dfdfdf;"></a>';
+				        <a href="javascript:" class="fa fa-plus faplus_progress '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;" title="Insert Files"></a>
+				        <a href="javascript:" class="fa fa-edit fanotepad_progress '.$disabled.'" style="padding:5px;background: #dfdfdf;" title="Create Notes"></a>
+				        <a href="javascript:" class="fa fa-download faprogress_download_all '.$disabled.'" data-element="'.$task->id.'" style="padding:5px;background: #dfdfdf;" title="Download All Progress FIles"></a>';
 				        if($task->client_id != "")
 				        {
 				          $open_tasks.='<a href="javascript:" class="infiles_link_progress '.$disabled.'" data-element="'.$task->id.'">Infiles</a>';
@@ -5666,6 +6276,27 @@ class TaskmanagerController extends Controller {
 		}
 		fclose($file);
    	 	echo $filename;
+	}
+	public function taskmanager_download_all_progress_files()
+	{
+		$id = Input::get('id');
+		$task_details = DB::table('taskmanager')->where('id',$id)->first();
+		$files = DB::table('taskmanager_files')->where('task_id',$id)->where('status',1)->get();
+		if(count($files))
+		{
+			$public_dir=public_path();
+			$zipFileName = 'Progress Files for Task ID '.$task_details->taskid.'.zip';
+			$zip = new ZipArchive;
+	       	if ($zip->open($public_dir . '/' . $zipFileName, ZipArchive::CREATE) === TRUE) {
+				foreach($files as $file)
+				{
+					$filename = $file->filename;
+		            $zip->addFile($file->url.'/'.$file->filename,$filename);
+				}
+				$zip->close();
+			}
+			echo $zipFileName;
+		}
 	}
 }
 

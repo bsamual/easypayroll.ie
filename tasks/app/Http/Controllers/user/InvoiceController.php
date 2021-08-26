@@ -100,7 +100,7 @@ class InvoiceController extends Controller {
 									<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 									<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 									<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
-									<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+									<td class="jids" align="left" style="'.$textcolor.'"><a href="javascript:" class="journal_id_viewer" data-element="'.$jids.'">'.$jids.'</a></td>
 								</tr>
 							';
 							$i++;
@@ -182,7 +182,7 @@ class InvoiceController extends Controller {
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
-							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'"><a href="javascript:" class="journal_id_viewer" data-element="'.$jids.'">'.$jids.'</a></td>
 						</tr>
 					';
 					$i++;
@@ -341,7 +341,7 @@ class InvoiceController extends Controller {
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'.$statementtext.'</td>
-							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'"><a href="javascript:" class="journal_id_viewer" data-element="'.$jids.'">'.$jids.'</a></td>
 						</tr>
 					';
 					$i++;
@@ -416,7 +416,7 @@ class InvoiceController extends Controller {
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'. $statementtext.'</td>
-							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'"><a href="javascript:" class="journal_id_viewer" data-element="'.$jids.'">'.$jids.'</a></td>
 						</tr>
 					';
 					$i++;
@@ -1937,7 +1937,7 @@ class InvoiceController extends Controller {
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
-							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'"><a href="javascript:" class="journal_id_viewer" data-element="'.$jids.'">'.$jids.'</a></td>
 						</tr>
 					';
 					$i++;
@@ -2023,7 +2023,7 @@ class InvoiceController extends Controller {
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
-							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
+							<td class="jids" align="left" style="'.$textcolor.'"><a href="javascript:" class="journal_id_viewer" data-element="'.$jids.'">'.$jids.'</a></td>
 						</tr>
 					';
 					$i++;

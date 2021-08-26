@@ -1856,3 +1856,43 @@ Route::post('/user/export_csv_client_opening','user\FinancialController@export_c
 Route::post('/user/check_financial_opening_bal_date','user\InvoiceController@check_financial_opening_bal_date');
 
 Route::post('/user/remove_client_from_year','user\YearendController@remove_client_from_year');
+
+Route::post('/user/croard_upload_images', 'user\CroardController@croard_upload_images');
+Route::post('/user/get_company_details_next_crd', 'user\CroardController@get_company_details_next_crd');
+Route::get('/user/edit_email_unsent_files_croard', 'user\CroardController@edit_email_unsent_files_croard');
+Route::post('/user/email_unsent_files_croard', 'user\CroardController@email_unsent_files_croard');
+Route::post('/user/change_yellow_status_croard', 'user\CroardController@change_yellow_status_croard');
+Route::post('/user/save_croard_signature_date', 'user\CroardController@save_croard_signature_date');
+Route::post('/user/croard_get_yellow_status_clients', 'user\CroardController@croard_get_yellow_status_clients');
+Route::post('/user/check_cro_in_api', 'user\CroardController@check_cro_in_api');
+
+Route::post('/user/update_email_setting', 'user\UserController@update_email_setting');
+Route::post('/user/show_journal_viewer_by_journal_id', 'user\UserController@show_journal_viewer_by_journal_id');
+Route::post('/user/download_journal_viewer_by_journal_id', 'user\UserController@download_journal_viewer_by_journal_id');
+Route::post('/user/commit_client_account_opening_balance', 'user\FinancialController@commit_client_account_opening_balance');
+
+Route::get('/user/taskmanager_download_all_progress_files', 'user\TaskmanagerController@taskmanager_download_all_progress_files');
+Route::post('/user/create_new_taskmanager_task_vat', 'user\TaskmanagerController@create_new_taskmanager_task_vat');
+Route::post('/user/create_new_taskmanager_task_croard', 'user\TaskmanagerController@create_new_taskmanager_task_croard');
+
+Route::post('/user/edit_bank_account_finance', 'user\FinancialController@edit_bank_account_finance');
+Route::post('/user/update_bank_financial', 'user\FinancialController@update_bank_financial');
+
+
+Route::post('/user/get_client_review_for_year', 'user\UserController@get_client_review_for_year');
+Route::post('/user/download_selected_periods_vat_attachments', 'user\UserController@download_selected_periods_vat_attachments');
+
+
+Route::get('/user/payment_management','user\PaymentController@payment_management');
+Route::post('/user/payment_move_to_allowable_list','user\PaymentController@payment_move_to_allowable_list');
+Route::post('/user/payment_save_details','user\PaymentController@payment_save_details');
+Route::post('/user/payment_update_details','user\PaymentController@payment_update_details');
+Route::get('/user/payment_common_client_search', 'user\PaymentController@payment_commonclient_search');
+Route::post('/user/load_payment', 'user\PaymentController@load_payment');
+Route::post('/user/export_load_payment', 'user\PaymentController@export_load_payment');
+Route::post('/user/payment_change_to_unhold', 'user\PaymentController@payment_change_to_unhold');
+Route::post('/user/import_new_payment','user\PaymentController@import_new_payment');
+Route::get('/user/import_new_payment_one', 'user\PaymentController@import_new_payment_one');
+Route::post('/user/add_payment_export_csv', 'user\PaymentController@add_payment_export_csv');
+Route::post('/user/check_import_csv_payment','user\PaymentController@check_import_csv_payment');
+Route::get('/user/check_import_csv_one_payment/{id?}','user\PaymentController@check_import_csv_one_payment');

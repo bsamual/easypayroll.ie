@@ -59,6 +59,25 @@ body.loading {
 body.loading .modal_load {
     display: block;
 }
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
 .disclose_label{ width:300px; }
 .option_label{width:100%;}
 table{
@@ -1129,7 +1148,9 @@ input:checked + .slider:before {
 <input type="hidden" name="progress_sortoptions" id="progress_sortoptions" value="asc">
 <input type="hidden" name="redlight_sortoptions" id="redlight_sortoptions" value="asc">
 <div class="modal_load"></div>
-
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Resetting Stop Navigation.</p>
+</div>
 <script>
 <?php
 if(!empty($_GET['tr_task_id']))
@@ -1219,7 +1240,21 @@ var convertToNumber = function(value){
 var parseconvertToNumber = function(value){
        return parseInt(value);
 }
+function event_load()
+{
+  $('.create_new_model').on('shown.bs.modal', function () {
+      $(window).bind('beforeunload', function() {
+        return 'You have unsaved changes which will not be saved.';
+      });
+  });
+  $('.create_new_model').on('hidden.bs.modal', function () {   
+    $("body").addClass("loading_apply");
+    $(window).unbind('beforeunload');
+     window.location.reload(true);
+  });
+}
 $(window).click(function(e) {
+  event_load();
   if($(e.target).hasClass('cant_edit_task'))
   {
     alert("You are not authorized to edit this task. You should be either an author or the allocated user to edit this task");
@@ -1433,6 +1468,37 @@ $(window).click(function(e) {
 			ascending = ascending ? false : true;
 			$('#task_body_layout').html(sorted);
 		}
+    if($(e.target).hasClass('faprogress_download_all')){
+        var lenval = $(e.target).parents("tbody:first").find(".file_attachments").length;
+        if(lenval > 0)
+        {
+            $("body").addClass("loading");
+            var id = $(e.target).attr('data-element');
+            $.ajax({
+
+                url:"<?php echo URL::to('user/taskmanager_download_all_progress_files'); ?>",
+                type:"get",
+                data:{id:id},
+                success: function(result) {
+                    SaveToDisk("<?php echo URL::to('public'); ?>/"+result,result);
+                    setTimeout(function() {
+                      $.ajax({
+                        url:"<?php echo URL::to('user/delete_file_link'); ?>",
+                        type:"post",
+                        data:{result:result},
+                        success: function(result)
+                        {
+                          $("body").removeClass("loading");
+                        }
+                      });
+                    },3000);
+                }
+            });
+        }
+        else{
+          alert("There are no Progress Files attached to download.");
+        }
+    }
 		if($(e.target).hasClass('export_csv'))
 		{
 		    $("body").addClass("loading");
@@ -1880,6 +1946,7 @@ $(window).click(function(e) {
             else{
               if($(".2_bill_task").is(":checked"))
               {
+                $(window).unbind('beforeunload');
                 $("#create_job_form").submit();
               }
               else{
@@ -1890,6 +1957,7 @@ $(window).click(function(e) {
           else{
             if($(".2_bill_task").is(":checked"))
             {
+              $(window).unbind('beforeunload');
               $("#create_job_form").submit();
             }
             else{
@@ -1900,11 +1968,13 @@ $(window).click(function(e) {
       }
       if($(e.target).hasClass('yes_make_task_live'))
       {
+        $(window).unbind('beforeunload');
         $(".2_bill_task").prop("checked",true);
         $("#create_job_form").submit();
       }
       if($(e.target).hasClass('no_make_task_live'))
       {
+        $(window).unbind('beforeunload');
         $(".2_bill_task").prop("checked",false);
         $("#create_job_form").submit();
       }

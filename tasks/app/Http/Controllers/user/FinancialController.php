@@ -124,9 +124,36 @@ class FinancialController extends Controller {
 		
 		$id = DB::table('financial_banks')->insertGetid($data);
 
+		$dataval['description'] = $description;
+		DB::table('nominal_codes')->where('code',$code)->update($dataval);
+
 		$bank_count = DB::table('financial_banks')->get();
 
 		echo json_encode(array("id" => $id,"bank_name" => $bank_name, "account_name" => $account_name,"account_no" => $account_no,"description" => $description, "code" => $code,"bank_counts" => count($bank_count)));
+	}
+	public function update_bank_financial()
+	{
+		$bank_name = Input::get('bank_name');
+		$account_name = Input::get('account_name');
+		$account_no = Input::get('account_no');
+		$description = Input::get('description');
+		$id = Input::get('bank_id');
+
+		$data['bank_name'] = $bank_name;
+		$data['account_name'] = $account_name;
+		$data['account_number'] = $account_no;
+		$data['description'] = $description;
+		
+		DB::table('financial_banks')->where('id',$id)->update($data);
+
+		$bank_code = DB::table('financial_banks')->where('id',$id)->first();
+		
+		$dataval['description'] = $description;
+		DB::table('nominal_codes')->where('code',$bank_code->nominal_code)->update($dataval);
+
+		$bank_count = DB::table('financial_banks')->get();
+
+		echo json_encode(array("id" => $id,"bank_name" => $bank_name, "account_name" => $account_name,"account_no" => $account_no,"description" => $description, "code" => $bank_code->nominal_code));
 	}
 	
 	public function edit_nominal_code_finance()
@@ -240,6 +267,7 @@ class FinancialController extends Controller {
 				$data['debit_balance'] = $debit_balance;
 				$data['credit_balance'] = $credit_balance;
 				DB::table('financial_banks')->where('id',$id)->update($data);
+				echo $journal_id;
 			}
 			else{
 				$count_total_journals = DB::table('journals')->groupBy('reference')->get();
@@ -283,6 +311,8 @@ class FinancialController extends Controller {
 				$data['credit_balance'] = $credit_balance;
 				$data['journal_id'] = $next_connecting_journal;
 				DB::table('financial_banks')->where('id',$id)->update($data);
+
+				echo $next_connecting_journal;
 			}
 		}
 	}
@@ -338,7 +368,7 @@ class FinancialController extends Controller {
 			{
 				$get_nominal = DB::table('nominal_codes')->where('code',$journal->nominal_code)->first();
 				$output.='<tr>
-					<td>'.$journal->connecting_journal_reference.'</td>
+					<td><a href="javascript:" class="journal_id_viewer" data-element="'.$journal->connecting_journal_reference.'">'.$journal->connecting_journal_reference.'</a></td>
 					<td>'.date('d-M-Y',strtotime($journal->journal_date)).'</td>
 					<td>'.$journal->description.'</td>
 					<td>'.$journal->nominal_code.'</td>
@@ -458,5 +488,87 @@ class FinancialController extends Controller {
 		}
 		fclose($file);
 		echo $filename;
+	}
+	public function commit_client_account_opening_balance()
+	{
+		$client_id = Input::get('client_id');
+		$finance_client = DB::table('finance_clients')->where('client_id',$client_id)->first();
+		$get_sets = DB::table('journals')->groupBy('reference')->get();
+		$next_ref_id = count($get_sets) + 1;
+		if(count($finance_client))
+		{
+			$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+			$opening_dete_details = DB::table('user_login')->where('id',Session::get('userid'))->first();
+
+			if($finance_client->debit > 0)
+			{
+				$data['journal_date'] = $opening_dete_details->opening_balance_date;
+				$data['description'] = 'Client Account Open Bal '.$client_id.' '.$client_details->company;
+				$data['journal_source'] = 'CFA';
+				$data['nominal_code'] = '813A';
+				$data['dr_value'] = $finance_client->debit;
+				$data['cr_value'] = '0.00';
+				$data['connecting_journal_reference'] = $next_ref_id;
+				$data['reference'] = 'CFA'.$finance_client->id;
+
+				DB::table('journals')->insert($data);
+
+				$data['journal_date'] = $opening_dete_details->opening_balance_date;
+				$data['description'] = 'Client Account Open Bal '.$client_id.' '.$client_details->company;
+				$data['journal_source'] = 'CFA';
+				$data['nominal_code'] = '991';
+				$data['dr_value'] = '0.00';
+				$data['cr_value'] = $finance_client->debit;
+				$data['connecting_journal_reference'] = $next_ref_id.'.01';
+				$data['reference'] = 'CFA'.$finance_client->id;
+
+				DB::table('journals')->insert($data);
+
+				$dataval['journal_id'] = $next_ref_id;
+				DB::table('finance_clients')->where('id',$finance_client->id)->update($dataval);
+				echo $next_ref_id;
+			}
+			elseif($finance_client->credit > 0)
+			{
+				$data['journal_date'] = $opening_dete_details->opening_balance_date;
+				$data['description'] = 'Client Account Open Bal '.$client_id.' '.$client_details->company;
+				$data['journal_source'] = 'CFA';
+				$data['nominal_code'] = '991';
+				$data['dr_value'] = $finance_client->credit;
+				$data['cr_value'] = '0.00';
+				$data['connecting_journal_reference'] = $next_ref_id;
+				$data['reference'] = 'CFA'.$finance_client->id;
+
+				DB::table('journals')->insert($data);
+
+				$data['journal_date'] = $opening_dete_details->opening_balance_date;
+				$data['description'] = 'Client Account Open Bal '.$client_id.' '.$client_details->company;
+				$data['journal_source'] = 'CFA';
+				$data['nominal_code'] = '813A';
+				$data['dr_value'] = '0.00';
+				$data['cr_value'] = $finance_client->credit;
+				$data['connecting_journal_reference'] = $next_ref_id.'.01';
+				$data['reference'] = 'CFA'.$finance_client->id;
+
+				DB::table('journals')->insert($data);
+
+				$dataval['journal_id'] = $next_ref_id;
+				DB::table('finance_clients')->where('id',$finance_client->id)->update($dataval);
+				echo $next_ref_id;
+			}
+		}
+	}
+	public function edit_bank_account_finance()
+	{
+		$bank_id = Input::get('id');
+		$banks = DB::table('financial_banks')->where('id',$bank_id)->first();
+		if(count($banks))
+		{
+			$data['bank_name'] = $banks->bank_name;
+			$data['account_name'] = $banks->account_name;
+			$data['account_no'] = $banks->account_number;
+			$data['description'] = $banks->description;
+			echo json_encode($data);
+		}
 	}
 }

@@ -13,7 +13,9 @@
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 
 <style>
-
+#colorbox{
+  z-index:99999999;
+}
 .label_class{
   width:20%;
   float: left;
@@ -216,7 +218,7 @@ a:hover{text-decoration: underline;}
         <h4 class="modal-title" id="myModalLabel">
           Client Account Opening Balance Manager
           <div style="float:right;margin-right: 24px;font-size: 16px;margin-top: 5px;">
-            <input type="button" name="export_csv_client_opening" class="common_black_button export_csv_client_opening" value="Export Csv">
+            <input type="button" name="export_csv_client_opening" class="common_black_button export_csv_client_opening" value="Export CSV">
             <label>Client Account Opening Balance Date: </label> <spam class="opening_balance_date_spam"></spam>
           </div>
         </h4>
@@ -253,6 +255,7 @@ a:hover{text-decoration: underline;}
                   $bal_style = '';
                   $owed_text = '';
                   $commit_style="display:none";
+                  $commit_btn = '<input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" data-element="'.$client->client_id.'" style="'.$commit_style.'">';
                   if(count($finance_client))
                   {
                     $debit = ($finance_client->debit != "")?$finance_client->debit:"0.00";
@@ -273,6 +276,14 @@ a:hover{text-decoration: underline;}
                         $commit_style = 'display:block'; 
                       }
                     }
+
+                    if($finance_client->journal_id == "")
+                    {
+                      $commit_btn = '<input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" data-element="'.$client->client_id.'" style="'.$commit_style.'">';
+                    }
+                    else{
+                      $commit_btn = '<a href="javascript:" class="journal_id_viewer" data-element="'.$finance_client->journal_id.'">'.$finance_client->journal_id.'</a>';
+                    }
                   }
                   echo '<tr class="client_tr_'.$client->client_id.'">
                       <td class="client_sort_val" style="width:8%">'.$client->client_id.'</td>
@@ -285,7 +296,9 @@ a:hover{text-decoration: underline;}
                         <input type="text" class="form-control balance_fin_sort_val balance_fin_sort_val_'.$client->client_id.'" id="balance_fin_sort_val" value="'.$balance.'" style="'.$bal_style.'" disabled>
                         '.$owed_text.'
                       </td>
-                      <td style="width:9%"><input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" style="'.$commit_style.'"></td>
+                      <td style="width:9%">
+                          '.$commit_btn.'
+                      </td>
                     </tr>';
                 }
               }
@@ -321,20 +334,21 @@ a:hover{text-decoration: underline;}
               {
                 foreach($nominal_codes as $codes)
                 {
+                  $des_code = $codes->description;
                   if($codes->type == 0)
                   {
-                    echo '<tr>
+                    echo '<tr class="des_tr_'.$codes->code.'">
                       <td class="code_sort_val">'.$codes->code.' <i class="fa fa-lock" title="Core Nominal"></i></td>
-                      <td class="des_sort_val">'.$codes->description.'</td>
+                      <td class="des_sort_val">'.$des_code.'</td>
                       <td class="primary_sort_val">'.$codes->primary_group.'</td>
                       <td class="debit_sort_val">'.$codes->debit_group.'</td>
                       <td class="credit_sort_val">'.$codes->credit_group.'</td>
                     </tr>';
                   }
                   else{
-                    echo '<tr class="code_'.$codes->code.'">
+                    echo '<tr class="des_tr_'.$codes->code.' code_'.$codes->code.'">
                       <td><a href="javascript:" class="edit_nominal_code code_sort_val" data-element="'.$codes->code.'">'.$codes->code.'</a></td>
-                      <td><a href="javascript:" class="edit_nominal_code des_sort_val" data-element="'.$codes->code.'">'.$codes->description.'</a></td>
+                      <td><a href="javascript:" class="edit_nominal_code des_sort_val" data-element="'.$codes->code.'">'.$des_code.'</a></td>
                       <td><a href="javascript:" class="edit_nominal_code primary_sort_val" data-element="'.$codes->code.'">'.$codes->primary_group.'</a></td>
                       <td><a href="javascript:" class="edit_nominal_code debit_sort_val" data-element="'.$codes->code.'">'.$codes->debit_group.'</a></td> 
                       <td><a href="javascript:" class="edit_nominal_code credit_sort_val" data-element="'.$codes->code.'">'.$codes->credit_group.'</a></td>
@@ -356,6 +370,7 @@ a:hover{text-decoration: underline;}
           <a href="javascript:" class="common_black_button save_opening_balance_btn" style="display:none;line-height: 32px;float:left">Save</a>
         <input type="hidden" name="request_id_email_client" id="request_id_email_client" value="">
         <input type="button" class="common_black_button bank_account_manager" value="Bank Account Manager" style="float:right">
+        <a class="common_black_button" href="<?php echo URL::to('user/opening_balance_manager'); ?>" style="float:right">Opening Balances</a>
       </div>
     </div>
   </div>
@@ -400,7 +415,7 @@ a:hover{text-decoration: underline;}
   </div>
 </div>
 <div class="modal fade bank_account_manager_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog" role="document" style="width:45%">
+  <div class="modal-dialog" role="document" style="width:60%">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -415,6 +430,8 @@ a:hover{text-decoration: underline;}
             <th style="text-align: left">Account Number</th>
             <th style="text-align: left">Description</th>
             <th style="text-align: left">Nominal Code</th>
+            <th style="text-align: left">Opening Balance</th>
+            <th style="text-align: left">Journal</th>
             <th style="text-align: left">Action</th>
           </thead>
           <tbody id="bank_tbody">
@@ -424,13 +441,37 @@ a:hover{text-decoration: underline;}
             {
               foreach($banks as $bank)
               {
+                if($bank->debit_balance != "")
+                {
+                  $baln = number_format_invoice($bank->debit_balance);
+                }
+                elseif($bank->credit_balance != "")
+                {
+                  $baln = '-'.number_format_invoice($bank->credit_balance);
+                }
+                else{
+                  $baln = '';
+                }
+
+                if($bank->journal_id == 0)
+                {
+                  $journal_id = '';
+                }
+                else{
+                  $journal_id = $bank->journal_id;
+                }
                 echo '<tr class="bank_'.$bank->id.'">
                     <td>'.$bank->bank_name.'</td>
                     <td>'.$bank->account_name.'</td>
                     <td>'.$bank->account_number.'</td>
                     <td>'.$bank->description.'</td>
                     <td>'.$bank->nominal_code.'</td>
-                    <td><a href="javascript:" class="edit_opening_balance" title="Opening Balance" data-element="'.$bank->id.'"><img src="'.URL::to('assets/images/opening_balance.png').'" class="edit_opening_balance" data-element="'.$bank->id.'" style="width:30px"></a></td>
+                    <td>'.$baln.'</td>
+                    <td><a href="javascript:" class="journal_id_viewer" data-element="'.$journal_id.'">'.$journal_id.'</a></td>
+                    <td>
+                      <a href="javascript:" class="fa fa-edit edit_bank_account" data-element="'.$bank->id.'" title="Edit Bank Description"></a>
+                      <a href="javascript:" class="edit_opening_balance" title="Opening Balance" data-element="'.$bank->id.'"><img src="'.URL::to('assets/images/opening_balance.png').'" class="edit_opening_balance" data-element="'.$bank->id.'" style="width:30px"></a>
+                    </td>
                 </tr>';
               }
             }
@@ -478,6 +519,32 @@ a:hover{text-decoration: underline;}
     </div>
   </div>
 </div>
+<div class="modal fade edit_bank_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Update Bank</h4>
+      </div>
+      <div class="modal-body">
+        <form name="edit_bank_form" id="edit_bank_form" method="post">
+          <h4>Enter Bank Name:</h4>
+          <input type="text" name="bank_name_edit" class="form-control bank_name_edit" id="bank_name_edit" value="">
+          <h4>Enter Account Name:</h4>
+          <input type="text" name="account_name_edit" class="form-control account_name_edit" id="account_name_edit" value="">
+          <h4>Enter Account No:</h4>
+          <input type="text" name="account_no_edit" class="form-control account_no_edit" id="account_no_edit" value="">
+          <h4>Enter Nominal Description:</h4>
+          <textarea name="nominal_description_edit" class="form-control nominal_description_edit" id="nominal_description_edit"></textarea>
+          <input type="hidden" name="hidden_bank_id_update" id="hidden_bank_id_update" value="">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <input type="submit" class="common_black_button update_bank_btn" value="Update Bank">
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade opening_balance_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
@@ -504,14 +571,20 @@ a:hover{text-decoration: underline;}
     </div>
   </div>
 </div>
+
 <div class="content_section" style="margin-bottom:200px">
     <div class="page_title">
       <h4 class="col-lg-12 padding_00 new_main_title">
                 Financials               
             </h4>
-        
-        <div class="col-md-6 padding_00">
-          <div class="col-md-12" style="padding: 0px">
+        <div class="c0l-md-12" style="text-align: right">
+          <input type="button" name="financial_setup" class="common_black_button financial_setup" value="Financial Setup">
+          <input type="button" name="journal_source" class="common_black_button journal_source" value="Journal Source">
+          <input type="button" class="common_black_button client_finance_account_btn" value="Client Finance Account" style="float:right;font-size: 14px;margin-bottom: 10px;">
+        </div>
+        <div class="col-md-6 padding_00" style="margin-top: 10px;">
+          <h4>NOMINAL JOURNAL LISTING</h4>
+          <div class="col-md-12" style="padding: 0px;margin-top:10px">
             <div class="col-md-8 padding_00">
               <input type="radio" name="date_selection" class="date_selection" id="curr_year" value="1"><label for="curr_year">Current Year</label>
               <input type="radio" name="date_selection" class="date_selection" id="prev_year" value="2"><label for="prev_year">Previous Year</label>
@@ -540,10 +613,49 @@ a:hover{text-decoration: underline;}
 
           </div>
         </div>
-        <div class="col-md-6" style="text-align: right">
+        <div class="col-md-6">
+          <h4>TRIAL BALANCE</h4>
+          <div class="col-md-12" style="padding: 0px;margin-top:10px">
+            <div class="col-md-8 padding_00">
+              <input type="radio" name="date_selectio_trialn" class="date_selection_trial" id="curr_year_trial" value="1"><label for="curr_year_trial">Current Year</label>
+              <input type="radio" name="date_selection_trial" class="date_selection_trial" id="prev_year_trial" value="2"><label for="prev_year_trial">Previous Year</label>
+              <input type="radio" name="date_selection_trial" class="date_selection_trial" id="curr_month_trial" value="3" checked><label for="curr_month_trial">Current Month</label>
+              <input type="radio" name="date_selection_trial" class="date_selection_trial" id="custom_trial" value="4"><label for="custom_trial">Custom</label>
+            </div>
+            <div class="col-md-4">
+              <a href="javascript:" class="common_black_button load_balance" style="position: absolute;top: 10px;z-index: 9999;height: 74px;padding-top: 16px;width: 122px;">Load Trial<br/> Balance</a>
+            </div>
+          </div>
+          <div class="col-md-12" style="padding: 0px; margin-top: 20px;" >
+            <label class="col-md-1 padding_00" style="margin-top: 6px;text-align: left;">From:</label>
+            <div class="col-md-3">
+              <input type="text" name="from_custom_date_trial" class="form-control from_custom_date_trial" value="" disabled>
+            </div>
+
+            <label class="col-md-1" style="margin-top: 6px;text-align: right;">To:</label>
+            <div class="col-md-3">
+              <input type="text" name="to_custom_date_trial" class="form-control to_custom_date_trial" value="" disabled>
+            </div>
+          </div>
+          <div class="col-md-12" style="margin-top:5px">
             
-              <input type="button" name="financial_setup" class="common_black_button financial_setup" value="Financial Setup">
-              <input type="button" class="common_black_button client_finance_account_btn" value="Client Finance Account" style="float:right;font-size: 14px;margin-bottom: 10px;">
+          </div>
+          <div class="col-md-12 load_balance_div" style="margin-top:30px;background: #fff; height:800px;max-height: 800px;overflow-y: scroll">
+            <table class="table own_table_white">
+              <thead>
+                <th>Nomainal Code</th>
+                <th>Nomainal Description</th>
+                <th>Primary Group</th>
+                <th>Debit Value</th>
+                <th>Credit Value</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="5" style="text-align:center">No Data's Found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
     </div>
     <!-- End  -->
@@ -1012,6 +1124,23 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#client_tbody').html(sorted);
   }
+  if($(e.target).hasClass('commit_btn'))
+  {
+    var client_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/commit_client_account_opening_balance'); ?>",
+      type:"post",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        $(e.target).parents("td:first").html('<a href="javascript:" class="journal_id_viewer" data-element="'+result+'">'+result+'</a>')
+      }
+    })
+  }
+  if($(e.target).hasClass('journal_source'))
+  {
+    $(".journal_source_viewer_modal").modal("show");
+  }
   if($(e.target).hasClass('export_csv_client_opening'))
   {
     $("body").addClass("loading");
@@ -1104,13 +1233,22 @@ $(window).click(function(e) {
       success:function(result)
       {
         $(".opening_balance_modal").modal("hide");
+        if(debit_balance != "")
+        {
+          $(".bank_"+id).find("td").eq(5).html(debit_balance);
+        }
+        else{
+          $(".bank_"+id).find("td").eq(5).html('-'+credit_balance);
+        }
+
+        $(".bank_"+id).find("td").eq(6).html(result);
       }
     })
   }
   if($(e.target).hasClass('add_bank'))
   {
     $(".add_bank_modal").modal("show");
-
+    $(".add_bank_modal").find(".modal-title").html('Add a Bank');
     $(".add_bank_btn").val("Add Bank");
     $(".bank_name_add").prop("disabled",false);
     $(".account_name_add").val('');
@@ -1215,13 +1353,15 @@ $(window).click(function(e) {
         {
           if(result['bank_counts'] == 0)
           {
-            $("#bank_tbody").html('<tr class="bank_'+result['id']+'"><td>'+bank_name+'</td><td>'+account_name+'</td><td>'+account_no+'</td><td>'+description+'</td><td>'+code+'</td><td><a href="javascript:" class="edit_opening_balance" title="Opening Balance" data-element="'+result['id']+'"><img src="<?php echo URL::to('assets/images/opening_balance.png'); ?>" class="edit_opening_balance" data-element="'+result['id']+'" style="width:30px"></a></td></tr>');  
+            $("#bank_tbody").html('<tr class="bank_'+result['id']+'"><td>'+bank_name+'</td><td>'+account_name+'</td><td>'+account_no+'</td><td>'+description+'</td><td>'+code+'</td><td><a href="javascript:" class="edit_opening_balance" title="Opening Balance" data-element="'+result['id']+'"><img src="<?php echo URL::to('assets/images/opening_balance.png'); ?>" class="edit_opening_balance" data-element="'+result['id']+'" style="width:30px"></a></td><td></td><td></td></tr>');  
               $(".add_bank_modal").modal("hide");
           }
           else{
             $("#bank_tbody").append('<tr class="bank_'+result['id']+'"><td>'+bank_name+'</td><td>'+account_name+'</td><td>'+account_no+'</td><td>'+description+'</td><td>'+code+'</td><td><a href="javascript:" class="edit_opening_balance" title="Opening Balance" data-element="'+result['id']+'"><img src="<?php echo URL::to('assets/images/opening_balance.png'); ?>" class="edit_opening_balance" data-element="'+result['id']+'"  style="width:30px"></a></td></tr>');  
               $(".add_bank_modal").modal("hide");
           }
+
+          $(".des_tr_"+code).find("td").eq(1).html(description);
           
           // if(result['table_type'] == 0)
           // {
@@ -1232,6 +1372,33 @@ $(window).click(function(e) {
           //    $(".bank_"+code).html('<td>'+bank_name+'</td><td>'+account_name+'</td><td>'+account_no+'</td><td>'+code+'</td>');
           //     $(".add_bank_modal").modal("hide");
           // }
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('update_bank_btn'))
+  {
+    if($("#edit_bank_form").valid())
+    {
+      var bank_name = $(".bank_name_edit").val();
+      var account_name = $(".account_name_edit").val();
+      var account_no = $(".account_no_edit").val();
+      var description = $(".nominal_description_edit").val();
+      var bank_id = $("#hidden_bank_id_update").val();
+
+      $.ajax({
+        url:"<?php echo URL::to('user/update_bank_financial'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{bank_name:bank_name,account_name:account_name,account_no:account_no,description:description,bank_id:bank_id},
+        success:function(result)
+        {
+          $(".bank_"+bank_id).find("td").eq(0).html(result['bank_name']);
+          $(".bank_"+bank_id).find("td").eq(1).html(result['account_name']);
+          $(".bank_"+bank_id).find("td").eq(2).html(result['account_no']);
+          $(".bank_"+bank_id).find("td").eq(3).html(result['description']);
+          $(".edit_bank_modal").modal("hide");
+          $(".des_tr_"+result['code']).find("td").eq(1).html(result['description']);
         }
       })
     }
@@ -1311,25 +1478,25 @@ $(window).click(function(e) {
         }
     });
   }
-  // if($(e.target).hasClass('edit_bank_account'))
-  // {
-  //   var id = $(e.target).attr("data-element");
-  //   $.ajax({
-  //       url:"<?php echo URL::to('user/edit_bank_account_finance'); ?>",
-  //       type:"post",
-  //       dataType:"json",
-  //       data:{id:id},
-  //       success:function(result)
-  //       {
-  //         $(".add_bank_btn").val("Update Bank");
-  //         $(".add_bank_modal").modal("show");
-  //         $(".bank_name_add").val(result['bank_name']);
-  //         $(".account_name_add").val(result['account_name']);
-  //         $(".account_no_add").val(result['account_no']);
-  //         $(".bank_code_add").val(result['code']);
-  //       }
-  //   });
-  // }
+  if($(e.target).hasClass('edit_bank_account'))
+  {
+    var id = $(e.target).attr("data-element");
+    $.ajax({
+        url:"<?php echo URL::to('user/edit_bank_account_finance'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{id:id},
+        success:function(result)
+        {
+          $(".edit_bank_modal").modal("show");
+          $(".bank_name_edit").val(result['bank_name']);
+          $(".account_name_edit").val(result['account_name']);
+          $(".account_no_edit").val(result['account_no']);
+          $(".nominal_description_edit").val(result['description']);
+          $("#hidden_bank_id_update").val(id);
+        }
+    });
+  }
   if($(e.target).hasClass('date_selection'))
   {
     var type = $(e.target).val();
@@ -1344,6 +1511,22 @@ $(window).click(function(e) {
 
       $(".from_custom_date").val("");
       $(".to_custom_date").val("");
+    }
+  }
+  if($(e.target).hasClass('date_selection_trial'))
+  {
+    var type = $(e.target).val();
+    if(type == "4")
+    {
+      $(".from_custom_date_trial").prop("disabled",false);
+      $(".to_custom_date_trial").prop("disabled",false);
+    }
+    else{
+      $(".from_custom_date_trial").prop("disabled",true);
+      $(".to_custom_date_trial").prop("disabled",true);
+
+      $(".from_custom_date_trial").val("");
+      $(".to_custom_date_trial").val("");
     }
   }
 });
@@ -1390,6 +1573,28 @@ $('#add_bank_form').validate({
         },
         bank_code_add : {
           required : "Nominal Code is Required",
+        }
+    },
+});
+$('#edit_bank_form').validate({
+    rules: {
+        bank_name_edit : {required: true,},
+        account_name_edit : {required: true,},
+        account_no_edit : {required:true,},
+        nominal_description_edit : {required:true,},
+    },
+    messages: {
+        bank_name_edit : {
+          required : "Bank Name is Required",
+        },
+        account_name_edit : { 
+          required : "Account Name is Required",
+        },
+        account_no_edit : { 
+          required : "Account No is Required",
+        },
+        nominal_description_edit : {
+          required : "Description is Required",
         }
     },
 });
@@ -1474,6 +1679,20 @@ $(window).keyup(function(e) {
         clearTimeout(valueTimmer);
         valueTimmer = setTimeout(doneTyping, valueInterval,bank_name,input_val);   
     }    
+    if($(e.target).hasClass('bank_name_edit'))
+    {        
+        var input_val = $(e.target).val();
+        var account_no = $(".account_no_edit").val();
+        clearTimeout(valueTimmer);
+        valueTimmer = setTimeout(doneTyping_edit, valueInterval,input_val,account_no);   
+    }    
+    if($(e.target).hasClass('account_no_edit'))
+    {        
+        var input_val = $(e.target).val();
+        var bank_name = $(".bank_name_edit").val();
+        clearTimeout(valueTimmer);
+        valueTimmer = setTimeout(doneTyping_edit, valueInterval,bank_name,input_val);   
+    }    
     if($(e.target).hasClass('debit_fin_sort_val'))
     {
       var input_val = $(e.target).val();
@@ -1494,6 +1713,9 @@ $(window).keyup(function(e) {
 });
 function doneTyping (bank_name,account_no) {
   $(".nominal_description_add").val(bank_name+' '+account_no);
+}
+function doneTyping_edit (bank_name,account_no) {
+  $(".nominal_description_edit").val(bank_name+' '+account_no);
 }
 function doneTyping_debit (debit,credit,client_id) {
   $.ajax({

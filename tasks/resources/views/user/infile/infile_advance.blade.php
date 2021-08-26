@@ -887,18 +887,37 @@ else{
   
 
   <div class="row" style="margin-bottom: 10px;margin-top: 20px;">
-
-
-
-    
-
       <div class="col-lg-12">
+      </div>
+      <div class="col-lg-12">
+        <div style="float: left; margin-right: 10px">
+          <label style="float: left; padding-top: 10px;">Search Client ID: </label>
+        </div>
+        <div style="float: left; margin-right: 6px;">
 
+          
+
+          <input type="text" class="form-control client_common_search ui-autocomplete-input" placeholder="Enter Client Name" style="font-weight: 500;margin-bottom: 13px;margin-top:2px;width:350px;float:left" value="<?php echo $company_client; ?>" autocomplete="off">
+
+          <input type="button" class="common_black_button load_single_client" value="Load" style="float: left;width: 100px;margin-top: 3px;">
+
+          <input type="hidden" class="client_search_common" id="client_search_hidden_infile" value="<?php echo $client_search_val; ?>" name="client_id">
+        </div>
+        <div style="float: left;">
+          <input type="button" class="common_black_button load_all_clients" value="Load All Clients" style="float: left;width:100%;margin-top: 3px;">
+        </div>
+        <?php 
+            $user = DB::table('user_login')->where('id',1)->first();
+          ?>
+          <div style="float: left; margin-right: 20px;margin-left:20px;margin-top:10px">
+            <input type="checkbox" name="hide_inactive" class="hide_inactive" id="hide_inactive" value="1"><label for="hide_inactive" title="Hides the Inactive Clients">Hide Inactive</label>
+          </div>
+          <div style="float: left;;margin-top:10px"><input type="checkbox" name="show_incomplete" class="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete" title="Show client who have an Incomplete Batches">Show Incomplete Only</label></div>
           <?php
 
           if(Session::has('message')) { ?>
 
-              <spam class="alert alert-info" style="clear: both;float: left;margin-top: 1.5%;"><?php echo Session::get('message'); ?> &nbsp; &nbsp;
+              <spam class="alert alert-info" style="float: left;margin-top: -14px;margin-left:10px"><?php echo Session::get('message'); ?> &nbsp; &nbsp;
 
                 <?php echo Session::get('view_button'); ?>
 
@@ -911,49 +930,7 @@ else{
             
 
           <?php } ?>
-
-      </div>
-
-     
-      <div class="col-lg-10">
-
-        <div style="float: left; margin-right: 10px">
-
-          <label style="float: left; padding-top: 10px;">Search Client ID: </label>
-
-        </div>
-
-        <div style="float: left; margin-right: 6px;">
-
-          
-
-          <input type="text" class="form-control client_common_search ui-autocomplete-input" placeholder="Enter Client Name" style="font-weight: 500;margin-bottom: 13px;margin-top:2px;width:350px;float:left" value="<?php echo $company_client; ?>" autocomplete="off">
-
-          <input type="button" class="common_black_button load_single_client" value="Load" style="float: left;width: 100px;margin-top: 3px;">
-
-          <input type="hidden" class="client_search_common" id="client_search_hidden_infile" value="<?php echo $client_search_val; ?>" name="client_id">
-
-          
-
-        </div>
-
-        <div style="float: left;">
-
-          <input type="button" class="common_black_button load_all_clients" value="Load All Clients" style="float: left;width:100%;margin-top: 3px;">
-
-        </div>
-        <?php 
-            $user = DB::table('user_login')->where('id',1)->first();
-          ?>
-          <div style="float: left; margin-right: 20px;margin-left:20px;margin-top:10px">
-            <input type="checkbox" name="hide_inactive" class="hide_inactive" id="hide_inactive" value="1"><label for="hide_inactive" title="Hides the Inactive Clients">Hide Inactive</label>
-          </div>
-          <div style="float: left;;margin-top:10px"><input type="checkbox" name="show_incomplete" class="show_incomplete" id="show_incomplete" value="1"><label for="show_incomplete" title="Show client who have an Incomplete Batches">Show Incomplete Only</label></div>
-      </div>
-      <div class="col-lg-2 text-right" >
-
-        <a href="javascript:" class="integrity_check_for_all common_black_button" style="margin-top:-1px; float: right;">Integrity Check For All Clients</a>                              
-
+           <a href="javascript:" class="integrity_check_for_all common_black_button" style="margin-top:-1px; float: right;">Integrity Check For All Clients</a>
       </div>
 
       

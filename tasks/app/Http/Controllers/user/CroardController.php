@@ -319,5 +319,394 @@ class CroardController extends Controller {
 			DB::table('croard')->insert($data);
 		}
 	}
+	public function croard_upload_images()
+	{
+		$client_id = Input::get('hidden_client_id_croard');
+
+		$upload_dir = 'uploads/croard_uploads';
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir);
+		}
+		$upload_dir = $upload_dir.'/'.$client_id;
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir);
+		}
+
+		if (!empty($_FILES)) {
+			$tmpFile = $_FILES['file']['tmp_name'];
+			$fname = str_replace("#","",$_FILES['file']['name']);
+			$fname = str_replace("#","",$fname);
+			$fname = str_replace("#","",$fname);
+			$fname = str_replace("#","",$fname);
+
+			$fname = str_replace("%","",$fname);
+			$fname = str_replace("%","",$fname);
+			$fname = str_replace("%","",$fname);
+
+			$filename = $upload_dir.'/'.$fname;
+			move_uploaded_file($tmpFile,$filename);
+
+			$data['client_id'] = $client_id;
+			$data['filename'] = $fname;
+			$data['url'] = $upload_dir;
+			$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+			if(count($client_details))
+			{
+				$data['company_name'] = $client_details->company;
+			}
+
+			$details = DB::table('croard')->where('client_id',$client_id)->first();
+			if(!count($details))
+			{
+				$insertedid = DB::table('croard')->insertGetid($data);
+			}
+			else{
+				DB::table('croard')->where('client_id',$client_id)->update($data);
+				$insertedid = $details->id;
+			}
+
+			$download_url = URL::to($filename);
+			$delete_url = URL::to('user/delete_croard_files?file_id='.$insertedid.'');
+			
+		 	echo json_encode(array('id' => $insertedid,'filename' => $fname,'client_id' => $client_id, 'download_url' => $download_url, 'delete_url' => $delete_url));
+		}
+	}
+	public function get_company_details_next_crd()
+	{
+		$company_number = Input::get('company_number');
+		$indicator = Input::get('indicator');
+		$client_id = Input::get('client_id');
+
+		if($indicator == "C") { $indi = 'Limited Company'; }
+		else { $indi = 'Registered Business'; }
+
+		$ch = curl_init();
+		$url = "https://services.cro.ie/cws/company/".$company_number."/C";
+
+		$cro = DB::table('cro_credentials')->first();
+		$authenticate = $cro->username.':'.$cro->api_key;
+		 
+		$headers = array( "Authorization: Basic ".base64_encode($authenticate),  
+		    "Content-Type: application/json", 
+		    "charset: utf-8");
+		 
+		 
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		// curl_setopt($ch, CURLOPT_PROXY, 'http://ip of your proxy:8080');  // Proxy if applicable
+		curl_setopt($ch, CURLOPT_FAILONERROR,1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		curl_setopt($ch, CURLOPT_URL, $url );
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_POST, 0); 
+
+		$response = curl_exec($ch);
+ 
+		// Some values from the header if want to take a look... 
+		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$headerOut = curl_getinfo($ch, CURLINFO_HEADER_OUT);
+		//echo $code.'<p>'.$headerOut.'</p>';
+		// Don't forget to close handle.
+		curl_close($ch);
+		$results_array = json_decode($response);
+
+		$color_status = '';
+		$status_label = '';
+		$cro_ard_val = date('d/m/Y', strtotime($results_array->next_ar_date));
+		$dataval['cro_ard'] = $cro_ard_val;
+		$dataval['signature_date'] = $results_array->next_ar_date;
+		DB::table('croard')->where('client_id',$client_id)->update($dataval);
+		$updated = 0;
+		$cro_ard_details = DB::table('croard')->where('client_id',$client_id)->first();
+		if(count($cro_ard_details))
+		{
+			$expandcroard = explode('/',$cro_ard_details->cro_ard);
+	        if(count($expandcroard) > 1)
+	        {
+	          $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
+	          if($correctcroard != $results_array->next_ar_date)
+	          {
+	          	$updated = 1;
+	          	$datavall['signature'] = 0;
+				DB::table('croard')->where('client_id',$client_id)->update($datavall);
+	          }
+
+	          $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+
+	          $current_date = date('Y-m-d');
+	          $current_year = date('Y');
+	          $croard_year = $expandcroard[2];
+
+	          if($croard_year > $current_year)
+	          {
+	            $color_status = 'blue_status';
+	            $status_label = 'Current Year OK';
+	          }
+	          else{
+	            $firstdate = strtotime($correctcroard);
+	            $seconddate = strtotime($current_date);
+
+	            $diff = ceil(($firstdate - $seconddate)/60/60/24);
+	            if($diff < 0 || $diff == 0)
+	            {
+	              $color_status = 'red_status';
+	              $status_label = 'Submission Late';
+	            }
+	            elseif($diff <= 30)
+	            {
+	              $color_status = 'orange_status';
+	              $status_label = 'Submission Pending';
+	            }
+	            elseif($diff > 30)
+	            {
+	              $color_status = 'green_status';
+	              $status_label = 'Future Submission';
+	            }
+	          }
+	        }
+		}
+
+		echo json_encode(array("croard" => date('d/m/Y', strtotime($results_array->next_ar_date)), "color_status" => $color_status, "status_label" => $status_label,'updated' => $updated));
+	}
+	public function edit_email_unsent_files_croard()
+	{
+		$client_id = Input::get('client_id');
+		$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+		$result = DB::table('croard')->where('client_id',$client_id)->first();
+		$files = '';
+		$html = '<p>Hi '.$client_details->firstname.'</p>
+		<p>Please find attached the B1 for '.$result->company_name.' which needs to be signed and sent back to my office at your very earliest convenience.</p>
+		<p>I note this B1 can be scanned-in and emailed back to me, it must be signed and dated before you send it back, and the quality of the scan must be very good Quality.</p>';
+		$files ='<p>'.$result->filename.'</p>';
+	    $subject = 'CROARD: '.$result->company_name.'';
+
+	    
+	    if(count($client_details))
+	    {
+	    	if($client_details->email2 != '')
+			{
+				$to_email = $client_details->email.','.$client_details->email2;
+			}
+			else{
+				$to_email = $client_details->email;
+			}
+	    }
+	    echo json_encode(["files" => $files,"html" => $html,"to" => $to_email,'subject' => $subject]);
+	}
+	public function email_unsent_files_croard()
+	{
+		$from_input = Input::get('select_user');
+		$client_id = Input::get('hidden_client_id_email_croard');
+		$details = DB::table('user')->where('user_id',$from_input)->first();
+		$from = $details->email;
+		$user_name = $details->lastname.' '.$details->firstname;
+		$toemails = Input::get('to_user').','.Input::get('cc_unsent');
+		$sentmails = Input::get('to_user').', '.Input::get('cc_unsent');
+		$subject = Input::get('subject_unsent'); 
+		$message = Input::get('message_editor');
+		$explode = explode(',',$toemails);
+		$data['sentmails'] = $sentmails;
+		$croard_details = DB::table('croard')->where('client_id',$client_id)->first();
+		$attach = $croard_details->url.'/'.$croard_details->filename;
+		$filename = $croard_details->filename;
+
+		if(count($explode))
+		{
+			foreach($explode as $exp)
+			{
+				$to = trim($exp);
+				$data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
+				$data['message'] = $message;
+				$contentmessage = view('user/email_share_paper_croard', $data);
+				$email = new PHPMailer();
+				$email->SetFrom($from, $user_name); //Name is optional
+				$email->Subject   = $subject;
+				$email->Body      = $contentmessage;
+				$email->IsHTML(true);
+				$email->AddAddress( $to );
+				$email->AddAttachment( $attach , $filename );
+				$email->Send();
+			}
+			$date = date('Y-m-d H:i:s');
+			
+			$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+			$datamessage['message_id'] = time();
+			$datamessage['message_from'] = $from_input;
+			$datamessage['subject'] = $subject;
+			$datamessage['message'] = $message;
+			$datamessage['client_ids'] = $client_id;
+			$datamessage['primary_emails'] = $client_details->email;
+			$datamessage['secondary_emails'] = $client_details->email2;
+			$datamessage['date_sent'] = $date;
+			$datamessage['date_saved'] = $date;
+			$datamessage['source'] = "CROARD";
+			$datamessage['attachments'] = $attach;
+			$datamessage['status'] = 1;
+			DB::table('messageus')->insert($datamessage);
+
+
+			DB::table('croard')->where('client_id',$client_id)->update(['last_email_sent' => $date]);
+			
+			$last_date = date('d F Y @ H : i', strtotime($date));
+			echo $last_date.'||'.$client_id;
+		}
+		else{
+			echo "1";
+		}
+	}
+	public function change_yellow_status_croard()
+	{
+		$client_id = Input::get('client_id');
+		$status = Input::get('status');
+		$data['signature'] = $status;
+		$date = date('Y-m-d');
+		if($status == 1)
+		{
+			$data['signature_date'] = $date;
+		}
+		else{
+			$data['signature_date'] = "";
+		}
+		DB::table('croard')->where('client_id',$client_id)->update($data);
+		echo date('d/m/Y', strtotime($date));
+	}
+	public function save_croard_signature_date()
+	{
+		$client_id = Input::get('client');
+		$date = explode('/', Input::get('date'));
+		$data['signature_date'] = $date[2].'-'.$date[1].'-'.$date[0];
+		DB::table('croard')->where('client_id',$client_id)->update($data);
+	}
+	public function croard_get_yellow_status_clients()
+	{
+		$clients = DB::table('croard')->where('signature',1)->orderBy('client_id','asc')->get();
+		$output = '<table class="table own_table_white">
+		<thead>
+			<th>Client Code</th>
+			<th>Company Name</th>
+			<th>CRO Number</th>
+			<th>Current CRO ARD</th>
+			<th>Updated CRO ARD</th>
+		</thead>
+		<tbody>';
+		if(count($clients))
+		{
+			foreach($clients as $client)
+			{
+				$client_details = DB::table('cm_clients')->where('client_id',$client->client_id)->first();
+				$output.='<tr class="overlay_tr_'.$client->client_id.'">
+					<td>'.$client->client_id.'</td>
+					<td>'.$client->company_name.'</td>
+					<td class="overlay_cro" data-element="'.$client->client_id.'">'.$client_details->cro.'</td>
+					<td class="overlay_current_croard">'.$client->cro_ard.'</td>
+					<td class="overlay_updated_croard"></td>
+				</tr>';
+			}
+		}
+		$output.='</tbody>
+		</table>';
+		echo $output;
+	}
+	public function check_cro_in_api()
+	{
+		$company_number = Input::get('cro');
+		$indicator = 'C';
+		$client_id = Input::get('client');
+
+		if($indicator == "C") { $indi = 'Limited Company'; }
+		else { $indi = 'Registered Business'; }
+
+		$ch = curl_init();
+		$url = "https://services.cro.ie/cws/company/".$company_number."/C";
+
+		$cro = DB::table('cro_credentials')->first();
+		$authenticate = $cro->username.':'.$cro->api_key;
+		 
+		$headers = array( "Authorization: Basic ".base64_encode($authenticate),  
+		    "Content-Type: application/json", 
+		    "charset: utf-8");
+		 
+		 
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		// curl_setopt($ch, CURLOPT_PROXY, 'http://ip of your proxy:8080');  // Proxy if applicable
+		curl_setopt($ch, CURLOPT_FAILONERROR,1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		curl_setopt($ch, CURLOPT_URL, $url );
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_POST, 0); 
+
+		$response = curl_exec($ch);
+ 
+		// Some values from the header if want to take a look... 
+		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$headerOut = curl_getinfo($ch, CURLINFO_HEADER_OUT);
+		//echo $code.'<p>'.$headerOut.'</p>';
+		// Don't forget to close handle.
+		curl_close($ch);
+		$results_array = json_decode($response);
+
+		$color_status = '';
+		$status_label = '';
+		$cro_ard_val = date('d/m/Y', strtotime($results_array->next_ar_date));
+		$updated = 0;
+
+		$cro_ard_details = DB::table('croard')->where('client_id',$client_id)->first();
+		if(count($cro_ard_details))
+		{
+			if($cro_ard_val != $cro_ard_details->cro_ard)
+			{
+				$dataval['cro_ard'] = $cro_ard_val;
+				$dataval['signature'] = 0;
+				//$dataval['signature_date'] = $results_array->next_ar_date;
+				DB::table('croard')->where('client_id',$client_id)->update($dataval);
+				$updated = 1;
+			}
+
+			$expandcroard = explode('/',$cro_ard_val);
+	        if(count($expandcroard) > 1)
+	        {
+	          $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
+	          $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+
+	          $current_date = date('Y-m-d');
+	          $current_year = date('Y');
+	          $croard_year = $expandcroard[2];
+
+	          if($croard_year > $current_year)
+	          {
+	            $color_status = 'blue_status';
+	            $status_label = 'Current Year OK';
+	          }
+	          else{
+	            $firstdate = strtotime($correctcroard);
+	            $seconddate = strtotime($current_date);
+
+	            $diff = ceil(($firstdate - $seconddate)/60/60/24);
+	            if($diff < 0 || $diff == 0)
+	            {
+	              $color_status = 'red_status';
+	              $status_label = 'Submission Late';
+	            }
+	            elseif($diff <= 30)
+	            {
+	              $color_status = 'orange_status';
+	              $status_label = 'Submission Pending';
+	            }
+	            elseif($diff > 30)
+	            {
+	              $color_status = 'green_status';
+	              $status_label = 'Future Submission';
+	            }
+	          }
+	        }
+		}
+
+		echo json_encode(array("croard" => date('d/m/Y', strtotime($results_array->next_ar_date)), "color_status" => $color_status, "status_label" => $status_label,'updated' => $updated));
+	}
 }
 

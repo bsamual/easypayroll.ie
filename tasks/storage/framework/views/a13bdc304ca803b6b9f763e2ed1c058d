@@ -61,13 +61,13 @@
 
             <li class="<?php echo e(Request::is( 'admin/central_locations') ? 'active' : ''); ?>"><a href="<?php echo URL::to('admin/central_locations')?>">Central Location</a></li>
             
-            <li class="dropdown <?php if($segment1 == "p30_task_leval" || $segment1 == "p30_due_date" || $segment1 == "p30_period") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage P30</a>
+            <!-- <li class="dropdown <?php if($segment1 == "p30_task_leval" || $segment1 == "p30_due_date" || $segment1 == "p30_period") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage P30</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo URL::to('admin/p30_task_leval')?>">Manage Task Level</a></li>
                     <li><a href="<?php echo URL::to('admin/p30_due_date')?>">Manage Due Date</a></li>
                     <li><a href="<?php echo URL::to('admin/p30_period')?>">Manage Period</a></li>
                 </ul>
-            </li>
+            </li> -->
             <!-- <li class="dropdown <?php if($segment1 == "gbs_p30_task_leval" || $segment1 == "gbs_p30_due_date" || $segment1 == "gbs_p30_period") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage Gbsco P30</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo URL::to('admin/gbs_p30_task_leval')?>">Manage Task Level</a></li>

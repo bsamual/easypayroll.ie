@@ -194,7 +194,7 @@ class ClientreviewController extends Controller {
 
 		$outputinvoice = '<div style="width:100%;position:absolute; '.$margin_top.'">
 			<p style="position: relative;bottom: 0px;"><input type="checkbox" name="select_all_invoice" class="select_all_invoice" id="select_all_invoice" value=""><label for="select_all_invoice">Select All</label></p>
-			<table class="display nowrap fullviewtablelist own_table_white" id="invoice_expand" width="100%">
+			<table class="display nowrap fullviewtablelist own_table_white" id="invoice_expand" width="100%" style="margin-bottom:100px !important;">
                 <thead>
                   <tr style="background: #fff;">
                       <th style="text-align: left;">S.No <i class="fa fa-sort sort_sno"></i></th>
@@ -340,7 +340,12 @@ class ClientreviewController extends Controller {
 
         $outputreceipt.='                
                 </tbody>
-            </table>';
+            </table>
+            <p style="float:left;clear:both;margin-bottom:100px;">&nbsp;</p>
+            <p style="float:left;clear:both;margin-bottom:100px;">&nbsp;</p>
+            <p style="float:left;clear:both;margin-bottom:100px;">&nbsp;</p>
+            <p style="float:left;clear:both;margin-bottom:100px;">&nbsp;</p>
+            <p style="float:left;clear:both;margin-bottom:100px;">&nbsp;</p>';
 
         echo json_encode(array('receiptoutput' => $outputreceipt));
 

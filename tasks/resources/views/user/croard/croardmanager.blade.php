@@ -2,7 +2,59 @@
 @section('content')
 <script src='<?php echo URL::to('assets/js/table-fixed-header_croard.js'); ?>'></script>
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
+<script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
+.modal{
+  z-index: 99999999;
+}
+#colorbox{
+  z-index: 99999999999;
+}
+.attachment_div{
+  margin-top: 10px;
+  margin-left: 25px;
+}
+.add_attachment_month_year{
+  float:left;
+}
+.email_unsent_label{
+  margin-top: 10px;
+margin-left: 25px;
+}
+.email_unsent{
+  float:left;
+}
+.dz-remove{
+    color: #000;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+.upload_img{
+  position: absolute;
+    top: 0px;
+    z-index: 1;
+    background: rgb(226, 226, 226);
+    padding: 19% 0%;
+    text-align: center;
+    overflow: hidden;
+}
+.upload_text{
+  font-size: 15px;
+    font-weight: 800;
+    color: #631500;
+}
+.status_icon{
+padding: 10px;
+width: 50%;
+border-radius: 39px;
+text-align: center;
+}
+.red_status{ background: #f00; color:#fff !important; }
+.orange_status{ background: orange; color:#000 !important; }
+.green_status{ background: green; color:#fff !important; }
+.blue_status{ background: blue;color:#fff !important;  }
+.yellow_status{ background: yellow !important; color:#000 !important;}
+
 .table>thead>tr>th { background: #fff !important; }
 .fa-sort{ cursor:pointer; }
 .company_td { font-weight:800; }
@@ -30,7 +82,25 @@ body.loading {
 body.loading .modal_load {
     display: block;
 }
-
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
 .modal_load_content {
     display:    none;
     position:   fixed;
@@ -65,35 +135,7 @@ table{
 .ui-widget .ui-menu-item-wrapper{font-size: 14px; font-weight: bold;}
 .ui-widget .ui-menu-item-wrapper:hover{font-size: 14px; font-weight: bold}
 .file_attachment_div{width:100%;}
-.dropzone .dz-preview.dz-image-preview {
-    background: #949400 !important;
-}
-.dz-message span{text-transform: capitalize !important; font-weight: bold;}
-.trash_imageadd{
-  cursor:pointer;
-}
-.dropzone.dz-clickable .dz-message, .dropzone.dz-clickable .dz-message *{
-      margin-top: 40px;
-}
-.dropzone .dz-preview {
-  margin:0px !important;
-  min-height:0px !important;
-  width:100% !important;
-  color:#000 !important;
-  float: left;
-  clear: both;
-}
-.dropzone .dz-preview p {
-  font-size:12px !important;
-}
-.remove_dropzone_attach{
-  color:#f00 !important;
-  margin-left:10px;
-}
-.remove_dropzone_attach_add{
-  color:#f00 !important;
-  margin-left:10px;
-}
+
 .remove_notepad_attach_add{
   color:#f00 !important;
   margin-left:10px;
@@ -384,9 +426,54 @@ input:checked + .slider:before {
   border-radius: 50%;
   background:green;
 }
-
+.dropzone .dz-preview.dz-image-preview {
+    background: #949400 !important;
+}
+.dz-message span{text-transform: capitalize !important; font-weight: bold;}
+.trash_imageadd{
+  cursor:pointer;
+}
+.dropzone.dz-clickable .dz-message, .dropzone.dz-clickable .dz-message *{
+      margin-top: 40px;
+}
+.dropzone .dz-preview {
+  margin:0px !important;
+  min-height:0px !important;
+  width:100% !important;
+  color:#000 !important;
+  float: left;
+  clear: both;
+}
+.dropzone .dz-preview p {
+  font-size:12px !important;
+}
+.remove_dropzone_attach{
+  color:#f00 !important;
+  margin-left:10px;
+}
+.remove_dropzone_attach_add{
+  color:#f00 !important;
+  margin-left:10px;
+}
+.remove_notepad_attach_add{
+  color:#f00 !important;
+  margin-left:10px;
+}
+.remove__attach_add{
+  color:#f00 !important;
+  margin-left:10px;
+}
+.img_div_add{
+    border: 1px solid #000;
+    width: 280px;
+    position: absolute !important;
+    min-height: 118px;
+    background: rgb(255, 255, 0);
+    display:none;
+}
 .form_radio .text{}
 .form_radio span{right: 0px; left: unset;}
+input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { margin-left:0px; }
 </style>
 <script src="<?php echo URL::to('ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('ckeditor/samples/js/sample.js'); ?>"></script>
@@ -396,6 +483,359 @@ input:checked + .slider:before {
   $admin_details = Db::table('admin')->first();
   $admin_cc = $admin_details->task_cc_email;
 ?> 
+<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:45%">
+    <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_task_form">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">New Task Creator</h4>
+          </div>
+          <div class="modal-body">            
+            <div class="row"> 
+                <div class="col-md-3">
+                  <label style="margin-top:5px">Author:</label>
+                </div>
+                <div class="col-md-9">
+                  <select name="select_user" class="form-control select_user_author" required>
+                    <option value="">Select User</option>        
+                      <?php
+                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                      ?>
+                        <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <div class="col-md-3">
+                  <label style="margin-top:5px">Creation Date:</label>
+                </div>
+                <div class="col-md-9">
+                  <label class="input-group datepicker-only-init_date_received">
+                      <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                      <span class="input-group-addon">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                      </span>
+                  </label>
+                </div>
+            </div>
+            <div class="row" style="margin-top:7px">
+              <div class="col-md-3">
+                  <label style="margin-top:5px">Allocate To:</label>
+                </div>
+                <div class="col-md-7">
+                  <select name="allocate_user" class="form-control allocate_user_add">
+                    <option value="">Select User</option>        
+                      <?php
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                      ?>
+                        <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <div style="margin-top:5px">
+                    <input type='checkbox' name="open_task" id="open_task" value="1"/>
+                    <label for="open_task">OpenTask</label>
+                  </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:14px">
+              <div class="col-md-3 client_group">
+                  <label style="margin-top:5px">Client:</label>
+                </div>
+                <?php
+                if(isset($_GET['client_id']))
+                {
+                  $client_id = $_GET['client_id'];
+                  $client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+                  $company = $client_details->company.'-'.$client_id;
+                }
+                else{
+                  $client_id = '';
+                  $company = '';
+                }
+                ?>
+                <div class="col-md-7 client_group">
+                  <input  type="text" class="form-control client_search_class_task" name="client_name" placeholder="Enter Client Name / Client ID" value="" readonly required>
+                  <input type="hidden" id="client_search_task" name="clientid" value=""/>
+                </div>
+
+                <div class="col-md-3 internal_tasks_group" style="display: none;">
+                  <label style="margin-top:5px">Select Task:</label>
+                </div>
+                <div class="col-md-7 internal_tasks_group" style="display: none;">
+                  <div class="dropdown" style="width: 100%">
+                    <a class="btn btn-default dropdown-toggle tasks_drop" data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                      <span class="task-choose_internal">Select Task</span>  <span class="caret"></span>                          
+                    </a>
+                    <ul class="dropdown-menu internal_task_details" role="menu"  aria-labelledby="dropdownMenu" style="width: 100%">
+                      <li><a tabindex="-1" href="javascript:" class="tasks_li_internal">Select Task</a></li>
+                        <?php
+                        $taskslist = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
+                        if(count($taskslist)){
+                          foreach ($taskslist as $single_task) {
+                            if($single_task->task_type == 0){
+                              $icon = '<i class="fa fa-desktop" style="margin-right:10px;"></i>';
+                            }
+                            else if($single_task->task_type == 1){
+                              $icon = '<i class="fa fa-users" style="margin-right:10px;"></i>';
+                            }
+                            else{
+                              $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
+                            }
+                        ?>
+                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>"><?php echo $icon.$single_task->task_name?></a></li>
+                        <?php
+                          }
+                        }
+                        ?>
+                    </ul>
+                    <input type="hidden" name="idtask" id="idtask" value="">
+                  </div>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <div style="margin-top:5px">
+                    <!-- <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1" disabled />
+                    <label for="internal_checkbox">Internal</label> -->
+                  </div>
+                </div>
+            </div>
+            <div class="form-group start_group" style="margin-top:10px">
+                <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+            </div>
+            <div class="form-group start_group task_specifics_add">
+                <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
+                <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+            </div>
+            <div class="form-group date_group">
+                <div class="col-md-2" style="padding:0px">
+                  <label style="margin-top:5px">DueDate:</label>
+                </div>
+                <div class="col-md-10">
+                  <label class="input-group datepicker-only-init_date_received">
+                      <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
+                      <span class="input-group-addon">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                      </span>
+                  </label>
+                </div>
+            </div>
+            <div class="form-group start_group retreived_files_div">
+
+            </div>
+            <div class="form-group start_group">
+              <label>Task Files: </label>
+              <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+              <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+              <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+              <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+              <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
+                <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                </form>
+                <div class="image_div_attachments">
+                  <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                  <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                      <input name="_token" type="hidden" value="">
+                  </form>              
+                </div>
+               </div>
+               <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
+                  <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
+                  <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                  <spam class="error_files_notepad_add"></spam>
+              </div>
+            </div>
+            
+            <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
+            <div id="add_attachments_div_task">
+            </div>
+            <div id="add_notepad_attachments_div_task">
+            </div>
+            <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+            <div id="add_infiles_attachments_div">
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                <div class="accept_recurring_div">
+                  <p>This Task is repeated:</p>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                    <label for="recurring_checkbox1">Monthly</label>
+                  </div>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                    <label for="recurring_checkbox2">Weekly</label>
+                  </div>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                    <label for="recurring_checkbox3">Daily</label>
+                  </div>
+                  <div class="form-title" style="float:none">
+                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                    <label for="recurring_checkbox4">Specific Number of Days</label>
+                    <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                  </div>
+                </div>
+            </div>
+            <div class="form-group date_group">
+                <div class="form-title" style="font-weight:600;margin-left:-10px">
+                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">     
+            <input type="hidden" name="action_type" id="action_type" value="">
+            <input type="hidden" name="hidden_specific_type" id="hidden_specific_type" value="">
+            <input type="hidden" name="hidden_attachment_type" id="hidden_attachment_type" value="">
+            <input type="hidden" name="hidden_task_id_copy_task" class="hidden_task_id_copy_task" value="">
+            <input type="hidden" name="total_count_files" id="total_count_files" value="">
+            <input type="submit" class="common_black_button make_task_live" value="Make Task Live" style="width: 100%;">
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+<div class="modal fade dropzone_progress_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 999999;">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title" >Add Attachments</h4>
+          </div>
+          <div class="modal-body" style="min-height:280px">  
+              <div class="img_div_progress">
+                 <div class="image_div_attachments_progress">
+                    <form action="<?php echo URL::to('user/croard_upload_images'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload" style="clear:both;min-height:250px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                        <input name="hidden_client_id_croard" id="hidden_client_id_croard" type="hidden" value="">
+                    </form>
+                 </div>
+              </div>
+          </div>
+          <div class="modal-footer">  
+            <a href="javascript:" class="btn btn-sm btn-primary" align="left" style="margin-left:7px; float:left;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+          </div>
+        </div>
+  </div>
+</div>
+
+<div class="modal fade automatic_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 999999;">
+  <div class="modal-dialog modal-sm" role="document" style="width:70%">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title" >Updating - Awaiting CRO ARD</h4>
+          </div>
+          <div class="modal-body automatic_tbody" style="min-height:280px">  
+              
+          </div>
+          <div class="modal-footer">  
+            
+          </div>
+        </div>
+  </div>
+</div>
+<div class="modal fade emailunsent" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog" role="document">
+    <form id="email_unsent_form" action="<?php echo URL::to('user/email_unsent_files_croard'); ?>" method="post" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Send Email</h4>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+            <div class="col-md-3">
+              <label>From</label>
+            </div>
+            <?php
+              $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+              $uname = '<option value="">Select Username</option>';
+              if(count($userlist)){
+                foreach ($userlist as $singleuser) {
+                    if($uname == '')
+                    {
+                      $uname = '<option value="'.$singleuser->user_id.'">'.$singleuser->lastname.' '.$singleuser->firstname.'</option>';
+                    }
+                    else{
+                      $uname = $uname.'<option value="'.$singleuser->user_id.'">'.$singleuser->lastname.' '.$singleuser->firstname.'</option>';
+                    }
+                  }
+              }
+            ?>
+            <div class="col-md-9">
+              <select name="select_user" id="select_user" class="form-control" title="Select the User" required>
+                <?php echo $uname; ?>
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>To</label>
+            </div>
+            <div class="col-md-9">
+              <input type="text" name="to_user" id="to_user" class="form-control" value="" required>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>CC</label>
+            </div>
+            <div class="col-md-9">
+              <input type="text" name="cc_unsent" class="form-control" value="<?php echo $admin_cc; ?>" readonly>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>Subject</label>
+            </div>
+            <div class="col-md-9">
+              <input type="text" name="subject_unsent" class="form-control subject_unsent" value="" required>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-12">
+              <label>Message</label>
+            </div>
+            <div class="col-md-12">
+              <textarea name="message_editor" id="editor">
+              </textarea>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-12">
+              <label>Attachment</label>
+            </div>
+            <div class="col-md-12" id="email_attachments">
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <input type="hidden" name="hidden_client_id_email_croard" id="hidden_client_id_email_croard" value="">
+        <input type="button" class="btn btn-primary common_black_button email_unsent_files_btn" value="Send Email">
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
 <div class="modal fade search_company_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog" role="document" style="width:50%">
         <div class="modal-content">
@@ -573,9 +1013,36 @@ input:checked + .slider:before {
                 $timestampcroard = '';
 	              $cro_ard_details = DB::table('croard')->where('client_id',$client->client_id)->first();
                 $notes = '';
+                $color_status = '';
+                $status_label = '';
+                $attachment = '';
+                $last_email_sent = '';
+                $signature_checked = '';
+                $yellow_status = '';
+                $yellow_label = '';
+                $signature_file_date = '';
 	              if(count($cro_ard_details))
 	              {
-                  $notes = $cro_ard_details->notes;
+                  if($cro_ard_details->filename != "")
+                  {
+                    $attachment = '<a class="attachment_link" href="'.URL::to($cro_ard_details->url.'/'.$cro_ard_details->filename).'" download>'.$cro_ard_details->filename.'</a>';
+                  }
+                  if($cro_ard_details->signature == 1)
+                  {
+                    $signature_checked = 'checked';
+                    $yellow_status = 'yellow_status';
+                    $yellow_label = '';
+                    
+                  }
+	              	if($cro_ard_details->signature_date != "")
+                  {
+                    $signature_file_date = date('d/m/Y', strtotime($cro_ard_details->signature_date));
+                  }
+                  if($cro_ard_details->last_email_sent != "")
+                  {
+                    $last_email_sent = date('d F Y @ H : i', strtotime($cro_ard_details->last_email_sent));
+                  }
+                  	$notes = $cro_ard_details->notes;
 	              	if(strtolower($client->company) == strtolower($cro_ard_details->company_name))
 	              	{
 	              		$cmp = '<spam class="company_td" style="color:green;font-style:italic">'.$cro_ard_details->company_name.'</spam>';
@@ -613,7 +1080,38 @@ input:checked + .slider:before {
                         if(count($expandcroard) > 1)
                         {
                           $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
-                            $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                          $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+
+                          $current_date = date('Y-m-d');
+                          $current_year = date('Y');
+                          $croard_year = $expandcroard[2];
+
+                          if($croard_year > $current_year)
+                          {
+                            $color_status = 'blue_status';
+                            $status_label = 'Current Year OK';
+                          }
+                          else{
+                            $firstdate = strtotime($correctcroard);
+                            $seconddate = strtotime($current_date);
+
+                            $diff = ceil(($firstdate - $seconddate)/60/60/24);
+                            if($diff < 0 || $diff == 0)
+                            {
+                              $color_status = 'red_status';
+                              $status_label = 'Submission Late';
+                            }
+                            elseif($diff <= 30)
+                            {
+                              $color_status = 'orange_status';
+                              $status_label = 'Submission Pending';
+                            }
+                            elseif($diff > 30)
+                            {
+                              $color_status = 'green_status';
+                              $status_label = 'Future Submission';
+                            }
+                          }
                         }
                         else{
                           $timestampcroard = '';
@@ -634,6 +1132,37 @@ input:checked + .slider:before {
                         {
                           $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
                           $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+
+                          $current_date = date('Y-m-d');
+                          $current_year = date('Y');
+                          $croard_year = $expandcroard[2];
+
+                          if($croard_year > $current_year)
+                          {
+                            $color_status = 'blue_status';
+                            $status_label = 'Current Year OK';
+                          }
+                          else{
+                            $firstdate = strtotime($correctcroard);
+                            $seconddate = strtotime($current_date);
+
+                            $diff = ceil(($firstdate - $seconddate)/60/60/24);
+                            if($diff < 0 || $diff == 0)
+                            {
+                              $color_status = 'red_status';
+                              $status_label = 'Submission Late';
+                            }
+                            elseif($diff <= 30)
+                            {
+                              $color_status = 'orange_status';
+                              $status_label = 'Submission Pending';
+                            }
+                            elseif($diff > 30)
+                            {
+                              $color_status = 'green_status';
+                              $status_label = 'Future Submission';
+                            }
+                          }
                         }
                         else{
                           $timestampcroard = '';
@@ -658,7 +1187,6 @@ input:checked + .slider:before {
                   else{
                     $timestampard = '';
                   }
-                  
                 }
 		          ?>
 		            <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->client_id; ?>">
@@ -669,11 +1197,30 @@ input:checked + .slider:before {
                           
                           <?php echo ($client->cro == "")?"-":'<a href="javascript:" class="check_cro" data-element="'.$client->cro.'">'.$client->cro.'</a>'; ?>
                     </td>
-		                <td style="<?php echo $style; ?>" align="left"><spam class="ard_sort_val" style="display: none"><?php echo $timestampard; ?></spam><?php echo ($client->ard == "")?"-":$client->ard; ?></td>
+		                <td style="<?php echo $style; ?>" align="left"><spam class="ard_sort_val" style="display: none"><?php echo $timestampard; ?></spam><spam class="ard_val"><?php echo ($client->ard == "")?"-":$client->ard; ?></spam></td>
 		                <td style="<?php echo $style; ?>" class="type_sort_val" align="left"><?php echo ($client->tye == "")?"-":$client->tye; ?></td>
-		                <td class="cro_ard_td" style="<?php echo $ard_color; ?>" align="left"><spam class="cro_ard_sort_val" style="display: none"><?php echo $timestampcroard; ?></spam><?php echo $cr_ard_date; ?></td>
-                    <td align="left">
+		                <td class="cro_ard_td" style="<?php echo $ard_color; ?>" align="left"><spam class="cro_ard_sort_val" style="display: none"><?php echo $timestampcroard; ?></spam><spam class="cro_ard_val"><?php echo $cr_ard_date; ?></spam></td>
+                    <td align="left" style="color:#000">
                       <textarea name="cro_notes" class="form-control cro_notes" data-element="<?php echo $client->client_id; ?>" style="height:50px"><?php echo $notes; ?></textarea>
+                      <h4>Active submissions: <a href="javascript:" class="common_black_button create_task_manager" data-client="<?php echo $client->client_id; ?>" data-clientname="<?php echo ($client->company == "")?$client->firstname.' & '.$client->surname.' - '.$client->client_id:$client->company.' - '.$client->client_id; ?>" style="margin-left:20px;padding: 6px 10px;";>Create Task</a></h4>
+                      <label class="status_icon <?php echo $color_status; ?> <?php echo $yellow_status; ?>">
+                        <spam class="status_label"><?php echo $status_label; ?></spam>
+                        <spam class="yellow_label" style="display:none">Awaiting CRO Update</spam>
+                      </label><br/>
+                      <div class="col-md-12 padding_00">
+                        <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-client="<?php echo $client->client_id; ?>" style="margin-top:10px;" aria-hidden="true" title="Add a File"></a> 
+                        <div class="attachment_div"><?php echo $attachment; ?></div>
+                      </div>
+                      <div class="col-md-12 padding_00" style="margin-top:15px">
+                        <a href="javascript:" class="fa fa-envelope email_unsent" data-client="<?php echo $client->client_id; ?>" style="margin-top:10px;" aria-hidden="true" title="Send Email"></a>
+                        <div class="email_unsent_label"><?php echo $last_email_sent; ?></div>
+                      </div>
+                      <div class="col-md-8 padding_00" style="margin-top:15px">
+                        <input type="checkbox" name="signature_file_check" id="signature_file_check<?php echo $client->client_id; ?>" class="signature_file_check" data-element="<?php echo $client->client_id; ?>" value="" <?php echo $signature_checked; ?>><label for="signature_file_check<?php echo $client->client_id; ?>">Signature file Submitted</label>
+                      </div>
+                      <div class="col-md-4 padding_00" style="margin-top:15px">
+                        <input type="text" class="form-control signature_file_date" id="signature_file_date" name="signature_file_date" value="<?php echo $signature_file_date; ?>" data-element="<?php echo $client->client_id; ?>">
+                      </div>
                     </td>
 		                <td align="left"><a href="javascript:" class="fa fa-refresh refresh_croard" data-element="<?php echo $client->client_id; ?>" data-cro="<?php echo trim($client->cro); ?>" data-type="<?php echo trim($client->tye); ?>" style="<?php echo $style; ?>"></a></td>
 		            </tr>
@@ -691,6 +1238,10 @@ input:checked + .slider:before {
     </div>
 </div>
 <div class="modal_load"></div>
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Clients CRO are Checked.</p>
+  <p style="font-size:18px;font-weight: 600;">Checking CRO: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
 <div class="modal_load_content" style="text-align: center;">
   <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Clients are loaded.</p>
   <p style="font-size:18px;font-weight: 600;">Loading: <span id="count_first"></span> of <span id="count_last"></span></p>
@@ -705,9 +1256,173 @@ input:checked + .slider:before {
 <input type="hidden" name="cro_ard_sortoptions" id="cro_ard_sortoptions" value="asc">
 
 <script>
-$(document).ready(function() {
-  $('.table-fixed-header').fixedHeader();
+$(".client_search_class_task").autocomplete({
+  source: function(request, response) {
+      $.ajax({
+          url:"<?php echo URL::to('user/task_client_search'); ?>",
+          dataType: "json",
+          data: {
+              term : request.term
+          },
+          success: function(data) {
+              response(data);
+          }
+      });
+  },
+  minLength: 1,
+  select: function( event, ui ) {
+    $("#client_search_task").val(ui.item.id);
+    $.ajax({
+      dataType: "json",
+      url:"<?php echo URL::to('user/task_client_search_select'); ?>",
+      data:{value:ui.item.id},
+      success: function(result){         
+        $("#client_search_task").val(ui.item.id);
+      }
+    })
+  }
 });
+$(document).ready(function() {
+  <?php if(Session::has('message_client_id')) { ?>
+    $(document).scrollTop( $("#clientidtr_<?php echo Session::get('message_client_id'); ?>").offset().top - parseInt(150) );  
+    $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:green">Task Created Successfully. </p>',fixed:true,width:"800px"});
+  <?php } else{  ?>
+    var yellow_status = $(".signature_file_check:checked").length;
+    if(yellow_status > 0)
+    {
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/croard_get_yellow_status_clients'); ?>",
+        type:"post",
+        success:function(result)
+        {
+          $(".automatic_tbody").html(result);
+          $(".automatic_modal").modal("show");
+          $("body").removeClass("loading");
+
+
+          $("body").addClass("loading_apply");
+          var countcro = $(".overlay_cro").length;
+          $("#apply_last").html(countcro);
+          var cro = $(".overlay_cro:eq(0)").html();
+          var client = $(".overlay_cro:eq(0)").attr("data-element");
+
+          $.ajax({
+            url:"<?php echo URL::to('user/check_cro_in_api'); ?>",
+            type:"post",
+            dataType:"json",
+            data:{cro:cro,client:client},
+            success:function(result)
+            {
+              if(result['updated'] == 1)
+              {
+                $(".overlay_tr_"+client).find(".overlay_updated_croard").html(result['croard']);
+                $("#clientidtr_"+client).find(".cro_ard_val").html(result['croard']);
+                $("#clientidtr_"+client).find(".signature_file_date").val(result['croard']);
+
+                $("#clientidtr_"+client).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status').removeClass('yellow_status');
+                $("#clientidtr_"+client).find(".status_icon").addClass(result['color_status']);
+                $("#clientidtr_"+client).find(".status_label").html(result['status_label']);
+                $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
+
+                var cro_ard = $("#clientidtr_"+client).find(".cro_ard_val").html();
+                var ard = $("#clientidtr_"+client).find(".ard_val").html();
+                if(cro_ard == ard)
+                {
+                  $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","green");
+                }
+                else{
+                  $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","#f00");
+                }
+              }
+              setTimeout( function() {
+                if($(".overlay_cro:eq(1)").length > 0)
+                {
+                  next_cro_check(1);
+                  $("#apply_first").html(1);
+                }
+                else{
+                  $("body").removeClass("loading_apply");
+                }
+            },200);
+            }
+          });
+        }
+      })
+    }
+  <?php } ?>
+  $('.table-fixed-header').fixedHeader();
+  $(".signature_file_check:checked").parents("td").find(".status_label").hide();
+  $(".signature_file_check:checked").parents("td").find(".yellow_label").show();
+  $(".signature_file_date").datetimepicker({
+     defaultDate: "",
+       format: 'L',
+       format: 'DD/MM/YYYY',
+  });
+
+  $(".signature_file_date").on("dp.hide", function (e) {
+    var client = $(e.target).attr("data-element");
+    var date = $(e.target).val();
+    $.ajax({
+      url:"<?php echo URL::to('user/save_croard_signature_date'); ?>",
+      type:"post",
+      data:{client:client,date:date},
+      success:function(result)
+      {
+
+      }
+    })
+  }); 
+
+    
+});
+
+function next_cro_check(count)
+{
+  var cro = $(".overlay_cro:eq("+count+")").html();
+  var client = $(".overlay_cro:eq("+count+")").attr("data-element");
+  $.ajax({
+    url:"<?php echo URL::to('user/check_cro_in_api'); ?>",
+    type:"post",
+    dataType:"json",
+    data:{cro:cro,client:client},
+    success:function(result)
+    {
+      if(result['updated'] == 1)
+      {
+        $(".overlay_tr_"+client).find(".overlay_updated_croard").html(result['croard']);
+        $("#clientidtr_"+client).find(".cro_ard_val").html(result['croard']);
+        $("#clientidtr_"+client).find(".signature_file_date").val(result['croard']);
+        $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
+        $("#clientidtr_"+client).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status').removeClass('yellow_status');
+        $("#clientidtr_"+client).find(".status_icon").addClass(result['color_status']);
+        $("#clientidtr_"+client).find(".status_icon").html(result['status_label']);
+        $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
+        var cro_ard = $("#clientidtr_"+client).find(".cro_ard_val").html();
+        var ard = $("#clientidtr_"+client).find(".ard_val").html();
+        if(cro_ard == ard)
+        {
+          $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","green");
+        }
+        else{
+          $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","#f00");
+        }
+      }
+      setTimeout( function() {
+        var countval = count + 1;
+        if($(".overlay_cro:eq("+countval+")").length > 0)
+        {
+          next_cro_check(countval);
+          $("#apply_first").html(countval);
+        }
+        else{
+          $("body").removeClass("loading_apply");
+          $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">CRO ARD Date Updated Successfully. </p>',fixed:true,width:"800px"});
+        }
+      },200);
+    }
+  });
+}
 function refresh_all_function(ival)
 {
 	var ival = ival + 1;
@@ -944,9 +1659,511 @@ $(window).click(function(e) {
         $(e.target).val("Show all Clients");
       }
     }
+  if($(e.target).hasClass('signature_file_check'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(e.target).parents("td:first").find(".status_label").hide();
+      $(e.target).parents("td:first").find(".yellow_label").show();
+      $(e.target).parents("td:first").find(".status_icon").addClass("yellow_status");
+      var status = 1;
+    }
+    else{
+      $(e.target).parents("td:first").find(".status_label").show();
+      $(e.target).parents("td:first").find(".yellow_label").hide();
+      $(e.target).parents("td:first").find(".status_icon").removeClass("yellow_status");
+      var status = 0;
+    }
+    var client_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/change_yellow_status_croard'); ?>",
+      type:"post",
+      data:{client_id:client_id,status:status},
+      success:function(result)
+      {
+        if(status == 1)
+        {
+          $(e.target).parents("td:first").find(".signature_file_date").val(result);
+        }
+        else{
+          $(e.target).parents("td:first").find(".signature_file_date").val("");
+        }
+      }
+    })
+  }
+  if($(e.target).hasClass('email_unsent'))
+  {
+    if (CKEDITOR.instances.editor) CKEDITOR.instances.editor.destroy();
+    var attach_len = $(e.target).parents("td:first").find(".attachment_link").length;
+    if(attach_len > 0)
+    {
+      CKEDITOR.replace('editor',
+         {
+          height: '150px',
+         });
+      var client_id = $(e.target).attr('data-client');
+      $.ajax({
+        url:'<?php echo URL::to('user/edit_email_unsent_files_croard'); ?>',
+        type:'get',
+        data:{client_id:client_id},
+        dataType:"json",
+        success: function(result)
+        {
+          CKEDITOR.instances['editor'].setData(result['html']);
+          $("#email_attachments").html(result['files']);
+          $(".subject_unsent").val(result['subject']);
+          $("#to_user").val(result['to']);
+          $("#hidden_client_id_email_croard").val(client_id);
+          $(".emailunsent").modal('show');
+        }
+      });
+    }
+    else{
+      $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000"> Email option will be enabled only after you add a signature file.</p>',fixed:true,width:"800px"});
+    }
+  }
+  if($(e.target).hasClass('email_unsent_files_btn'))
+  {
+    for (instance in CKEDITOR.instances) 
+    {
+        CKEDITOR.instances['editor'].updateElement();
+    }
+    if($("#email_unsent_form").valid())
+    {
+      $("body").addClass("loading");
+      $('#email_unsent_form').ajaxForm({
+          success:function(result){
+            var date = result.split("||");
+            $("#clientidtr_"+date[1]).find(".email_unsent_label").html("<p>"+date[0]+"</p>");
+            $("body").removeClass("loading");
+            $(".emailunsent").modal("hide");
+            $("body").removeClass("loading");
+          }
+      }).submit();
+    }
+  }
   if($(e.target).hasClass('global_core_call'))
   {
     $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});
+  }
+  if($(e.target).hasClass('add_attachment_month_year'))
+  {
+  	var client = $(e.target).attr("data-client");
+  	var attach_len = $(e.target).parents("td:first").find(".attachment_link").length;
+  	if(attach_len > 0)
+  	{
+  		$.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000"> A B1 file is already listed, do you want to over write it</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_attach" data-element="'+client+'">Yes</a><a href="javascript:" class="common_black_button no_attach">No</a></p>',fixed:true,width:"800px"});
+  	}
+    else{
+    	$("#hidden_client_id_croard").val(client);
+	    $(".dropzone_progress_modal").modal("show");
+	    $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");
+    }
+  }
+  if($(e.target).hasClass('yes_attach'))
+  {
+  	$.colorbox.close();
+  	var client = $(e.target).attr("data-element");
+  	$("#hidden_client_id_croard").val(client);
+    $(".dropzone_progress_modal").modal("show");
+    $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");
+  }
+  if($(e.target).hasClass('no_attach'))
+  {
+  	$.colorbox.close();
+  }
+  if($(e.target).hasClass('delete_attachments'))
+  {
+    e.preventDefault();
+    var hrefval = $(e.target).attr("href");
+    var client = $(e.target).attr("data-client");
+    var month = $(e.target).attr("data-element");
+    var r = confirm("Are you sure you want to delete this file?");
+    if(r)
+    {
+      $.ajax({
+        url:hrefval,
+        type:"post",
+        success:function(result)
+        {
+          $(e.target).parents("p:first").detach();
+          $(".tasks_tr_"+client).find("#add_files_vat_client_"+month).find(".attachment_div").find('.delete_attachments[href="'+hrefval+'"]').parents("p:first").detach();
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass("dropzone"))
+  {
+    $(e.target).parents('td').find('.img_div').show();    
+    $(e.target).parents('.modal-body').find('.img_div').show();    
+  }
+  if($(e.target).hasClass("remove_dropzone_attach"))
+  {
+    $(e.target).parents('td').find('.img_div').show();   
+    $(e.target).parents('.modal-body').find('.img_div').show(); 
+  }
+  if($(e.target).parent().hasClass("dz-message"))
+  {
+    $(e.target).parents('td').find('.img_div').show();
+    $(e.target).parents('.modal-body').find('.img_div').show(); 
+  }
+  if($(e.target).hasClass('remove_dropzone_attach'))
+  {
+    var attachment_id = $(e.target).attr("data-element");
+    var file_id = $(e.target).attr("data-task");
+    $.ajax({
+      url:"<?php echo URL::to('user/infile_remove_dropzone_attachment'); ?>",
+      type:"post",
+      data:{attachment_id:attachment_id,file_id:file_id},
+      success: function(result)
+      {
+        var countval = $(e.target).parents(".dropzone").find(".dz-preview").length;
+        if(countval == 1)
+        {
+          $(e.target).parents(".dropzone").removeClass("dz-started");
+        }
+        $(e.target).parents(".dz-preview").detach();
+      }
+    })
+  }  
+  if($(e.target).hasClass('notepad_contents_task'))
+  {
+    $(e.target).parents('.modal-body').find('.notepad_div_notes_task').show();
+  }
+  if($(e.target).hasClass('download_pdf_task'))
+  {
+    $("body").addClass("loading");
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/download_taskmanager_task_pdf'); ?>",
+      type:"post",
+      data:{task_id:task_id},
+      success:function(result)
+      {
+        SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    })
+  }
+  if($(e.target).hasClass('make_task_live'))
+  {
+    e.preventDefault();
+    if($("#create_task_form").valid())
+    {
+      if($("#internal_checkbox").is(":checked"))
+      {
+          var taskvalue = $("#idtask").val();
+          if(taskvalue == "")
+          {
+            alert("Please select the Task Name and then make the task as live");
+            return false;
+          }
+      }
+      else{
+        var clientid = $("#client_search_task").val();
+        if(clientid == "")
+        {
+          alert("Please select the Client and then make the task as live");
+          return false;
+        }
+      }
+      if (CKEDITOR.instances.editor_2)
+      {
+        var comments = CKEDITOR.instances['editor_2'].getData();
+        if(comments == "")
+        {
+          alert("Please Enter Task Specifics and then make the task as Live.");
+          return false;
+        }
+        else{
+          if($(".2_bill_task").is(":checked"))
+          {
+            $("#create_task_form").submit();
+          }
+          else{
+            $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+          }
+        }
+      }
+      else{
+        if($(".2_bill_task").is(":checked"))
+        {
+          $("#create_task_form").submit();
+        }
+        else{
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;"><img src="<?php echo URL::to('assets/2bill.png'); ?>" style="width: 100px;"></p><p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Is this Task a 2Bill Task?  If this is a Non-Standard task for this Client you may want to set the 2Bill Status</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_make_task_live">Yes</a><a href="javascript:" class="common_black_button no_make_task_live">No</a></p>',fixed:true,width:"800px"});
+        }
+      }
+    }
+  }
+  if($(e.target).hasClass('yes_make_task_live'))
+  {
+    $(".2_bill_task").prop("checked",true);
+      $("#create_task_form").submit();
+  }
+  if($(e.target).hasClass('no_make_task_live'))
+  {
+    $(".2_bill_task").prop("checked",false);
+      $("#create_task_form").submit();
+  }
+  if($(e.target).hasClass('accept_recurring'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".accept_recurring_div").show();
+      $("#recurring_checkbox1").prop("checked",true);
+    }
+    else{
+      $(".accept_recurring_div").hide();
+      $(".recurring_checkbox").prop("checked",false);
+    }
+  }
+  if($(e.target).hasClass('remove_infile_link_add'))
+  {
+    var file_id = $(e.target).attr("data-element");
+    var ids = $("#hidden_infiles_id").val();
+    var idval = ids.split(",");
+    var nextids = '';
+    $.each(idval, function( index, value ) {
+      if(value != file_id)
+      {
+        if(nextids == "")
+        {
+          nextids = value;
+        }
+        else{
+          nextids = nextids+','+value;
+        }
+      }
+    });
+    $("#hidden_infiles_id").val(nextids);
+    $(e.target).parents("tr").detach();
+  }
+  if(e.target.id == "link_infile_button")
+  {
+    var checkcount = $(".infile_check:checked").length;
+    if(checkcount > 0)
+    {
+      var ids = '';
+      $(".infile_check:checked").each(function() {
+        if(ids == "")
+        {
+          ids = $(this).val();
+        }
+        else{
+          ids = ids+','+$(this).val();
+        }
+      });
+
+      $("#hidden_infiles_id").val(ids);
+      $(".infiles_modal").modal("hide");
+      $.ajax({
+        url:"<?php echo URL::to('user/show_linked_infiles'); ?>",
+        type:"post",
+        data:{ids:ids},
+        success:function(result)
+        {
+          $("#attachments_infiles").show();
+          $("#add_infiles_attachments_div").show();
+          $("#add_infiles_attachments_div").html(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('infiles_link'))
+  {
+    var client_id = $("#client_search_task").val();
+    var ids = $("#hidden_infiles_id").val();
+
+    if(client_id == "")
+    {
+      alert("Please select the client and then choose infiles");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/show_infiles'); ?>",
+        type:"post",
+        data:{client_id:client_id,ids:ids},
+        success: function(result)
+        {
+          $(".infiles_modal").modal("show");
+          $("#infiles_body").html(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('notepad_submit_task'))
+  { 
+    var contents = $(e.target).parent().find('.notepad_contents_task').val();
+    if(contents == '' || typeof contents === 'undefined')
+    {
+      $(e.target).parent().find(".error_files_notepad_add").text("Please Enter the contents for the notepad to save.");
+      return false;
+    }
+    else{
+      $(e.target).parents('td').find('.notepad_div_notes_task').toggle();
+    }
+  }
+  else{
+    $(".notepad_div_notes_task").each(function() {
+      $(this).hide();
+    });
+  }
+  if($(e.target).hasClass('notepad_contents_task'))
+  {
+    $(e.target).parents('.modal-body').find('.notepad_div_notes_task').show();
+  }
+  if($(e.target).hasClass('notepad_submit_task'))
+  {
+    var contents = $(".notepad_contents_task").val();
+    $.ajax({
+      url:"<?php echo URL::to('user/add_taskmanager_notepad_contents'); ?>",
+      type:"post",
+      data:{contents:contents},
+      dataType:"json",
+      success: function(result)
+      {
+        $("#attachments_text").show();
+        $("#add_notepad_attachments_div_task").append("<p>"+result['filename']+" <a href='javascript:' class='remove_notepad_attach_task' data-task='"+result['file_id']+"'>Remove</a></p>");
+        $(".notepad_div_notes_task").hide();
+      }
+    });
+  }
+  if($(e.target).hasClass("create_task_manager"))
+  {
+    var client = $(e.target).attr("data-client");
+    var clientname = $(e.target).attr("data-clientname");
+
+    $(".client_search_class_task").val(clientname);
+    $("#client_search_task").val(client);
+    
+    $(".create_new_task_model").find(".job_title").html("New Task Creator");
+    var fullDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Dublin"});
+    $(".create_new_task_model").modal("show");
+    if (CKEDITOR.instances.editor_2) CKEDITOR.instances.editor_2.destroy();
+    $(".created_date").datetimepicker({
+       defaultDate: fullDate,       
+       format: 'L',
+       format: 'DD-MMM-YYYY',
+       maxDate: fullDate,
+    });
+    $(".due_date").datetimepicker({
+       defaultDate: fullDate,
+       format: 'L',
+       format: 'DD-MMM-YYYY',
+       minDate: fullDate,
+    });
+    CKEDITOR.replace('editor_2',
+    {
+      height: '150px',
+      enterMode: CKEDITOR.ENTER_BR,
+        shiftEnterMode: CKEDITOR.ENTER_P,
+        autoParagraph: false,
+        entities: false,
+   });
+
+    $("#action_type").val("1");
+    $(".allocate_user_add").val("");
+    $(".task-choose_internal").html("Select Task");
+    $(".subject_class").val("CRO ARD System Task");
+    $(".task_specifics_add").show();
+    CKEDITOR.instances['editor_2'].setData("Do the Annual Return");
+    
+    $(".retreived_files_div").hide();
+    $(".retreived_files_div").html("");
+    $(".recurring_checkbox").prop("checked", false);
+    $(".specific_recurring").val("");
+    $(".task_specifics_copy_val").html("");
+    $("#hidden_task_specifics").val("");
+
+    $("#hidden_specific_type").val("");
+    $("#hidden_attachment_type").val("");
+
+    $(".created_date").prop("readonly", true);
+    $(".client_group").show();
+    $(".client_search_class").prop("required",true);
+    $(".internal_tasks_group").hide();
+    $("#internal_checkbox").prop("checked",false);
+    $(".infiles_link").show();
+    $("#attachments_text").hide();
+    
+    $("#attachments_infiles").hide();
+    $("#idtask").val("");
+
+    $("#hidden_copied_files").val("");
+    $("#hidden_copied_notes").val("");
+    $("#hidden_copied_infiles").val("");
+
+    $(".auto_close_task").prop("checked",false);
+    $(".accept_recurring").prop("checked",false);
+    $(".accept_recurring_div").hide();
+    $("#recurring_checkbox1").prop("checked",false);
+
+    $("#open_task").prop("checked",false);
+    $(".allocate_user_add").removeClass("disable_user");
+    $.ajax({
+      url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
+      type:"post",
+      success: function(result)
+      {
+        $("#add_notepad_attachments_div").html('');
+        $("#add_attachments_div").html('');
+        $("body").removeClass("loading");
+      }
+    })
+  }
+  
+  if($(e.target).hasClass('fanotepadtask')){
+    var clientid = $("#client_search_task").val();
+    var pos = $(e.target).position();
+    var leftposi = parseInt(pos.left) - 20;
+    $(e.target).parent().find('.notepad_div_notes_task').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
+  }
+  if($(e.target).hasClass('remove_dropzone_attach_task'))
+  {
+    var file_id = $(e.target).attr("data-task");
+    $.ajax({
+      url:"<?php echo URL::to('user/tasks_remove_dropzone_attachment'); ?>",
+      type:"post",
+      data:{file_id:file_id},
+      success: function(result)
+      {
+        $(e.target).parents("p").detach();
+      }
+    })
+  }
+  if($(e.target).hasClass('remove_notepad_attach_task'))
+  {
+    var file_id = $(e.target).attr("data-task");
+    $.ajax({
+      url:"<?php echo URL::to('user/tasks_remove_notepad_attachment'); ?>",
+      type:"post",
+      data:{file_id:file_id},
+      success: function(result)
+      {
+        $(e.target).parents("p").detach();
+      }
+    })
+  }
+  if($(e.target).hasClass('fa-plus-task'))
+  {
+    var pos = $(e.target).position();
+    var leftposi = parseInt(pos.left);
+    $(e.target).parent().find('.img_div_task').toggle();
+    Dropzone.forElement("#imageUpload5").removeAllFiles(true);
+    $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");    
+  }
+  if(e.target.id == "open_task")
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".allocate_user_add").val("");
+      $(".allocate_user_add").addClass("disable_user");
+    }
+    else{
+      $(".allocate_user_add").val("");
+      $(".allocate_user_add").removeClass("disable_user");
+    }
   }
   if($(e.target).hasClass('yes_proceed'))
   {
@@ -1184,7 +2401,138 @@ function doneTyping_cro (input,clientid,that) {
       }
   });
 }
-
-
+fileList = new Array();
+Dropzone.options.imageUpload = {
+    maxFiles: 1,
+    maxFilesize:500000,
+    timeout: 10000000,
+    dataType: "HTML",
+    parallelUploads: 1,
+    maxfilesexceeded: function(file) {
+        this.removeAllFiles();
+        this.addFile(file);
+    },
+    init: function() {
+        this.on('sending', function(file) {
+            $("body").addClass("loading");
+        });
+        this.on("drop", function(event) {
+            $("body").addClass("loading");        
+        });
+        this.on("success", function(file, response) {
+            var obj = jQuery.parseJSON(response);
+            file.serverId = obj.id;
+            $(".dropzone_progress_modal").modal("hide");
+            var croard_date = $("#clientidtr_"+obj.client_id).find(".cro_ard_val").html();
+            var cro_number =  $("#clientidtr_"+obj.client_id).find(".check_cro").html();
+            $("#clientidtr_"+obj.client_id).find(".attachment_div").html('<a class="attachment_link" href="'+obj.download_url+'" download>'+obj.filename+'</a>');
+            $.ajax({
+              url:"<?php echo URL::to('user/get_company_details_next_crd'); ?>",
+              type:"post",
+              dataType:"json",
+              data:{company_number:cro_number,indicator:'C',client_id:obj.client_id},
+              success:function(result)
+              {
+                $("#clientidtr_"+obj.client_id).find(".cro_ard_val").html(result['croard']);
+                $("#clientidtr_"+obj.client_id).find(".signature_file_date").val(result['croard']);
+                if(result['updated'] == 1)
+                {
+                  $("#clientidtr_"+obj.client_id).find(".signature_file_check").prop("checked",false);
+                  $("#clientidtr_"+obj.client_id).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status').removeClass('yellow_status');
+                }
+                else{
+                  $("#clientidtr_"+obj.client_id).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status');
+                }
+                
+                $("#clientidtr_"+obj.client_id).find(".status_icon").addClass(result['color_status']);
+                $("#clientidtr_"+obj.client_id).find(".status_icon").html(result['status_label']);
+                var cro_ard = $("#clientidtr_"+obj.client_id).find(".cro_ard_val").html();
+                var ard = $("#clientidtr_"+obj.client_id).find(".ard_val").html();
+                if(cro_ard == ard)
+                {
+                  $("#clientidtr_"+obj.client_id).find(".cro_ard_val").parents("td:first").css("color","green");
+                }
+                else{
+                  $("#clientidtr_"+obj.client_id).find(".cro_ard_val").parents("td:first").css("color","#f00");
+                }
+                $("body").removeClass("loading");
+              }
+            });
+        });
+        this.on("complete", function (file, response) {
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+            var acceptedcount= this.getAcceptedFiles().length;
+            var rejectedcount= this.getRejectedFiles().length;
+            var totalcount = acceptedcount + rejectedcount;
+            $("#total_count_files").val(totalcount);
+            Dropzone.forElement("#imageUpload").removeAllFiles(true);
+            //$(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+          }
+        });
+        this.on("error", function (file) {
+            $("body").removeClass("loading");
+        });
+        this.on("canceled", function (file) {
+            $("body").removeClass("loading");
+        });
+        this.on("removedfile", function(file) {
+            if (!file.serverId) { return; }
+        });
+    },
+};
+Dropzone.options.imageUpload5 = {
+    maxFiles: 2000,
+    acceptedFiles: null,
+    maxFilesize:500000,
+    timeout: 10000000,
+    dataType: "HTML",
+    parallelUploads: 1,
+    maxfilesexceeded: function(file) {
+        this.removeAllFiles();
+        this.addFile(file);
+    },
+    init: function() {
+        this.on('sending', function(file) {
+            $("body").addClass("loading");
+        });
+        this.on("drop", function(event) {
+            $("body").addClass("loading");        
+        });
+        this.on("success", function(file, response) {
+            var obj = jQuery.parseJSON(response);
+            file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
+            if(obj.id != 0)
+            {
+              file.previewElement.innerHTML = "<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach_task' data-task='"+obj.task_id+"'>Remove</a></p>";
+            }
+            else{
+              $("#attachments_text").show();
+              $("#add_attachments_div_task").append("<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach_task' data-task='"+obj.file_id+"'>Remove</a></p>");
+              $(".img_div").each(function() {
+                $(this).hide();
+              });
+            }
+        });
+        this.on("complete", function (file) {
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+            var acceptedcount= this.getAcceptedFiles().length;
+            var rejectedcount= this.getRejectedFiles().length;
+            var totalcount = acceptedcount + rejectedcount;
+            $("#total_count_files").val(totalcount);
+            $("body").removeClass("loading");
+          }
+        });
+        this.on("error", function (file) {
+            $("body").removeClass("loading");
+        });
+        this.on("canceled", function (file) {
+            $("body").removeClass("loading");
+        });
+        this.on("removedfile", function(file) {
+            if (!file.serverId) { return; }
+            $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+        });
+    },
+};
 </script>
 @stop

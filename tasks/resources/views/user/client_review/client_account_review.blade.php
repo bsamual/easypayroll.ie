@@ -14,6 +14,7 @@
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 
 <style>
+
 #receipt_tbody > tr > td{
   padding:12px !important;
 }
@@ -203,20 +204,20 @@ body.loading_apply {
 body.loading_apply .modal_load_apply {
     display: block;
 }
-    .table thead th:focus{background: #ddd !important;}
-    .form-control{border-radius: 0px;}
-    .disabled{cursor :auto !important;pointer-events: auto !important}
-    body #coupon {
-      display: none;
-    }
-    @media print {
-      body * {
-        display: none;
-      }
-      body #coupon {
-        display: block;
-      }
-    }
+.table thead th:focus{background: #ddd !important;}
+.form-control{border-radius: 0px;}
+.disabled{cursor :auto !important;pointer-events: auto !important}
+body #coupon {
+  display: none;
+}
+@media print {
+  body * {
+    display: none;
+  }
+  body #coupon {
+    display: block;
+  }
+}
 </style>
 <script>
 function popitup(url) {
