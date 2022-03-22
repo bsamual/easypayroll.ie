@@ -1,1 +1,0 @@
-This Payroll is to be run under the Scheme: Scheme 5
