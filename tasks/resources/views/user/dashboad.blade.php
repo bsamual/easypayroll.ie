@@ -13,9 +13,6 @@
 
 <!-- <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script> -->
-
-
-
 <style>
   .dashboard .dashboard_signle .crm_content{
     width:100%;
@@ -28,7 +25,8 @@
 }
 body{
 
-  background: #f5f5f5 !important;
+  /*background: #f5f5f5 !important;*/
+  background: url('<?php echo URL::to('assets/images/gbs-and-co-bubbles.jpg')?>')!important;
 
 }
 .dashboard .yearend
@@ -140,103 +138,264 @@ body #coupon {
 }
 </style>
 <div class="modal fade email_settings_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
-  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
+  <div class="modal-dialog modal-sm" role="document" style="width:70%;">
         <div class="modal-content">
-          <form id="form-validation-email" name="form-validation" method="POST" action="<?php echo URL::to('user/update_email_setting'); ?>">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Email Settings</h4>
+            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Settings</h4>
           </div>
-          <div class="modal-body" style="min-height: 100px;">  
-            <div class="col-lg-12 text-left padding_00">
-                
-                              <div class="col-lg-12" style="padding: 25px;">
-                                <div>
-                                  <?php
-                                  if(Session::has('emailmessage')) { ?>
-                                      <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('emailmessage'); ?></p>
-                                  <?php }
-                                  ?>
-                                </div>
-                                  <div class="form-group">
-                                      <label>Admin Email ID</label>
-                                       <input id="validation-email"
-                                             class="form-control"
-                                             placeholder="Enter Email"
-                                             value="<?php echo $admin_details->email; ?>"
-                                             name="email"
-                                             type="text"
-                                             required >                                
-                                  </div> 
-                                  <div class="form-group">
-                                      <label>Rct Item Delete Email ID</label>
-                                      <input id="validation-cc-email"
-                                             class="form-control"
-                                             placeholder="Enter Delete Email ID"
-                                             value="<?php echo $admin_details->delete_email; ?>"
-                                             name="deleteemail"
-                                             type="text"
-                                             required>                                
-                                  </div>  
-                                  <div class="form-group">
-                                      <label>RCT CC Email ID</label>
-                                      <input id="validation-cc-email"
-                                             class="form-control"
-                                             placeholder="Enter RCT CC Email ID"
-                                             value="<?php echo $admin_details->cc_email; ?>"
-                                             name="ccemail"
-                                             type="text"
-                                             required>                                 
-                                  </div>
-                                  <div class="form-group">
-                                      <label>Taskmanager CC Email ID</label>
-                                      <input id="validation-cc-email"
-                                             class="form-control"
-                                             placeholder="Enter Taskmanager CC Email ID"
-                                             value="<?php echo $admin_details->task_cc_email; ?>"
-                                             name="taskccemail"
-                                             type="text"
-                                             required>                                 
-                                  </div>
-                                  <div class="form-group">
-                                      <label>P30 CC Email ID</label>
-                                      <input id="validation-cc-email"
-                                             class="form-control"
-                                             placeholder="Enter Taskmanager CC Email ID"
-                                             value="<?php echo $admin_details->p30_cc_email; ?>"
-                                             name="p30ccemail"
-                                             type="text"
-                                             required>                                 
-                                  </div>
-                                  <div class="form-group">
-                                      <label>Client Management CC Email ID</label>
-                                      <input id="validation-cc-email"
-                                             class="form-control"
-                                             placeholder="Enter Taskmanager CC Email ID"
-                                             value="<?php echo $admin_details->cm_cc_email; ?>"
-                                             name="cmccemail"
-                                             type="text"
-                                             required>                                 
-                                  </div>
-                                  <div class="form-group">
-                                      <label>VAT CC Email ID</label>
-                                      <input id="validation-cc-email"
-                                             class="form-control"
-                                             placeholder="Enter VAT CC Email ID"
-                                             value="<?php echo $admin_details->vat_cc_email; ?>"
-                                             name="vatccemail"
-                                             type="text"
-                                             required>                                 
-                                  </div>
-                              </div>
-                            
+          <div class="modal-body" style="clear:both"> 
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item active">
+                <a class="nav-link active" id="first-tab" data-toggle="tab" href="#first" role="tab" aria-controls="first" aria-selected="true">Practice</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Email Settings</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Manage Year</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Manage Users</a>
+              </li>
+            </ul>
+            <?php
+            $settings = DB::table('settings')->where('source','practice')->first();
+            if(count($settings))
+            {
+              $settingsval = unserialize($settings->settings);
+            }
+            ?>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade active in" id="first" role="tabpanel" aria-labelledby="first-tab">
+                <form id="form-validation-email" name="form-validation" method="POST" action="<?php echo URL::to('user/update_practice_setting'); ?>">
+                  <div class="col-lg-12 text-left padding_00">
+                    <div class="col-lg-12" style="padding: 25px;">
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Practice Code:</label>
+                             <input id="validation-email"
+                                   class="form-control"
+                                   placeholder="Enter Practice Code"
+                                   value="GBS"
+                                   name="practice_code"
+                                   type="text"
+                                   disabled>                                
+                        </div> 
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Practice Name:</label>
+                            <input id="validation-practice_name"
+                                   class="form-control"
+                                   placeholder="Enter Practice Name"
+                                   value="<?php echo (isset($settingsval['practice_name']))?$settingsval['practice_name']:''; ?>"
+                                   name="practice_name"
+                                   type="text"
+                                   required>                                
+                        </div> 
+                      </div> 
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Address 1:</label>
+                            <input id="validation-address_1"
+                                   class="form-control"
+                                   placeholder="Enter Address 1"
+                                   value="<?php echo (isset($settingsval['address_1']))?$settingsval['address_1']:''; ?>"
+                                   name="address_1"
+                                   type="text"
+                                   required>                                
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Address 2:</label>
+                            <input id="validation-address_2"
+                                   class="form-control"
+                                   placeholder="Enter Address 2"
+                                   value="<?php echo (isset($settingsval['address_2']))?$settingsval['address_2']:''; ?>"
+                                   name="address_2"
+                                   type="text">                                
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Address 3:</label>
+                            <input id="validation-address_3"
+                                   class="form-control"
+                                   placeholder="Enter Address 3"
+                                   value="<?php echo (isset($settingsval['address_3']))?$settingsval['address_3']:''; ?>"
+                                   name="address_3"
+                                   type="text">                                
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Address 4:</label>
+                            <input id="validation-address_4"
+                                   class="form-control"
+                                   placeholder="Enter Address 4"
+                                   value="<?php echo (isset($settingsval['address_4']))?$settingsval['address_4']:''; ?>"
+                                   name="address_4"
+                                   type="text">                                
+                        </div> 
+                      </div>
+                      <div class="col-lg-6"> 
+                        <div class="form-group">
+                            <label>Link 1:</label>
+                            <input id="validation-link_1"
+                                   class="form-control"
+                                   placeholder="Enter Link 1"
+                                   value="<?php echo (isset($settingsval['link_1']))?$settingsval['link_1']:''; ?>"
+                                   name="link_1"
+                                   type="text"
+                                   required>                                
+                        </div>  
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Link 2:</label>
+                            <input id="validation-link_2"
+                                   class="form-control"
+                                   placeholder="Enter Link 2"
+                                   value="<?php echo (isset($settingsval['link_2']))?$settingsval['link_2']:''; ?>"
+                                   name="link_2"
+                                   type="text">                                
+                        </div>  
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Link 3:</label>
+                            <input id="validation-link_3"
+                                   class="form-control"
+                                   placeholder="Enter Link 3"
+                                   value="<?php echo (isset($settingsval['link_3']))?$settingsval['link_3']:''; ?>"
+                                   name="link_3"
+                                   type="text">                                
+                        </div> 
+                      </div>
+                      <div class="col-lg-6"> 
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+                            <input id="validation-phone_no"
+                                   class="form-control"
+                                   placeholder="Enter Phone Number"
+                                   value="<?php echo (isset($settingsval['phone_no']))?$settingsval['phone_no']:''; ?>"
+                                   name="phone_no"
+                                   type="text"
+                                   required>                                
+                        </div>  
+                      </div>
+                    </div>
+                    <div class="col-lg-12" style="padding: 25px;text-align:right">
+                      <input type="button" class="common_black_button" data-dismiss="modal" aria-label="Close" value="Cancel">
+                      <input type="submit" class="common_black_button" id="park_submit" value="Submit">
+                    </div>
+                  </div>
+                </form>
               </div>
+              <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <form id="form-validation-email" name="form-validation" method="POST" action="<?php echo URL::to('user/update_email_setting'); ?>">
+                  <div class="col-lg-6 text-left padding_00">
+                    <div class="col-lg-12" style="padding: 25px;">
+                      <div>
+                        <?php
+                        if(Session::has('emailmessage')) { ?>
+                            <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('emailmessage'); ?></p>
+                        <?php }
+                        ?>
+                      </div>
+                        <div class="form-group">
+                            <label>Admin Email ID</label>
+                             <input id="validation-email"
+                                   class="form-control"
+                                   placeholder="Enter Email"
+                                   value="<?php echo $admin_details->email; ?>"
+                                   name="email"
+                                   type="text"
+                                   required >                                
+                        </div> 
+                        <div class="form-group">
+                            <label>Rct Item Delete Email ID</label>
+                            <input id="validation-cc-email"
+                                   class="form-control"
+                                   placeholder="Enter Delete Email ID"
+                                   value="<?php echo $admin_details->delete_email; ?>"
+                                   name="deleteemail"
+                                   type="text"
+                                   required>                                
+                        </div>  
+                        <div class="form-group">
+                            <label>RCT CC Email ID</label>
+                            <input id="validation-cc-email"
+                                   class="form-control"
+                                   placeholder="Enter RCT CC Email ID"
+                                   value="<?php echo $admin_details->cc_email; ?>"
+                                   name="ccemail"
+                                   type="text"
+                                   required>                                 
+                        </div>
+                        <div class="form-group">
+                            <label>Taskmanager CC Email ID</label>
+                            <input id="validation-cc-email"
+                                   class="form-control"
+                                   placeholder="Enter Taskmanager CC Email ID"
+                                   value="<?php echo $admin_details->task_cc_email; ?>"
+                                   name="taskccemail"
+                                   type="text"
+                                   required>                                 
+                        </div>
+                        <div class="form-group">
+                            <label>P30 CC Email ID</label>
+                            <input id="validation-cc-email"
+                                   class="form-control"
+                                   placeholder="Enter Taskmanager CC Email ID"
+                                   value="<?php echo $admin_details->p30_cc_email; ?>"
+                                   name="p30ccemail"
+                                   type="text"
+                                   required>                                 
+                        </div>
+                        <div class="form-group">
+                            <label>Client Management CC Email ID</label>
+                            <input id="validation-cc-email"
+                                   class="form-control"
+                                   placeholder="Enter Taskmanager CC Email ID"
+                                   value="<?php echo $admin_details->cm_cc_email; ?>"
+                                   name="cmccemail"
+                                   type="text"
+                                   required>                                 
+                        </div>
+                        <div class="form-group">
+                            <label>VAT CC Email ID</label>
+                            <input id="validation-cc-email"
+                                   class="form-control"
+                                   placeholder="Enter VAT CC Email ID"
+                                   value="<?php echo $admin_details->vat_cc_email; ?>"
+                                   name="vatccemail"
+                                   type="text"
+                                   required>                                 
+                        </div>
+                    </div>
+                    <div class="col-lg-12" style="padding: 25px;text-align:right">
+                      <input type="button" class="common_black_button" data-dismiss="modal" aria-label="Close" value="Cancel">
+                      <input type="submit" class="common_black_button" id="park_submit" value="Submit">
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <iframe src="{{URL::to('user/manage_task')}}" style="width:100%;height:800px"></iframe>
+              </div>
+              <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <iframe src="{{URL::to('user/manage_user')}}" style="width:100%;height:800px"></iframe>
+              </div>
+            </div> 
+            
           </div>
-          <div class="modal-footer">
-            <input type="button" class="common_black_button" data-dismiss="modal" aria-label="Close" value="Cancel">
-            <input type="submit" class="common_black_button" id="park_submit" value="Submit">
+          <div class="modal-footer" style="clear:both">
+            
           </div>
-          </form>
+          
         </div>
   </div>
 </div>

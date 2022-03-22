@@ -4,6 +4,11 @@
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
+  .margintop20{
+  margin-top:20px !important;
+  margin-bottom: 0px !important;
+}
+  .start_group{clear:both;}
 .modal{
   z-index: 99999999;
 }
@@ -485,18 +490,18 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
 ?> 
 <div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
-    <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_task_form">
+    <form action="<?php echo URL::to('user/create_new_taskmanager_task_croard')?>" method="post" class="add_new_form" id="create_task_form">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">New Task Creator</h4>
+            <h4 class="modal-title job_title" style="font-weight: 700; font-size: 20px;">New Task Creator</h4>
           </div>
           <div class="modal-body">            
             <div class="row"> 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <label style="margin-top:5px">Author:</label>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3">
                   <select name="select_user" class="form-control select_user_author" required>
                     <option value="">Select User</option>        
                       <?php
@@ -512,38 +517,44 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                       ?>
                   </select>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px">
-              <div class="col-md-3">
-                  <label style="margin-top:5px">Creation Date:</label>
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Author Email:</label>
                 </div>
-                <div class="col-md-9">
-                  <label class="input-group datepicker-only-init_date_received">
-                      <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
-                      <span class="input-group-addon">
-                          <i class="glyphicon glyphicon-calendar"></i>
-                      </span>
-                  </label>
+                <div class="col-md-4">
+                  <input  type="email" class="form-control author_email" name="author_email" placeholder="Enter Author's Email" required>
                 </div>
             </div>
-            <div class="row" style="margin-top:7px">
-              <div class="col-md-3">
+            
+            <div class="row margintop20" style="margin-top:7px">
+                <div class="col-md-2">
                   <label style="margin-top:5px">Allocate To:</label>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-3">
                   <select name="allocate_user" class="form-control allocate_user_add">
                     <option value="">Select User</option>        
                       <?php
                       $selected = '';
                       if(count($userlist)){
                         foreach ($userlist as $user) {
+                          if(Session::has('task_manager_user'))
+                          {
+                            if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }
                       ?>
-                        <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
                       <?php
                         }
                       }
                       ?>
                   </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To Email:</label>
+                </div>
+                <div class="col-md-3">
+                  <input  type="email" class="form-control allocate_email" name="allocate_email" placeholder="Enter Allocate's Email" required>
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
@@ -552,8 +563,8 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                   </div>
                 </div>
             </div>
-            <div class="row" style="margin-top:14px">
-              <div class="col-md-3 client_group">
+            <div class="row margintop20" style="margin-top:14px">
+              <div class="col-md-2 client_group">
                   <label style="margin-top:5px">Client:</label>
                 </div>
                 <?php
@@ -568,7 +579,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                   $company = '';
                 }
                 ?>
-                <div class="col-md-7 client_group">
+                <div class="col-md-8 client_group">
                   <input  type="text" class="form-control client_search_class_task" name="client_name" placeholder="Enter Client Name / Client ID" value="" readonly required>
                   <input type="hidden" id="client_search_task" name="clientid" value=""/>
                 </div>
@@ -597,7 +608,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                               $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
                             }
                         ?>
-                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>"><?php echo $icon.$single_task->task_name?></a></li>
+                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>" data-project="<?php echo $single_task->project_id; ?>"><?php echo $icon.$single_task->task_name?></a></li>
                         <?php
                           }
                         }
@@ -613,19 +624,87 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                   </div>
                 </div>
             </div>
-            <div class="form-group start_group" style="margin-top:10px">
-                <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
-                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+            <div class="form-group start_group margintop20" style="margin-top:20px">
+
+              <div class="row">
+                <div class="col-lg-5">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <div class="form-title"><label style="margin-top:5px">Priority:</label></div>
+                    </div>
+                    <div class="col-md-7" style="padding-top: 5px;">
+                      <?php echo user_rating(); ?>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7" >
+                  <div class="row">
+                    <div class="col-md-3">
+                        <label style="margin-top:5px">Creation Date:</label>
+                      </div>
+                      <div class="col-md-9">
+                        <label class="input-group datepicker-only-init_date_received">
+                            <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </label>
+                      </div>
+                  </div>
+                  
+                </div>
+              </div>
+
+
+              
             </div>
-            <div class="form-group start_group task_specifics_add">
-                <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
-                <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+            <div class="form-group start_group margintop20" style="margin-top:15px !important">
+                <div class="row">
+                  <div class="col-lg-2">
+                    <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                  </div>
+                  <div class="col-lg-10">
+                    <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+                  </div>
+                </div>
+                
+                
             </div>
-            <div class="form-group date_group">
-                <div class="col-md-2" style="padding:0px">
+            <div class="form-group start_group task_specifics_add margintop20">
+
+                <div class="row">
+                  <div class="col-lg-7">
+                    <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
+                  </div>
+                  <div class="col-lg-5">
+                    <div class="form-group date_group" style="float: right;  width: 100%;">
+                      <div class="form-title" style="font-weight:600; width: 100%;">
+                        <div style="float: right;">
+                          <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                        </div>
+                        <div style="float: right;">
+                          <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                          <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                        </div>
+                        
+                        
+                      </div>
+                  </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+                  </div>
+                </div>
+
+
+                
+                
+            </div>
+            <div class="form-group date_group margintop20">
+                <div class="col-md-1" style="padding:0px">
                   <label style="margin-top:5px">DueDate:</label>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-3">
                   <label class="input-group datepicker-only-init_date_received">
                       <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
                       <span class="input-group-addon">
@@ -633,74 +712,130 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                       </span>
                   </label>
                 </div>
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">Project:</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="select_project" class="form-control select_project">
+                      <option value="">Select Project</option>
+                      <?php
+                          $projects = DB::table('projects')->get();
+                          if(count($projects)){
+                            foreach($projects as $project){
+                              ?>
+                              <option value="<?php echo $project->project_id; ?>"><?php echo $project->project_name; ?></option>
+                              <?php
+                            }
+                          }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <label style="margin-top:5px">Project Time:</label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_hours" class="form-control project_hours">
+                      <option value="">HH</option>
+                      <?php
+                      for($i = 0; $i <= 23; $i++)
+                      {
+                        if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_mins" class="form-control project_mins">
+                      <option value="">MM</option>
+                      <?php
+                      for($i = 0; $i <= 59; $i++)
+                      {
+                         if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
             </div>
-            <div class="form-group start_group retreived_files_div">
+            <div class="form-group start_group retreived_files_div margintop20">
 
             </div>
-            <div class="form-group start_group">
-              <label>Task Files: </label>
-              <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
-              <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
-              <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
-              <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
-              <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
-                <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
-                </form>
-                <div class="image_div_attachments">
-                  <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
-                  <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
-                      <input name="_token" type="hidden" value="">
-                  </form>              
+
+            <div class="row margintop20" style="clear: both; padding-top: 10px;">
+              <div class="col-lg-8">
+                <div class="form-group start_group">
+                  <label>Task Files: </label>
+                  <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+                  <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+                  <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+                  <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+                  <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
+                    <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                    </form>
+                    <div class="image_div_attachments">
+                      <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                      <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                          <input name="_token" type="hidden" value="">
+                      </form>              
+                    </div>
+                   </div>
+                   <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
+                      <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
+                      <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                      <spam class="error_files_notepad_add"></spam>
+                  </div>
                 </div>
-               </div>
-               <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
-                  <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
-                  <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-                  <spam class="error_files_notepad_add"></spam>
+                
+                <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
+                <div id="add_attachments_div_task">
+                </div>
+                <div id="add_notepad_attachments_div_task">
+                </div>
+                <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+                <div id="add_infiles_attachments_div">
+                </div>
+                
+              </div>
+              <div class="col-lg-4">
+                <div class="form-group date_group">
+                  <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+              </div>
+              <div class="form-group date_group">
+                  <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                  <div class="accept_recurring_div">
+                    <p>This Task is repeated:</p>
+                    <div class="form-title" style="float:none">
+                      <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                      <label for="recurring_checkbox1">Monthly</label>
+                    </div>
+                    <div class="form-title" style="float:none">
+                      <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                      <label for="recurring_checkbox2">Weekly</label>
+                    </div>
+                    <div class="form-title" style="float:none">
+                      <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                      <label for="recurring_checkbox3">Daily</label>
+                    </div>
+                    <div class="form-title" style="float:none">
+                      <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                      <label for="recurring_checkbox4">Specific Number of Days</label>
+                      <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                    </div>
+                  </div>
+              </div>
+                
               </div>
             </div>
+
+
             
-            <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
-            <div id="add_attachments_div_task">
-            </div>
-            <div id="add_notepad_attachments_div_task">
-            </div>
-            <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
-            <div id="add_infiles_attachments_div">
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
-                <div class="accept_recurring_div">
-                  <p>This Task is repeated:</p>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
-                    <label for="recurring_checkbox1">Monthly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
-                    <label for="recurring_checkbox2">Weekly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
-                    <label for="recurring_checkbox3">Daily</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
-                    <label for="recurring_checkbox4">Specific Number of Days</label>
-                    <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
-                  </div>
-                </div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px">
-                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
-                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
-                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
-                </div>
-            </div>
+            
+            
           </div>
           <div class="modal-footer">     
             <input type="hidden" name="action_type" id="action_type" value="">
@@ -753,6 +888,83 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
         </div>
   </div>
 </div>
+<div class="modal fade name_verify_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 999999;">
+  <div class="modal-dialog modal-sm" role="document" style="width:60%">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Company name discrepancy</h4>
+          </div>
+          <div class="modal-body automatic_tbody" style="min-height:280px">  
+              <a href="javascript:" class="common_black_button refresh_blue_client" style="float:right;margin-bottom: 10px">Refresh The Client From CRO Details</a>
+              <table class="table">
+                <thead>
+                  <th>Company Number</th>
+                  <th>CM System Name</th>
+                  <th>Type</th>
+                  <th>CRO Name</th>
+                  <th>CRO Number</th>
+                  <th>CRO ARD</th>
+                </thead>
+                <tbody id="name_verify_tbody">
+                </tbody>
+              </table>
+          </div>
+          <div class="modal-footer">  
+            
+          </div>
+        </div>
+  </div>
+</div>
+<div class="modal fade croard_settings_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 999999;">
+  <div class="modal-dialog modal-sm" role="document" style="width:40%">
+        <div class="modal-content">
+          <form name="croard_settings_form" id="croard_settings_form" method="post" action="<?php echo URL::to('user/save_croard_settings'); ?>">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title job_title" >CRO-ARD Settings</h4>
+            </div>
+            <div class="modal-body">  
+                <h4>Enter Email Signature:</h4>
+                <textarea name="message_editor" id="editor1"><?php echo $admin_details->croard_signature; ?></textarea>
+                <h4>Enter CC Box:</h4>
+                <input type="text" name="croard_cc_input" class="form-control croard_cc_input" value="<?php echo $admin_details->croard_cc_email; ?>">
+                <h4>Submission Days Allowed After ARD Date:</h4>
+                <input type="text" name="croard_days_input" class="form-control croard_days_input" value="<?php echo $admin_details->croard_submission_days; ?>" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                <?php $cro = DB::table('cro_credentials')->first(); ?>
+                <h4>Username:</h4>
+                <input id="validation-email" class="form-control" placeholder="Enter Username" value="<?php echo $cro->username; ?>" name="username" type="text" required > 
+                <label>API Key</label>
+                <input id="validation-cc-email" class="form-control" placeholder="Enter API Key" value="<?php echo $cro->api_key; ?>" name="api_key" type="text" required> 
+
+            </div>
+            <div class="modal-footer">  
+                <input type="submit" name="submit_croard_settings" class="common_black_button submit_croard_settings" value="Submit">
+            </div>
+          </form>
+        </div>
+  </div>
+</div>
+<div class="modal fade rbo_review_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 999999;">
+  <div class="modal-dialog modal-lg" role="document" style="width:80%">
+        <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">RBO REVIEW</h4>
+            </div>
+            <div class="modal-body" style="clear:both">  
+              <input type="button" name="show_ltd_rbo" id="show_ltd_rbo" class="common_black_button show_ltd_rbo" value="Show Active Ltd Clients Only" style="float:right">
+              <input type="button" name="report_csv_rbo" id="report_csv_rbo" class="common_black_button report_csv_rbo" value="Report CSV" style="float:right">
+
+              <div class="col-md-12" id="rbo_review_tbody">
+              </div>
+            </div>
+            <div class="modal-footer" style="clear:both">  
+                
+            </div>
+        </div>
+  </div>
+</div>
 <div class="modal fade emailunsent" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog" role="document">
     <form id="email_unsent_form" action="<?php echo URL::to('user/email_unsent_files_croard'); ?>" method="post" >
@@ -800,7 +1012,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
               <label>CC</label>
             </div>
             <div class="col-md-9">
-              <input type="text" name="cc_unsent" class="form-control" value="<?php echo $admin_cc; ?>" readonly>
+              <input type="text" name="cc_unsent" class="form-control" value="<?php echo $admin_details->croard_cc_email; ?>" readonly required>
             </div>
           </div>
           <div class="row" style="margin-top:10px">
@@ -843,7 +1055,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title job_title">Search Company</h4>
           </div>
-          <div class="modal-body">  
+          <div class="modal-body modal_max_height">  
             <div class="row">
               <div class="col-md-3">
                 <h5>Company number:</h5>
@@ -954,7 +1166,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
       <div class="col-lg-2" style="text-align: left; width: 9%;">
         <label style="margin-top: 5px;">CRO Api Username:</label>
       </div>
-      <div class="col-lg-2" style="padding:0px">
+      <div class="col-lg-1" style="padding:0px">
         <input type="text" name="cro_username" class="form-control cro_username" id="cro_username" value="<?php echo $cro->username; ?>" disabled>
       </div>
       <div class="col-lg-1" style="text-align: left; width: 7%;">
@@ -963,10 +1175,12 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
       <div class="col-lg-2" style="padding:0px">
         <input type="text" name="cro_api" class="form-control cro_api" id="cro_api" value="<?php echo $cro->api_key; ?>" disabled>
       </div>
-      <div class="col-md-4 text-right padding_00">
+      <div class="col-md-5 text-right padding_00">
           <input type="button" name="check_company" class="common_black_button check_company" value="Check Company" data-toggle="modal" data-target=".search_company_modal">
           <input type="button" name="global_core_call" class="common_black_button global_core_call" value="Global Core Call"> 
           <input type="button" name="show_ltd" id="show_ltd" class="common_black_button show_ltd" value="Show Active Ltd Clients Only">
+          <input type="button" name="rbo_review_btn" id="rbo_review_btn" class="common_black_button rbo_review_btn" value="RBO Review">
+          <a href="javascript:" id="settings_croard" class="fa fa-cog common_black_button"></a>
         </div>
   </div>
 </div>
@@ -984,7 +1198,6 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
 	            <th style="width:6%;text-align: left;">Client Code <i class="fa fa-sort clientid_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:25%;text-align: left;">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:7%;text-align: left;">CRO Number <i class="fa fa-sort cro_sort" aria-hidden="true" style="float: right;"></i></th>
-	            <th style="width:10%;text-align: left;">ARD <i class="fa fa-sort ard_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:10%;text-align: left;">Type <i class="fa fa-sort type_sort" aria-hidden="true" style="float: right;"></i></th>
 	            <th style="width:10%;text-align: left;">CRO ARD <i class="fa fa-sort cro_ard_sort" aria-hidden="true" style="float: right;"></i></th>
               <th style="width:25%;text-align: left;">NOTES </th>
@@ -992,7 +1205,10 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
 	        </thead>                            
         	<tbody id="clients_tbody">
 	        <?php
-	        $i=1;
+	        $ivall=1;
+          $admin_details = DB::table('admin')->first();
+          $submission_days = $admin_details->croard_submission_days;
+
 	        if(count($clientlist)){              
 		        foreach($clientlist as $key => $client){
 	              $disabled='';
@@ -1006,7 +1222,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
 	                }
 	                $check_color = DB::table('cm_class')->where('id',$client->active)->first();
 	              }
-
+                $last_submission = '';
 	              $cmp = '<spam class="company_td" style="font-style:italic;"></spam>';
 	              $cr_ard_date = '';
 	              $ard_color = '';
@@ -1021,6 +1237,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                 $yellow_status = '';
                 $yellow_label = '';
                 $signature_file_date = '';
+                $rbo_submission = '';
 	              if(count($cro_ard_details))
 	              {
                   if($cro_ard_details->filename != "")
@@ -1042,14 +1259,12 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                   {
                     $last_email_sent = date('d F Y @ H : i', strtotime($cro_ard_details->last_email_sent));
                   }
-                  	$notes = $cro_ard_details->notes;
-	              	if(strtolower($client->company) == strtolower($cro_ard_details->company_name))
-	              	{
-	              		$cmp = '<spam class="company_td" style="color:green;font-style:italic">'.$cro_ard_details->company_name.'</spam>';
-	              	}
-	              	else{
-	              		$cmp = '<spam class="company_td" style="color:blue;font-style:italic;font-weight:800">'.$cro_ard_details->company_name.'</spam>';
-	              	}
+                  $notes = $cro_ard_details->notes;
+
+                  $clientname_company = preg_replace('/[[:^print:]]/', '', strtolower($client->company));
+                  $croname_company = preg_replace('/[[:^print:]]/', '', strtolower($cro_ard_details->company_name));
+                  
+
 	              	if($cro_ard_details->cro_ard != "")
 	              	{
                     $exp_api_date_month = explode("/",$cro_ard_details->cro_ard);
@@ -1081,6 +1296,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                         {
                           $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
                           $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                          $dd = date('d/m/Y', strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]. ' + '.$submission_days.' days'));
 
                           $current_date = date('Y-m-d');
                           $current_year = date('Y');
@@ -1090,26 +1306,31 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                           {
                             $color_status = 'blue_status';
                             $status_label = 'Current Year OK';
+                            $ard_color = 'color:blue';
                           }
                           else{
                             $firstdate = strtotime($correctcroard);
                             $seconddate = strtotime($current_date);
-
                             $diff = ceil(($firstdate - $seconddate)/60/60/24);
                             if($diff < 0 || $diff == 0)
                             {
                               $color_status = 'red_status';
                               $status_label = 'Submission Late';
+                              $ard_color = 'color:red';
+
+                              $last_submission = '<strong>Last Submission Date: <spam>'.$dd.'</spam></strong>';
                             }
                             elseif($diff <= 30)
                             {
                               $color_status = 'orange_status';
                               $status_label = 'Submission Pending';
+                              $ard_color = 'color:orange';
                             }
                             elseif($diff > 30)
                             {
                               $color_status = 'green_status';
                               $status_label = 'Future Submission';
+                              $ard_color = 'color:green';
                             }
                           }
                         }
@@ -1117,7 +1338,6 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                           $timestampcroard = '';
                         }
                       }
-		              		$ard_color = 'color:green';
 		              	}
 		              	else{
 		              		$cr_ard_date = $cro_ard_details->cro_ard;
@@ -1132,6 +1352,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                         {
                           $correctcroard = $expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0];
                           $timestampcroard = strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]);
+                          $dd = date('d/m/Y', strtotime($expandcroard[2].'-'.$expandcroard[1].'-'.$expandcroard[0]. ' + '.$submission_days.' days'));
 
                           $current_date = date('Y-m-d');
                           $current_year = date('Y');
@@ -1141,6 +1362,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                           {
                             $color_status = 'blue_status';
                             $status_label = 'Current Year OK';
+                            $ard_color = 'color:blue';
                           }
                           else{
                             $firstdate = strtotime($correctcroard);
@@ -1151,16 +1373,20 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                             {
                               $color_status = 'red_status';
                               $status_label = 'Submission Late';
+                              $ard_color = 'color:red';
+                              $last_submission = '<strong>Last Submission Date: <spam>'.$dd.'</spam></strong>';
                             }
                             elseif($diff <= 30)
                             {
                               $color_status = 'orange_status';
                               $status_label = 'Submission Pending';
+                              $ard_color = 'color:orange';
                             }
                             elseif($diff > 30)
                             {
                               $color_status = 'green_status';
                               $status_label = 'Future Submission';
+                              $ard_color = 'color:green';
                             }
                           }
                         }
@@ -1168,9 +1394,18 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                           $timestampcroard = '';
                         }
                       }
-		              		$ard_color = 'color:red';
 		              	}
 	              	}
+
+                  if($clientname_company == $croname_company)
+                  {
+                    $cmp = '<spam class="company_td" style="color:green;font-style:italic">'.$cro_ard_details->company_name.'</spam>';
+                  }
+                  else{
+                    $cmname = ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company;
+                    $cmp = '<spam class="company_td company_blue" data-crono="'.$client->client_id.'" data-cmname="'.$cmname.'" data-croname="'.$cro_ard_details->company_name.'" data-croard="'.$cr_ard_date.'" data-cronumber="'.$client->cro.'" data-type="'.$client->tye.'" style="color:blue;font-style:italic;font-weight:800">'.$cro_ard_details->company_name.'</spam>';
+                  }
+                  $rbo_submission = $cro_ard_details->rbo_submission;
 	              }
 
                 if($client->ard == "")
@@ -1188,25 +1423,36 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                     $timestampard = '';
                   }
                 }
+
+                
 		          ?>
 		            <tr class="edit_task <?php echo $disabled; ?>" style="<?php echo $style; ?>"  id="clientidtr_<?php echo $client->client_id; ?>">
-		                <td style="<?php echo $style; ?>" class="sno_sort_val"><?php echo $i; ?></td>
+		                <td style="<?php echo $style; ?>" class="sno_sort_vall"><?php echo $ivall; ?></td>
 		                <td style="<?php echo $style; ?>" class="clientid_sort_val" align="left"><?php echo $client->client_id; ?></td>
 		                <td style="<?php echo $style; ?>" align="left"><spam class="company_sort_val"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></spam> <br/> <?php echo $cmp; ?></td>
 		                <td style="<?php echo $style; ?>" class="cro_sort_val" align="left">
                           
                           <?php echo ($client->cro == "")?"-":'<a href="javascript:" class="check_cro" data-element="'.$client->cro.'">'.$client->cro.'</a>'; ?>
                     </td>
-		                <td style="<?php echo $style; ?>" align="left"><spam class="ard_sort_val" style="display: none"><?php echo $timestampard; ?></spam><spam class="ard_val"><?php echo ($client->ard == "")?"-":$client->ard; ?></spam></td>
 		                <td style="<?php echo $style; ?>" class="type_sort_val" align="left"><?php echo ($client->tye == "")?"-":$client->tye; ?></td>
 		                <td class="cro_ard_td" style="<?php echo $ard_color; ?>" align="left"><spam class="cro_ard_sort_val" style="display: none"><?php echo $timestampcroard; ?></spam><spam class="cro_ard_val"><?php echo $cr_ard_date; ?></spam></td>
                     <td align="left" style="color:#000">
                       <textarea name="cro_notes" class="form-control cro_notes" data-element="<?php echo $client->client_id; ?>" style="height:50px"><?php echo $notes; ?></textarea>
-                      <h4>Active submissions: <a href="javascript:" class="common_black_button create_task_manager" data-client="<?php echo $client->client_id; ?>" data-clientname="<?php echo ($client->company == "")?$client->firstname.' & '.$client->surname.' - '.$client->client_id:$client->company.' - '.$client->client_id; ?>" style="margin-left:20px;padding: 6px 10px;";>Create Task</a></h4>
+                      <div class="col-md-12" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin-top:10px">
+                        <div class="col-md-12 padding_00"><span style="float:left;font-size: 18px;margin-right: 10px;margin-top: 5px;">RBO Submisison Reference:</span> <input type="text" name="rbo_submission_text" class="form-control rbo_submission_text" value="<?php echo $rbo_submission; ?>" data-element="<?php echo $client->client_id; ?>" maxlength="10" style="float:left;width:30%"></div>
+                      </div>
+                      <div class="col-md-12 padding_00" style="margin-bottom: 10px">
+                        <div class="col-md-5 padding_00"><h4>Active submissions:</h4></div>
+                        <div class="col-md-3 padding_00" style="margin-top:10px">
+                          <a href="javascript:" class="common_black_button create_task_manager" data-client="<?php echo $client->client_id; ?>" data-clientname="<?php echo ($client->company == "")?$client->firstname.' & '.$client->surname.' - '.$client->client_id:$client->company.' - '.$client->client_id; ?>" style="padding: 6px 10px;";>Create Task</a>
+                        </div>
+                      </div>
+                       
+                        
                       <label class="status_icon <?php echo $color_status; ?> <?php echo $yellow_status; ?>">
-                        <spam class="status_label"><?php echo $status_label; ?></spam>
+                        <spam class="status_label"><?php echo $status_label; ?> </spam>
                         <spam class="yellow_label" style="display:none">Awaiting CRO Update</spam>
-                      </label><br/>
+                      </label> &nbsp;&nbsp; <?php echo $last_submission; ?><br/>
                       <div class="col-md-12 padding_00">
                         <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-client="<?php echo $client->client_id; ?>" style="margin-top:10px;" aria-hidden="true" title="Add a File"></a> 
                         <div class="attachment_div"><?php echo $attachment; ?></div>
@@ -1215,20 +1461,34 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                         <a href="javascript:" class="fa fa-envelope email_unsent" data-client="<?php echo $client->client_id; ?>" style="margin-top:10px;" aria-hidden="true" title="Send Email"></a>
                         <div class="email_unsent_label"><?php echo $last_email_sent; ?></div>
                       </div>
-                      <div class="col-md-8 padding_00" style="margin-top:15px">
-                        <input type="checkbox" name="signature_file_check" id="signature_file_check<?php echo $client->client_id; ?>" class="signature_file_check" data-element="<?php echo $client->client_id; ?>" value="" <?php echo $signature_checked; ?>><label for="signature_file_check<?php echo $client->client_id; ?>">Signature file Submitted</label>
-                      </div>
-                      <div class="col-md-4 padding_00" style="margin-top:15px">
-                        <input type="text" class="form-control signature_file_date" id="signature_file_date" name="signature_file_date" value="<?php echo $signature_file_date; ?>" data-element="<?php echo $client->client_id; ?>">
+                      <?php
+                      $tasks_det = DB::table('taskmanager_croard')->where('client_id',$client->client_id)->get();
+                      if(count($tasks_det))
+                      {
+                        echo '<div class="col-md-12 padding_00" style="margin-top:15px"><h5>Linked Tasks</h5>';
+                        $i = 1;
+                        foreach($tasks_det as $task_det)
+                        {
+                          $task_details = DB::table('taskmanager')->where('id',$task_det->task_id)->first();
+                          echo '<p style="float: left;margin-top: 10px;font-weight: 600;">'.$i.'. Task : '.$task_details->taskid.' - '.$task_details->subject.'</p>';
+                          $i++;
+                        }
+                        echo '</div>';
+                      }
+                      ?>
+                      <div class="col-md-12 padding_00" style="margin-top:15px">
+                        <input type="checkbox" name="signature_file_check" id="signature_file_check<?php echo $client->client_id; ?>" class="signature_file_check" data-element="<?php echo $client->client_id; ?>" value="" <?php echo $signature_checked; ?>><label for="signature_file_check<?php echo $client->client_id; ?>" 
+                          style="width: fit-content;float: left;margin-right: 10px;">Signature file Submitted</label>
+                        <input type="text" class="form-control signature_file_date" id="signature_file_date" name="signature_file_date" value="<?php echo $signature_file_date; ?>" data-element="<?php echo $client->client_id; ?>" readonly style="width: 30%;margin-top: -20px;background: #dfdfdf">
                       </div>
                     </td>
 		                <td align="left"><a href="javascript:" class="fa fa-refresh refresh_croard" data-element="<?php echo $client->client_id; ?>" data-cro="<?php echo trim($client->cro); ?>" data-type="<?php echo trim($client->tye); ?>" style="<?php echo $style; ?>"></a></td>
 		            </tr>
 	              <?php
-	              $i++;
+	              $ivall++;
 	            }              
             }
-            if($i == 1)
+            if($ivall == 1)
             {
               echo'<tr><td colspan="11" align="center">Empty</td></tr>';
             }
@@ -1254,6 +1514,13 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
 <input type="hidden" name="ard_sortoptions" id="ard_sortoptions" value="asc">
 <input type="hidden" name="type_sortoptions" id="type_sortoptions" value="asc">
 <input type="hidden" name="cro_ard_sortoptions" id="cro_ard_sortoptions" value="asc">
+
+<input type="hidden" name="sno_rbo_sortoptions" id="sno_rbo_sortoptions" value="asc">
+<input type="hidden" name="clientid_rbo_sortoptions" id="clientid_rbo_sortoptions" value="asc">
+<input type="hidden" name="company_rbo_sortoptions" id="company_rbo_sortoptions" value="asc">
+<input type="hidden" name="cro_rbo_sortoptions" id="cro_rbo_sortoptions" value="asc">
+<input type="hidden" name="type_rbo_sortoptions" id="type_rbo_sortoptions" value="asc">
+<input type="hidden" name="rbo_ref_sortoptions" id="rbo_ref_sortoptions" value="asc">
 
 <script>
 $(".client_search_class_task").autocomplete({
@@ -1286,8 +1553,12 @@ $(document).ready(function() {
   <?php if(Session::has('message_client_id')) { ?>
     $(document).scrollTop( $("#clientidtr_<?php echo Session::get('message_client_id'); ?>").offset().top - parseInt(150) );  
     $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:green">Task Created Successfully. </p>',fixed:true,width:"800px"});
+  <?php } elseif(Session::has('message_settings')) { ?>
+    $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:green">Croard Settings Saved successfully. </p>',fixed:true,width:"800px"});
+
   <?php } else{  ?>
     var yellow_status = $(".signature_file_check:checked").length;
+    var blue_status = $(".company_blue").length;
     if(yellow_status > 0)
     {
       $("body").addClass("loading");
@@ -1318,22 +1589,23 @@ $(document).ready(function() {
               {
                 $(".overlay_tr_"+client).find(".overlay_updated_croard").html(result['croard']);
                 $("#clientidtr_"+client).find(".cro_ard_val").html(result['croard']);
-                $("#clientidtr_"+client).find(".signature_file_date").val(result['croard']);
+                $("#clientidtr_"+client).find(".signature_file_date").val('');
 
                 $("#clientidtr_"+client).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status').removeClass('yellow_status');
                 $("#clientidtr_"+client).find(".status_icon").addClass(result['color_status']);
                 $("#clientidtr_"+client).find(".status_label").html(result['status_label']);
                 $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
-
-                var cro_ard = $("#clientidtr_"+client).find(".cro_ard_val").html();
-                var ard = $("#clientidtr_"+client).find(".ard_val").html();
-                if(cro_ard == ard)
-                {
-                  $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","green");
-                }
-                else{
-                  $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","#f00");
-                }
+                $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color",result['ard_color']);
+                $("#clientidtr_"+client).find(".attachment_div").html("");
+              }
+              else{
+                $("#clientidtr_"+client).find(".signature_file_date").val('');
+                $("#clientidtr_"+client).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status').removeClass('yellow_status');
+                $("#clientidtr_"+client).find(".status_icon").addClass(result['color_status']);
+                $("#clientidtr_"+client).find(".status_label").html(result['status_label']);
+                $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
+                $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color",result['ard_color']);
+                $("#clientidtr_"+client).find(".attachment_div").html("");
               }
               setTimeout( function() {
                 if($(".overlay_cro:eq(1)").length > 0)
@@ -1349,6 +1621,29 @@ $(document).ready(function() {
           });
         }
       })
+    }
+    else{
+      if(blue_status > 0)
+      {
+        $("body").addClass('loading');
+        var html_output = '';
+        $(".company_blue").each(function() {
+          var company_number = $(this).attr("data-crono");
+          var cm_name = $(this).attr("data-cmname");
+          var cro_name = $(this).attr("data-croname");
+          var cro_number = $(this).attr("data-cronumber");
+          var cro_ard = $(this).attr("data-croard");
+          var type = $(this).attr("data-type");
+          if(type == "Ltd" || type == "ltd")
+          {
+            html_output+='<tr><td class="refresh_blue_croard" data-element="'+company_number+'" data-cro="'+cro_number+'" data-type="'+type+'">'+company_number+'</td><td>'+cm_name+'</td><td>'+type+'</td><td>'+cro_name+'</td><td>'+cro_number+'</td><td>'+cro_ard+'</td></tr>';
+          }
+          
+        })
+        $("#name_verify_tbody").html(html_output);
+        $(".name_verify_modal").modal("show");
+        $("body").removeClass('loading');
+      }
     }
   <?php } ?>
   $('.table-fixed-header').fixedHeader();
@@ -1392,21 +1687,23 @@ function next_cro_check(count)
       {
         $(".overlay_tr_"+client).find(".overlay_updated_croard").html(result['croard']);
         $("#clientidtr_"+client).find(".cro_ard_val").html(result['croard']);
-        $("#clientidtr_"+client).find(".signature_file_date").val(result['croard']);
-        $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
+        $("#clientidtr_"+client).find(".signature_file_date").val('');
+
         $("#clientidtr_"+client).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status').removeClass('yellow_status');
         $("#clientidtr_"+client).find(".status_icon").addClass(result['color_status']);
-        $("#clientidtr_"+client).find(".status_icon").html(result['status_label']);
+        $("#clientidtr_"+client).find(".status_label").html(result['status_label']);
         $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
-        var cro_ard = $("#clientidtr_"+client).find(".cro_ard_val").html();
-        var ard = $("#clientidtr_"+client).find(".ard_val").html();
-        if(cro_ard == ard)
-        {
-          $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","green");
-        }
-        else{
-          $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color","#f00");
-        }
+        $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color",result['ard_color']);
+        $("#clientidtr_"+client).find(".attachment_div").html("");
+      }
+      else{
+        $("#clientidtr_"+client).find(".signature_file_date").val('');
+        $("#clientidtr_"+client).find(".status_icon").removeClass('green_status').removeClass('red_status').removeClass('orange_status').removeClass('blue_status').removeClass('yellow_status');
+        $("#clientidtr_"+client).find(".status_icon").addClass(result['color_status']);
+        $("#clientidtr_"+client).find(".status_label").html(result['status_label']);
+        $("#clientidtr_"+client).find(".signature_file_check").prop("checked",false);
+        $("#clientidtr_"+client).find(".cro_ard_val").parents("td:first").css("color",result['ard_color']);
+        $("#clientidtr_"+client).find(".attachment_div").html("");
       }
       setTimeout( function() {
         var countval = count + 1;
@@ -1432,54 +1729,193 @@ function refresh_all_function(ival)
 	var type = $(".refresh_croard:eq("+ival+")").attr("data-type");
 
 	$("#count_first").html(ival);
+  if(cro == "")
+  {
+    $.ajax({
+        url:"<?php echo URL::to('user/remove_croard_refresh'); ?>",
+        type:"post",
+        data:{clientid:clientid},
+        success:function(result)
+        {
+          $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
+          $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
+          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          else { 
+            setTimeout(function() {
+              refresh_all_function(ival); 
+            },500);
+          }
+        }
+    });
+  }
+  else {
+    if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
+    {
+      $.ajax({
+        url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
+        dataType:"json",
+        type:"get",
+        data:{clientid:clientid,cro:cro},
+        success:function(result)
+        {
+          if(result['companystatus'] == "0")
+          {
+            $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+            $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
+          }
+          else{
+            $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+            $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
+          }
+          $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
+          if(result['ardstatus'] == "0")
+          {
+           $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+           $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+          }
+          else{
+           $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+           $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+          }
 
-	if(cro == "")
-	{
-		if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
-		else { refresh_all_function(ival); }
-	}
-	else
-  	{
-  		if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
-  		{
-  			$.ajax({
-  				url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
-  				dataType:"json",
-  				type:"get",
-  				data:{clientid:clientid,cro:cro},
-  				success:function(result)
-  				{
-  					if(result['companystatus'] == "0")
-  					{
-  						$("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-  						$("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
-  					}
-  					else{
-  						$("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-  						$("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
-  					}
-
-  					if(result['ardstatus'] == "0")
-  					{
-  						$("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-  						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
-  					}
-  					else{
-  						$("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-  						$("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
-  					}
-
-  					if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
-  					else { refresh_all_function(ival); }
-  				}
-  			});
-  		}
-  		else{
-  			if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
-  			else { refresh_all_function(ival); }
-  		}
-  	}
+          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          else { 
+            setTimeout(function() {
+              refresh_all_function(ival); 
+            },500); 
+          }
+        }
+      });
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/remove_croard_refresh'); ?>",
+        type:"post",
+        data:{clientid:clientid},
+        success:function(result)
+        {
+          $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
+          $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
+          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          else { 
+            setTimeout(function() {
+              refresh_all_function(ival); 
+            },500);
+          }
+        }
+      });
+    }
+  }
 }
+function refresh_blue_function(ival)
+{
+  var ival = ival + 1;
+  var countval = $(".refresh_blue_croard").length;
+  var clientid = $(".refresh_blue_croard:eq("+ival+")").attr("data-element");
+  var cro = $(".refresh_blue_croard:eq("+ival+")").attr("data-cro");
+  var type = $(".refresh_blue_croard:eq("+ival+")").attr("data-type");
+
+  $("#count_first").html(ival);
+  $("#count_last").html(countval);
+  console.log(countval);
+  if(cro == "")
+  {
+    $.ajax({
+        url:"<?php echo URL::to('user/remove_blue_croard_refresh'); ?>",
+        type:"post",
+        data:{clientid:clientid},
+        success:function(result)
+        {
+          $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
+
+          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          else { 
+            setTimeout(function() {
+              refresh_blue_function(ival); 
+            },500);
+          }
+        }
+    });
+  }
+  else {
+    if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
+    {
+      $.ajax({
+        url:"<?php echo URL::to('user/refresh_blue_cro_ard'); ?>",
+        dataType:"json",
+        type:"get",
+        data:{clientid:clientid,cro:cro},
+        success:function(result)
+        {
+          $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html(result['company_name']);
+
+          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          else { 
+            setTimeout(function() {
+              refresh_blue_function(ival); 
+            },500); 
+          }
+        }
+      });
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/remove_blue_croard_refresh'); ?>",
+        type:"post",
+        data:{clientid:clientid},
+        success:function(result)
+        {
+            $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
+          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          else { 
+            setTimeout(function() {
+              refresh_blue_function(ival); 
+            },500);
+          }
+        }
+      });
+    }
+  }
+}
+$(window).change(function(e) {
+  if($(e.target).hasClass('select_user_author'))
+  {
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".author_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".author_email").val(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('allocate_user_add')){
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".allocate_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".allocate_email").val(result);
+        }
+      })
+    }
+  }
+});
 $(window).click(function(e) {
   var ascending = false;
   if($(e.target).hasClass('sno_sort'))
@@ -1490,16 +1926,16 @@ $(window).click(function(e) {
       $("#sno_sortoptions").val('desc');
       var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
         return (ascending ==
-             (convertToNumeric($(a).find('.sno_sort_val').html()) <
-        convertToNumeric($(b).find('.sno_sort_val').html()))) ? 1 : -1;
+             (convertToNumeric($(a).find('.sno_sort_vall').html()) <
+        convertToNumeric($(b).find('.sno_sort_vall').html()))) ? 1 : -1;
       });
     }
     else{
       $("#sno_sortoptions").val('asc');
       var sorted = $('#clients_tbody').find('tr').sort(function(a,b){
         return (ascending ==
-             (convertToNumeric($(a).find('.sno_sort_val').html()) <
-        convertToNumeric($(b).find('.sno_sort_val').html()))) ? -1 : 1;
+             (convertToNumeric($(a).find('.sno_sort_vall').html()) <
+        convertToNumeric($(b).find('.sno_sort_vall').html()))) ? -1 : 1;
       });
     }
     ascending = ascending ? false : true;
@@ -1643,22 +2079,219 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#clients_tbody').html(sorted);
   }
-    if($(e.target).hasClass('show_ltd'))
+  if($(e.target).hasClass('sno_rbo_sort'))
+  {
+    var sort = $("#sno_rbo_sortoptions").val();
+    if(sort == 'asc')
     {
-      if($(e.target).hasClass('show_all'))
-      {
-        $(".type_sort_val").parents("tr").show();
-        $(e.target).removeClass("show_all");
-        $(e.target).val("Show Active Ltd Clients Only");
-      }
-      else{
-        $(".type_sort_val").parents("tr").hide();
-        $(".type_sort_val:contains(Ltd)").parents("tr").show();
-        $(".type_sort_val").parents(".disabled_tr").hide();
-        $(e.target).addClass("show_all");
-        $(e.target).val("Show all Clients");
-      }
+      $("#sno_rbo_sortoptions").val('desc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.sno_rbo_sort_val').html()) <
+        convertToNumeric($(b).find('.sno_rbo_sort_val').html()))) ? 1 : -1;
+      });
     }
+    else{
+      $("#sno_rbo_sortoptions").val('asc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumeric($(a).find('.sno_rbo_sort_val').html()) <
+        convertToNumeric($(b).find('.sno_rbo_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_rbo_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('clientid_rbo_sort'))
+  {
+    var sort = $("#clientid_rbo_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#clientid_rbo_sortoptions").val('desc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.clientid_rbo_sort_val').html()) <
+        convertToNumber($(b).find('.clientid_rbo_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#clientid_rbo_sortoptions").val('asc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.clientid_rbo_sort_val').html()) <
+        convertToNumber($(b).find('.clientid_rbo_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_rbo_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('company_rbo_sort'))
+  {
+    var sort = $("#company_rbo_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#company_rbo_sortoptions").val('desc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($.trim($(a).find('.company_rbo_sort_val').html())) <
+        convertToNumber($.trim($(b).find('.company_rbo_sort_val').html())))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#company_rbo_sortoptions").val('asc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($.trim($(a).find('.company_rbo_sort_val').html())) <
+        convertToNumber($.trim($(b).find('.company_rbo_sort_val').html())))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_rbo_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('cro_rbo_sort'))
+  {
+    var sort = $("#cro_rbo_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#cro_rbo_sortoptions").val('desc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.cro_rbo_sort_val').html()) <
+        convertToNumber($(b).find('.cro_rbo_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#cro_rbo_sortoptions").val('asc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.cro_rbo_sort_val').html()) <
+        convertToNumber($(b).find('.cro_rbo_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_rbo_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('type_rbo_sort'))
+  {
+    var sort = $("#type_rbo_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#type_rbo_sortoptions").val('desc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.type_rbo_sort_val').html()) <
+        convertToNumber($(b).find('.type_rbo_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#type_rbo_sortoptions").val('asc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.type_rbo_sort_val').html()) <
+        convertToNumber($(b).find('.type_rbo_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_rbo_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('rbo_ref_sort'))
+  {
+    var sort = $("#rbo_ref_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#rbo_ref_sortoptions").val('desc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.rbo_ref_sort_val').html()) <
+        convertToNumber($(b).find('.rbo_ref_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#rbo_ref_sortoptions").val('asc');
+      var sorted = $('#clients_rbo_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.rbo_ref_sort_val').html()) <
+        convertToNumber($(b).find('.rbo_ref_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#clients_rbo_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('rbo_review_btn'))
+  {
+    $("body").addClass("loading");
+    $.ajax({
+      url:"<?php echo URL::to('user/rbo_review_list'); ?>",
+      type:"post",
+      success:function(result)
+      {
+        $("#rbo_review_tbody").html(result);
+        $(".show_ltd_rbo").removeClass("show_all_rbo");
+        $(".show_ltd_rbo").val("Show Active Ltd Clients Only");
+        $(".rbo_review_modal").modal("show");
+        $("body").removeClass("loading");
+      }
+    });
+  }
+  if($(e.target).hasClass('report_csv_rbo'))
+  {
+    $("body").addClass("loading");
+    $.ajax({
+      url:"<?php echo URL::to('user/report_csv_rbo'); ?>",
+      type:"post",
+      success:function(result)
+      {
+        SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    });
+  }
+  if(e.target.id == "settings_croard")
+  {
+    if (CKEDITOR.instances.editor1) CKEDITOR.instances.editor1.destroy();
+
+    CKEDITOR.replace('editor1',
+    {
+      height: '150px',
+      enterMode: CKEDITOR.ENTER_BR,
+        shiftEnterMode: CKEDITOR.ENTER_P,
+        autoParagraph: false,
+        entities: false,
+    });
+    $(".croard_settings_modal").modal("show");
+  }
+  if($(e.target).hasClass('show_ltd'))
+  {
+    if($(e.target).hasClass('show_all'))
+    {
+      $(".type_sort_val").parents("tr").show();
+      $(e.target).removeClass("show_all");
+      $(e.target).val("Show Active Ltd Clients Only");
+    }
+    else{
+      $(".type_sort_val").parents("tr").hide();
+      $(".type_sort_val:contains(Ltd):not(:contains('UK Ltd'))").parents("tr").show();
+      $(".type_sort_val").parents(".disabled_tr").hide();
+      $(e.target).addClass("show_all");
+      $(e.target).val("Show all Clients");
+    }
+  }
+  if($(e.target).hasClass('show_ltd_rbo'))
+  {
+    if($(e.target).hasClass('show_all_rbo'))
+    {
+      $(".type_rbo_sort_val").parents("tr").show();
+      $(e.target).removeClass("show_all_rbo");
+      $(e.target).val("Show Active Ltd Clients Only");
+    }
+    else{
+      $(".type_rbo_sort_val").parents("tr").hide();
+      $(".type_rbo_sort_val:contains(Ltd):not(:contains('UK Ltd'))").parents("tr").show();
+      $(".type_rbo_sort_val").parents(".disabled_rbo_tr").hide();
+      $(e.target).addClass("show_all_rbo");
+      $(e.target).val("Show all Clients");
+    }
+  }
   if($(e.target).hasClass('signature_file_check'))
   {
     if($(e.target).is(":checked"))
@@ -1745,6 +2378,10 @@ $(window).click(function(e) {
   if($(e.target).hasClass('global_core_call'))
   {
     $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});
+  }
+  if($(e.target).hasClass('refresh_blue_client'))
+  {
+    $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_blue_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});
   }
   if($(e.target).hasClass('add_attachment_month_year'))
   {
@@ -2101,6 +2738,7 @@ $(window).click(function(e) {
 
     $("#open_task").prop("checked",false);
     $(".allocate_user_add").removeClass("disable_user");
+    $(".allocate_email").removeClass("disable_user");
     $.ajax({
       url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
       type:"post",
@@ -2159,70 +2797,175 @@ $(window).click(function(e) {
     {
       $(".allocate_user_add").val("");
       $(".allocate_user_add").addClass("disable_user");
+      $(".allocate_email").addClass("disable_user");
     }
     else{
       $(".allocate_user_add").val("");
       $(".allocate_user_add").removeClass("disable_user");
+      $(".allocate_email").removeClass("disable_user");
     }
   }
   if($(e.target).hasClass('yes_proceed'))
   {
     $("body").addClass("loading_content");
+    $.colorbox.close();
     var ival = 1;
     var countval = $(".refresh_croard").length;
     var clientid = $(".refresh_croard:eq("+ival+")").attr("data-element");
     var cro = $(".refresh_croard:eq("+ival+")").attr("data-cro");
     var type = $(".refresh_croard:eq("+ival+")").attr("data-type");
-
-    $("#count_last").html(countval);
-    $("#count_first").html(ival);
-
-    if(cro == "")
-    {
-      if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
-      else { refresh_all_function(ival); }
-    }
-    else
-    {
-      if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
+    setTimeout(function() {
+      $("#count_last").html(countval);
+      $("#count_first").html(ival);
+      if(cro == "")
       {
         $.ajax({
-          url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
-          dataType:"json",
-          type:"get",
-          data:{clientid:clientid,cro:cro},
+          url:"<?php echo URL::to('user/remove_croard_refresh'); ?>",
+          type:"post",
+          data:{clientid:clientid},
           success:function(result)
           {
-            if(result['companystatus'] == "0")
-            {
-              $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-              $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
-            }
-            else{
-              $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
-              $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
-            }
-
-            if(result['ardstatus'] == "0")
-            {
-              $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-              $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
-            }
-            else{
-              $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-              $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
-            }
-
+            $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
+            $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
             if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
-            else { refresh_all_function(ival); }
+            else { 
+              setTimeout( function() {
+                refresh_all_function(ival); 
+              },500);
+            }
           }
         });
       }
       else{
-        if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
-        else { refresh_all_function(ival); }
+        if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited") {
+          $.ajax({
+            url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
+            dataType:"json",
+            type:"get",
+            data:{clientid:clientid,cro:cro},
+            success:function(result)
+            {
+              if(result['companystatus'] == "0")
+              {
+                $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+                $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'green', 'font-weight' : '500'});
+              }
+              else{
+                $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
+                $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
+              }
+              $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
+              if(result['ardstatus'] == "0")
+              {
+                $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+                $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+              }
+              else{
+                $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+                $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+              }
+
+              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              else { 
+                setTimeout( function() {
+                  refresh_all_function(ival); 
+                },500);
+              }
+            }
+          });
+        }
+        else{
+          $.ajax({
+            url:"<?php echo URL::to('user/remove_croard_refresh'); ?>",
+            type:"post",
+            data:{clientid:clientid},
+            success:function(result)
+            {
+              $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
+              $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
+              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              else { 
+                setTimeout( function() {
+                  refresh_all_function(ival); 
+                },500);
+              }
+            }
+          });
+        }
       }
-    }
+    },1000);
+  }
+  if($(e.target).hasClass('yes_blue_proceed'))
+  {
+    $("body").addClass("loading_content");
+    $.colorbox.close();
+    var ival = 1;
+    var countval = $(".refresh_blue_croard").length;
+    var clientid = $(".refresh_blue_croard:eq("+ival+")").attr("data-element");
+    var cro = $(".refresh_blue_croard:eq("+ival+")").attr("data-cro");
+    var type = $(".refresh_blue_croard:eq("+ival+")").attr("data-type");
+
+    setTimeout(function() {
+      $("#count_last").html(countval);
+      $("#count_first").html(ival);
+      if(cro == "")
+      {
+        $.ajax({
+          url:"<?php echo URL::to('user/remove_blue_croard_refresh'); ?>",
+          type:"post",
+          data:{clientid:clientid},
+          success:function(result)
+          {
+            $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
+            if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+            else { 
+              setTimeout( function() {
+                refresh_blue_function(ival); 
+              },500);
+            }
+          }
+        });
+      }
+      else{
+        if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited") {
+          $.ajax({
+            url:"<?php echo URL::to('user/refresh_blue_cro_ard'); ?>",
+            dataType:"json",
+            type:"get",
+            data:{clientid:clientid,cro:cro},
+            success:function(result)
+            {
+              $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html(result['company_name']);
+            
+
+              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              else { 
+                setTimeout( function() {
+                  refresh_blue_function(ival); 
+                },500);
+              }
+            }
+          });
+        }
+        else{
+          $.ajax({
+            url:"<?php echo URL::to('user/remove_blue_croard_refresh'); ?>",
+            type:"post",
+            data:{clientid:clientid},
+            success:function(result)
+            {
+              $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
+              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              else { 
+                setTimeout( function() {
+                  refresh_blue_function(ival); 
+                },500);
+              }
+            }
+          });
+        }
+      }
+    },1000);
   }
   if($(e.target).hasClass('no_proceed'))
   {
@@ -2293,20 +3036,29 @@ $(window).click(function(e) {
     var clientid = $(e.target).attr("data-element");
     var cro = $(e.target).attr("data-cro");
     var type = $(e.target).attr("data-type");
-    if(cro == "")
-    {
-      alert("Sorry you cant fetch the details from api because the CRO Number for this client is empty.")
-    }
-    else 
-    { 
-      if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
+
+    $.ajax({
+      url:"<?php echo URL::to('user/remove_croard_refresh'); ?>",
+      type:"post",
+      data:{clientid:clientid},
+      success:function(result)
       {
-        $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed_single" data-element="'+clientid+'" data-cro="'+cro+'">Yes</a><a href="javascript:" class="common_black_button no_proceed_single">No</a></p>',fixed:true,width:"800px"});
+        $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
+        $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
+        if(cro == "")
+        {
+          alert("Sorry you cant fetch the details from api because the CRO Number for this client is empty.");
+        }
+
+        if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
+        {
+          $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed_single" data-element="'+clientid+'" data-cro="'+cro+'">Yes</a><a href="javascript:" class="common_black_button no_proceed_single">No</a></p>',fixed:true,width:"800px"});
+        }
+        else{
+          alert("Sorry you cant fetch the details from api because the type should be 'Ltd' or 'Limited'.")
+        }
       }
-      else{
-        alert("Sorry you cant fetch the details from api because the type should be 'Ltd' or 'Limited'.")
-      }
-    }
+    })
   }
   if($(e.target).hasClass('yes_proceed_single'))
   {
@@ -2329,7 +3081,7 @@ $(window).click(function(e) {
           $("#clientidtr_"+clientid).find(".company_td").html(result['company_name']);
           $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
         }
-
+        $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
         if(result['ardstatus'] == "0")
         {
           $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
@@ -2362,10 +3114,24 @@ $(window).click(function(e) {
           }
       });
   });
+  $(".rbo_submission_text").blur(function() {
+    var input_val = $(this).val();
+    var clientid = $(this).attr('data-element');
+    
+      $.ajax({
+          url:"<?php echo URL::to('user/update_rbo_submission'); ?>",
+          type:"post",
+          data:{input_val:input_val,clientid:clientid},
+          success: function(result) {
+
+          }
+      });
+  });
 
   var typingTimer;                //timer identifier
   var doneTypingInterval = 1000;  //time in ms, 5 second for example
   var $input1 = $('.cro_notes');
+  var $input2 = $('.rbo_submission_text');
   $input1.on('keyup', function () {
     var input_val = $(this).val();
     var clientid = $(this).attr('data-element');
@@ -2373,13 +3139,24 @@ $(window).click(function(e) {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(doneTyping_cro, doneTypingInterval,input_val,clientid,that);
   });
+  $input2.on('keyup', function () {
+    var input_val = $(this).val();
+    var clientid = $(this).attr('data-element');
+    var that = $(this);
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(doneTyping_rbo, doneTypingInterval,input_val,clientid,that);
+  });
   //on keydown, clear the countdown 
   $input1.on('keydown', function () {
     clearTimeout(typingTimer);
   });
+  $input2.on('keydown', function () {
+    clearTimeout(typingTimer);
+  });
 })
 var convertToNumber = function(value){
-       return value.toLowerCase();
+       var lowercase = value.toLowerCase();
+       return lowercase.trim();
 }
 var convertToNumeric = function(value){
       value = value.replace(',','');
@@ -2401,6 +3178,33 @@ function doneTyping_cro (input,clientid,that) {
       }
   });
 }
+
+function doneTyping_rbo (input,clientid,that) {
+  $.ajax({
+      url:"<?php echo URL::to('user/update_rbo_submission'); ?>",
+      type:"post",
+      data:{input_val:input,clientid:clientid},
+      success: function(result) {
+
+      }
+  });
+}
+
+$.ajaxSetup({async:false});
+$('#email_unsent_form').validate({
+    rules: {
+        select_user : {required: true,},
+        to_user : {required: true,},
+        cc_unsent : {required: true,},
+    },
+    messages: {
+        select_user : "Please select a From User",
+        to_user : "Please Enter the Email ID to send a mail",
+        cc_unsent : "Please create a CC Mail ID in CROARD Settings Overlay",
+    },
+});
+
+
 fileList = new Array();
 Dropzone.options.imageUpload = {
     maxFiles: 1,

@@ -70,9 +70,41 @@ class RctControllerNew extends Controller {
 	 */
 
   	public function rctsystem(){
+      $user = DB::table('email_salution')->get();
+      $letterpad = DB::table('letterpad')->get();
   		$client = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();
-      return view('user/rct_system/rct_system', array('title' => 'TA System', 'clientlist' => $client));
+      return view('user/rct_system/rct_system', array('title' => 'TA System', 'clientlist' => $client, 'userlist' => $user, 'letterpad' => $letterpad));
   	}
+    public function editsalution($id=""){
+      $id = base64_decode($id);
+      $result = DB::table('email_salution')->where('id', $id)->first();
+      echo json_encode(array('name' => $result->name, 'description' =>  $result->description, 'id' => $result->id));
+    }
+    public function updatesalution(){   
+      $id = Input::get('id');
+      $description = Input::get('description');
+      DB::table('email_salution')->where('id', $id)->update(['description' => $description]);
+      return redirect::back()->with('message','Update Success');
+    }
+    public function editletterpad($id=""){
+      $id = base64_decode($id);
+      $result = DB::table('letterpad')->where('id', $id)->first();
+      $image = URL::to('uploads/letterpad/'.$result->image);
+      echo json_encode(array('name' => $result->name, 'image' =>  $image, 'salution' => $result->salution, 'id' => $result->id));
+    }
+    public function updateletterpad(){    
+      $id = Input::get('id');
+      $salution = Input::get('salution');
+      
+      $imagesname = $_FILES['letterpadimage']['name'];
+      $imagesname_temp = $_FILES['letterpadimage']['tmp_name'];
+      $uploaddir = 'uploads/letterpad/';
+      move_uploaded_file($imagesname_temp, $uploaddir.$imagesname);
+      
+
+      DB::table('letterpad')->where('id', $id)->update(['image' => $imagesname, 'salution' => $salution]);
+      return redirect::back()->with('message','Update Success');
+    }
     public function rctclientmanager($id=""){
       $client = DB::table('cm_clients')->where('client_id', $id)->first();
       $tax = DB::table('rct_tax_number')->where('tax_client_id', $id)->first();
@@ -871,7 +903,16 @@ class RctControllerNew extends Controller {
   public function rctsaveaspdf_multiple(){
     $client_id = Input::get('client_id');
     $keys = explode(',',Input::get('keys'));
-    $outputprint = '';
+    $outputprint = '<style>
+            @page { margin: 0in; }
+            body {
+                background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
+                background-position: top left right bottom;
+              background-repeat: no-repeat;
+              background-size:auto;
+              font-family: Verdana,Geneva,sans-serif;
+            }
+          </style>';
     if(count($keys))
     {
       foreach($keys as $key)
@@ -906,19 +947,7 @@ class RctControllerNew extends Controller {
           $unserialize_finish = unserialize($submission_count->finish_date);
           $unserialize_site = unserialize($submission_count->site);
           $outputprint.='
-          <style>
-            @page { margin: 0in; }
-            body {
-                background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
-                background-position: top left right bottom;
-              background-repeat: no-repeat;
-              background-size:auto;
-              font-family: Verdana,Geneva,sans-serif; 
-              
-            }
-          </style>
-          <body style="width:100%">
-          <table style="width:95%; margin:230px 0px 0px 20px; height:auto; float:left; font-family: Open Sans, sans-serif !important; font-size:14px;page-break:always;">
+          <table style="width:95%; margin:230px 0px 0px 20px; font-family: Open Sans, sans-serif !important; font-size:14px;page-break-after:always;">
             <tr>
             <td colspan="2" align="center" valign="top" style="height:35px;"><b>Contract Notification</b></td>
             </tr>
@@ -951,9 +980,7 @@ class RctControllerNew extends Controller {
               <td style="text-align:right">'.$unserialize_site[$key].'</td>
             </tr>
             
-          </table>
-          </body>
-          ';
+          </table>';
         }
         else{
           $unserialize_sub_contractor = unserialize($submission_count->sub_contractor);
@@ -965,18 +992,7 @@ class RctControllerNew extends Controller {
           $rate_percentage = $rate*100;
 
           $outputprint.='
-          <style>
-            @page { margin: 0in; }
-            body {
-                background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
-                background-position: top left right bottom;
-              background-repeat: no-repeat;
-              background-size:auto;
-              font-family: Verdana,Geneva,sans-serif; 
-            }
-          </style>
-          <body style="width:100%">
-          <table style="width:95%; margin:230px 0px 0px 20px; height:auto; float:left; font-family: Open Sans, sans-serif !important; font-size:14px;page-break:always;">
+          <table style="width:95%; margin:230px 0px 0px 20px; font-family: Open Sans, sans-serif !important; font-size:14px;page-break-after:always;">
             <tr>
             <td colspan="2" align="center" valign="top" style="height:35px;"><b>Payment Notification</b></td>
             </tr>
@@ -1029,18 +1045,16 @@ class RctControllerNew extends Controller {
               The Revenue Commissioners have been notified that you are about to make a relevant payment of '.number_format_invoice_without_decimal($unserialize_gross[$key]).' to the above subcontractor.
               </td>
             </tr>
-            
           </table>
-          </body>
           ';
         }
       }
     }
-
+    $filename = time().'_RCT_Notification.pdf';
     $pdf = PDF::loadHTML($outputprint);
     $pdf->setPaper('A4', 'portrait');
-    $pdf->save('papers/RCT_Notification.pdf');
-    echo 'RCT_Notification.pdf';
+    $pdf->save('papers/'.$filename.'');
+    echo $filename;
   }
   public function rct_send_bulk_email()
   {
@@ -1065,7 +1079,17 @@ class RctControllerNew extends Controller {
       $explode_tax_number = array();
     }
 
-    $outputprint = '';
+    $outputprint = '<style>
+            @page { margin: 0in; }
+            body {
+                background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
+                background-position: top left right bottom;
+              background-repeat: no-repeat;
+              background-size:auto;
+              font-family: Verdana,Geneva,sans-serif; 
+              
+            }
+          </style>';
     if(count($keys))
     {
       foreach($keys as $key)
@@ -1079,17 +1103,6 @@ class RctControllerNew extends Controller {
           $unserialize_finish = unserialize($submission_count->finish_date);
           $unserialize_site = unserialize($submission_count->site);
           $outputprint.='
-          <style>
-            @page { margin: 0in; }
-            body {
-                background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
-                background-position: top left right bottom;
-              background-repeat: no-repeat;
-              background-size:auto;
-              font-family: Verdana,Geneva,sans-serif; 
-              
-            }
-          </style>
           <body style="width:100%">
           <table style="width:95%; margin:230px 0px 0px 20px; height:auto; float:left; font-family: Open Sans, sans-serif !important; font-size:14px;page-break:always;">
             <tr>
@@ -1138,16 +1151,7 @@ class RctControllerNew extends Controller {
           $rate_percentage = $rate*100;
 
           $outputprint.='
-          <style>
-            @page { margin: 0in; }
-            body {
-                background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
-                background-position: top left right bottom;
-              background-repeat: no-repeat;
-              background-size:auto;
-              font-family: Verdana,Geneva,sans-serif; 
-            }
-          </style>
+          
           <body style="width:100%">
           <table style="width:95%; margin:230px 0px 0px 20px; height:auto; float:left; font-family: Open Sans, sans-serif !important; font-size:14px;page-break:always;">
             <tr>
@@ -1641,7 +1645,16 @@ class RctControllerNew extends Controller {
 
             if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
             if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
-
+            $sub_id_val = $rct_id[$key].$type;
+            $emails_sent = DB::table('rct_submission_email')->where('submission_id',$sub_id_val)->where('client_id',$client_id)->get();
+            $ee = '';
+            if(count($emails_sent))
+            {
+              foreach($emails_sent as $sent)
+              {
+                $ee.='<label>'.date('F d, Y', strtotime($sent->email_sent)).'</label>';
+              }
+            }
             $outputsubmission.='
             <tr>
               <td style="text-align:left"><input type="checkbox" class="select_class select_class_'.$type.'" value="'.$key.'"  /><label>&nbsp;</label></td>
@@ -1660,7 +1673,8 @@ class RctControllerNew extends Controller {
               <td style="text-align:left">
                 <a href="javascript:" title="Download Pdf"><i class="fa fa-download download_submission" data-element="'.$type.'" id="'.$key.'"></i></a>&nbsp;&nbsp;
                 <a href="javascript:" title="View / Edit"><i class="fa fa-pencil edit_class"  data-element="'.$type.'" id="'.$key.'"></i></a>&nbsp;&nbsp;
-                <a href="javascript:" title="Email"><i class="fa fa-envelope email_class_single"  data-element="'.$type.'" id="'.$key.'"></i></a>
+                <a href="javascript:" title="Email"><i class="fa fa-envelope email_class_single"  data-element="'.$type.'" id="'.$key.'"></i></a><br/>
+                '.$ee.'
               </td>
             </tr>
             ';
@@ -1840,7 +1854,7 @@ class RctControllerNew extends Controller {
           for($i=0;$i<=22;$i++)
           {
             $month = $i + 1;
-            $newdate = date("Y-m-05", strtotime("-".$month." months"));
+            $newdate = date("Y-m-01", strtotime("-".$month." months"));
             $formatted_date = date('M-Y', strtotime($newdate));
             $formatted_date2 = date('Y-m', strtotime($newdate));
 
@@ -1944,16 +1958,6 @@ class RctControllerNew extends Controller {
             <td align="left" class="gross_clientid" style="'.$color.'">'.$grosssum.'</td>
             <td align="left" class="net_clientid" style="'.$color.'">'.$netsum.'</td>
             <td align="left" class="count_clientid" style="'.$color.'">'.$icount.'</td>
-            <td align="left" class="emails_clientid">';
-            $emails = DB::table('rct_submission_email')->where('client_id',$client->client_id)->where('start_date',$dateval)->get();
-            if(count($emails))
-            {
-              foreach($emails as $email)
-              {
-                $output_result.='<p style="'.$color.'">'.date('F d, Y', strtotime($email->email_sent)).'</p>';
-              }
-            }
-            $output_result.='</td>
             <td align="center"><a href="'.URL::to('user/rct_liability_assessment/'.$client->client_id).'" class="fa fa-eye view_liability_assessment" style="'.$color.'"></a></td>
           </tr>';
           $ival++;
@@ -1990,6 +1994,7 @@ class RctControllerNew extends Controller {
     $grosssum = 0;
     $netsum = 0;
     $icount = 0;
+    $email_text = '';
     if(count($client)){
         $current_month = date('Y-m');
         $prevdate = date("Y-m-05", strtotime("-1 months"));
@@ -2532,6 +2537,296 @@ class RctControllerNew extends Controller {
       echo $html;
     }
   }
+  public function send_batch_email_single()
+  {
+    $client_id = Input::get('client_id');
+    $get_salutation = DB::table('cm_clients')->where('client_id',$client_id)->first();
+    $key = Input::get('key');
+
+    $rct_submission = DB::table('rct_submission')->where('client_id',$client_id)->first();
+    if(count($rct_submission))
+    {
+      $type = unserialize($rct_submission->type);
+      $rct_id = unserialize($rct_submission->rct_id);
+      $principal_name = unserialize($rct_submission->principal_name);
+      $sub_contractor = unserialize($rct_submission->sub_contractor);
+      $sub_contractor_id = unserialize($rct_submission->sub_contractor_id);
+      $site = unserialize($rct_submission->site);
+      $start_date = unserialize($rct_submission->start_date);
+      $finish_date = unserialize($rct_submission->finish_date);
+      $value_gross = unserialize($rct_submission->value_gross);
+      $value_net = unserialize($rct_submission->value_net);
+      $deduction = unserialize($rct_submission->deduction);
+
+      if(isset($type[$key])) { $typeval =$type[$key]; } else { $typeval = ''; }
+      if(isset($rct_id[$key])) { $rct_idval =$rct_id[$key]; } else { $rct_idval = ''; }
+      if(isset($principal_name[$key])) { $principal_nameval =$principal_name[$key]; } else { $principal_nameval = ''; }
+      if(isset($sub_contractor[$key])) { $sub_contractorval =$sub_contractor[$key]; } else { $sub_contractorval = ''; }
+      if(isset($sub_contractor_id[$key])) { $sub_contractor_idval =$sub_contractor_id[$key]; } else { $sub_contractor_idval = ''; }
+      if(isset($site[$key])) { $siteval =$site[$key]; } else { $siteval = ''; }
+      if(isset($start_date[$key])) { $start_dateval =$start_date[$key]; } else { $start_dateval = ''; }
+      if(isset($finish_date[$key])) { $finish_dateval =$finish_date[$key]; } else { $finish_dateval = ''; }
+      if(isset($value_gross[$key])) { $value_grossval =$value_gross[$key]; } else { $value_grossval = ''; }
+      if(isset($value_net[$key])) { $value_netval =$value_net[$key]; } else { $value_netval = ''; }
+      if(isset($deduction[$key])) { $deductionval =$deduction[$key]; } else { $deductionval = ''; }
+
+      if($typeval == "1")
+      {
+        $html = '<p>'.$get_salutation->salutation.', </p>
+        <p>We have attached the RCT Contract Notification for '.$sub_contractorval.' - '.$sub_contractor_idval.' </p>
+        <p>ROS CONTRACT ID : '.$rct_idval.'</p>
+        <p>Site : '.$siteval.'</p>
+        <p>START DATE : '.$start_dateval.'</p>
+        <p>FINISH DATE : '.$finish_dateval.'</p>
+        <p>VALUE : '.$value_grossval.'</p>';
+      }
+      else{
+        $html = '<p>'.$get_salutation->salutation.', </p>
+        <p>We have attached the RCT Payment Submission for '.$sub_contractorval.' - '.$sub_contractor_idval.' </p>
+        <p>ROS PAYMENT ID : '.$rct_idval.'</p>
+        <p>The GROSS payment of : '.$value_grossval.'</p>
+        <p>Less Deductions of : '.$deductionval.'</p>
+        <p>PAYMENT TO SUBCONTRACTOR : '.$value_netval.'</p>';
+      }
+
+
+      $submission_count = DB::table('rct_submission')->where('client_id', $client_id)->first();
+      $unserialize_rctid = unserialize($submission_count->rct_id);
+      $unserialize_principal = unserialize($submission_count->principal_name);
+      $unserialize_start = unserialize($submission_count->start_date);
+      $unserialize_gross = unserialize($submission_count->value_gross);
+      $unserialize_type = unserialize($submission_count->type);
+
+      $tax_details = DB::table('rct_tax_number')->where('tax_client_id', $client_id)->first();
+      if(count($tax_details))
+      {
+        $explode_tax_name = explode(',', $tax_details->tax_name);
+        $explode_tax_number = explode(',', $tax_details->tax_number);
+      }
+      else{
+        $explode_tax_name = array();
+        $explode_tax_number = array();
+      }
+
+      $outputprint = '';
+      $tax_key = $unserialize_principal[$key];
+
+      if(isset($explode_tax_name[$tax_key])) { $exp_tax_name = $explode_tax_name[$tax_key]; } else { $exp_tax_name = ''; }
+      if(isset($explode_tax_number[$tax_key])) { $exp_tax_number = $explode_tax_number[$tax_key]; } else { $exp_tax_number = ''; }
+
+      if($unserialize_type[$key] == "1"){
+        $unserialize_finish = unserialize($submission_count->finish_date);
+        $unserialize_site = unserialize($submission_count->site);
+        $outputprint.='
+        <style>
+          @page { margin: 0in; }
+          body {
+              background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
+              background-position: top left right bottom;
+            background-repeat: no-repeat;
+            background-size:auto;
+            font-family: Verdana,Geneva,sans-serif; 
+            
+          }
+        </style>
+        <body style="width:100%">
+        <table style="width:95%; margin:230px 0px 0px 20px; height:auto; float:left; font-family: Open Sans, sans-serif !important; font-size:14px;page-break:always;">
+          <tr>
+          <td colspan="2" align="center" valign="top" style="height:35px;"><b>Contract Notification</b></td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Revenue Contract ID:</td>
+            <td style="text-align:right">'.$unserialize_rctid[$key].'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Principal Contractor:</td>
+            <td style="text-align:right">'.$exp_tax_name.'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
+            <td style="text-align:right">'.$exp_tax_number.'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Start Date:</td>
+            <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Finish Date:</td>
+            <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_finish[$key])).'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Contractor Value:</td>
+            <td style="text-align:right">'.number_format_invoice_without_decimal($unserialize_gross[$key]).'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Site ID:</td>
+            <td style="text-align:right">'.$unserialize_site[$key].'</td>
+          </tr>
+          
+        </table>
+        </body>';
+      }
+      else{
+        $unserialize_sub_contractor = unserialize($submission_count->sub_contractor);
+        $unserialize_sub_contractorid = unserialize($submission_count->sub_contractor_id);
+        $unserialize_deduction = unserialize($submission_count->deduction);
+        $unserialize_value_net = unserialize($submission_count->value_net);
+
+        $rate = $unserialize_deduction[$key]/$unserialize_gross[$key];
+        $rate_percentage = $rate*100;
+
+        $outputprint.='
+        <style>
+          @page { margin: 0in; }
+          body {
+              background-image: url('.URL::to('assets/invoice_letterpad.jpg').');
+              background-position: top left right bottom;
+            background-repeat: no-repeat;
+            background-size:auto;
+            font-family: Verdana,Geneva,sans-serif; 
+          }
+        </style>
+        <body style="width:100%">
+        <table style="width:95%; margin:230px 0px 0px 20px; height:auto; float:left; font-family: Open Sans, sans-serif !important; font-size:14px;page-break:always;">
+          <tr>
+          <td colspan="2" align="center" valign="top" style="height:35px;"><b>Payment Notification</b></td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Revenue Contract ID:</td>
+            <td style="text-align:right">'.$unserialize_rctid[$key].'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Principal Contractor:</td>
+            <td style="text-align:right">'.$exp_tax_name.'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Principal Contractor Tax Id:</td>
+            <td style="text-align:right">'.$exp_tax_number.'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Sub Contractor:</td>
+            <td style="text-align:right">'.$unserialize_sub_contractor[$key].'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Sub Contractor Id:</td>
+            <td style="text-align:right">'.$unserialize_sub_contractorid[$key].'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Payment Date:</td>
+            <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+          </tr>        
+          <tr>
+            <td style="height:35px; text-align:left">Gross Payment:</td>
+            <td style="text-align:right">'.number_format_invoice_without_decimal($unserialize_gross[$key]).'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Deduction:</td>
+            <td style="text-align:right">'.number_format_invoice_without_decimal($unserialize_deduction[$key]).'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Net Payment:</td>
+            <td style="text-align:right">'.number_format_invoice_without_decimal($unserialize_value_net[$key]).'</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left">Rate:</td>
+            <td style="text-align:right">'.number_format_invoice_without_decimal($rate_percentage).'%</td>
+          </tr>
+          <tr>
+            <td style="height:35px; text-align:left"></td>
+            <td style="text-align:right"></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+            The Revenue Commissioners have been notified that you are about to make a relevant payment of '.number_format_invoice_without_decimal($unserialize_gross[$key]).' to the above subcontractor.
+            </td>
+          </tr>
+          
+        </table>
+        </body>
+        ';
+      }
+
+      $pdf = PDF::loadHTML($outputprint);
+      $pdf->setPaper('A4', 'portrait');
+      $pdf->save('papers/RCT_Notification.pdf');
+
+      $path = 'papers/RCT_Notification.pdf';
+
+      $from = Input::get('from_user');
+      $toemails = Input::get('to_user').','.Input::get('cc_unsent');
+      $sentmails = Input::get('to_user').', '.Input::get('cc_unsent');
+      $subject = Input::get('subject'); 
+      $message = $html;
+    
+      $explode = explode(',',$toemails);
+      $data['sentmails'] = $sentmails;
+      $time = time();
+      
+      $data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
+      $data['message'] = $message;
+      $contentmessage = view('user/p30_email_share_paper', $data);  
+
+      if(count($explode))
+      {
+        foreach($explode as $exp)
+        {
+          $to = trim($exp);
+
+          $email = new PHPMailer();
+          $email->SetFrom($from); //Name is optional
+          $email->Subject   = $subject;
+          $email->Body      = $contentmessage;
+          $email->IsHTML(true);
+          $email->AddAddress( $to );
+          $email->AddAttachment( $path ,'RCT_Notification.pdf');
+          $email->Send();     
+        }
+
+        $user_details = DB::table('user')->where('email',$from)->first();
+        if(count($user_details))
+        {
+          $user_from = $user_details->user_id;
+        }
+        else{
+          $user_from = 0;
+        }
+
+        if($client_id != "")
+        {
+          $client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+          $datamessage['message_id'] = $time;
+          $datamessage['message_from'] = $user_from;
+          $datamessage['subject'] = $subject;
+          $datamessage['message'] = $contentmessage;
+          $datamessage['client_ids'] = $client_id;
+          $datamessage['primary_emails'] = $client_details->email;
+          $datamessage['secondary_emails'] = $client_details->email2;
+          $datamessage['date_sent'] = date('Y-m-d H:i:s');
+          $datamessage['date_saved'] = date('Y-m-d H:i:s');
+          $datamessage['source'] = "RCT SYSTEM";
+          $datamessage['attachments'] = $path;
+          $datamessage['status'] = 1;
+
+          DB::table('messageus')->insert($datamessage);
+        }
+
+        $date = date('Y-m-d H:i:s');
+        $keyi = $key;
+        if(isset($unserialize_start[$keyi]))
+        {
+          $start_date_val = date('Y-m', strtotime($unserialize_start[$keyi]));
+        }
+        else{
+          $start_date_val = date('Y-m');
+        }
+
+        $datainert['client_id'] = $client_id;
+        $datainert['submission_id'] = $key;
+        $datainert['start_date'] = $start_date_val;
+        DB::table('rct_submission_email')->insert($datainert);
+      }
+    }
+  }
   public function upload_rct_html_form()
   {
     $client_id = Input::get('hidden_upload_client_id');
@@ -2917,4 +3212,276 @@ class RctControllerNew extends Controller {
       return redirect::back()->with('message', "Tax Number Deleted Successfully");
     }
   }
+
+  public function rct_summary(){      
+      return view('user/rct_system/rct_summary', array('title' => 'RCT Summary'));
+  }
+
+  public function rct_summary_filter(){
+    $from_date = Input::get('from');
+
+    $to_month='<option value="">Please select to</option>';
+    if($from_date != ''){
+      $current_month = date('Y-m');
+      $prevdate = date("Y-m-05", strtotime("-1 months"));
+      
+
+      $to_month.='<option value="'.$current_month.'">'.date('M-Y', strtotime($current_month)).'</option>';
+      for($i=0;$i<=22;$i++)
+      {
+        $month = $i + 1;
+        $newdate = date("Y-m-05", strtotime("-".$month." months"));
+        $formatted_date = date('M-Y', strtotime($newdate));
+        $formatted_date2 = date('Y-m', strtotime($newdate));
+
+        if($formatted_date2 >= $from_date){
+          $to_month.='<option value="'.$formatted_date2.'">'.$formatted_date.'</option>';
+        }
+        
+      }
+    }
+    else{
+      $to_month='<option value="">Please select From</option>';
+    }   
+
+    echo json_encode(array('to_month' => $to_month));
+  }
+
+  public function rct_summary_result(){
+    $from = Input::get('from_date');
+    $to = Input::get('to_date');
+
+    /*$from_date = date('Y-m-01', strtotime($from));
+    $to_date = date('Y-m-01', strtotime($to));
+
+    $loop_date='';
+    for($date=$from_date; $date<=$to_date;){
+    
+      if($loop_date == ''){
+        $loop_date = $date;
+      }
+      else{
+        $loop_date = $date.','.$loop_date='';
+      }
+      $loop_date.=$date.',';
+
+      echo $date;
+      exit;
+
+      $date = date("Y-m-01", strtotime($from_date, strtotime("+1 month")));     
+      
+    }*/
+
+    
+    /*$date_from = strtotime($from); // Convert date to a UNIX timestamp 
+
+   
+
+    // Specify the end date. This date can be any English textual format  
+    $date_to = strtotime($to); // Convert date to a UNIX timestamp  
+
+    $dates = [];
+
+    // Loop from the start date to end date and output all dates inbetween  
+    for ($i=$date_from; $i<=$date_to; $i+=86400) {  
+        array_push($dates,date("Y-m-01", $i));  
+    }
+
+    print_r($dates);
+    exit;*/
+
+    $from_date = strtotime($from);
+    $to_date = strtotime($to);
+
+    $different_month = ((date('Y',$to_date) - date('Y',$from_date)) * 12) + (date('m',$to_date) - date('m',$from_date));
+
+
+    $array_month = array();
+    array_push($array_month,date('Y-m', strtotime($to)));
+
+    for($i= 1; $i<=$different_month; $i++){
+      $dateval = date('Y-m', strtotime('first day of previous month', strtotime($to)));
+      array_push($array_month,$dateval);
+      $to  = date('Y-m-d', strtotime('first day of previous month', strtotime($to)));
+    }
+    $all_month = array_reverse($array_month);
+    $count_month= count($all_month);
+
+    $table_width = 200+($count_month*250);
+
+    
+
+    $month_output='<table class="table own_table_white" id="rct_table" style="min-width:'.$table_width.'px" ><thead><tr><th></th><th></th><th></th>';
+    $deduction_gross_month='';
+    if(count($all_month)){
+      foreach ($all_month as $single_month) {
+        $deduction_gross_month.='
+        <th style="text-align:right; border-left:1px solid #000;">Deduction</th>
+        <th style="text-align:right;">Gross</th>
+        <th style="text-align:right;">Net</th>
+        <th style="text-align:right; border-right:1px solid #000;">Count</th>';
+
+        $month_output.='<th colspan="4" style="text-align:center; border-right:1px solid #000; border-left:1px solid #000;">'.date('M-Y', strtotime($single_month)).'</th>';
+      }
+      $month_output.='<th colspan="3" style="text-align:center;">Total</th></tr>';
+    }
+
+    $clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();
+
+    
+
+    $output=$month_output.'<tr>
+        <th>#</th>
+        <th  style="width:100px;">Client Id</th>
+        <th style="min-width:300px">Company Name</th>
+        '.$deduction_gross_month.'
+        <th style="text-align:right; border-left:1px solid #000;">Deduction</th>
+        <th style="text-align:right;">Gross</th>
+        <th style="text-align:right;">Net</th>
+        <th style="text-align:right; border-right:1px solid #000;">Count</th>
+      </tr>
+    </thead>';
+    $i=1;
+    if(count($clientlist)){
+      foreach ($clientlist as $client) {
+
+        if($client->company == ""){
+          $client_company = $client->firstname.' & '.$client->surname;
+        }
+        else{
+          $client_company = $client->company;
+        }
+
+        $result_td='';
+        $deductionsum = 0;
+        $grosssum = 0;
+        $netsum = 0;
+        $icount = 0;
+
+        $total_deduction='';
+        $total_gross='';
+        $total_net='';
+        $total_count='';
+        if(count($all_month)){
+          foreach ($all_month as $single_month) {
+
+            $dateval = $single_month;
+
+            $rctsubmission = DB::table('rct_submission')->where('client_id', $client->client_id)->first();
+            if(count($rctsubmission)){
+              $start_date = unserialize($rctsubmission->start_date);
+              $grossval = unserialize($rctsubmission->value_gross);
+              $netval = unserialize($rctsubmission->value_net);
+              $deductionval = unserialize($rctsubmission->deduction);
+
+              $prevdate = date("Y-m-05", strtotime("-1 months"));
+              $prev_date2 = date('Y-m', strtotime($prevdate));
+              $data = array();
+              if(count($start_date))
+              {
+                foreach($start_date as $key => $start)
+                {
+                  $date = substr($start,0,7);
+                  if($date == $dateval)
+                  {
+                    if(isset($data[$date]))
+                    {
+                      $implodeval = implode(",",$data[$date]);                  
+                      $combineval = $implodeval.','.$key;
+                      $data[$date] = explode(',',$combineval);
+
+                    }
+                    else{
+                      $data[$date] = array($key);
+                    }
+                  }
+                }
+              }
+              krsort($data);
+              if(count($data))
+              {
+                foreach($data as $key_date => $dataval)
+                {
+                  $grosssum = 0;
+                  $netsum = 0;
+                  $deductionsum = 0;
+                  $icount = 0;
+                  if(count($dataval))
+                  {
+                    foreach($dataval as $sumvalue)
+                    {
+                      if(isset($grossval[$sumvalue]))
+                      {
+                        $grosssum = $grosssum + $grossval[$sumvalue];
+                      }
+                      else{
+                        $grosssum = $grosssum + 0;
+                      }
+
+                      if(isset($netval[$sumvalue]))
+                      {
+                        $netsum = $netsum + $netval[$sumvalue];
+                      }
+                      else{
+                        $netsum = $netsum + 0;
+                      }
+
+                      if(isset($deductionval[$sumvalue]))
+                      {
+                        $deductionsum = $deductionsum + $deductionval[$sumvalue];
+                      }
+                      else{
+                        $deductionsum = $deductionsum + 0;
+                      }
+                      $icount++;
+                    }
+                  }
+                }
+              }
+            }
+
+            $total_deduction = $total_deduction+$deductionsum;
+            $total_gross = $total_gross+$grosssum;
+            $total_net = $total_net+$netsum;
+            $total_count = $total_count+$icount;
+
+
+
+
+            $result_td.='
+            <td style="text-align:right; border-left:1px solid #000;">'.number_format_invoice($deductionsum).'</td>
+            <td style="text-align:right">'.number_format_invoice($grosssum).'</td>
+            <td style="text-align:right;">'.number_format_invoice($netsum).'</td>
+            <td style="text-align:right; border-right:1px solid #000;">'.$icount.'</td>
+            ';
+          }
+          $result_td.='
+          <td style="text-align:right">'.number_format_invoice($total_deduction).'</td>
+          <td style="text-align:right">'.number_format_invoice($total_gross).'</td>
+          <td style="text-align:right">'.number_format_invoice($total_net).'</td>
+          <td style="text-align:right">'.$total_count.'</td>
+          ';
+
+        }
+
+
+
+        $output.='
+          <tr>
+            <td>'.$i.'</td>
+            <td>'.$client->client_id.'</td>
+            <td>'.$client_company.'</td>
+            '.$result_td.'
+          </tr>';
+          $i++;
+      }
+      $output.='</table>';
+    }
+
+    echo json_encode(array('output' => $output));
+
+
+  }
+
+
 }

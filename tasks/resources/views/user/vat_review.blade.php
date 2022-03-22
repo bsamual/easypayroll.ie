@@ -7,7 +7,13 @@
 <script src="<?php echo URL::to('assets/js/dataTables.fixedHeader.min.js'); ?>"></script>
 
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
+
 <style>
+  .margintop20{
+  margin-top:20px !important;
+  margin-bottom: 0px !important;
+}
+  .start_group{clear:both;}
 .ui-autocomplete{
   z-index:99999999999999999 !important;
 }
@@ -479,6 +485,8 @@ input:checked + .slider:before {
   font-weight: 800;
   margin-left:15px;
 }
+.file_attachments img {width:30px !important;}
+.attachment_div p {width:18%; float:left;}
 </style>
 <?php
 if(!empty($_GET['import_type']))
@@ -573,14 +581,14 @@ if(!empty($_GET['import_type']))
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">New Task Creator</h4>
+            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">New Task Creator</h4>
           </div>
           <div class="modal-body">            
             <div class="row"> 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <label style="margin-top:5px">Author:</label>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3">
                   <select name="select_user" class="form-control select_user_author" required>
                     <option value="">Select User</option>        
                       <?php
@@ -596,38 +604,44 @@ if(!empty($_GET['import_type']))
                       ?>
                   </select>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px">
-              <div class="col-md-3">
-                  <label style="margin-top:5px">Creation Date:</label>
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Author Email:</label>
                 </div>
-                <div class="col-md-9">
-                  <label class="input-group datepicker-only-init_date_received">
-                      <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
-                      <span class="input-group-addon">
-                          <i class="glyphicon glyphicon-calendar"></i>
-                      </span>
-                  </label>
+                <div class="col-md-4">
+                  <input  type="email" class="form-control author_email" name="author_email" placeholder="Enter Author's Email" required>
                 </div>
             </div>
-            <div class="row" style="margin-top:7px">
-              <div class="col-md-3">
+            
+            <div class="row margintop20" style="margin-top:7px">
+                <div class="col-md-2">
                   <label style="margin-top:5px">Allocate To:</label>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-3">
                   <select name="allocate_user" class="form-control allocate_user_add">
                     <option value="">Select User</option>        
                       <?php
                       $selected = '';
                       if(count($userlist)){
                         foreach ($userlist as $user) {
+                          if(Session::has('task_manager_user'))
+                          {
+                            if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }
                       ?>
-                        <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
                       <?php
                         }
                       }
                       ?>
                   </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To Email:</label>
+                </div>
+                <div class="col-md-3">
+                  <input  type="email" class="form-control allocate_email" name="allocate_email" placeholder="Enter Allocate's Email" required>
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
@@ -636,8 +650,8 @@ if(!empty($_GET['import_type']))
                   </div>
                 </div>
             </div>
-            <div class="row" style="margin-top:14px">
-              <div class="col-md-3 client_group">
+            <div class="row margintop20" style="margin-top:14px">
+              <div class="col-md-2 client_group">
                   <label style="margin-top:5px">Client:</label>
                 </div>
                 <?php
@@ -652,7 +666,7 @@ if(!empty($_GET['import_type']))
                   $company = '';
                 }
                 ?>
-                <div class="col-md-7 client_group">
+                <div class="col-md-8 client_group">
                   <input  type="text" class="form-control client_search_class_task" name="client_name" placeholder="Enter Client Name / Client ID" value="" required>
                   <input type="hidden" id="client_search_task" name="clientid" value=""/>
                 </div>
@@ -681,7 +695,7 @@ if(!empty($_GET['import_type']))
                               $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
                             }
                         ?>
-                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>"><?php echo $icon.$single_task->task_name?></a></li>
+                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>" data-project="<?php echo $single_task->project_id; ?>"><?php echo $icon.$single_task->task_name?></a></li>
                         <?php
                           }
                         }
@@ -697,19 +711,78 @@ if(!empty($_GET['import_type']))
                   </div>
                 </div>
             </div>
-            <div class="form-group start_group" style="margin-top:10px">
-                <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
-                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+            <div class="form-group start_group margintop20" style="margin-top:20px">
+              <div class="row">
+                <div class="col-lg-5">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <div class="form-title"><label style="margin-top:5px">Priority:</label></div>
+                    </div>
+                    <div class="col-md-7" style="padding-top: 5px">
+                      <?php echo user_rating(); ?>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7">
+                  <div class="row">
+                    <div class="col-md-3">
+                        <label style="margin-top:5px">Creation Date:</label>
+                      </div>
+                      <div class="col-md-9">
+                        <label class="input-group datepicker-only-init_date_received">
+                            <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              
             </div>
-            <div class="form-group start_group task_specifics_add">
-                <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
-                <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+            <div class="form-group start_group margintop20" style="margin-top:15px !important">
+                <div class="row">
+                  <div class="col-lg-2">
+                    <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                  </div>
+                  <div class="col-lg-10">
+                    <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+                  </div>
+                </div>
+
+                
+                
             </div>
-            <div class="form-group date_group">
-                <div class="col-md-2" style="padding:0px">
+            <div class="form-group start_group task_specifics_add margintop20">
+
+                <div class="row">
+                  <div class="col-lg-7">
+                    <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
+                  </div>
+                  <div class="col-lg-5">
+                    <div class="form-group date_group" style="float: right;">
+                      <div class="form-title" style="font-weight:600;margin-left:-10px">
+                        <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                        <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                        <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                      </div>
+                  </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+                  </div>
+                </div>
+
+
+                
+                
+            </div>
+            <div class="form-group date_group margintop20">
+                <div class="col-md-1" style="padding:0px">
                   <label style="margin-top:5px">DueDate:</label>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-3">
                   <label class="input-group datepicker-only-init_date_received">
                       <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
                       <span class="input-group-addon">
@@ -717,74 +790,128 @@ if(!empty($_GET['import_type']))
                       </span>
                   </label>
                 </div>
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">Project:</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="select_project" class="form-control select_project">
+                      <option value="">Select Project</option>
+                      <?php
+                          $projects = DB::table('projects')->get();
+                          if(count($projects)){
+                            foreach($projects as $project){
+                              ?>
+                              <option value="<?php echo $project->project_id; ?>"><?php echo $project->project_name; ?></option>
+                              <?php
+                            }
+                          }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <label style="margin-top:5px">Project Time:</label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_hours" class="form-control project_hours">
+                      <option value="">HH</option>
+                      <?php
+                      for($i = 0; $i <= 23; $i++)
+                      {
+                        if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_mins" class="form-control project_mins">
+                      <option value="">MM</option>
+                      <?php
+                      for($i = 0; $i <= 59; $i++)
+                      {
+                         if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
             </div>
-            <div class="form-group start_group retreived_files_div">
+            <div class="form-group start_group retreived_files_div margintop20">
 
             </div>
-            <div class="form-group start_group">
-              <label>Task Files: </label>
-              <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
-              <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
-              <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
-              <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
-              <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
-                <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
-                </form>
-                <div class="image_div_attachments">
-                  <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
-                  <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
-                      <input name="_token" type="hidden" value="">
-                  </form>              
+
+            <div class="row margintop20" style="clear: both; padding-top: 10px;">
+              <div class="col-lg-8">
+                <div class="form-group start_group">
+                  <label>Task Files: </label>
+                  <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+                  <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+                  <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+                  <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+                  <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
+                    <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                    </form>
+                    <div class="image_div_attachments">
+                      <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                      <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                          <input name="_token" type="hidden" value="">
+                      </form>              
+                    </div>
+                   </div>
+                   <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
+                      <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
+                      <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                      <spam class="error_files_notepad_add"></spam>
+                  </div>
                 </div>
-               </div>
-               <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
-                  <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
-                  <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-                  <spam class="error_files_notepad_add"></spam>
+                
+                <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
+                <div id="add_attachments_div_task">
+                </div>
+                <div id="add_notepad_attachments_div_task">
+                </div>
+                <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+                <div id="add_infiles_attachments_div">
+                </div>
               </div>
+              <div class="col-lg-4">
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+                </div>
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                    <div class="accept_recurring_div">
+                      <p>This Task is repeated:</p>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                        <label for="recurring_checkbox1">Monthly</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                        <label for="recurring_checkbox2">Weekly</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                        <label for="recurring_checkbox3">Daily</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                        <label for="recurring_checkbox4">Specific Number of Days</label>
+                        <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                      </div>
+                    </div>
+                </div>
+              </div>
+              
             </div>
+
             
-            <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
-            <div id="add_attachments_div_task">
-            </div>
-            <div id="add_notepad_attachments_div_task">
-            </div>
-            <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
-            <div id="add_infiles_attachments_div">
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
-                <div class="accept_recurring_div">
-                  <p>This Task is repeated:</p>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
-                    <label for="recurring_checkbox1">Monthly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
-                    <label for="recurring_checkbox2">Weekly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
-                    <label for="recurring_checkbox3">Daily</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
-                    <label for="recurring_checkbox4">Specific Number of Days</label>
-                    <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
-                  </div>
-                </div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px">
-                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
-                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
-                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
-                </div>
-            </div>
+            
+            
           </div>
           <div class="modal-footer">     
             <input type="hidden" name="action_type" id="action_type" value="">
@@ -817,8 +944,34 @@ if(!empty($_GET['import_type']))
                  </div>
               </div>
           </div>
-          <div class="modal-footer">  
-            <a href="javascript:" class="btn btn-sm btn-primary" align="left" style="margin-left:7px; float:left;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+          <div class="modal-footer" style="text-align: center">  
+              <div class="vat3_div" style="display:none">
+                <h4 style="text-align: left;font-weight: 600">Details</h4>
+                <table class="table">
+                    <tr>
+                      <td style="font-weight: 600">Client Tax No: </td>
+                      <td class="client_tax_no"></td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight: 600">Registration No: </td>
+                      <td class="vat3_reg_no"></td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight: 600">T1: </td>
+                      <td class="vat3_t1"></td>
+                    </tr>
+                    <tr>
+                      <td style="font-weight: 600">T2: </td>
+                      <td class="vat3_t2"></td>
+                    </tr>
+                </table>
+              </div>
+              <div class="vat3_error_div" style="display:none">
+                <h4 class="vat3_error" style="font-weight: 600;color:#f00"></h4>
+              </div>
+              <input type="hidden" name="hidden_vat3_filename" id="hidden_vat3_filename" class="hidden_vat3_filename" value="">
+              <input type="hidden" name="hidden_vat3_dir" id="hidden_vat3_dir" class="hidden_vat3_dir" value="">
+              <input type="button" class="common_black_button vat3_upload_btn" value="Commit Upload File">
           </div>
         </div>
   </div>
@@ -952,7 +1105,7 @@ if(!empty($_GET['import_type']))
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">View Month Progress</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body modal_max_height">
         <div class="show_active_div" style="width:33%;margin-right: 0px;float: left;">
             <label style="margin-right: 10px; line-height: 30px;float: left;margin-left: 4%;margin-top: 3px;">Show All</label>
             <label class="switch" style="margin-right: 10px;">
@@ -1061,6 +1214,19 @@ if(!empty($_GET['import_type']))
   </div>
 </div>
 </div>
+
+<div>
+    <!-- embed the pdftotext web app as an iframe -->
+    <iframe id="processor" src="" style="display: none"></iframe>
+    <!-- a container for the output -->
+    <div id="output" style="display: none"><div id="intro">Extracting text from a PDF file using only Javascript.<br>Tested in Chrome 16 and Firefox 9.</div></div>
+</div>
+  
+<div>
+  <!-- the PDF file must be on the same domain as this page -->
+  <iframe id="input" src="" style="display: none"></iframe>
+</div>
+
 <input type="hidden" name="sno_sortoptions" id="sno_sortoptions" value="asc">
 <input type="hidden" name="client_sortoptions" id="client_sortoptions" value="asc">
 <input type="hidden" name="tax_sortoptions" id="tax_sortoptions" value="asc">
@@ -1312,6 +1478,45 @@ $(".client_search_class_task").autocomplete({
         })
       }
   });
+$(window).change(function(e) {
+  if($(e.target).hasClass('select_user_author'))
+  {
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".author_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".author_email").val(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('allocate_user_add')){
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".allocate_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".allocate_email").val(result);
+        }
+      })
+    }
+  }
+});
 $(window).click(function(e) { 
   var ascending = false;
   if($(e.target).hasClass('sno_sort'))
@@ -1683,6 +1888,106 @@ $(window).click(function(e) {
     }
     else{
       alert("Please select the Periods to download the attachments");
+    }
+  }
+  if($(e.target).hasClass('vat3_upload_btn')){
+    var client_id = $("#hidden_client_id_vat").val();
+    var month_year = $("#hidden_month_year_vat").val();
+    var filename = $(".hidden_vat3_filename").val();
+    var dir = $(".hidden_vat3_dir").val();
+    var t1 = $(".vat3_t1").html();
+    var t2 = $(".vat3_t2").html();
+    var reg = $(".vat3_reg_no").html();
+    var client_tax_no = $(".client_tax_no").html();
+
+    if(client_tax_no != reg){
+      alert("The Registration No and the client tax no is different.");
+    }
+    else{
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/vat_commit_upload_images'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{client_id:client_id,month_year:month_year,filename:filename,dir:dir,t1:t1,t2:t2,reg:reg},
+        success:function(result)
+        {
+
+          $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".attachment_div").append("<p><a href='javascript:' data-element='"+result['download_url']+"' class='file_attachments' title='"+filename+"' download><img src='<?php echo URL::to('assets/images/pdf.png'); ?>' style='width:30px !important'></a> <a href='"+result['delete_url']+"' class='fa fa-trash delete_attachments'></a></p>");
+          $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".records_receive_label").attr("class","records_receive_label submitted_td");
+
+          $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t1_spam").parents("p").show();
+          $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t2_spam").parents("p").show();
+          $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t1_spam").html(t1);
+          $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t2_spam").html(t2);
+
+          $(".shown_tr_"+client_id+"_"+month_year).find(".attachment_div_overlay").append("<p><a href='javascript:' data-element='"+result['download_url']+"' class='file_attachments'>"+filename+"</a> <a href='"+result['delete_url']+"' class='fa fa-trash delete_attachments'></a></p>");
+          $(".shown_tr_"+client_id+"_"+month_year).find(".records_receive_label_overlay").attr("class","records_receive_label_overlay submitted_td_overlay");
+
+          $(".shown_tr_"+client_id+"_"+month_year).find(".t1_spam_overlay").parents("p").show();
+          $(".shown_tr_"+client_id+"_"+month_year).find(".t2_spam_overlay").parents("p").show();
+
+          $(".shown_tr_"+client_id+"_"+month_year).find(".t1_spam_overlay").html(t1);
+          $(".shown_tr_"+client_id+"_"+month_year).find(".t2_spam_overlay").html(t2);
+
+          $(".shown_tr_"+client_id+"_"+month_year).find(".month_download_checkbox").prop("disabled",false);
+          $(".dropzone_progress_modal").modal("hide");
+
+          $("#processor").hide();
+          $("#output").hide();
+          $("#input").hide();
+
+          var submitted_date = $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".submitted_import").val();
+          if((/\d/.test(submitted_date)) && submitted_date != "")
+          {
+            var r = confirm("Are you sure you want to update the submission date?");
+            if(r)
+            {
+              $.ajax({
+                url:"<?php echo URL::to('user/check_submitted_date_vat_reviews'); ?>",
+                type:"post",
+                data:{month:month_year,client:client_id},
+                success:function(resultt)
+                {
+                  $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".submitted_import").val(resultt);
+                  $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".delete_submitted").show();
+
+                  $(".shown_tr_"+client_id+"_"+month_year).find(".submitted_import_overlay").val(resultt);
+                  $(".shown_tr_"+client_id+"_"+month_year).find(".delete_submitted").show();
+                  $(".shown_tr_"+client_id+"_"+month_year).find(".date_sort_val").val(resultt);
+
+                  $("body").removeClass("loading");
+                }
+              })
+            }
+            else{
+              $("body").removeClass("loading");
+            }
+          }
+          else{
+            $.ajax({
+              url:"<?php echo URL::to('user/check_submitted_date_vat_reviews'); ?>",
+              type:"post",
+              data:{month:month_year,client:client_id},
+              success:function(resultt)
+              {
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".submitted_import").val(resultt);
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".import_icon").removeClass("orange_import").removeClass("red_import").removeClass("blue_import").removeClass("green_import").removeClass("white_import").addClass("green_import");
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".import_icon").html("Submitted");
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".delete_submitted").show();
+
+                $(".shown_tr_"+client_id+"_"+month_year).find(".submitted_import_overlay").val(resultt);
+                $(".shown_tr_"+client_id+"_"+month_year).find(".date_sort_val").val(resultt);
+                $(".shown_tr_"+client_id+"_"+month_year).find(".import_icon_overlay").removeClass("orange_import_overlay").removeClass("red_import_overlay").removeClass("blue_import_overlay").removeClass("green_import_overlay").removeClass("white_import_overlay").addClass("green_import_overlay");
+                $(".shown_tr_"+client_id+"_"+month_year).find(".import_icon_overlay").html("Submitted");
+                $(".shown_tr_"+client_id+"_"+month_year).find(".delete_submitted_overlay").show();
+
+                $("body").removeClass("loading");
+              }
+            })
+          }
+        }
+      })
     }
   }
   if($(e.target).hasClass('vat_client_class'))
@@ -2102,6 +2407,11 @@ $(window).click(function(e) {
         $('.submission_due_no').eq(1).find(".no_sub_due").html(result['curr_no_sub_due']);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(result['next_no_sub_due']);
 
+        $(".show_month_in_overlay").eq(0).html(result['prev_month']);
+        $(".show_month_in_overlay").eq(1).html(result['curr_month']);
+        $(".show_month_in_overlay").eq(2).html(result['next_month']);
+
+
         <?php if(Session::has('vat_client_id')) { ?>
             $('html, body').animate({ scrollTop: $(".tasks_tr_<?php echo Session::get('vat_client_id'); ?>").offset().top - 300}, 1000);
         <?php } ?>
@@ -2118,7 +2428,19 @@ $(window).click(function(e) {
     $("#hidden_month_year_vat").val(month_year);
     $("#hidden_client_id_vat").val(client);
     $(".dropzone_progress_modal").modal("show");
-    $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");
+
+    $("#processor").show();
+    $("#output").show();
+    $("#input").show();
+
+    Dropzone.forElement("#imageUpload").removeAllFiles(true);
+    $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+    $(".vat3_div").hide();
+    $(".vat3_error_div").hide();
+    $(".vat3_error").html("");
+    $(".vat3_upload_btn").hide();
+    $(".hidden_vat3_filename").val("");
+            $(".hidden_vat3_dir").val("");
   }
   if($(e.target).hasClass('add_attachment_month_year_overlay'))
   {
@@ -2127,7 +2449,19 @@ $(window).click(function(e) {
     $("#hidden_month_year_vat").val(month_year);
     $("#hidden_client_id_vat").val(client);
     $(".dropzone_progress_modal").modal("show");
-    $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");
+
+    $("#processor").show();
+    $("#output").show();
+    $("#input").show();
+
+    Dropzone.forElement("#imageUpload").removeAllFiles(true);
+    $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+    $(".vat3_div").hide();
+    $(".vat3_error_div").hide();
+    $(".vat3_error").html("");
+    $(".vat3_upload_btn").hide();
+    $(".hidden_vat3_filename").val("");
+            $(".hidden_vat3_dir").val("");
   }
   if($(e.target).hasClass('show_prev_month'))
   {
@@ -2262,6 +2596,12 @@ $(window).click(function(e) {
         {
           $(e.target).parents("p:first").detach();
           $(".tasks_tr_"+client).find("#add_files_vat_client_"+month).find(".attachment_div").find('.delete_attachments[href="'+hrefval+'"]').parents("p:first").detach();
+
+          $(".tasks_tr_"+client).find("#add_files_vat_client_"+month).find(".t1_spam").html("");
+          $(".tasks_tr_"+client).find("#add_files_vat_client_"+month).find(".t2_spam").html("");
+
+          $(".shown_tr_"+client+"_"+month).find(".t1_spam_overlay").html("");
+          $(".shown_tr_"+client+"_"+month).find(".t2_spam_overlay").html("");
         }
       })
     }
@@ -2625,6 +2965,7 @@ $(window).click(function(e) {
 
     $("#open_task").prop("checked",false);
     $(".allocate_user_add").removeClass("disable_user");
+    $(".allocate_email").removeClass("disable_user");
     $.ajax({
       url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
       type:"post",
@@ -2683,16 +3024,18 @@ $(window).click(function(e) {
     {
       $(".allocate_user_add").val("");
       $(".allocate_user_add").addClass("disable_user");
+      $(".allocate_email").addClass("disable_user");
     }
     else{
       $(".allocate_user_add").val("");
       $(".allocate_user_add").removeClass("disable_user");
+      $(".allocate_email").removeClass("disable_user");
     }
   }
 });
 fileList = new Array();
 Dropzone.options.imageUpload = {
-    maxFiles: 200,
+    maxFiles: 1,
     acceptedFiles: ".pdf",
     maxFilesize:500000,
     timeout: 10000000,
@@ -2712,75 +3055,98 @@ Dropzone.options.imageUpload = {
         this.on("success", function(file, response) {
             var obj = jQuery.parseJSON(response);
             file.serverId = obj.id;
-            $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".attachment_div").append("<p><a href='javascript:' data-element='"+obj.download_url+"' class='file_attachments'>"+obj.filename+"</a> <a href='"+obj.delete_url+"' class='fa fa-trash delete_attachments'></a></p>");
-            $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".records_receive_label").attr("class","records_receive_label submitted_td");
+            $(".client_tax_no").html(obj.tax_no);
 
-            $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".attachment_div_overlay").append("<p><a href='javascript:' data-element='"+obj.download_url+"' class='file_attachments'>"+obj.filename+"</a> <a href='"+obj.delete_url+"' class='fa fa-trash delete_attachments'></a></p>");
-            $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".records_receive_label_overlay").attr("class","records_receive_label_overlay submitted_td_overlay");
+            $(".hidden_vat3_filename").val(obj.filename);
+            $(".hidden_vat3_dir").val(obj.upload_dir);
 
-            $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".month_download_checkbox").prop("disabled",false);
+            $("#input").attr("src",obj.download_url);
+            $("#processor").attr("src","<?php echo url('pdftotext/index.html'); ?>");
+            var input = document.getElementById("input");
+            var processor = document.getElementById("processor");
+            var output = document.getElementById("output");
+            
+            window.addEventListener("message", function(event){
+              if (event.source != processor.contentWindow) return;
+              switch (event.data){
+                case "ready":
+                  var xhr = new XMLHttpRequest;
+                  xhr.open('GET', input.getAttribute("src"), true);
+                  xhr.responseType = "arraybuffer";
+                  xhr.onload = function(event) {
+                    processor.contentWindow.postMessage(this.response, "*");
+                  };
+                  xhr.send();
+                break;
+                default:
+                  output.textContent = $.trim(event.data.replace(/[^a-z0-9.,:' ]+/gi, " "));
+                  var error = 0;
+                  if(output.textContent.indexOf('VAT3 Return') !== -1){
+                    var t2_string = output.textContent.split('VAT3 Return');
+                    var t2_array = $.trim(t2_string[0]).split(' ');
+                    var t2 = t2_array[t2_array.length-1];
 
-            $(".dropzone_progress_modal").modal("hide");
+                    var t2_string_array = $.trim(t2_string[1]).split(' ');
 
-            if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
-              var submitted_date = $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".submitted_import").val();
-              if((/\d/.test(submitted_date)) && submitted_date != "")
-              {
-                var r = confirm("Are you sure you want to update the submission date?");
-                if(r)
-                {
-                  $.ajax({
-                    url:"<?php echo URL::to('user/check_submitted_date_vat_reviews'); ?>",
-                    type:"post",
-                    data:{month:obj.month_year,client:obj.client_id},
-                    success:function(result)
-                    {
-                      $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".submitted_import").val(result);
-                      $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".delete_submitted").show();
+                    if($.inArray("T3",t2_string_array) !== -1){
+                      var t1_string = t2_string[1].split(' Offset Instructions ');
+                      var t1_array = $.trim(t1_string[1]).split(' ');
+                      var t3 = t1_array[2];
+                      var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
 
-                      $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".submitted_import_overlay").val(result);
-                      $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".delete_submitted").show();
-                      $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".date_sort_val").val(result);
-
-                      $("body").removeClass("loading");
+                    }else if($.inArray("T4",t2_string_array) !== -1){
+                      var t1_string = t2_string[1].split(' Offset Instructions ');
+                      var t1_array = $.trim(t1_string[1]).split(' ');
+                      var t3 = t1_array[2];
+                      var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
                     }
-                  })
-                }
-                else{
-                  $("body").removeClass("loading");
-                }
-              }
-              else{
-                $.ajax({
-                  url:"<?php echo URL::to('user/check_submitted_date_vat_reviews'); ?>",
-                  type:"post",
-                  data:{month:obj.month_year,client:obj.client_id},
-                  success:function(result)
-                  {
-                    $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".submitted_import").val(result);
-                    $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".import_icon").removeClass("orange_import").removeClass("red_import").removeClass("blue_import").removeClass("green_import").removeClass("white_import").addClass("green_import");
-                    $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".import_icon").html("Submitted");
-                    $(".tasks_tr_"+obj.client_id).find("#add_files_vat_client_"+obj.month_year).find(".delete_submitted").show();
+                    else{
+                      var error = 1;
+                    }
 
-                    $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".submitted_import_overlay").val(result);
-                    $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".date_sort_val").val(result);
-                    $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".import_icon_overlay").removeClass("orange_import_overlay").removeClass("red_import_overlay").removeClass("blue_import_overlay").removeClass("green_import_overlay").removeClass("white_import_overlay").addClass("green_import_overlay");
-                    $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".import_icon_overlay").html("Submitted");
-                    $(".shown_tr_"+obj.client_id+"_"+obj.month_year).find(".delete_submitted_overlay").show();
-
-                    $("body").removeClass("loading");
+                    var reg = t1_array[1];
+                    console.log(t1+'--'+t2+'--'+reg);
+                    $(".vat3_reg_no").html(reg);
+                    $(".vat3_t1").html(t1);
+                    $(".vat3_t2").html(t2);
+                    $(".vat3_div").show();
+                    if(reg != obj.tax_no)
+                    {
+                      var error = 3;
+                    }
+                    
                   }
-                })
+                  else{
+                    var error = 2;
+                  }
+
+                  if(error == 1){
+                    $(".vat3_error_div").show();
+                    $(".vat3_error").html("Invalid VAT3 File");
+                    $(".vat3_upload_btn").hide();
+                    $("body").removeClass("loading");       
+                  }
+                  else if(error == 2){
+                    $(".vat3_error_div").show();
+                    $(".vat3_error").html("Invalid VAT3 File");
+                    $(".vat3_upload_btn").hide();
+                    $("body").removeClass("loading");    
+                  }
+                  else if(error == 3){
+                    $(".vat3_error_div").show();
+                    $(".vat3_error").html("File can not be Uploaded as the Tax Numbers do not match");
+                    $(".vat3_upload_btn").hide();
+                    $("body").removeClass("loading");    
+                  }
+                  else{
+                    $(".vat3_error_div").hide();
+                    $(".vat3_error").html("");
+                    $(".vat3_upload_btn").show();
+                    $("body").removeClass("loading");    
+                  }
+                break;
               }
-            }
-
-            var prev_count = $("#task_body").find("td:nth-child(4)").find(".orange_import").length;
-            var curr_count = $("#task_body").find("td:nth-child(5)").find(".orange_import").length;
-            var next_count = $("#task_body").find("td:nth-child(6)").find(".orange_import").length;
-
-            $('.submission_due_no').eq(0).find(".no_sub_due").html(prev_count);
-            $('.submission_due_no').eq(1).find(".no_sub_due").html(curr_count);
-            $('.submission_due_no').eq(2).find(".no_sub_due").html(next_count);
+            }, true);
         });
         this.on("complete", function (file, response) {
           if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
@@ -2788,8 +3154,9 @@ Dropzone.options.imageUpload = {
             var rejectedcount= this.getRejectedFiles().length;
             var totalcount = acceptedcount + rejectedcount;
             $("#total_count_files").val(totalcount);
-            Dropzone.forElement("#imageUpload").removeAllFiles(true);
-            $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+            //Dropzone.forElement("#imageUpload").removeAllFiles(true);
+            //$(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+
           }
           
         });

@@ -269,7 +269,13 @@ body #coupon {
  }
 
 .ui-widget{z-index: 999999999}
-
+#colorbox{
+  z-index: 99999999999;
+}
+.show_client_ids_import .col-md-4{
+  padding: 10px;
+  border:1px solid #eee;
+}
 </style>
 
 <div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
@@ -724,7 +730,7 @@ body #coupon {
               </div>
               
               <div class="hide_group_div" style="margin-top:10px;background: #fff;padding:10px;min-height:700px;max-height: 700px;overflow-y: scroll;">
-                <p><label style="font-weight:800;font-size:18px;text-decoration: underline" id="selected_grp_name"></label> </p>
+                <p><label style="font-weight:800;font-size:18px;text-decoration: underline" id="selected_grp_name"></label> <a href="javascript:" class="fa fa-plus common_black_button import_client_select_list" title="Import Bulk Client List" style="float:right"></a></p>
                  <input type="checkbox" name="select_all_clients" id="select_all_clients" class="select_all_clients" value=""><label for="select_all_clients">Select / Deselect All Clients</label> 
                  <?php
                   $default_tasks = DB::table('time_task')->orderBy('task_name','asc')->get();
@@ -738,7 +744,7 @@ body #coupon {
                   else{
                     $output_default.= '<option value="">No Tasks Found</option>';
                   }
-                  $output_default.='</select><spam style="float:right;margin-top: 8px;">Select Default TaskType: </spam>';
+                  $output_default.='</select><spam style="float:right;margin-top: 8px;">Select Default Task Type: </spam>';
                   echo $output_default;
                  ?>
                 <table class="table own_table_white" id="client_table" style="border: 1px solid #000;">
@@ -1682,7 +1688,48 @@ body #coupon {
 </div>
 
 
+<div class="modal fade import_bulk_client_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
+  <div class="modal-dialog modal-sm" role="document" style="width:60%">
+    <form action="<?php echo URL::to('user/import_client_list_timeme')?>" method="post" class="import_bulk_client_form" enctype="multipart/form-data">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Import Bulk Client List</h4>
+        </div>
+        <div class="modal-body" style="clear:both">            
+          <h4>Choose CSV File:</h4>
+          <input type="file" name="import_file" class="form-control import_file" value="" accept=".csv" required>
+          <p style="color:#f00">Note: Please import a  CSV file with the client codes you want to import, the title of the column must be "Client Code"</p>
+          <div class="col-md-12 show_client_ids_import" style="display:none;margin-top:20px">
+          </div>
+        </div>
+        <div class="modal-footer" style="clear:both">
+          <input type="hidden" name="hidden_bulk_ids" id="hidden_bulk_ids" value="">
+          <input type="button" name="import_file_submit" class="common_black_button import_file_submit" value="IMPORT FILE">
+          <input type="button" name="bulk_assigned" class="common_black_button bulk_assigned" value="Bulk Assigned" style="display:none">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
+<div class="modal fade load_time_sheet_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
+  <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Load Time Sheet</h4>
+        </div>
+        <div class="modal-body" style="clear:both">            
+          <h4>Select Date:</h4>
+          <input type="text" name="time_sheet_date" class="form-control time_sheet_date" value="" required>
+        </div>
+        <div class="modal-footer" style="clear:both">
+          <input type="button" name="load_time_sheet_btn" class="common_black_button load_time_sheet_btn" value="Load Time Sheet">
+        </div>
+      </div>
+  </div>
+</div>
 
 
 <div class="modal fade take_break_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;">
@@ -1877,10 +1924,15 @@ body #coupon {
 
       <div class="col-lg-12" style="background: #fff; padding:25px 15px !important; margin-top:23px;  ">        
 
-        <h3 class="col-lg-2" style="margin: 0px 0px 0px 0px;">Active Job</h3>
-
-        <div class="col-lg-5"></div>
-
+        <h3 class="col-lg-6" style="margin: 0px 0px 0px 0px;">
+          Active Job
+          <?php
+          if(isset($_GET['timesheet_date']))
+          {
+            echo '<span style="font-size: 16px;font-weight: 600;margin-left: 30px;color: #f00;">You are Reviewing the Time Sheet for '.date('d-M-Y', strtotime($_GET['timesheet_date'])).'</span> <a href="'.URL::to('user/time_track').'" class="common_black_button">Revert to Current Date</a>';
+          }
+          ?>
+        </h3>
         <div class="col-lg-2">
 
 
@@ -1923,17 +1975,25 @@ body #coupon {
 
         </div>
 
-        <div class="col-lg-3" style="padding: 7px 0px 0px 0px;">
-        <?php
-        if(Session::has('task_job_user') && Session::get('task_job_user') != "")
-        {
-          $check_date_available = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('quick_job',0)->where('status',0)->first();
-
-          if(count($check_date_available))
-
+        <div class="col-lg-4" style="padding: 7px 0px 0px 0px;">
+          <?php
+          if(Session::has('task_job_user') && Session::get('task_job_user') != "")
           {
+            $check_date_available = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('quick_job',0)->where('status',0)->first();
 
-            $job_available = 'not_create';
+            if(count($check_date_available))
+
+            {
+
+              $job_available = 'not_create';
+
+            }
+
+            else{
+
+              $job_available = '';
+
+            }  
 
           }
 
@@ -1941,27 +2001,16 @@ body #coupon {
 
             $job_available = '';
 
-          }  
+          }
 
-        }
+               
 
-        else{
-
-          $job_available = '';
-
-        }
-
-             
-
-        ?>
+          ?>
 
           <a href="javascript:" class="common_black_button create_new <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px; font-weight: bold;">Create an Active Job</a> 
           <a href="javascript:" class="common_black_button create_bulk_job <?php echo $job_available; ?>" style="line-height:20px; margin-right: 5px; font-weight: bold;">Create an Even Bulk Job</a>           
-
+          <a href="javascript:" class="common_black_button load_time_sheet" style="line-height:20px; margin-right: 5px; font-weight: bold;">Load Time Sheet</a>
         </div>
-
-
-
         <div class="clearfix" style="margin-bottom: 20px;"></div>
 
 
@@ -2530,12 +2579,18 @@ body #coupon {
           <tbody id="tbody_jobclosed">
 
             <?php
-
+            if(isset($_GET['timesheet_date']))
+            {
+              $current_date = $_GET['timesheet_date'];
+            }
+            else{
+              $current_date = date('Y-m-d');
+            }
             $output='';
             $i=1;            
             if(count($joblist)){
               foreach ($joblist as $jobs) {
-                $current_date = date('Y-m-d');
+                
                 if($current_date == $jobs->job_date)
                 {
                     if($jobs->status == 1 ){
@@ -2727,7 +2782,14 @@ body #coupon {
                     $childi=1;            
                       if(count($joblist_child)){
                         foreach ($joblist_child as $child) {
-                          $current_date = date('Y-m-d');
+                          if(isset($_GET['timesheet_date']))
+                          {
+                            $current_date = $_GET['timesheet_date'];
+                          }
+                          else{
+                            $current_date = date('Y-m-d');
+                          }
+
                           if($current_date == $child->job_date)
                           {
                               if($child->status == 1 ){
@@ -2933,7 +2995,13 @@ body #coupon {
 
           if(Session::has('task_job_user') && Session::get('task_job_user') != "")
           {
-            $currentdate = date('Y-m-d');
+            if(isset($_GET['timesheet_date']))
+            {
+              $currentdate = $_GET['timesheet_date'];
+            }
+            else{
+              $currentdate = date('Y-m-d');
+            }
             $user_details = DB::table('user')->where('user_id',Session::get('task_job_user'))->first();
             $getdetails_active_jobs = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',0)->where('stop_time','!=','00:00:00')->get();
             $getdetails_active_jobs_num = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('stop_time','00:00:00')->count();
@@ -2943,7 +3011,15 @@ body #coupon {
 
             $getdetails_quick_jobs = DB::table('task_job')->where('user_id',Session::get('task_job_user'))->where('job_date',$currentdate)->where('quick_job',1)->get();
 
-            $currentdatetime = date('Y-m-d H:i:s');
+            if(isset($_GET['timesheet_date']))
+            {
+              $his = date('H:i:s');
+              $currentdatetime = $_GET['timesheet_date'].' '.$his;
+            }
+            else{
+              $currentdatetime = date('Y-m-d H:i:s');
+            }
+
             $spendminutes = 0;
             $spendquickminutes = 0;
             $primary_active_job_text = '';
@@ -3360,6 +3436,20 @@ $(window).change(function(e) {
   {
     var value = $(e.target).val();
     $(".client_exclude:checked").parents(".client_tr").find(".client_task").val(value);
+
+    var ival = 0;
+    $(".client_exclude:checked").each(function() {
+      var value = $(this).parents(".client_tr").find(".client_task").val();
+      if(value == "" || value == null || typeof value == null || typeof value === "undefined")
+      {
+        ival++;
+      }
+    });
+    if(ival > 0)
+    {
+      alert("The selected Task Type did not apply to one or more selected clients because this task type is not applicable to those clients(Either it is an internal task OR not assigned). Please review this before you stop this Active job");
+      return false;
+    }
   }
   if($(e.target).hasClass('select_group_clients'))
   {
@@ -3377,6 +3467,7 @@ $(window).change(function(e) {
           dataType:"json",
           success:function(result)
           {
+
             $("#selected_grp_name").html(result['group_name']);
             var clientids = result['client_ids'].split(",");
             $.each(clientids, function(index,value) {
@@ -3535,6 +3626,160 @@ $(window).click(function(e) {
     $(".user_details_div").hide(); 
 
   }
+  if($(e.target).hasClass('load_time_sheet'))
+  {
+    var user = $("#user_select").val();
+    if(user == "")
+    {
+      alert("Please select the Users");
+    }
+    else {
+      $(".load_time_sheet_modal").modal("show");
+    }
+  }
+  if($(e.target).hasClass('load_time_sheet_btn'))
+  {
+    var date = $(".time_sheet_date").val();
+    if(date == "")
+    {
+      $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#f00">Please Select the Date to view the Time Sheet.</p>',fixed:true,width:"800px"});
+    }
+    else{
+      var dateval = date.split('/');
+      var datevall = dateval[2]+'-'+dateval[1]+'-'+dateval[0];
+      window.location.replace('<?php echo URL::to('user/time_track?timesheet_date='); ?>'+datevall);
+    }
+  }
+  if($(e.target).hasClass('import_client_select_list'))
+  {
+    $(".import_bulk_client_modal").modal("show");
+    $(".import_file_submit").show();
+    $(".bulk_assigned").hide();
+    $(".show_client_ids_import").html("");
+    $(".show_client_ids_import").hide();
+    $("#hidden_bulk_ids").val("");
+    $(".import_file").val("");
+  }
+  if($(e.target).hasClass('import_file_submit'))
+  {
+
+      $("body").addClass("loading");
+      $('.import_bulk_client_form').ajaxForm({
+          dataType:"json",
+          success:function(result){
+            if(result['error'] > 0)
+            {
+              if(result['client_errors'] == "")
+              {
+                $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#f00">'+result['message']+'</p>',fixed:true,width:"800px"});
+
+                $(".import_file_submit").show();
+                $(".bulk_assigned").hide();
+                $(".show_client_ids_import").html("");
+                $(".show_client_ids_import").hide();
+                $("#hidden_bulk_ids").val("");
+              }
+              else{
+                $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#f00">'+result['message']+'</p>',fixed:true,width:"800px"});
+                $(".import_file_submit").show();
+                $(".bulk_assigned").hide();
+                var ival = "<h4>Client ID's that are Invalid From Imported CSV File:</h4>";
+                $.each(result['client_errors'], function(index, value){
+                  if(ival == "")
+                  {
+                    ival = '<div class="col-md-4" style="color:#f00">'+value+'</div>';
+                  }
+                  else{
+                    ival = ival+' '+'<div class="col-md-4" style="color:#f00">'+value+'</div>';
+                  }
+                });
+                $(".show_client_ids_import").html(ival);
+                $(".show_client_ids_import").show();
+                $("#hidden_bulk_ids").val("");
+              }
+            }
+            else{
+              $(".import_file_submit").hide();
+              $(".bulk_assigned").show();
+              var ival = '<h4>Client IDs From Imported CSV File:</h4><table class="table"> <thead><tr><th>Client Code</th><th>Firstname</th><th>Surname</th><th>Company</th></tr></thead><tbody>';
+              var hidden_ival = '';
+              var firstname = result['client_firstname'];
+              var surname = result['client_surname'];
+              var company = result['client_company'];
+
+              $.each(result['client_codes'], function(index, value){
+                
+                  ival =ival+'<tr><td>'+value+'</td><td>'+firstname[index]+'</td><td>'+surname[index]+'</td><td>'+company[index]+'</td></tr>';
+                
+                if(hidden_ival == "")
+                {
+                  hidden_ival = value;
+                }
+                else{
+                  hidden_ival = hidden_ival+','+value;
+                }
+
+              });
+              ival = ival+'</tbody></table>';
+              $(".show_client_ids_import").html(ival);
+              $(".show_client_ids_import").show();
+              $("#hidden_bulk_ids").val(hidden_ival);  
+            }
+            //$(".import_bulk_client_modal").modal("hide");
+            $("body").removeClass("loading");
+          }
+      }).submit();
+  }
+  if($(e.target).hasClass('bulk_assigned'))
+  {
+    var ids = $("#hidden_bulk_ids").val();
+    if(ids == ""){
+      alert("There are No Client ID's from Imported CSV File to select");
+    }
+    else{
+      $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to de-select clients not listed here?</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});
+    }
+  }
+  if($(e.target).hasClass('yes_proceed'))
+  {
+    $(".client_exclude").prop("checked",false);
+    var ids = $("#hidden_bulk_ids").val();
+    var idsval = ids.split(",");
+    $.each(idsval, function(index,value) {
+      $("#client_tr_"+value).find(".client_exclude").prop("checked",true);
+    });
+
+    var checked_client = $(".client_exclude:checked").length;
+    $(".clients_selected").html(checked_client);
+    if(checked_client == 0)
+    {
+      $(".minutes_per_client").html("0");
+      $("#hidden_minutes_per_client").val("0");
+    }
+    else
+    {
+      var available_for_distribution = $(".available_job_time").html();
+      var minutes_per_client = parseInt(available_for_distribution) / parseInt(checked_client);
+      if(minutes_per_client < 1)
+      {
+        $(".minutes_per_client").html("1");
+        $("#hidden_minutes_per_client").val("1");
+      }
+      else{
+        $(".minutes_per_client").html(minutes_per_client.toFixed(2));
+        $("#hidden_minutes_per_client").val(minutes_per_client.toFixed(2));
+      }
+    }
+
+    
+    $(".import_bulk_client_modal").modal("hide");
+    $.colorbox.close();
+  }
+  if($(e.target).hasClass('no_proceed'))
+  {
+    $(".import_bulk_client_modal").modal("hide");
+    $.colorbox.close();
+  }
   if(e.target.id == "stop_active_job")
   {
     e.preventDefault();
@@ -3557,7 +3802,7 @@ $(window).click(function(e) {
           });
           if(ival > 0)
           {
-            alert("Please select the Tasktype for all the selected clients");
+            alert("Please select the 'Task Type' for all the selected clients");
             return false;
           }
           else{
@@ -3669,6 +3914,7 @@ $(window).click(function(e) {
       $(".select_client_groups").prop("checked",false);
     }
     else{
+      $(".import_client_select_list").show();
       $("#selected_grp_name").html("All Clients");
       $(".hide_group_div").show();
       $(".presets_combo").hide();
@@ -3716,6 +3962,7 @@ $(window).click(function(e) {
       $(".select_client_groups").prop("checked",false);
     }
     else{
+      $(".import_client_select_list").hide();
       $(".hide_group_div").hide();
       $(".presets_combo").show();
       $(".groups_combo").hide();
@@ -3735,6 +3982,7 @@ $(window).click(function(e) {
       $(".select_client_groups").prop("checked",false);
     }
     else{
+      $(".import_client_select_list").hide();
       $(".hide_group_div").hide();
       $(".presets_combo").hide();
       $(".groups_combo").show();
@@ -3772,6 +4020,7 @@ $(window).click(function(e) {
           $(".mark_internal").prop("checked",false);
           $(".mark_internal").prop("disabled",false);
           $("#hidden_job_type").val("0");
+          $(".internal_type").val('1');
           $(".client_search_class").val("");
 
           $(".client_group").show();
@@ -5812,9 +6061,11 @@ $(document).ready(function() {
         }
   });
 
-
-
-
+  $(".time_sheet_date").datetimepicker({
+     defaultDate: '',
+     format: 'L',
+     format: 'DD/MM/YYYY',
+  });
 });
 
 </script>

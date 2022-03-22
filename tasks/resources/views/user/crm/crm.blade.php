@@ -302,7 +302,7 @@ a:hover{text-decoration: underline;}
         <a href="javascript:" class="addclass common_black_button float_right" data-toggle="modal" data-target=".add_model" style="margin-right: 20px;">Add Setup Category</a>
          <h4 class="modal-title" id="exampleModalLabel">Setup Request Categories</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body modal_max_height">
         <?php $requestlist = DB::table('request_category')->get(); ?>
         <table class="table own_table_white">
           <thead>

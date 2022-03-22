@@ -216,10 +216,23 @@ a:hover{text-decoration: underline;}
      <?php }   
     ?>
     </div> 
-            <div class="col-lg-1" style="padding-right: 0px; line-height: 35px; width: 120px;">
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
+      <ul class="nav nav-tabs" style="margin-top: 20px;">
+        <li class="nav-item active">
+          <a class="nav-link" href="<?php echo URL::to('user/rct_system'); ?>">RCT Manager</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?php echo URL::to('user/rct_summary'); ?>">RCT Summary</a>
+        </li>
+      </ul>
+    </div>
+
+<div class="row" style="background: #fff; padding-bottom: 20px;">
+            <div class="col-lg-1" style="padding-left: 40px; line-height: 35px; width: 160px; margin-top: 18px; ">
                 Active Month
             </div>
-            <div class="col-lg-2 padding_00">
+            <div class="col-lg-2 padding_00" style="margin-top: 20px;">
               <select class="form-control select_active_month_rct">
                 <?php
                   $current_month = date('Y-m');
@@ -241,10 +254,14 @@ a:hover{text-decoration: underline;}
                 ?>
               </select>
             </div>
+            <div class="col-lg-2" style="float:right;text-align: right;margin-right: 12px; margin-top: 30px; background: #fff">
+              <a href="javascript:" class="common_black_button rct_settings">Settings</a>
+            </div>
+            </div>
 </div>
 
 <div class="col-lg-12 padding_00">
-  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:15px">
+  <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px;">
   
   
 
@@ -255,8 +272,203 @@ a:hover{text-decoration: underline;}
 .bootstrap-datetimepicker-widget{width: 300px !important;}
 .image_div_attachments P{width: 100%; height: auto; font-size: 13px; font-weight: normal; color: #000;}
 </style>
+<div class="modal fade rct_settings_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-lg" role="document" style="width:60%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">RCT Settings</h4>
+          </div>
+          <div class="modal-body" style="clear:both">  
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item active">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Email Salutation</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Letter Pad Background</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade active in" id="home" role="tabpanel" aria-labelledby="home-tab">
+                
+                <style>
+                .cursor_sort{cursor: pointer;}
+                </style>
+                  <div class="col-lg-12 padding_00" style="margin-top: 20px;">
+                      <div class="col-lg-12 padding_00">                    
+                          <div class="margin-bottom-50">
+                              <table class="table" >
+                                  <thead class="table-inverse">
+                                  <tr style="background: #fff;">
+                                      <th width="5%" style="text-align: left;">S.No</th>
+                                      <th>Name</th>
+                                      <th style="text-align: center;">Description</th>
+                                      <th style="text-align: center;" width="15%">Action</th>
+                                  </tr>
+                                  </thead>                            
+                                  <tbody>
+                                    <?php
+                                      $i=1;
+                                      if(count($userlist)){              
+                                        foreach($userlist as $user){
+                                    ?>
+                                    <tr>            
+                                      <td><?php echo $i;?></td>            
+                                      <td align="left"><?php echo $user->name; ?></td>
+                                      <td align="left"><?php echo $user->description; ?></td>
+                                      <td align="center">
+                                          <a href="#" id="<?php echo base64_encode($user->id); ?>" class="editclass"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
+                                      </td>
+                                    </tr>
+                                    <?php
+                                        $i++;
+                                        }              
+                                      }
+                                      else{
+                                        echo'<tr><td colspan="5" align="center">Empty</td></tr>';
+                                      }
+                                    ?>                                                       
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div> 
 
-<table class="display nowrap fullviewtablelist own_table_white" id="ta_expand" width="100%" style="max-width: 100%;">
+                <input type="hidden" name="sno_sortoptions" id="sno_sortoptions" value="asc">
+                <input type="hidden" name="first_sortoptions" id="first_sortoptions" value="asc">
+                <input type="hidden" name="last_sortoptions" id="last_sortoptions" value="asc">
+                <input type="hidden" name="tax_sortoptions" id="tax_sortoptions" value="asc">
+                <input type="hidden" name="email_sortoptions" id="email_sortoptions" value="asc">
+                <input type="hidden" name="seconday_sortoptions" id="seconday_sortoptions" value="asc">
+              </div>
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="col-lg-12 padding_00">
+                        <div class="col-lg-12 padding_00">                    
+                            <div class="margin-bottom-50">
+                                <table class="table">
+                                    <thead class="table-inverse">
+                                    <tr style="background: #fff;">
+                                        <th width="5%" style="text-align: left;">S.No</th>
+                                        <th>Name</th>
+                                        <th>Email Salution</th>
+                                        <th style="text-align: center;">image</th>
+                                        <th style="text-align: center;" width="15%">Action</th>
+                                    </tr>
+                                    </thead>                            
+                                    <tbody id="sort_maintable">
+                                      <?php
+                                        $i=1;
+                                        if(count($letterpad)){              
+                                          foreach($letterpad as $user){
+                                      ?>
+                                      <tr>            
+                                        <td><?php echo $i;?></td>            
+                                        <td align="left"><?php echo $user->name; ?></td>
+                                        <td align="left"><?php echo $user->salution; ?></td>
+                                        <td align="left">
+                                          <img width="150px;" src="<?php echo URL::to('uploads/letterpad/'.$user->image); ?>" >                                                                    
+                                        </td>
+                                        <td align="center">
+                                            <a href="#" id="<?php echo base64_encode($user->id); ?>" class="editclass_letter"><i class="fa fa-pencil-square" aria-hidden="true"></i></a>
+                                        </td>
+                                      </tr>
+                                      <?php
+                                          $i++;
+                                          }              
+                                        }
+                                        else{
+                                          echo'<tr><td colspan="5" align="center">Empty</td></tr>';
+                                        }
+                                      ?>                                                       
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div> 
+                    <input type="hidden" name="sno_sortoptions" id="sno_sortoptions" value="asc">
+                    <input type="hidden" name="first_sortoptions" id="first_sortoptions" value="asc">
+                    <input type="hidden" name="last_sortoptions" id="last_sortoptions" value="asc">
+                    <input type="hidden" name="tax_sortoptions" id="tax_sortoptions" value="asc">
+                    <input type="hidden" name="email_sortoptions" id="email_sortoptions" value="asc">
+                    <input type="hidden" name="seconday_sortoptions" id="seconday_sortoptions" value="asc">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer" style="clear:both">  
+            <input type="button" class="common_black_button" id="link_infile_button" value="Submit">
+          </div>
+        </div>
+  </div>
+</div>
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;z-index:99999999999">
+    <div class="modal-dialog modal-sm" role="document">
+      <form id="form-validation-edit" action="<?php echo URL::to('user/update_rctsalution'); ?>" method="post" class="editsp">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Edit Salution</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                  <input type="text"
+                    class="form-control name_class" readonly>
+              </div>
+
+              <div class="form-group">
+                  <textarea class="form-control desc_class"
+                         name="description"
+                         placeholder="Enter Salution"
+                         type="text"
+                         data-validation="[NOTEMPTY]"
+                         data-validation-message="Enter Salution" style="height: 150px;"></textarea>
+                  <input type="hidden" class="name_id" name="id">
+              </div>            
+            </div>
+            <div class="modal-footer">
+              <input type="submit" value="Update" class="common_black_button">
+            </div>
+          </div>
+      </form>
+    </div>
+  </div>
+<div class="modal fade bs-example-modal-sm_letter" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document">
+    <form id="form-validation-edit" action="<?php echo URL::to('user/update_rctletterpad'); ?>" method="post" enctype="multipart/form-data" class="editsp_letter">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Letter Background</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+                <input type="text"
+                  class="form-control name_class_letter" readonly>
+            </div>
+
+            <div class="form-group">
+              <img src="<?php echo URL::to('uploads/letterpad/no-image.jpg'); ?>" id="img_id" width="100%">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control salution_class" style="height: 150px;" name="salution" data-validation="[NOTEMPTY]" data-validation-message="Enter Salution">></textarea>
+            </div>
+
+            <div class="form-group">
+                <input class="form-control image_class"
+                       name="letterpadimage"                       
+                       type="file"
+                       data-validation="[NOTEMPTY]"
+                       data-validation-message="Enter Image">
+                <input type="hidden" class="name_id_letter" name="id">
+            </div>            
+          </div>
+          <div class="modal-footer">
+            <input type="submit" value="Update" class="common_black_button">
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+<table class="display nowrap fullviewtablelist own_table_white" id="ta_expand" width="100%" style="max-width: 100%; margin-top:0px !important; ">
                         <thead>
                         <tr style="background: #fff;">
                              <th width="2%" style="text-align: left;">S.No</th>
@@ -269,7 +481,7 @@ a:hover{text-decoration: underline;}
                             <th style="text-align: left;">Gross</th>
                             <th style="text-align: left;">Net</th>
                             <th style="text-align: left;">Count</th>
-                            <th style="text-align: left;">Email</th>
+                            <!-- <th style="text-align: left;">Email</th> -->
                             <th style="text-align: center;">Action</th>
                         </tr>
                         </thead>                            
@@ -403,7 +615,7 @@ a:hover{text-decoration: underline;}
                                 </td>
                                 <td align="left" class="net_clientid" style="<?php echo $color; ?>"><?php echo ($netsum)?number_format_invoice_without_decimal($netsum):'-'; ?></td>
                                 <td align="left" class="count_clientid" style="<?php echo $color; ?>"><?php echo ($icount)?$icount:'-'; ?></td>
-                                <td align="left" class="emails_clientid">
+                                <!-- <td align="left" class="emails_clientid">
                                   <?php
                                   $emails = DB::table('rct_submission_email')->where('client_id',$client->client_id)->where('start_date',$prev_date2)->get();
                                   if(count($emails))
@@ -414,7 +626,7 @@ a:hover{text-decoration: underline;}
                                     }
                                   }
                                   ?>
-                                </td>
+                                </td> -->
                                 <td align="center"><a href="<?php echo URL::to('user/rct_liability_assessment/'.$client->client_id)?>" class="fa fa-eye view_liability_assessment" style="<?php echo $color; ?>"></a></td>
                             </tr>
                             <?php
@@ -524,7 +736,80 @@ a:hover{text-decoration: underline;}
 
 <!-- Page Scripts -->
 <script>
+$(".editclass_letter").click( function(){
+  var editid = $(this).attr("id");
+  console.log(editid);
+  $.ajax({
+      url: "<?php echo URL::to('user/edit_rctletterpad') ?>"+"/"+editid,
+      dataType:"json",
+      type:"post",
+      success:function(result){
+         $(".bs-example-modal-sm_letter").modal("toggle");
+         $(".editsp_letter").show();
+         $(".name_class_letter").val(result['name']);
+         $(".salution_class").val(result['salution']);
+         $(".name_id_letter").val(result['id']);         
+         $("#img_id").attr("src",result['image']);
 
+    }
+  })
+});
+
+
+
+
+
+$(".addclass").click( function(){
+  $(".addsp").show();
+  $(".editsp").hide();
+});
+$(".editclass").click( function(){
+  var editid = $(this).attr("id");
+  console.log(editid);
+  $.ajax({
+      url: "<?php echo URL::to('user/edit_rctsalution') ?>"+"/"+editid,
+      dataType:"json",
+      type:"post",
+      success:function(result){
+         $(".bs-example-modal-sm").modal("toggle");
+         $(".editsp").show();
+         $(".addsp").hide();
+         $(".name_class").val(result['name']);
+         $(".desc_class").val(result['description']);         
+         $(".name_id").val(result['id']);
+    }
+  })
+});
+$(window).click(function(e) {
+  var ascending = false;
+  if($(e.target).hasClass('delete_user'))
+  {
+    var r = confirm("Are You Sure want to delete this Subcontractor?");
+    if (r == true) {
+       
+    } else {
+        return false;
+    }
+  }
+});
+$('#form-validation').validate({
+    submit: {
+        settings: {
+            inputContainer: '.form-group',
+            errorListClass: 'form-control-error',
+            errorClass: 'has-danger'
+        }
+    }
+});
+$('#form-validation-edit').validate({
+    submit: {
+        settings: {
+            inputContainer: '.form-group',
+            errorListClass: 'form-control-error',
+            errorClass: 'has-danger'
+        }
+    }
+});
 $(function(){
     $('#ta_expand').DataTable({
         fixedHeader: {
@@ -543,6 +828,7 @@ $(window).change(function(e){
   {
     $("body").addClass("loading");
     var value = $(e.target).val();
+    $("#ta_expand").dataTable().fnDestroy();
     $.ajax({
       url:"<?php echo URL::to('user/set_rct_active_month'); ?>",
       type:"post",
@@ -550,6 +836,17 @@ $(window).change(function(e){
       success: function(result)
       {
         $("#clients_tbody").html(result);
+        $('#ta_expand').DataTable({
+            fixedHeader: {
+              headerOffset: 75
+            },
+            autoWidth: true,
+            scrollX: false,
+            fixedColumns: false,
+            searching: false,
+            paging: false,
+            info: false
+        });
         $("body").removeClass("loading");
       }
     })
@@ -578,6 +875,10 @@ $(window).change(function(e){
   }
 })
 $(window).click(function(e) {
+  if($(e.target).hasClass('rct_settings'))
+  {
+    $(".rct_settings_modal").modal("show");
+  }
   if($(e.target).hasClass('view_liability_assessment'))
   {
     e.preventDefault();

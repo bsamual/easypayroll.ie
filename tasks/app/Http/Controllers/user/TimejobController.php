@@ -786,6 +786,7 @@ class TimejobController extends Controller {
 				        $dataquick['quick_job'] = 1;
 				       	$dataquick['bulk_job'] = 0; 
 				       	$dataquick['job_created_date'] = $jobs->job_created_date;
+				       	$dataquick['comments'] = $data['comments'];
 				       	$dataquick['status'] = 1;
 				       	$task_new_id = DB::table('task_job')->insertGetid($dataquick);
 
@@ -878,6 +879,7 @@ class TimejobController extends Controller {
 					        $dataquick['quick_job'] = 1;
 					       	$dataquick['bulk_job'] = 0; 
 					       	$dataquick['job_created_date'] = $jobs->job_created_date;
+					       	$dataquick['comments'] = $data['comments'];
 					       	$dataquick['status'] = 1;
 					       	$task_new_id = DB::table('task_job')->insertGetid($dataquick);
 
@@ -965,6 +967,7 @@ class TimejobController extends Controller {
 					        $dataquick['quick_job'] = 1;
 					       	$dataquick['bulk_job'] = 0; 
 					       	$dataquick['job_created_date'] = $jobs->job_created_date;
+					       	$dataquick['comments'] = $data['comments'];
 					       	$dataquick['status'] = 1;
 					       	$task_new_id = DB::table('task_job')->insertGetid($dataquick);
 
@@ -1055,6 +1058,7 @@ class TimejobController extends Controller {
 				        $dataquick['quick_job'] = 1;
 				       	$dataquick['bulk_job'] = 0; 
 				       	$dataquick['job_created_date'] = $jobs->job_created_date;
+				       	$dataquick['comments'] = $data['comments'];
 				       	$dataquick['status'] = 1;
 				       	DB::table('task_job')->insert($dataquick);
 				       	$quickstarttime = $quickstop_time;
@@ -1112,27 +1116,30 @@ class TimejobController extends Controller {
 		$statsdata['status'] = 1;
 		DB::table('task_job')->where('active_id', $id)->update($statsdata);
 
+		$commentsdata['comments'] = $data['comments'];
+		DB::table('task_job')->where('active_id', $id)->where('comments',"")->update($commentsdata);
+
 		$count_minues = Input::get('break_time_val');
 
 
-          if(floor($count_minues / 60) <= 9)
-          {
-            $h = '0'.floor($count_minues / 60);
-          }
-          else{
-            $h = floor($count_minues / 60);
-          }
-          if(($count_minues -   floor($count_minues / 60) * 60) <= 9)
-          {
-            $m = '0'.($count_minues -   floor($count_minues / 60) * 60);
-          }
-          else{
-            $m = ($count_minues -   floor($count_minues / 60) * 60);
-          }
-          $break_hours = $h.':'.$m.':00';
-          $dataval['break_time'] = $break_hours;
-          $dataval['job_id'] = $id;
-          DB::table('job_break_time')->insert($dataval);
+		if(floor($count_minues / 60) <= 9)
+		{
+		$h = '0'.floor($count_minues / 60);
+		}
+		else{
+		$h = floor($count_minues / 60);
+		}
+		if(($count_minues -   floor($count_minues / 60) * 60) <= 9)
+		{
+		$m = '0'.($count_minues -   floor($count_minues / 60) * 60);
+		}
+		else{
+		$m = ($count_minues -   floor($count_minues / 60) * 60);
+		}
+		$break_hours = $h.':'.$m.':00';
+		$dataval['break_time'] = $break_hours;
+		$dataval['job_id'] = $id;
+		DB::table('job_break_time')->insert($dataval);
          
         if($jobs->job_type !=  0)
 		{
@@ -6697,51 +6704,52 @@ class TimejobController extends Controller {
 			$total_breaks_minutes = $breaks_minutes;
 		}
 
-		$sum_of_breaks = $total_breaks_minutes + $total_quick_jobs_minutes;
+		$sum_of_breaks = $total_breaks_minutes;
+		$sum_of_breaks2 = $total_breaks_minutes + $total_quick_jobs_minutes;
 
 		$jobtime_1 = explode(':', $jobtime);
 		$job_minutes = ($jobtime_1[0]*60) + ($jobtime_1[1]) + ($jobtime_1[2]/60);
 		$jobtime_minutes = $job_minutes;
 
 		$total_time_minutes = $jobtime_minutes - $sum_of_breaks;
+		$total_time_minutes2 = $jobtime_minutes - $sum_of_breaks2;
 
-		if($total_time_minutes < 0)
+		if($total_time_minutes2 < 0)
 		{
 			$alert =1;
-			$total_time_minutes = str_replace("-","",$total_time_minutes);
-			if(floor($total_time_minutes / 60) <= 9)
-	          {
-	            $h = floor($total_time_minutes / 60);
-	          }
-	          else{
-	            $h = floor($total_time_minutes / 60);
-	          }
-	          if(($total_time_minutes -   floor($total_time_minutes / 60) * 60) <= 9)
-	          {
-	            $m = '0'.($total_time_minutes -   floor($total_time_minutes / 60) * 60);
-	          }
-	          else{
-	            $m = ($total_time_minutes -   floor($total_time_minutes / 60) * 60);
-	          }
-	          $total_time_minutes_format = '-'.$h.':'.$m.':00';
+			$total_time_minutes2 = str_replace("-","",$total_time_minutes2);
+			if(floor($total_time_minutes2 / 60) <= 9){
+				$h = floor($total_time_minutes2 / 60);
+			}
+			else{
+				$h = floor($total_time_minutes2 / 60);
+			}
+			if(($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60) <= 9)
+			{
+				$m = '0'.($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
+			}
+			else{
+				$m = ($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
+			}
+			$total_time_minutes_format = '-'.$h.':'.$m.':00';
 		}
 		else{
-			if(floor($total_time_minutes / 60) <= 9)
-	          {
-	            $h = '0'.floor($total_time_minutes / 60);
-	          }
-	          else{
-	            $h = floor($total_time_minutes / 60);
-	          }
-	          if(($total_time_minutes -   floor($total_time_minutes / 60) * 60) <= 9)
-	          {
-	            $m = '0'.($total_time_minutes -   floor($total_time_minutes / 60) * 60);
-	          }
-	          else{
-	            $m = ($total_time_minutes -   floor($total_time_minutes / 60) * 60);
-	          }
-	          $total_time_minutes_format = $h.':'.$m.':00';
-	          $alert =0;
+			if(floor($total_time_minutes2 / 60) <= 9)
+			{
+				$h = '0'.floor($total_time_minutes2 / 60);
+			}
+			else{
+				$h = floor($total_time_minutes2 / 60);
+			}
+			if(($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60) <= 9)
+			{
+				$m = '0'.($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
+			}
+			else{
+				$m = ($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
+			}
+			$total_time_minutes_format = $h.':'.$m.':00';
+			$alert =0;
 		}
 		$explode_job_minutes = explode(":",$jobtime);
         $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
@@ -6807,52 +6815,49 @@ class TimejobController extends Controller {
 			$total_quick_jobs_minutes = $minutes;
 			
 			$total_breaks_minutes = $count_minues;
-			$sum_of_breaks = $total_breaks_minutes + $total_quick_jobs_minutes;
-
+			$sum_of_breaks = $total_breaks_minutes;
+			$sum_of_breaks2 = $total_breaks_minutes + $total_quick_jobs_minutes;
 
 			$jobtime_1 = explode(':', $jobtime);
 			$job_minutes = ($jobtime_1[0]*60) + ($jobtime_1[1]) + ($jobtime_1[2]/60);
 			$jobtime_minutes = $job_minutes;
 
 			$total_time_minutes = $jobtime_minutes - $sum_of_breaks;
-
-			
-
-
-			if($total_time_minutes < 0)
+			$total_time_minutes2 = $jobtime_minutes - $sum_of_breaks2;
+			if($total_time_minutes2 < 0)
 			{
 				$alert = 1;
-				$total_time_minutes = str_replace("-","",$total_time_minutes);
-				if(floor($total_time_minutes / 60) <= 9)
+				$total_time_minutes2 = str_replace("-","",$total_time_minutes2);
+				if(floor($total_time_minutes2 / 60) <= 9)
 		          {
-		            $h = floor($total_time_minutes / 60);
+		            $h = floor($total_time_minutes2 / 60);
 		          }
 		          else{
-		            $h = floor($total_time_minutes / 60);
+		            $h = floor($total_time_minutes2 / 60);
 		          }
-		          if(($total_time_minutes -   floor($total_time_minutes / 60) * 60) <= 9)
+		          if(($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60) <= 9)
 		          {
-		            $m = '0'.($total_time_minutes -   floor($total_time_minutes / 60) * 60);
+		            $m = '0'.($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
 		          }
 		          else{
-		            $m = ($total_time_minutes -   floor($total_time_minutes / 60) * 60);
+		            $m = ($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
 		          }
 		          $total_time_minutes_format = '-'.$h.':'.$m.':00';
 			}
 			else{
-				if(floor($total_time_minutes / 60) <= 9)
+				if(floor($total_time_minutes2 / 60) <= 9)
 		          {
-		            $h = '0'.floor($total_time_minutes / 60);
+		            $h = '0'.floor($total_time_minutes2 / 60);
 		          }
 		          else{
-		            $h = floor($total_time_minutes / 60);
+		            $h = floor($total_time_minutes2 / 60);
 		          }
-		          if(($total_time_minutes -   floor($total_time_minutes / 60) * 60) <= 9)
+		          if(($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60) <= 9)
 		          {
-		            $m = '0'.($total_time_minutes -   floor($total_time_minutes / 60) * 60);
+		            $m = '0'.($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
 		          }
 		          else{
-		            $m = ($total_time_minutes -   floor($total_time_minutes / 60) * 60);
+		            $m = ($total_time_minutes2 -   floor($total_time_minutes2 / 60) * 60);
 		          }
 		          $total_time_minutes_format = $h.':'.$m.':00';
 		          $alert = 0;

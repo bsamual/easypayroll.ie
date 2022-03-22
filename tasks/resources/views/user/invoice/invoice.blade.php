@@ -9,6 +9,9 @@
 body{
   background: #f5f5f5 !important;
 }
+.create_journal_for_invoice{
+  padding:5px;
+}
 .modal_load_apply {
     display:    none;
     position:   fixed;
@@ -339,10 +342,10 @@ if(!empty($_GET['import_type_new']))
               <input type="checkbox" name="all_clients" class="all_clients" id="all_clients" checked><label for="all_clients">All Clients</label>
             </div>
             <div class="col-lg-4 padding_00" style="width: 500px;">
-              <spam>Invoice List</spam>
-              <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_1" value="1"><label for="invoice_date_option_1">Year</label>
-              <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_2" value="2"><label for="invoice_date_option_2">All Invoice</label>
-              <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_3" value="3"><label for="invoice_date_option_3">Custom Date</label>
+              <spam>Invoice List: </spam>
+              <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_1" value="1"><label for="invoice_date_option_1">Year</label>&nbsp;&nbsp;&nbsp;&nbsp;
+              <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_2" value="2"><label for="invoice_date_option_2">All Invoice</label>&nbsp;&nbsp;&nbsp;&nbsp;
+              <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_3" value="3"><label for="invoice_date_option_3">Custom Date</label>&nbsp;&nbsp;&nbsp;&nbsp;
 
               <div class="invoice_year_div" style="display: none">
                   <h5 class="col-md-12">Select Year:</h5>
@@ -576,6 +579,7 @@ function next_invoice_check(count)
         else{
           $("#hidden_financial_opening_date").val("");
           $("body").removeClass("loading_apply");
+          $.colorbox.close();
         }
       },200);
     }
@@ -600,6 +604,7 @@ function next_invoice_check_after(count)
         }
         else{
           $("body").removeClass("loading_apply");
+          $.colorbox.close();
         }
       },200);
     }
@@ -651,6 +656,8 @@ $(window).click(function(e) {
         $(".invoice_year_div").show();
         $(".invoice_custom_div").hide();
         $(".invoice_select_year").val("");
+        var myVal = $('.invoice_select_year option:last').val();
+        $('.invoice_select_year').val(myVal);
       }
       else if(value == "2")
       {
@@ -753,7 +760,9 @@ $(window).click(function(e) {
                     $(".search_input_class").val("");
                     $(".search_input_class_date").val("");
                     $(".search_input_class_date").hide();
-                $(".search_input_class").show();
+                    $(".search_input_class").show();
+                    $(".invoice_year_div").hide();
+                    $(".invoice_custom_div").hide();
                     $("body").removeClass("loading");
                     }
                 });
@@ -787,7 +796,9 @@ $(window).click(function(e) {
                     $(".search_input_class").val("");
                     $(".search_input_class_date").val("");
                     $(".search_input_class_date").hide();
-                $(".search_input_class").show();
+                    $(".search_input_class").show();
+                    $(".invoice_year_div").hide();
+                    $(".invoice_custom_div").hide();
                     $("body").removeClass("loading");
                   }
               });
@@ -843,6 +854,7 @@ $(window).click(function(e) {
           else{
             $("#hidden_financial_opening_date").val("");
             $("body").removeClass("loading_apply");
+            $.colorbox.close();
           }
       },200);
       }
@@ -869,8 +881,24 @@ $(window).click(function(e) {
           }
           else{
             $("body").removeClass("loading_apply");
+            $.colorbox.close();
           }
       },200);
+      }
+    });
+  }
+  if($(e.target).hasClass('create_journal_for_invoice'))
+  {
+    $("body").addClass("loading_apply");
+    var inv_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/insert_update_invoice_nominals'); ?>",
+      type:"post",
+      data:{inv_id:inv_id},
+      success:function(result)
+      {
+        $(e.target).parents("td").html(result);
+        $("body").removeClass("loading_apply");
       }
     });
   }

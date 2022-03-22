@@ -21,7 +21,6 @@ use DateTime;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 class CmController extends Controller {
-
 	/*
 	|--------------------------------------------------------------------------
 	| Welcome Controller
@@ -32,7 +31,6 @@ class CmController extends Controller {
 	| controllers, you are free to modify or remove it as you desire.
 	|
 	*/
-
 	/**
 	 * Create a new controller instance.
 	 *
@@ -49,7 +47,6 @@ class CmController extends Controller {
 		date_default_timezone_set("Europe/Dublin");
 		require_once(app_path('Http/helpers.php'));
 	}
-
 	/**
 	 * Show the application welcome screen to the user.
 	 *
@@ -64,97 +61,85 @@ class CmController extends Controller {
 	}
 	
 	public function addcmclients(){
-		$pin = Input::get('crypt_pin');
 		$admin_details = DB::table('admin')->first();
-		if(Hash::check($pin,$admin_details->cm_crypt))
+		$check_clients = DB::table('cm_clients')->orderBy('id','desc')->first();
+		$last_client_id = substr($check_clients->client_id, 3);
+		$nextClientid = sprintf("%03d", $last_client_id + 1);
+		$clientid = 'GBS'.$nextClientid;
+		$data['client_id'] = 'GBS'.$nextClientid;
+		$data['firstname'] = Input::get('name');
+		$data['surname'] = Input::get('surname');
+		$firstname = Input::get('name');
+		$surname = Input::get('surname');
+		$company = Input::get('cname');
+		if($company != "")
 		{
-			$check_clients = DB::table('cm_clients')->orderBy('id','desc')->first();
-			$last_client_id = substr($check_clients->client_id, 3);
-			$nextClientid = sprintf("%03d", $last_client_id + 1);
-			$clientid = 'GBS'.$nextClientid;
-
-			$data['client_id'] = 'GBS'.$nextClientid;
-			$data['firstname'] = Input::get('name');
-			$data['surname'] = Input::get('surname');
-
-			$firstname = Input::get('name');
-			$surname = Input::get('surname');
-
-			$company = Input::get('cname');
-			if($company != "")
-			{
-				$data['company'] = $company;
+			$data['company'] = $company;
+		}
+		else
+		{
+			if($surname != ""){
+				$surname = ' '.$surname;
 			}
-			else
+			$data['company'] = $firstname.$surname;
+		}
+		$data['address1'] = Input::get('address1');
+		$data['address2'] = Input::get('address2');
+		$data['address3'] = Input::get('address3');
+		$data['address4'] = Input::get('address4');
+		$data['address5'] = Input::get('address5');
+		$data['email'] = Input::get('email');
+		$data['tye'] = Input::get('tye');
+		$data['active'] = (Input::get('class') == "")?'1':Input::get('class');
+		$data['tax_reg1'] = Input::get('tax_reg1');
+		$data['tax_reg2'] = Input::get('tax_reg2');
+		$data['tax_reg3'] = Input::get('tax_reg3');
+		$data['email2'] = Input::get('semail');
+		$data['phone'] = Input::get('phone');
+		$data['linkcode'] = Input::get('linkcode');
+		$data['cro'] = Input::get('cro');
+		$data['ard'] = Input::get('ard');
+		$data['trade_status'] = Input::get('trade_status');
+		$data['directory'] = Input::get('directory');
+		$data['send_statement'] = 1;
+		$check_fields = DB::table('cm_fields')->where('status',0)->get();
+		if(count($check_fields))
+		{
+			foreach($check_fields as $fields)
 			{
-				if($surname != ""){
-					$surname = ' '.$surname;
-				}
-				$data['company'] = $firstname.$surname;
-			}
-			$data['address1'] = Input::get('address1');
-			$data['address2'] = Input::get('address2');
-			$data['address3'] = Input::get('address3');
-			$data['address4'] = Input::get('address4');
-			$data['address5'] = Input::get('address5');
-			$data['email'] = Input::get('email');
-			$data['tye'] = Input::get('tye');
-			$data['active'] = (Input::get('class') == "")?'1':Input::get('class');
-			$data['tax_reg1'] = Input::get('tax_reg1');
-			$data['tax_reg2'] = Input::get('tax_reg2');
-			$data['tax_reg3'] = Input::get('tax_reg3');
-			$data['email2'] = Input::get('semail');
-			$data['phone'] = Input::get('phone');
-			$data['linkcode'] = Input::get('linkcode');
-			$data['cro'] = Input::get('cro');
-			$data['ard'] = Input::get('ard');
-			$data['trade_status'] = Input::get('trade_status');
-			$data['directory'] = Input::get('directory');
-
-			
-
-
-			$check_fields = DB::table('cm_fields')->where('status',0)->get();
-			if(count($check_fields))
-			{
-				foreach($check_fields as $fields)
+				if($fields->field == 4)
 				{
-					if($fields->field == 4)
+					$filename = $_FILES[$fields->name]['name'];
+					$tmp_name = $_FILES[$fields->name]['tmp_name'];
+					$uploads_dir = 'uploads/cm_fields';
+					if(!file_exists($uploads_dir))
 					{
-						$filename = $_FILES[$fields->name]['name'];
-						$tmp_name = $_FILES[$fields->name]['tmp_name'];
-						$uploads_dir = 'uploads/cm_fields';
-						if(!file_exists($uploads_dir))
-						{
-							mkdir($uploads_dir);
-						}
-						$uploads_dir = $uploads_dir.'/'.$clientid;
-						if(!file_exists($uploads_dir))
-						{
-							mkdir($uploads_dir);
-						}
-						$uploads_dir = $uploads_dir.'/'.$fields->name;
-						if(!file_exists($uploads_dir))
-						{
-							mkdir($uploads_dir);
-						}
-						move_uploaded_file($tmp_name, $uploads_dir.'/'.$filename);
-						$data[$fields->name] = $filename;
+						mkdir($uploads_dir);
 					}
-					else{
-						$data[$fields->name] = Input::get($fields->name);
+					$uploads_dir = $uploads_dir.'/'.$clientid;
+					if(!file_exists($uploads_dir))
+					{
+						mkdir($uploads_dir);
 					}
+					$uploads_dir = $uploads_dir.'/'.$fields->name;
+					if(!file_exists($uploads_dir))
+					{
+						mkdir($uploads_dir);
+					}
+					move_uploaded_file($tmp_name, $uploads_dir.'/'.$filename);
+					$data[$fields->name] = $filename;
 				}
-				DB::table('cm_clients')->insert($data);
+				else{
+					$data[$fields->name] = Input::get($fields->name);
+				}
 			}
-			else{
-				DB::table('cm_clients')->insert($data);
-			}
-			return redirect::back()->with('message','Add Success');
+			DB::table('cm_clients')->insert($data);
 		}
 		else{
-			return redirect::back()->with('message','Crypt Pin You have entered is Incorrect.');
+			DB::table('cm_clients')->insert($data);
 		}
+		time_task_review_all_helper();
+		return redirect::back()->with('message','Client Added Successfully');
 	}
 	public function editcmclient($id=""){
 		$id = base64_decode($id);
@@ -225,12 +210,10 @@ class CmController extends Controller {
 	public function copycmclient($id=""){
 		$id = base64_decode($id);
 		$result = DB::table('cm_clients')->where('id', $id)->first();
-
 		$check_clients = DB::table('cm_clients')->orderBy('id','desc')->first();
 		$last_client_id = substr($check_clients->client_id, 3);
 		$nextClientid = sprintf("%03d", $last_client_id + 1);
 		$clientid = 'GBS'.$nextClientid;
-
 		$fields = DB::table('cm_fields')->where('status',0)->get();
 		$data2 = array();
 		if(count($fields))
@@ -242,95 +225,84 @@ class CmController extends Controller {
 			}
 		}
 		$data1 = array('clientid' => $clientid, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro,'ard' => $result->ard, 'trade_status' => $result->trade_status, 'directory' => $result->directory,    'id' => $result->id);
-
 		$data3 = array_merge($data1,$data2);
-
 		echo json_encode($data3);
 	}
-	
 	public function updatecmclients(){
-		$pin = Input::get('crypt_pin');
 		$admin_details = DB::table('admin')->first();
 		$id = Input::get('id');
-		if(Hash::check($pin,$admin_details->cm_crypt))
+
+		$data['client_added'] = Input::get('client_added_class');
+		$data['firstname'] = Input::get('name');
+		$data['surname'] = Input::get('surname');
+		$data['company'] = Input::get('cname');
+		$data['address1'] = Input::get('address1');
+		$data['address2'] = Input::get('address2');
+		$data['address3'] = Input::get('address3');
+		$data['address4'] = Input::get('address4');
+		$data['address5'] = Input::get('address5');
+		$data['email'] = Input::get('email');
+		$data['tye'] = Input::get('tye');
+		$data['active'] = (Input::get('class') == "")?'1':Input::get('class');
+		$data['tax_reg1'] = Input::get('tax_reg1');
+		$data['tax_reg2'] = Input::get('tax_reg2');
+		$data['tax_reg3'] = Input::get('tax_reg3');
+		
+		$data['email2'] = Input::get('semail');
+		$data['phone'] = Input::get('phone');
+		$data['linkcode'] = Input::get('linkcode');
+		$data['cro'] = Input::get('cro');
+		$data['ard'] = Input::get('ard');
+		$data['trade_status'] = Input::get('trade_status');
+		$data['directory'] = Input::get('directory');
+
+		
+		$check_client = DB::table('cm_clients')->where('id', $id)->first();
+		$check_fields = DB::table('cm_fields')->where('status',0)->get();
+		if(count($check_fields))
 		{
-			$data['client_added'] = Input::get('client_added_class');
-			$data['firstname'] = Input::get('name');
-			$data['surname'] = Input::get('surname');
-			$data['company'] = Input::get('cname');
-			$data['address1'] = Input::get('address1');
-			$data['address2'] = Input::get('address2');
-			$data['address3'] = Input::get('address3');
-			$data['address4'] = Input::get('address4');
-			$data['address5'] = Input::get('address5');
-			$data['email'] = Input::get('email');
-			$data['tye'] = Input::get('tye');
-			$data['active'] = (Input::get('class') == "")?'1':Input::get('class');
-			$data['tax_reg1'] = Input::get('tax_reg1');
-			$data['tax_reg2'] = Input::get('tax_reg2');
-			$data['tax_reg3'] = Input::get('tax_reg3');
-
-			
-
-			$data['email2'] = Input::get('semail');
-			$data['phone'] = Input::get('phone');
-			$data['linkcode'] = Input::get('linkcode');
-			$data['cro'] = Input::get('cro');
-			$data['ard'] = Input::get('ard');
-			$data['trade_status'] = Input::get('trade_status');
-			$data['directory'] = Input::get('directory');
-			$check_client = DB::table('cm_clients')->where('id', $id)->first();
-			$check_fields = DB::table('cm_fields')->where('status',0)->get();
-			if(count($check_fields))
+			foreach($check_fields as $fields)
 			{
-				foreach($check_fields as $fields)
+				if($fields->field == 4)
 				{
-					if($fields->field == 4)
+					$filename = $_FILES[$fields->name]['name'];
+					$tmp_name = $_FILES[$fields->name]['tmp_name'];
+					$uploads_dir = 'uploads/cm_fields';
+					if(!file_exists($uploads_dir))
 					{
-						$filename = $_FILES[$fields->name]['name'];
-						$tmp_name = $_FILES[$fields->name]['tmp_name'];
-						$uploads_dir = 'uploads/cm_fields';
-						if(!file_exists($uploads_dir))
-						{
-							mkdir($uploads_dir);
-						}
-						$uploads_dir = $uploads_dir.'/'.$check_client->client_id;
-						if(!file_exists($uploads_dir))
-						{
-							mkdir($uploads_dir);
-						}
-						$uploads_dir = $uploads_dir.'/'.$fields->name;
-						if(!file_exists($uploads_dir))
-						{
-							mkdir($uploads_dir);
-						}
-						move_uploaded_file($tmp_name, $uploads_dir.'/'.$filename);
-						$data[$fields->name] = $filename;
+						mkdir($uploads_dir);
 					}
-					else{
-						$data[$fields->name] = Input::get($fields->name);
+					$uploads_dir = $uploads_dir.'/'.$check_client->client_id;
+					if(!file_exists($uploads_dir))
+					{
+						mkdir($uploads_dir);
 					}
+					$uploads_dir = $uploads_dir.'/'.$fields->name;
+					if(!file_exists($uploads_dir))
+					{
+						mkdir($uploads_dir);
+					}
+					move_uploaded_file($tmp_name, $uploads_dir.'/'.$filename);
+					$data[$fields->name] = $filename;
 				}
-				DB::table('cm_clients')->where('id', $id)->update($data);
+				else{
+					$data[$fields->name] = Input::get($fields->name);
+				}
 			}
-			else{
-				DB::table('cm_clients')->where('id', $id)->update($data);
-			}
-			
-			return redirect('user/client_management?divid=clientidtr_'.$id)->with('edit_message','Client Updated Successfully.');
+			DB::table('cm_clients')->where('id', $id)->update($data);
 		}
 		else{
-			return redirect('user/client_management?divid=clientidtr_'.$id)->with('edit_error','Crypt Pin You have entered is Incorrect.');
+			DB::table('cm_clients')->where('id', $id)->update($data);
 		}
+		time_task_review_all_helper();
+		return redirect('user/client_management?divid=clientidtr_'.$id)->with('edit_message','Client Updated Successfully.');
 	}
 	public function clientmanagement_paginate()
 	{
 		$page = Input::get('page');
 		$prev_page = $page - 1;
 		$offset = $prev_page * 1000;
-
 		$clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'email', 'status', 'active', 'id','address1','address2','address3','address4','address5','phone','statement')->orderBy('id','asc')->offset($offset)->limit(1000)->get();
-
 		$output ='';
 		$i = $offset+1;
 		if(count($clientlist)){   
@@ -358,7 +330,6 @@ class CmController extends Controller {
 	                <td style="word-wrap: break-word; white-space:normal; min-width:300px; max-width: 300px;" align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$address.'</a></td>
 	                <td align="left"><a style="'.$style.'" href="mailto:'.$client->email.'">'.$client->email.'</a></td>
 	                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->phone.'</a></td>
-
 	                <td style="'.$style.'" align="left">
 	                	<input type="checkbox" class="client_statement" id="statement_'.$client->client_id.'" data-element="'.$client->id.'"'; $output.=($client->statement == "yes")?'checked':''; $output.='><label for="statement_'.$client->client_id.'">Yes</label>
 	                </td>
@@ -378,7 +349,6 @@ class CmController extends Controller {
 		$input = Input::get('input');
 		$select = Input::get('select');
 		$incomplete_details = DB::table('user_login')->first();
-
 		$output = '';
 		if($select == "address1")
 		{
@@ -387,7 +357,6 @@ class CmController extends Controller {
 		else{
 			$clientlist = DB::table('cm_clients')->where($select,'like','%'.$input.'%')->get();
 		}
-
 		$i= 1;
         if(count($clientlist)){              
           foreach($clientlist as $client){
@@ -413,7 +382,6 @@ class CmController extends Controller {
 	                <td style="word-wrap: break-word; white-space:normal; min-width:300px; max-width: 300px;" align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$address.'</a></td>
 	                <td align="left"><a style="'.$style.'" href="mailto:'.$client->email.'">'.$client->email.'</a></td>
 	                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->phone.'</a></td>
-
 	                <td style="'.$style.'" align="left">
 	                	<input type="checkbox" class="client_statement" id="statement_'.$client->client_id.'" data-element="'.$client->id.'"'; $output.=($client->statement == "yes")?'checked':''; $output.='><label for="statement_'.$client->client_id.'">Yes</label>
 	                </td>
@@ -440,7 +408,6 @@ class CmController extends Controller {
 		$clients = DB::table('cm_clients')->whereIn('id', $ids)->get();
 		
 		$output = '';
-
 		if($type == 2)
 		{
 			$output.= '<style>
@@ -640,7 +607,6 @@ class CmController extends Controller {
 		$clients = DB::table('cm_clients')->whereIn('id', $ids)->get();
 		
 		$output = '';
-
 		if($type == 2)
 		{
 			if(count($clients))
@@ -670,8 +636,6 @@ class CmController extends Controller {
 		echo 'CM Report.pdf';
 	}
 	public function cm_report_csv($id=""){
-		
-
 		$ids = explode(",",Input::get('value'));
 		$clients = DB::table('cm_clients')->whereIn('id', $ids)->get();
 		$headers = array(
@@ -693,7 +657,6 @@ class CmController extends Controller {
       	
 		$columns_1 = array('#', 'Client ID', 'First Name', 'Surname', 'Company', 'Address 1', 'Address 2', 'Address 3', 'Address 4', 'Address 5', 'Primary Email', 'Type', 'Class Name', 'Tax Reg1', 'Tax Reg2', 'Tax Reg3', 'Secondary Email', 'Phone', 'Link code', 'cro','ard', 'Trade Status', 'Directory');
 		$columns = array_merge($columns_1,$fieldname);
-
 		$callback = function() use ($clients, $columns)
     	{
 	       	$file = fopen('papers/CM_Report.csv', 'w');
@@ -720,7 +683,6 @@ class CmController extends Controller {
 		      		}
 		      	}
 		      	$columns_2 = array($i, $single->client_id, $single->firstname, $single->surname, $single->company, $single->address1, $single->address2, $single->address3, $single->address4, $single->address5, $single->email, $single->tye, $class_details->classname, $single->tax_reg1,$single->tax_reg2,$single->tax_reg3, $single->email2, $single->phone, $single->linkcode, $single->cro,$single->ard,$single->trade_status,$single->directory);
-
 		      	$columns_3 = array_merge($columns_2,$fieldval);
 				fputcsv($file, $columns_3);
 				$i++;
@@ -733,26 +695,17 @@ class CmController extends Controller {
 	{
 		$status = Input::get('hidden_status');
 		$client = base64_decode(Input::get('client_id'));
-		$pin = Input::get('crypt_pin');
-
 		$admin_details = DB::table('admin')->first();
-
-		if(Hash::check($pin,$admin_details->cm_crypt))
+		if($status == 1)
 		{
-			if($status == 1)
-			{
-				$data['active'] = 2;
-			}
-			elseif($status == 0)
-			{
-				$data['active'] = 1;
-			}
-			DB::table('cm_clients')->where('id',$client)->update($data);
-			echo 1;
+			$data['active'] = 2;
 		}
-		else{
-			echo 0;
+		elseif($status == 0)
+		{
+			$data['active'] = 1;
 		}
+		DB::table('cm_clients')->where('id',$client)->update($data);
+		echo 1;
 	}
 	public function save_image()
 	{
@@ -800,7 +753,6 @@ class CmController extends Controller {
 					if($exp == "ard") { $name = 'Ard'; }
 					if($exp == "trade_status") { $name = 'Trade Status'; }
 					if($exp == "directory") { $name = 'Directory'; }
-
 					if($exp != "address") {
 						$output.='<tr>
 							<td style="text-align: center;font-weight: 600;vertical-align: text-top;padding:5px">'.$details->$exp.'</td>
@@ -867,9 +819,7 @@ class CmController extends Controller {
 		$admin_details = Db::table('admin')->first();
 		$from = $admin_details->email;
 		$data['logo'] = URL::to('assets/images/logo.png');
-
 		$admin_cc = $admin_details->cm_cc_email;
-
 		if($secondary == 1)
 		{
 			if($client_details->email2 != '')
@@ -913,19 +863,16 @@ class CmController extends Controller {
 		else{
 			$subject = 'GBS & CO. Note: '.$sub.' '.$client_details->company;
 		}
-
 		
 		if($client_details->email != '')
 		{
 			$to = $client_details->email;
 			$email = new PHPMailer();
-
 			$email->SetFrom($from); //Name is optional
 			$email->Subject   = $subject;
 			$email->Body      = $contentmessage;
 			$email->IsHTML(true);
 			$email->AddAddress( $to );
-
 			$attachments = DB::table('cm_email_attachment')->get();
 			$attach = '';
 			if(count($attachments))
@@ -940,12 +887,10 @@ class CmController extends Controller {
 					else{
 						$attach = $attach.'||'.$path;
 					}
-
 					$email->AddAttachment( $path , $attachment->attachment );
 				}
 			}
 			$email->Send();
-
 			$datamessage['message_id'] = $time;
 			$datamessage['message_from'] = 0;
 			$datamessage['subject'] = $subject;
@@ -958,7 +903,6 @@ class CmController extends Controller {
 			$datamessage['source'] = "CM SYSTEM";
 			$datamessage['attachments'] = $attach;
 			$datamessage['status'] = 1;
-
 			DB::table('messageus')->insert($datamessage);
 		}
 		if($secondary == 1)
@@ -973,7 +917,6 @@ class CmController extends Controller {
 				$email->Body      = $contentmessage;
 				$email->IsHTML(true);
 				$email->AddAddress( $to );
-
 				$attachments = DB::table('cm_email_attachment')->get();
 				if(count($attachments))
 				{
@@ -992,7 +935,6 @@ class CmController extends Controller {
 			$to = $admin_cc;
 			$email = new PHPMailer();
 			
-
 			$email->SetFrom($from); //Name is optional
 			$email->Subject   = $subject;
 			$email->Body      = $contentmessage;
@@ -1092,7 +1034,6 @@ class CmController extends Controller {
 			$name=$_FILES['new_file']['name'];
 			$errorlist = array();
 			if(move_uploaded_file($tmp_name, "$uploads_dir/$name")){
-
 				$filepath = $uploads_dir.'/'.$name;
 				$objPHPExcel = PHPExcel_IOFactory::load($filepath);
 				foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
@@ -1108,12 +1049,10 @@ class CmController extends Controller {
 					else{
 						$height = $highestRow;
 					}
-
 					$id = $worksheet->getCellByColumnAndRow(0, 1); $id = trim($id->getValue());
 					$firstname = $worksheet->getCellByColumnAndRow(1, 1); $firstname = trim($firstname->getValue());
 					$surname = $worksheet->getCellByColumnAndRow(2, 1); $surname = trim($surname->getValue());
 					$company = $worksheet->getCellByColumnAndRow(3, 1); $company = trim($company->getValue());
-
 					if($id == "ID" && $firstname == "First Name" && $surname == "Surname" && $company == "Company")
 					{	
 						$errorrow = array();
@@ -1123,7 +1062,6 @@ class CmController extends Controller {
 							$pemail = $worksheet->getCellByColumnAndRow(9, $row); $pemail = trim($pemail->getValue());
 							if($id == "" )
 							{
-
 							}
 							else{
 								$check_gbsid = DB::table('cm_clients')->where('client_id',$id)->first();
@@ -1135,7 +1073,6 @@ class CmController extends Controller {
 									$surname = $worksheet->getCellByColumnAndRow(2, $row); $data['surname'] = trim($surname->getValue());
 									$surname = trim($surname->getValue());
 									$company = $worksheet->getCellByColumnAndRow(3, $row); $company = trim($company->getValue());
-
 									if($company != "")
 									{
 										$data['company'] = $company;
@@ -1146,13 +1083,11 @@ class CmController extends Controller {
 										}
 										$data['company'] = $firstname.$surname;
 									}
-
 									$address1 = $worksheet->getCellByColumnAndRow(4, $row); $data['address1'] = trim($address1->getValue());
 									$address2 = $worksheet->getCellByColumnAndRow(5, $row); $data['address2'] = trim($address2->getValue());
 									$address3 = $worksheet->getCellByColumnAndRow(6, $row); $data['address3'] = trim($address3->getValue());
 									$address4 = $worksheet->getCellByColumnAndRow(7, $row); $data['address4'] = trim($address4->getValue());
 									$address5 = $worksheet->getCellByColumnAndRow(8, $row); $data['address5'] = trim($address5->getValue());
-
 									$email = $worksheet->getCellByColumnAndRow(9, $row); $data['email'] = trim($email->getValue());
 									$tye = $worksheet->getCellByColumnAndRow(10, $row); $data['tye'] = trim($tye->getValue());
 									$active = $worksheet->getCellByColumnAndRow(11, $row); $active = trim($active->getValue());
@@ -1163,8 +1098,6 @@ class CmController extends Controller {
 									}
 									else{
 										$data['client_added'] = $client_added;
-
-
 										// $date = date_create($client_added);
 									 //    date_add($date, date_interval_create_from_date_string("0 days"));
 									 //    $data['client_added'] = date_format($date, 'd-M-Y');
@@ -1179,16 +1112,14 @@ class CmController extends Controller {
 									$tax_reg1 = $worksheet->getCellByColumnAndRow(13, $row); $data['tax_reg1'] = trim($tax_reg1->getValue());
 									$tax_reg2 = $worksheet->getCellByColumnAndRow(14, $row); $data['tax_reg2'] = trim($tax_reg2->getValue());
 									$tax_reg3 = $worksheet->getCellByColumnAndRow(15, $row); $data['tax_reg3'] = trim($tax_reg3->getValue());
-
 									$semail = $worksheet->getCellByColumnAndRow(16, $row); $data['email2'] = trim($semail->getValue());
 									$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 									$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 									$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
 									$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
-
 									$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 									$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
-
+									$data['send_statement'] = 1;
 									DB::table('cm_clients')->insert($data);
 								}
 							}
@@ -1208,6 +1139,7 @@ class CmController extends Controller {
 				}
 				if($height >= $highestRow)
 				{
+					time_task_review_all_helper();
 					if($out != '')
 					{
 						return redirect('user/client_management')->with('success_error', $out);
@@ -1221,7 +1153,6 @@ class CmController extends Controller {
 				}
 			}
 		}
-
 	}
 	public function import_new_clients_one()
 	{
@@ -1229,7 +1160,6 @@ class CmController extends Controller {
 		$uploads_dir = dirname($_SERVER["SCRIPT_FILENAME"]).'/uploads/importfiles';
 		$filepath = $uploads_dir.'/'.$name;
 		$objPHPExcel = PHPExcel_IOFactory::load($filepath);
-
 		foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
 			$worksheetTitle     = $worksheet->getTitle();
 			$highestRow         = $worksheet->getHighestRow(); // e.g. 10
@@ -1239,12 +1169,10 @@ class CmController extends Controller {
 			
 			$round = Input::get('round');
 			$last_height = Input::get('height');
-
 			$offset = $round - 1;
 			$offsetcount = $last_height + 1;
 			$roundcount = $round * 50;
 			$nextround = $round + 1;
-
 			if($highestRow > $roundcount)
 			{
 				$height = $roundcount;
@@ -1260,7 +1188,6 @@ class CmController extends Controller {
 				$pemail = $worksheet->getCellByColumnAndRow(9, $row); $pemail = trim($pemail->getValue());
 				if($id == "")
 				{
-
 				}
 				else{
 					$check_gbsid = DB::table('cm_clients')->where('client_id',$id)->first();
@@ -1272,7 +1199,6 @@ class CmController extends Controller {
 						$surname = $worksheet->getCellByColumnAndRow(2, $row); $data['surname'] = trim($surname->getValue());
 						$surname = trim($surname->getValue());
 						$company = $worksheet->getCellByColumnAndRow(3, $row); $company = trim($company->getValue());
-
 						if($company != "")
 						{
 							$data['company'] = $company;
@@ -1283,13 +1209,11 @@ class CmController extends Controller {
 							}
 							$data['company'] = $firstname.$surname;
 						}
-
 						$address1 = $worksheet->getCellByColumnAndRow(4, $row); $data['address1'] = trim($address1->getValue());
 						$address2 = $worksheet->getCellByColumnAndRow(5, $row); $data['address2'] = trim($address2->getValue());
 						$address3 = $worksheet->getCellByColumnAndRow(6, $row); $data['address3'] = trim($address3->getValue());
 						$address4 = $worksheet->getCellByColumnAndRow(7, $row); $data['address4'] = trim($address4->getValue());
 						$address5 = $worksheet->getCellByColumnAndRow(8, $row); $data['address5'] = trim($address5->getValue());
-
 						$email = $worksheet->getCellByColumnAndRow(9, $row); $data['email'] = trim($email->getValue());
 						$tye = $worksheet->getCellByColumnAndRow(10, $row); $data['tye'] = trim($tye->getValue());
 						$active = $worksheet->getCellByColumnAndRow(11, $row); $active = trim($active->getValue());
@@ -1300,12 +1224,10 @@ class CmController extends Controller {
 						}
 						else{
 							$data['client_added'] = $client_added;
-
 							// $date = date_create($client_added);
 						 //    date_add($date, date_interval_create_from_date_string("0 days"));
 						 //    $data['client_added'] = date_format($date, 'd-M-Y');
 						}
-
 						if($active == 'N' || $active == 'n' || $active == "no" || $active == "No")
 						{
 							$data['active'] = 2;
@@ -1313,20 +1235,17 @@ class CmController extends Controller {
 						else{
 							$data['active'] = 1;
 						}
-
 						$tax_reg1 = $worksheet->getCellByColumnAndRow(13, $row); $data['tax_reg1'] = trim($tax_reg1->getValue());
 						$tax_reg2 = $worksheet->getCellByColumnAndRow(14, $row); $data['tax_reg2'] = trim($tax_reg2->getValue());
 						$tax_reg3 = $worksheet->getCellByColumnAndRow(15, $row); $data['tax_reg3'] = trim($tax_reg3->getValue());
-
 						$semail = $worksheet->getCellByColumnAndRow(16, $row); $data['email2'] = trim($semail->getValue());
 						$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 						$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 						$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
 						$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
-
 						$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 						$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
-
+						$data['send_statement'] = 1;
 						DB::table('cm_clients')->insert($data);
 					}
 				}
@@ -1341,6 +1260,7 @@ class CmController extends Controller {
 		}
 		if($height >= $highestRow)
 		{
+			time_task_review_all_helper();
 			if($out != '')
 			{
 				return redirect('user/client_management')->with('success_error', $out);
@@ -1357,16 +1277,13 @@ class CmController extends Controller {
 	{
 		$checkbox = Input::get('import_field');
 		$check = implode(",",$checkbox);
-
 		if($_FILES['exists_file']['name']!='')
 		{
 			$uploads_dir = dirname($_SERVER["SCRIPT_FILENAME"]).'/uploads/importfiles';
 			$tmp_name = $_FILES['exists_file']['tmp_name'];
 			$name=$_FILES['exists_file']['name'];
 			$errorlist = array();
-
 			if(move_uploaded_file($tmp_name, "$uploads_dir/$name")){
-
 				$filepath = $uploads_dir.'/'.$name;
 				$objReader = PHPExcel_IOFactory::createReader('CSV');
 				$objReader->setInputEncoding('ISO-8859-1');
@@ -1384,12 +1301,10 @@ class CmController extends Controller {
 					else{
 						$height = $highestRow;
 					}
-
 					$id = $worksheet->getCellByColumnAndRow(0, 1); $id = trim($id->getValue());
 					$firstname = $worksheet->getCellByColumnAndRow(1, 1); $firstname = trim($firstname->getValue());
 					$surname = $worksheet->getCellByColumnAndRow(2, 1); $surname = trim($surname->getValue());
 					$company = $worksheet->getCellByColumnAndRow(3, 1); $company = trim($company->getValue());
-
 					if($id == "ID" && $firstname == "First Name" && $surname == "Surname" && $company == "Company")
 					{	
 						$errorrow = array();
@@ -1399,23 +1314,19 @@ class CmController extends Controller {
 							$pemail = $worksheet->getCellByColumnAndRow(9, $row); $pemail = trim($pemail->getValue());
 							if($id == "" )
 							{
-
 							}
 							else{
 								$check_gbsid = DB::table('cm_clients')->where('client_id',$id)->first();
-
 								$firstname = $worksheet->getCellByColumnAndRow(1, $row); $data['firstname'] = trim($firstname->getValue());
 								$firstname = trim($firstname->getValue());
 								$surname = $worksheet->getCellByColumnAndRow(2, $row); $data['surname'] = trim($surname->getValue());
 								$surname = trim($surname->getValue());
-
 								if ($worksheet->getCellByColumnAndRow(3, $row)->getValue() instanceof PHPExcel_RichText) {
 			                        $company = $worksheet->getCellByColumnAndRow(3, $row)->getValue()->getPlainText();
 			                    } else {
 			                        $company= $worksheet->getCellByColumnAndRow(3, $row)->getValue();
 			                    }
 								//$company = $worksheet->getCellByColumnAndRow(3, $row); $company = trim($company->getValue()->getPlainText());
-
 								if($company != "")
 								{
 									$data['company'] = $company;
@@ -1426,13 +1337,11 @@ class CmController extends Controller {
 									}
 									$data['company'] = $firstname.$surname;
 								}
-
 								$address1 = $worksheet->getCellByColumnAndRow(4, $row); $data['address1'] = trim($address1->getValue());
 								$address2 = $worksheet->getCellByColumnAndRow(5, $row); $data['address2'] = trim($address2->getValue());
 								$address3 = $worksheet->getCellByColumnAndRow(6, $row); $data['address3'] = trim($address3->getValue());
 								$address4 = $worksheet->getCellByColumnAndRow(7, $row); $data['address4'] = trim($address4->getValue());
 								$address5 = $worksheet->getCellByColumnAndRow(8, $row); $data['address5'] = trim($address5->getValue());
-
 								$email = $worksheet->getCellByColumnAndRow(9, $row); $data['email'] = trim($email->getValue());
 								$tye = $worksheet->getCellByColumnAndRow(10, $row); $data['tye'] = trim($tye->getValue());
 								$active = $worksheet->getCellByColumnAndRow(11, $row); $active = trim($active->getValue());
@@ -1444,12 +1353,10 @@ class CmController extends Controller {
 								}
 								else{
 									$data['client_added'] = $client_added;
-
 									// $date = date_create($client_added);
 								 //    date_add($date, date_interval_create_from_date_string("0 days"));
 								 //    $data['client_added'] = date_format($date, 'd-M-Y');
 								}
-
 								if($active == 'N' || $active == 'n' || $active == "no" || $active == "No")
 								{
 									$data['active'] = 2;
@@ -1457,23 +1364,20 @@ class CmController extends Controller {
 								else{
 									$data['active'] = 1;
 								}
-
 								$tax_reg1 = $worksheet->getCellByColumnAndRow(13, $row); $data['tax_reg1'] = trim($tax_reg1->getValue());
 								$tax_reg2 = $worksheet->getCellByColumnAndRow(14, $row); $data['tax_reg2'] = trim($tax_reg2->getValue());
 								$tax_reg3 = $worksheet->getCellByColumnAndRow(15, $row); $data['tax_reg3'] = trim($tax_reg3->getValue());
-
 								$semail = $worksheet->getCellByColumnAndRow(16, $row); $data['email2'] = trim($semail->getValue());
 								$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 								$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 								$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
 								$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
-
 								$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 								$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
-
 								if(!count($check_gbsid))
 								{
 									$data['client_id'] = $id;
+									$data['send_statement'] = 1;
 									DB::table('cm_clients')->insert($data);
 								}
 								else{
@@ -1503,6 +1407,7 @@ class CmController extends Controller {
 				}
 				if($height >= $highestRow)
 				{
+					time_task_review_all_helper();
 					if($out != '')
 					{
 						return redirect('user/client_management')->with('success_error', $out);
@@ -1516,13 +1421,11 @@ class CmController extends Controller {
 				}
 			}
 		}
-
 	}
 	public function import_existing_clients_one()
 	{
 		$check = Input::get('checkbox');
 		$checkbox = explode(",",$check);
-
 		$name = Input::get('filename');
 		$uploads_dir = dirname($_SERVER["SCRIPT_FILENAME"]).'/uploads/importfiles';
 		$filepath = $uploads_dir.'/'.$name;
@@ -1538,12 +1441,10 @@ class CmController extends Controller {
 			
 			$round = Input::get('round');
 			$last_height = Input::get('height');
-
 			$offset = $round - 1;
 			$offsetcount = $last_height + 1;
 			$roundcount = $round * 50;
 			$nextround = $round + 1;
-
 			if($highestRow > $roundcount)
 			{
 				$height = $roundcount;
@@ -1557,14 +1458,11 @@ class CmController extends Controller {
 			for ($row = $offsetcount; $row <= $height; ++ $row) {
 				$id = $worksheet->getCellByColumnAndRow(0, $row); $id = trim($id->getValue());
 				$pemail = $worksheet->getCellByColumnAndRow(9, $row); $pemail = trim($pemail->getValue());
-
 				if($id == "" )
 				{
-
 				}
 				else{
 					$check_gbsid = DB::table('cm_clients')->where('client_id',$id)->first();
-
 					$firstname = $worksheet->getCellByColumnAndRow(1, $row); $data['firstname'] = trim($firstname->getValue());
 					$firstname = trim($firstname->getValue());
 					$surname = $worksheet->getCellByColumnAndRow(2, $row); $data['surname'] = trim($surname->getValue());
@@ -1575,7 +1473,6 @@ class CmController extends Controller {
                     } else {
                         $company= $worksheet->getCellByColumnAndRow(3, $row)->getValue();
                     }
-
 					if($company != "")
 					{
 						$data['company'] = $company;
@@ -1586,18 +1483,15 @@ class CmController extends Controller {
 						}
 						$data['company'] = $firstname.$surname;
 					}
-
 					$address1 = $worksheet->getCellByColumnAndRow(4, $row); $data['address1'] = trim($address1->getValue());
 					$address2 = $worksheet->getCellByColumnAndRow(5, $row); $data['address2'] = trim($address2->getValue());
 					$address3 = $worksheet->getCellByColumnAndRow(6, $row); $data['address3'] = trim($address3->getValue());
 					$address4 = $worksheet->getCellByColumnAndRow(7, $row); $data['address4'] = trim($address4->getValue());
 					$address5 = $worksheet->getCellByColumnAndRow(8, $row); $data['address5'] = trim($address5->getValue());
-
 					$email = $worksheet->getCellByColumnAndRow(9, $row); $data['email'] = trim($email->getValue());
 					$tye = $worksheet->getCellByColumnAndRow(10, $row); $data['tye'] = trim($tye->getValue());
 					$active = $worksheet->getCellByColumnAndRow(11, $row); $active = trim($active->getValue());
 					$client_added = $worksheet->getCellByColumnAndRow(12, $row); $client_added = trim($client_added->getValue());
-
 					
 					if($client_added == "")
 					{
@@ -1605,12 +1499,10 @@ class CmController extends Controller {
 					}
 					else{
 						$data['client_added'] = $client_added;
-
 						// $date = date_create($client_added);
 					 //    date_add($date, date_interval_create_from_date_string("0 days"));
 					 //    $data['client_added'] = date_format($date, 'd-M-Y');
 					}
-
 					if($active == 'N' || $active == 'n' || $active == "no" || $active == "No")
 					{
 						$data['active'] = 2;
@@ -1618,23 +1510,20 @@ class CmController extends Controller {
 					else{
 						$data['active'] = 1;
 					}
-
 					$tax_reg1 = $worksheet->getCellByColumnAndRow(13, $row); $data['tax_reg1'] = trim($tax_reg1->getValue());
 					$tax_reg2 = $worksheet->getCellByColumnAndRow(14, $row); $data['tax_reg2'] = trim($tax_reg2->getValue());
 					$tax_reg3 = $worksheet->getCellByColumnAndRow(15, $row); $data['tax_reg3'] = trim($tax_reg3->getValue());
-
 					$semail = $worksheet->getCellByColumnAndRow(16, $row); $data['email2'] = trim($semail->getValue());
 					$phone = $worksheet->getCellByColumnAndRow(17, $row); $data['phone'] = trim($phone->getValue());
 					$linkcode = $worksheet->getCellByColumnAndRow(18, $row); $data['linkcode'] = trim($linkcode->getValue());
 					$cro = $worksheet->getCellByColumnAndRow(19, $row); $data['cro'] = trim($cro->getValue());
 					$ard = $worksheet->getCellByColumnAndRow(23, $row); $data['ard'] = trim($ard->getValue());
-
 					$trade_status = $worksheet->getCellByColumnAndRow(20, $row); $data['trade_status'] = trim($trade_status->getValue());
 					$directory = $worksheet->getCellByColumnAndRow(22, $row); $data['directory'] = trim($directory->getValue());
-
 					if(!count($check_gbsid))
 					{
 						$data['client_id'] = $id;
+						$data['send_statement'] = 1;
 						DB::table('cm_clients')->insert($data);
 					}
 					else{
@@ -1659,6 +1548,7 @@ class CmController extends Controller {
 		}
 		if($height >= $highestRow)
 		{
+			time_task_review_all_helper();
 			if($out != '')
 			{
 				return redirect('user/client_management')->with('success_error', $out);
@@ -1677,9 +1567,7 @@ class CmController extends Controller {
 		$id = Input::get('id');
 		DB::table('cm_clients')->where('id',$id)->update(['statement' => $value]);
 	}
-
 	public function cm_client_invoice(){
-
 		$id = base64_decode(Input::get('id'));
 		$client_id = DB::table('cm_clients')->where('id',$id)->first();
 		$payrolllist = DB::table('payroll_tasks')->where('client_id', $client_id->client_id)->orderBy('update_time','DESC')->get();
@@ -1745,10 +1633,8 @@ class CmController extends Controller {
           }
           $output.='</tr>';
         }
-
         $clientid = $client_id->client_id;
         $timetasklist = DB::table('time_task')->where('clients','like','%'.$clientid.'%')->get();
-
         $i=1;
         $outputtimetask='<table class="display nowrap fullviewtablelist" id="timetask_expand" width="100%">
                 <thead>
@@ -1774,9 +1660,7 @@ class CmController extends Controller {
         {
           $outputtimetask.='<tr><td></td><td>Empty</td></tr>';
         }
-
         $outputtimetask.='</tbody></table>';
-
         $output_payroll = '<table class="display nowrap fullviewtablelist" id="payroll_expand" width="100%">
                 <thead>
                   <tr style="background: #fff;">
@@ -1790,7 +1674,6 @@ class CmController extends Controller {
                 </thead>                            
                 <tbody>';
 		$i=1;
-
 		if(count($payrolllist)){ 
 			foreach($payrolllist as $payroll){ 
 				$task_details = DB::table('task')->where('task_id',$payroll->task_id)->first();
@@ -1802,7 +1685,6 @@ class CmController extends Controller {
 					$taskname = '';
 				}
 				$year = DB::table('year')->where('year_id', $payroll->year)->first();
-
 				if($payroll->month == 0){
 					$week = DB::table('week')->where('week_id', $payroll->week)->first();
 					$period = $week->week;
@@ -1813,14 +1695,12 @@ class CmController extends Controller {
 					$period = $month->month;
 					$text = 'Month';
 				}
-
 				if($payroll->email_sent != '0000-00-00 00:00:00'){
 					$unsentfile = date('d F Y @ H : i', strtotime($payroll->email_sent));
 				}
 				else{
 					$unsentfile = 'N/A';
 				}
-
 				$output_payroll.='
 					<tr>
 						<td>'.$i.'</td>
@@ -1835,14 +1715,11 @@ class CmController extends Controller {
 			}						
 		}
 		if($i == 1){ $output_payroll.='<tr><td></td><td></td><td>Empty</td><td></td><td></td><td></td></tr>'; }
-
         $output_payroll.='                
                 </tbody>
             </table>';
-
          $aml_bank_list = DB::table('aml_bank')->where('client_id', $result->client_id)->get();
         
-
         
          $outputbank='<table class="display nowrap fullviewtablelist"  id="bank_expand">
             <thead>
@@ -1875,10 +1752,8 @@ class CmController extends Controller {
 		}
 		$outputbank.='</tbody>
             </table>';
-
         $current_week = DB::table('week')->orderBy('week_id','desc')->first();
 		$current_month = DB::table('month')->orderBy('month_id','desc')->first();
-
 		$outputmodule = '<table class="display nowrap fullviewtablelist" id="module_expand">
 	            <thead>
 					<th style="text-align:left">#</th>
@@ -1891,8 +1766,8 @@ class CmController extends Controller {
             <tbody>';
 		$week_tasks = DB::table('task')->where('client_id',$result->client_id)->where('task_week',$current_week->week_id)->get();
 		$month_tasks = DB::table('task')->where('client_id',$result->client_id)->where('task_month',$current_month->month_id)->get();
-
 		$vats = DB::table('vat_clients')->where('cm_client_id',$result->client_id)->get();
+		$statement = DB::table('client_statement')->where('client_id',$result->client_id)->first();
 		$i = 1;
 		if(count($week_tasks))
 		{
@@ -1939,12 +1814,24 @@ class CmController extends Controller {
 				$i++;
 			}
 		}
+		if(count($statement))
+		{
+			$outputmodule.='<tr class="statement_module_'.$statement->client_id.'">
+				<td>'.$i.'</td>
+				<td>Statement</td>
+				<td class="salutation_mod">'.$statement->salutation.'</td>
+				<td class="primary_mod">'.$statement->email.'</td>
+				<td class="secondary_mod">'.$statement->email2.'</td>
+				<td><a href="javascript:" class="edit_task_module" data-element="'.$statement->client_id.'" data-type="3" data-salutation="'.$statement->salutation.'" data-primary="'.$statement->email.'" data-secondary="'.$statement->email2.'">Edit</a></td>
+			</tr>';
+		}
+		
+		if($client_id->send_statement == 1) { $cecked = 'checked'; $statement_text = '<p class="statement_p" style="color:green;font-size: 16px;">Statements will be sent to this Client as part of the automated process</p>'; } else { $cecked = ''; $statement_text = '<p class="statement_p" style="color:#f00;font-size: 16px;">Statements will NOT be sent to this Client as part of the automated process</p>'; }
+		$outputstatement = '<input type="checkbox" name="ok_to_send_statement" class="ok_to_send_statement" id="ok_to_send_statement" data-client="'.$client_id->client_id.'" value="" '.$cecked.'><label style="font-size: 16px;" for="ok_to_send_statement">Ok to send statements to this client</label><br/>'.$statement_text.'';
+		$i++;
 		$outputmodule.='</tbody>
 		</table>';
-
-
-	echo json_encode(array('clientid' => $result->client_id, 'client_added' => $result->client_added, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro,'ard' => $result->ard, 'trade_status' => $result->trade_status, 'directory' => $result->directory,'employer_no' => $result->employer_no,'salutation' => $result->salutation,'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output, 'payrolloutput' => $output_payroll, 'timetaskoutput' => $outputtimetask, 'client_note' => $result->notes, 'outputbank' => $outputbank, 'bank_client_id' => $result->client_id,'outputmodule' => $outputmodule));
-
+	echo json_encode(array('clientid' => $result->client_id, 'client_added' => $result->client_added, 'firstname' => $result->firstname, 'surname' => $result->surname, 'company' => $result->company, 'address1' => $result->address1, 'address2' => $result->address2, 'address3' => $result->address3, 'address4' => $result->address4, 'address5' => $result->address5, 'email' => $result->email, 'tye' => $result->tye, 'active' => $result->active, 'tax_reg1' => $result->tax_reg1, 'tax_reg2' => $result->tax_reg2, 'tax_reg3' => $result->tax_reg3, 'email2' => $result->email2, 'phone' => $result->phone, 'linkcode' => $result->linkcode, 'cro' => $result->cro,'ard' => $result->ard, 'trade_status' => $result->trade_status, 'directory' => $result->directory,'employer_no' => $result->employer_no,'salutation' => $result->salutation,'status' => $result->status,   'id' => $result->id,'htmlcontent' => $output, 'payrolloutput' => $output_payroll, 'timetaskoutput' => $outputtimetask, 'client_note' => $result->notes, 'outputbank' => $outputbank, 'bank_client_id' => $result->client_id,'outputmodule' => $outputmodule, 'outputstatement' => $outputstatement));
 		
 	}
 	public function cm_load_all_client_invoice()
@@ -1974,7 +1861,6 @@ class CmController extends Controller {
 				else{
 					$textcolor="color:#00751a";
 				}
-
 				$outputinvoice.='
 					<tr>
 						<td>'.$i.' <input type="checkbox" name="invoice_check" class="invoice_check" data-element="'.$invoice->id.'" id="invoice_id_'.$invoice->id.'"> <label for="invoice_id_'.$invoice->id.'">&nbsp;</label></td>
@@ -1988,7 +1874,6 @@ class CmController extends Controller {
 				$i++;
 			}					
 		}
-
 		if($i == 1)
         {
           $outputinvoice.='<tr>
@@ -2000,19 +1885,15 @@ class CmController extends Controller {
           	<td></td>
           </tr>';
         }
-
         $outputinvoice.='                
                 </tbody>
             </table>';
-
         echo json_encode(array('invoiceoutput' => $outputinvoice));
-
 	}
 	public function cm_load_all_client_message()
 	{
 		$id = base64_decode(Input::get('id'));
 		$client_id = DB::table('cm_clients')->where('id',$id)->first();
-
 		$outputmessage='<table class="display nowrap fullviewtablelist"  id="message_expand">
             <thead>
               <th>#</th>
@@ -2031,7 +1912,6 @@ class CmController extends Controller {
         	$i = 1;
         	foreach($messageus as $message)
         	{
-
         		$from = $message->message_from;
                 if($from == 0)
                 {
@@ -2083,16 +1963,11 @@ class CmController extends Controller {
         			<td colspan="8">No Message Found</td>
         	</tr>';
         }
-
         echo json_encode(array('outputmessage' => $outputmessage));
-
 	}
 	public function cm_client_payroll(){
-
 		$id = base64_decode(Input::get('id'));
-
 		$payrolllist = DB::table('payroll_tasks')->where('client_id', $id)->orderBy('update_time','DESC')->get();
-
 		$output = '<table class="display nowrap fullviewtablelist" id="payroll_expand" width="100%">
                 <thead>
                   <tr style="background: #fff;">
@@ -2105,11 +1980,9 @@ class CmController extends Controller {
                 </thead>                            
                 <tbody>';
 		$i=1;
-
 		if(count($payrolllist)){ 
 			foreach($payrolllist as $payroll){ 
 				$year = DB::table('year')->where('year_id', $payroll->year)->first();
-
 				if($payroll->month == 0){
 					$week = DB::table('week')->where('week_id', $payroll->week)->first();
 					$period = $week->week;
@@ -2120,14 +1993,12 @@ class CmController extends Controller {
 					$period = $month->month;
 					$text = 'Month';
 				}
-
 				if($payroll->email_sent != '0000-00-00'){
 					$unsentfile = date('d F Y @ H : i', strtotime($payroll->email_sent));
 				}
 				else{
 					$unsentfile = 'N/A';
 				}
-
 				$output.='
 					<tr>
 						<td>'.$i.'</td>
@@ -2140,35 +2011,22 @@ class CmController extends Controller {
 				$i++;
 			}						
 		}
-
 		if($i == 1)
         {
           $output.='<tr><td colspan="5" align="center">Empty</td></tr>';
         }
-
         $output.='                
                 </tbody>
             </table>';
 		echo $output;
-
-
 				
 	}
-
 	public function cm_invoice_report_csv($id=""){
-
 		$id = Input::get('value');
-
-
 		$client_name = DB::table('cm_clients')->where('client_id', $id)->first();
 		$filename = $client_name->company;
-
-
 		$invoice = DB::select('SELECT `id`, `invoice_number`, `invoice_date`, `client_id`, `inv_net`, `vat_rate`,`vat_value`, `gross`, `status`, `statement`,UNIX_TIMESTAMP(`invoice_date`) as inc_date from `invoice_system` WHERE client_id = "'.$id.'" ORDER BY client_id,inc_date DESC');
-
 		
-
-
 		$headers = array(
 	        "Content-type" => "text/csv",
 	        "Content-Disposition" => "attachment; filename=CM_Report.csv",
@@ -2176,7 +2034,6 @@ class CmController extends Controller {
 	        "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
 	        "Expires" => "0"
 	    );      	
-
 		$columns = array('#', 'Invoice Number', 'Invoice Date', 'Client ID', 'Company Name', 'Net', 'VAT', 'Gross');
 		$callback = function() use ($invoice, $columns)
     	{
@@ -2196,25 +2053,17 @@ class CmController extends Controller {
 	}
 	public function cm_get_csv_filename($id=""){
 		$id = Input::get('value');
-
-
 		$client_name = DB::table('cm_clients')->where('client_id', $id)->first();
 		$filename = $client_name->company;
 		echo $filename.'_InvoiceReport.csv';
 	}
-
-
 	public function cm_invoice_report_pdf()
 	{
-
 		$id = Input::get('value');
-
 		$client_name = DB::table('cm_clients')->where('client_id', $id)->first();
 		
-
 		if($client_name->company != "")
 		{
-
 			$filename = $client_name->company.'-'.$id;
 			$companyname = $client_name->company;
 		}
@@ -2224,106 +2073,57 @@ class CmController extends Controller {
 		}
 		
 		
-
-
 		$invoicelist = DB::select('SELECT `id`, `invoice_number`, `invoice_date`, `client_id`, `inv_net`, `vat_rate`,`vat_value`, `gross`, `status`, `statement`,UNIX_TIMESTAMP(`invoice_date`) as inc_date from `invoice_system` WHERE client_id = "'.$id.'" ORDER BY client_id,inc_date DESC');
-
 		
-
 		$output = '';
-
 		$i=1;
-
-
-
 		if(count($invoicelist)){
-
 				foreach($invoicelist as $key => $invoice)
-
 				{
-
 					$client_details = DB::table('cm_clients')->where('client_id', $invoice->client_id)->first();
-
 					$output.='<tr>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px">'.$i.'</td>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.$invoice->invoice_number.'</td>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.$invoice->client_id.'</td>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="left">'.$client_details->company.'</td>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="right">'.number_format_invoice($invoice->inv_net).'</td>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="right">'.number_format_invoice($invoice->vat_value).'</td>
-
 									<td style="border-bottom:1px solid #ccc; border-right:1px solid #ccc; padding-left:5px" align="right">'.number_format_invoice($invoice->gross).'</td>
-
 								</tr>';
-
 								$i++;
-
 				}
-
 		}
-
 		echo json_encode(array("filename" => $filename,'output' => $output,'companyname'=>$companyname));
-
 	}
-
-
-
 	public function cm_invoice_download_report_pdfs()
-
 	{
-
-
-
 		$htmlval = Input::get('htmlval');
-
 		$pdf = PDF::loadHTML($htmlval);
-
 		$pdf->setPaper('A4', 'landscape');
-
 		
-
 		$pdf->save('papers/Invoice Report.pdf');
-
 		echo 'Invoice Report.pdf';
-
 	}
-
 	public function cm_note_update(){
 		$id = Input::get('client_id');
 		$notes = Input::get('notes');
-
 		DB::table('cm_clients')->where('client_id',  $id)->update(['notes' => $notes]);		
 		return redirect::back()->with('message','Notes Update Success');
 	}
-
-
 	public function cm_client_add_bank(){
-
 		$current_client_id = Input::get('current_client_id');
 		$bank_name = Input::get('bank_name');
 		$account_name = Input::get('account_name');
 		$account_number = Input::get('account_number');
-
 		
-
 		$data['client_id'] = $current_client_id;
 		$data['bank_name'] = $bank_name;
 		$data['account_name'] = $account_name;
 		$data['account_number'] = $account_number;
 		DB::table('aml_bank')->where('client_id', $current_client_id)->insert($data);
-
 		$client = DB::table('aml_system')->where('client_id', $current_client_id)->first();	
-
 		$aml_bank_count = DB::table('aml_bank')->where('client_id', $current_client_id)->get();	
-
 		$output='<table class="display nowrap fullviewtablelist" id="aml_expand" width="100%" style="max-width: 100%;">
 		<thead><tr>
 			<th>#</th>
@@ -2333,7 +2133,6 @@ class CmController extends Controller {
 			</tr>
 		</thead><tbody>';
 		$ibank=1;
-
 		if(count($aml_bank_count)){
 			foreach ($aml_bank_count as $bank) {
 				$output.='<tr>
@@ -2347,7 +2146,6 @@ class CmController extends Controller {
 		}
 		$output.='</tbody></table>';
         echo json_encode(array('output' => $output, 'id' =>$current_client_id));
-
 	}
 	public function print_selected_invoice()
 	{
@@ -2360,12 +2158,9 @@ class CmController extends Controller {
 			{
 				$get_inv_no = DB::table('invoice_system')->where('id',$id)->first();
 				$inv_no = $get_inv_no->invoice_number;
-
 				$invoice_details = DB::table('invoice_system')->where('invoice_number', $inv_no)->first();
 				$client_details = DB::table('cm_clients')->where('client_id', $invoice_details->client_id)->first();
-
 				if(count($client_details) == ''){
-
 					$companyname = '<div style="width: 100%; height: auto; float: left; margin: 200px 0px 0px 0px; font-size: 15px; font-weight: bold; text-align: center; letter-spacing: 0px;">Company Details not found</div>';
 				}
 				else{
@@ -2409,9 +2204,7 @@ class CmController extends Controller {
 			            <div class="invoice_label">
 			              INVOICE
 			            </div>';
-
 		            
-
 		            if($invoice_details->bn_row1 != "")
 		            {
 		            	$bn_row1_add_zero = number_format_invoice($invoice_details->bn_row1);
@@ -2451,7 +2244,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ab_row3.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->av_row3.'</div>
 		                  <div class="class_row_td right">'.$bp_row3_add_zero.'</div>';
-
 		            if($invoice_details->bq_row4 != "")
 		            {
 		            	$bq_row4_add_zero = number_format_invoice($invoice_details->bq_row4);
@@ -2464,7 +2256,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ac_row4.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->aw_row4.'</div>
 		                  <div class="class_row_td right">'.$bq_row4_add_zero.'</div>';
-
 		           if($invoice_details->br_row5 != "")
 		           {
 		           	$br_row5_add_zero = number_format_invoice($invoice_details->br_row5);
@@ -2477,7 +2268,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ad_row5.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->ax_row5.'</div>
 		                  <div class="class_row_td right">'.$br_row5_add_zero.'</div>';
-
 		            if($invoice_details->bs_row6 != "")
 		            {
 		            	$bs_row6_add_zero = number_format_invoice($invoice_details->bs_row6);
@@ -2490,7 +2280,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ae_row6.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->ay_row6.'</div>
 		                  <div class="class_row_td right">'.$bs_row6_add_zero.'</div>';
-
 		            if($invoice_details->bt_row7 != "")
 		            {
 		            	$bt_row7_add_zero = number_format_invoice($invoice_details->bt_row7);
@@ -2503,7 +2292,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->af_row7.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->az_row7.'</div>
 		                  <div class="class_row_td right">'.$bt_row7_add_zero.'</div>';
-
 		            if($invoice_details->bu_row8 != "")
 		            {
 		            	$bu_row8_add_zero = number_format_invoice($invoice_details->bu_row8);
@@ -2516,7 +2304,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ag_row8.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->ba_row8.'</div>
 		                  <div class="class_row_td right">'.$bu_row8_add_zero.'</div>';
-
 		            if($invoice_details->bv_row9 != "")
 		            {
 		            	$bv_row9_add_zero = number_format_invoice($invoice_details->bv_row9);
@@ -2529,7 +2316,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ah_row9.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->bb_row9.'</div>
 		                  <div class="class_row_td right">'.$bv_row9_add_zero.'</div>';
-
 		           if($invoice_details->bw_row10 != "")
 		           {
 		           	$bw_row10_add_zero = number_format_invoice($invoice_details->bw_row10);
@@ -2542,7 +2328,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ai_row10.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->bc_row10.'</div>
 		                  <div class="class_row_td right">'.$bw_row10_add_zero.'</div>';
-
 		            if($invoice_details->bx_row11 != "")
 		            {
 		            	$bx_row11_add_zero = number_format_invoice($invoice_details->bx_row11);
@@ -2556,7 +2341,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td right_start">'.$invoice_details->bd_row11.'</div>
 		                  <div class="class_row_td right">'.$bx_row11_add_zero.'</div>';
 		           
-
 		           if($invoice_details->by_row12 != "")
 		           {
 		           	$by_row12_add_zero = number_format_invoice($invoice_details->by_row12);
@@ -2570,7 +2354,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td right_start">'.$invoice_details->be_row12.'</div>
 		                  <div class="class_row_td right">'.$by_row12_add_zero.'</div>';
 		            
-
 		            if($invoice_details->bz_row13 != "")
 		            {
 		            	$bz_row13_add_zero = number_format_invoice($invoice_details->bz_row13);
@@ -2583,7 +2366,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->al_row13.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->bf_row13.'</div>
 		                  <div class="class_row_td right">'.$bz_row13_add_zero.'</div>';
-
 		            if($invoice_details->ca_row14 != "")
 		            {
 		            	$ca_row14_add_zero = number_format_invoice($invoice_details->ca_row14);
@@ -2610,7 +2392,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td right_start">'.$invoice_details->bh_row15.'</div>
 		                  <div class="class_row_td right">'.$cb_row15_add_zero.'</div>';
 		           
-
 		           if($invoice_details->cc_row16 != "")
 		           {
 		           	$cc_row16_add_zero = number_format_invoice($invoice_details->cc_row16);
@@ -2624,7 +2405,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td right_start">'.$invoice_details->bi_row16.'</div>
 		                  <div class="class_row_td right">'.$cc_row16_add_zero.'</div>';
 		            
-
 		            if($invoice_details->cd_row17 != "")
 		            {
 		            	$cd_row17_add_zero = number_format_invoice($invoice_details->cd_row17);
@@ -2638,7 +2418,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td right_start">'.$invoice_details->bj_row17.'</div>
 		                  <div class="class_row_td right">'.$cd_row17_add_zero.'</div>';
 		           
-
 		           if($invoice_details->ce_row18 != "")
 		           {
 		           	$ce_row18_add_zero = number_format_invoice($invoice_details->ce_row18);
@@ -2652,7 +2431,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td right_start">'.$invoice_details->bk_row18.'</div>
 		                  <div class="class_row_td right">'.$ce_row18_add_zero.'</div>';
 		            
-
 		            if($invoice_details->cf_row19 != "")
 		            {
 		            	$cf_row19_add_zero = number_format_invoice($invoice_details->cf_row19);
@@ -2665,8 +2443,6 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->ar_row19.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->bl_row19.'</div>
 		                  <div class="class_row_td right">'.$cf_row19_add_zero.'</div>';
-
-
 		            if($invoice_details->cg_row20 != "")
 		            {
 		            	$cg_row20_add_zero = number_format_invoice($invoice_details->cg_row20);
@@ -2679,12 +2455,7 @@ class CmController extends Controller {
 		                  <div class="class_row_td left_corner">'.$invoice_details->as_row20.'</div>
 		                  <div class="class_row_td right_start">'.$invoice_details->bm_row20.'</div>
 		                  <div class="class_row_td right">'.$cg_row20_add_zero.'</div>';
-
-
-
-
 			         $tax_details ='
-
 			         <div class="tax_table_div">
 			            <div class="tax_table">
 			              <div class="tax_row">
@@ -2709,7 +2480,6 @@ class CmController extends Controller {
 			              </div>
 			            </div>
 			          </div>
-
 			         ';
 			     }
 				$html = '<style>
@@ -2722,38 +2492,28 @@ class CmController extends Controller {
 				    }
 				    .tax_table_div{width: 100%; margin-top:-30px}
 		            .tax_table{margin-left:73%;width: 20%;}
-
 		            .details_table .class_row .class_row_td { font-size: 14px; float:left; }
-
 		            .details_table .class_row .class_row_td.left{position:absolute; width:70%; line-height:20px;  text-align: left;  font-size:14px; }
 		            .details_table .class_row .class_row_td.left_corner{position:absolute; margin-left:71%; width:10%; line-height:20px;  text-align: right;}
 		            .details_table .class_row .class_row_td.right_start{position:absolute; margin-left:81%; width:9%; line-height:20px;  text-align: right;}
 		            .details_table .class_row .class_row_td.right{position:absolute;line-height:20px; margin-left:90%; text-align: right; font-size:14px; width:10%;}
-
 		            .details_table .class_row{line-height: 30px; clear:both}
 		            .details_table { height : 420px !important; }
-
 		            .class_row{width: 100%; clear:both; height:20px:}
-
 		            .tax_table .tax_row .tax_row_td{ font-size: 14px; font-weight: 600;float:left;}
 		            .tax_table .tax_row .tax_row_td.left{position:absolute; left:80px; width:600px; text-align: left; font-family: Verdana,Geneva,sans-serif; font-size:14px;}
 		            .tax_table .tax_row .tax_row_td.right{{margin-left:605px;text-align: right; padding-right: 20px;border-top: 2px solid #000;}
 		            .tax_table .tax_row{line-height: 30px;}
-
 		            .company_details_class{width:100%; height:auto; }
-
 		            .account_details_main_address_div{width:200px; margin-top:-100px;  float:left; margin-left:550px;}
 		            .account_details_invoice_div{width:200px; }
-
 		            .company_details_div{width: 400px; margin-top: 220px; height:75px; float:left; font-family: Verdana,Geneva,sans-serif; font-size:14px;}
 		            .firstname_div{position:absolute; width:300px; left:80px; right:80px; margin-top: 90px; font-family: Verdana,Geneva,sans-serif; font-size:14px;}
 		            .aib_account{ color: #ccc; font-family: Verdana,Geneva,sans-serif; font-size: 12px; width:200px;  }
-
 		            .account_details_div{width: 400px; font-family: Verdana,Geneva,sans-serif; font-size:14px; line-height:20px; margin-top:40px;}
 		            .account_details_address_div{position:absolute; left:80px; width:250px; margin-top:60px; }
 		            .account_table .account_row .account_row_td.left{margin-left:0px;}
 		            .account_table .account_row .account_row_td.right{margin-left:100px;padding-top:-18px;}
-
 		            .invoice_label{ width: 100%; margin: 20px 0px; font-size: 15px; font-weight: bold; text-align: center; letter-spacing: 10px; }
 		            .tax_details_class_maindiv{width: 100%; float: left;}
 				</style>
@@ -2792,7 +2552,6 @@ class CmController extends Controller {
 				$pdf = PDF::loadHTML($html);
 				$pdf->save('papers/'.$time.'/Invoice of '.$inv_no.'.pdf');
 			}
-
 			$public_dir=public_path();
 			$zipFileName = $time.'.zip';
 	        $zip = new ZipArchive;
@@ -2822,7 +2581,6 @@ class CmController extends Controller {
 		$salutation = Input::get('salutation');
 		$primary = Input::get('primary');
 		$secondary = Input::get('secondary');
-
 		if($type == "2")
 		{
 			$data['salutation'] = $salutation;
@@ -2830,12 +2588,177 @@ class CmController extends Controller {
 			$data['semail'] = $secondary;
 			DB::table('vat_clients')->where('client_id',$taskid)->update($data);
 		}
+		elseif($type == "3")
+		{
+			$data['salutation'] = $salutation;
+			$data['email'] = $primary;
+			$data['email2'] = $secondary;
+			$check_statement = DB::table('client_statement')->where('client_id',$taskid)->first();
+			if(count($check_statement))
+			{
+				DB::table('client_statement')->where('client_id',$taskid)->update($data);
+			}
+			else{
+				$data['client_id'] = $taskid;
+				DB::table('client_statement')->insert($data);
+			}
+		}
 		else{
 			$data['salutation'] = $salutation;
 			$data['task_email'] = $primary;
 			$data['secondary_email'] = $secondary;
 			DB::table('task')->where('task_id',$taskid)->update($data);
 		}
+	}
+	public function change_send_statement_status()
+	{
+		$client_id = Input::get('client_id');
+		$data['send_statement'] = Input::get('status');
+		DB::table('cm_clients')->where('client_id',$client_id)->update($data);
+	}
+
+	public function load_all_clients_cm_system(){
+		$clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'email', 'status', 'active', 'id','address1','address2','address3','address4','address5','phone','statement')->orderBy('id','asc')->get();
+
+		$i=1;
+		$output_client='';
+        if(count($clientlist)){              
+          foreach($clientlist as $key => $client){
+            $address = $client->address1.' '.$client->address2.' '.$client->address3.' '.$client->address4.' '.$client->address5;
+              $disabled='';
+              if($client->active != "")
+              {
+                if($client->active == 2)
+                {
+                  $disabled='disabled';
+                }
+                $check_color = DB::table('cm_class')->where('id',$client->active)->first();
+                $style="color:#".$check_color->classcolor."";
+              }
+              else{
+                $style="color:#000";
+              }
+              
+              if($client->company == ""){$client_company = $client->firstname.' & '.$client->surname;}else{$client_company = $client->company;}
+
+              if($client->statement == "yes"){
+              	$yes_checked = 'checked';
+              }
+              else{
+              	$yes_checked='';
+              }
+
+
+            $output_client.='
+            <tr class="edit_task '.$disabled.'" id="clientidtr_'.$client->id.'">
+                <td style="<?php echo $style; ?>">'.$i.'</td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->client_id.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->firstname.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->surname.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client_company.'</a></td>
+                <td style="word-wrap: break-word; white-space:normal; min-width:300px; max-width: 300px;" align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$address.'</a></td>
+                <td align="left"><a style="'.$style.'" href="mailto:'.$client->email.'">'.$client->email.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->phone.'</a></td>
+
+
+                <td style="'.$style.'" align="left">
+                  <input type="checkbox" class="client_statement" id="statement_'.$client->client_id.'" data-element="'.$client->id.'" '.$yes_checked.'><label for="statement_'.$client->client_id.'">Yes</label>
+                </td>
+            </tr>
+
+            ';
+            $i++;
+          }
+      }
+      elseif($i == 1){
+      	$output_client='
+      	<tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td style="text-align:center; font-weight: normal !important;">No Data found</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      	';
+      }
+
+      echo $output_client;
+	}
+
+	public function load_single_cm_system(){
+		$client_id = Input::get('client_id');
+		$client = DB::table('cm_clients')->where('client_id',$client_id)->first();
+
+		$i=1;
+		if(count($client)){
+            $address = $client->address1.' '.$client->address2.' '.$client->address3.' '.$client->address4.' '.$client->address5;
+              $disabled='';
+              if($client->active != "")
+              {
+                if($client->active == 2)
+                {
+                  $disabled='disabled';
+                }
+                $check_color = DB::table('cm_class')->where('id',$client->active)->first();
+                $style="color:#".$check_color->classcolor."";
+              }
+              else{
+                $style="color:#000";
+              }
+              
+              if($client->company == ""){$client_company = $client->firstname.' & '.$client->surname;}else{$client_company = $client->company;}
+
+              if($client->statement == "yes"){
+              	$yes_checked = 'checked';
+              }
+              else{
+              	$yes_checked='';
+              }
+
+
+            $output_client ='
+            <tr class="edit_task '.$disabled.'" id="clientidtr_'.$client->id.'">
+                <td style="<?php echo $style; ?>">'.$i.'</td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->client_id.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->firstname.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->surname.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client_company.'</a></td>
+                <td style="word-wrap: break-word; white-space:normal; min-width:300px; max-width: 300px;" align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$address.'</a></td>
+                <td align="left"><a style="'.$style.'" href="mailto:'.$client->email.'">'.$client->email.'</a></td>
+                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'">'.$client->phone.'</a></td>
+
+
+                <td style="'.$style.'" align="left">
+                  <input type="checkbox" class="client_statement" id="statement_'.$client->client_id.'" data-element="'.$client->id.'" '.$yes_checked.'><label for="statement_'.$client->client_id.'">Yes</label>
+                </td>
+            </tr>
+
+            ';
+            $i++;
+          
+      }
+      else{
+      	$output_client='
+      	<tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td style="text-align:center; font-weight: normal !important;">No Data found</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      	';
+      }
+
+      echo $output_client;
+
 	}
 	
 }

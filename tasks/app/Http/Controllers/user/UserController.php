@@ -65,7 +65,20 @@ class UserController extends Controller {
 		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		$admin_details = DB::table('admin')->where('id',1)->first();
 		$user_details = DB::table('user_login')->where('userid',1)->first();
-		return view('user/dashboad', array('title' => 'Easypayroll - Dashboard', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks,'admin_details' => $admin_details,'user_details' => $user_details));
+		return view('user/dashboad', array('title' => 'Bubble - Dashboard', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks,'admin_details' => $admin_details,'user_details' => $user_details));
+	}
+	public function updatestatus_timetrack(){
+		$jobs = DB::table('task_job')->where('quick_job',0)->where('updatestatus',0)->get();
+		if(count($jobs))
+		{
+			foreach($jobs as $job)
+			{
+				$dataval['comments'] = $job->comments;
+				$datastatus['updatestatus'] = 1;
+				DB::table('task_job')->where('active_id',$job->id)->where('comments','')->update($dataval);
+				DB::table('task_job')->where('id',$job->id)->update($datastatus);
+			}
+		}
 	}
 	public function time_track()
 	{
@@ -80,7 +93,7 @@ class UserController extends Controller {
 		$tasks = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
 		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		
-		return view('user/dashboad_time_track', array('title' => 'Welcome to Easypayroll', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
+		return view('user/dashboad_time_track', array('title' => 'Welcome to Bubble', 'joblist' => $time_job, 'userlist' => $user, 'taskslist' => $tasks));
 	}	
 	public function unavailable()
 	{
@@ -114,7 +127,7 @@ class UserController extends Controller {
 			Session::forget('task_job_user');
 		}
 		Session::forget("userid");
-		return redirect('/');
+		return redirect('https://bubbleaccounting.ie');
 	}
 	public function selectweek($id=""){
 		$id =base64_decode($id);
@@ -795,9 +808,17 @@ class UserController extends Controller {
 		$output = '<table class="table_bg own_table_white" style="width:100%">';
 		if(count($result_task))
 		{
-			$output.= '<tr><td>Task Name</td><td>Notify</td><td>Primary Email</td><td>Secondary Email</td></tr>';
+			$output.= '<tr><td>Task Name</td><td>Request</td><td>Primary Email</td><td>Secondary Email</td><td>Emails Sent</td></tr>';
 			foreach($result_task as $task)
 			{
+				$last_email_sent = DB::table('task_email_sent')->where('task_id',$task->task_id)->where('options','n')->orderBy('id','desc')->first();
+				if(count($last_email_sent))
+				{
+					$email_sent = date('d F Y H:i:s', strtotime($last_email_sent->email_sent));
+				}
+				else{
+					$email_sent = '';
+				}
 				if($task->task_status == 1) { $task_label='style="color:#f00 !important;font-weight:800;text-align:left;"'; } elseif($task->task_complete_period == 1) { $task_label='style="color:#1b0fd4 !important;font-weight:800;text-align:left"'; } elseif($task->task_started == 1) { $task_label='style="color:#89ff00 !important;font-weight:800;text-align:left;"'; } else{ $task_label='style="color:#000 !important;font-weight:600;text-align:left;"'; } 
 				$output.='<tr>
 					<td '.$task_label.'>'.$task->task_name.'</td><td style="text-align:center">';
@@ -811,6 +832,7 @@ class UserController extends Controller {
 				$output.='</td>
 				<td style="text-align:center;color:#000 !important;"><input type="text" name="notify_primary_email" class="notify_primary_email form-control" value="'.$task->task_email.'" data-element="'.$task->task_id.'" readonly></td>
 				<td style="text-align:center;color:#000 !important;"><input type="text" name="notify_secondary_email" class="notify_secondary_email form-control" value="'.$task->secondary_email.'" data-element="'.$task->task_id.'" readonly></td>
+				<td style="text-align:center;color:#000 !important;">'.$email_sent.'</td>
 				</tr>';
 			}
 			$output.='';
@@ -832,9 +854,18 @@ class UserController extends Controller {
 		$output = '<table class="table_bg own_table_white" style="width:100%">';
 		if(count($result_task))
 		{
-			$output.= '<tr><td>Task Name</td><td>Notify</td><td>Primary Email</td><td>Secondary Email</td></tr>';
+			$output.= '<tr><td>Task Name</td><td>Notify</td><td>Primary Email</td><td>Secondary Email</td><td>Emails Sent</td></tr>';
 			foreach($result_task as $task)
 			{
+				$last_email_sent = DB::table('task_email_sent')->where('task_id',$task->task_id)->where('options','n')->orderBy('id','desc')->first();
+				if(count($last_email_sent))
+				{
+					$email_sent = date('d F Y H:i:s', strtotime($last_email_sent->email_sent));
+				}
+				else{
+					$email_sent = '';
+				}
+
 				if($task->task_status == 1) { $task_label='style="color:#f00 !important;font-weight:800;text-align:left;"'; } elseif($task->task_complete_period == 1) { $task_label='style="color:#1b0fd4 !important;font-weight:800;text-align:left"'; } elseif($task->task_started == 1) { $task_label='style="color:#89ff00 !important;font-weight:800;text-align:left;"'; } else{ $task_label='style="color:#000 !important;font-weight:600;text-align:left;"'; } 
 				$output.='<tr>
 					<td '.$task_label.'>'.$task->task_name.'</td><td style="text-align:center">';
@@ -848,6 +879,7 @@ class UserController extends Controller {
 				$output.='</td>
 				<td style="text-align:center;color:#000 !important;"><input type="text" name="notify_primary_email" class="notify_primary_email form-control" value="'.$task->task_email.'" data-element="'.$task->task_id.'" readonly></td>
 				<td style="text-align:center;color:#000 !important;"><input type="text" name="notify_secondary_email" class="notify_secondary_email form-control" value="'.$task->secondary_email.'" data-element="'.$task->task_id.'" readonly></td>
+				<td style="text-align:center;color:#000 !important;">'.$email_sent.'</td>
 				</tr>';
 			}
 			$output.='';
@@ -880,7 +912,11 @@ class UserController extends Controller {
 					$to = trim($exp);
 					$data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
 					$data['message'] = $message;
+					$admin_details = DB::table('admin')->first();
+	    			$data['signature'] = $admin_details->payroll_signature;
+
 					$contentmessage = view('user/email_share_paper', $data);
+					
 					$email = new PHPMailer();
 					$email->SetFrom($from, $user_name); //Name is optional
 					$email->Subject   = $subject;
@@ -941,7 +977,7 @@ class UserController extends Controller {
 				{
 					if($result->last_email_sent != '0000-00-00 00:00:00')
 	                {
-	                  $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
+	                  $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->where('options','!=','n')->get();
 	                  $last_date = '';
 	                  if(count($get_dates))
 	                  {
@@ -1016,7 +1052,11 @@ class UserController extends Controller {
 				$to = trim($exp);
 				$data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
 				$data['message'] = $message;
+				$admin_details = DB::table('admin')->first();
+	    		$data['signature'] = $admin_details->payroll_signature;
+
 				$contentmessage = view('user/email_share_paper', $data);
+				
 				$email = new PHPMailer();
 				$email->SetFrom($from, $user_name); //Name is optional
 				$email->Subject   = $subject;
@@ -1691,25 +1731,30 @@ class UserController extends Controller {
 		    		</table>';
 			    $pdf = PDF::loadHTML($output);
 			    $pdf->save('papers/Task_Report_For_Year-'.$year_id->year_name.'_Week-'.$year->week.'.pdf');
-	   		 	$subject = 'EasyPayroll.ie: Task Report For Year '.$year_id->year_name.' Week'.$year->week.'';	
+	   		 	$subject = 'Easypayroll.ie: Task Report For Year '.$year_id->year_name.' Week'.$year->week.'';	
 	   		 	echo $subject;
 	}
 	public function email_notify_pdf(){
 		$week = Input::get('week');
 		$month = Input::get('month');
 		$time = Input::get('timeval');
-		$email = Input::get('email');
+		$email_id = explode("||",Input::get('email'));
+		$email = $email_id[0];
+		$id = $email_id[1];
 		$message = Input::get('message');
 		$admin_details = Db::table('admin')->where('id',1)->first();
-		$admin_cc = $admin_details->task_cc_email;
+		$admin_cc = $admin_details->payroll_cc_email;
 		$from = $admin_details->email;
 		$to = trim($email);
 		$cc = $admin_cc;
 		$data['sentmails'] = $to.' , '.$cc;
 		$data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
 		$data['message'] = $message;
+		$admin_details = DB::table('admin')->first();
+	    $data['signature'] = $admin_details->payroll_signature;
 		$contentmessage = view('user/email_notify', $data);
-		$subject = 'EasyPayroll.ie: Notification';
+		
+		$subject = 'Easypayroll.ie: Notification';
 		$email = new PHPMailer();
 		if($to != '')
 		{
@@ -1723,13 +1768,22 @@ class UserController extends Controller {
 		}
 		if($week == "0")
 		{
-			$get_task_details = DB::table('task')->where('task_email',$to)->where('task_month',$month)->where('client_id','!=','')->first();
+			$get_task_details = DB::table('task')->where('task_email',$to)->where('task_month',$month)->where('task_id',$id)->where('client_id','!=','')->first();
 		}
 		else{
-			$get_task_details = DB::table('task')->where('task_email',$to)->where('task_week',$week)->where('client_id','!=','')->first();
+			$get_task_details = DB::table('task')->where('task_email',$to)->where('task_week',$week)->where('task_id',$id)->where('client_id','!=','')->first();
 		}
 		if(count($get_task_details))
 		{
+			$curr = date('Y-m-d H:i:s');
+			$dataval['task_created_id'] = $get_task_details->task_id;
+			$dataval['task_week'] = $get_task_details->task_week;
+			$dataval['task_month'] = $get_task_details->task_month;
+			$dataval['task_id'] = $get_task_details->task_id;
+			$dataval['email_sent'] = $curr;
+			$dataval['options'] = 'n';
+			DB::table("task_email_sent")->insert($dataval);
+
 			if($get_task_details->client_id != "")
 			{
 				$client_details = DB::table('cm_clients')->where('client_id',$get_task_details->client_id)->first();
@@ -1740,8 +1794,8 @@ class UserController extends Controller {
 				$datamessage['client_ids'] = $get_task_details->client_id;
 				$datamessage['primary_emails'] = $client_details->email;
 				$datamessage['secondary_emails'] = $client_details->email2;
-				$datamessage['date_sent'] = date('Y-m-d H:i:s');
-				$datamessage['date_saved'] = date('Y-m-d H:i:s');
+				$datamessage['date_sent'] = $curr;
+				$datamessage['date_saved'] = $curr;
 				$datamessage['source'] = "PMS SYSTEM";
 				$datamessage['status'] = 1;
 				DB::table('messageus')->insert($datamessage);
@@ -1767,7 +1821,7 @@ class UserController extends Controller {
 		}
 		$year = DB::table('year')->where('year_id',$task_details->task_year)->first();
 		$admin_details = Db::table('admin')->where('id',1)->first();
-		$admin_cc = $admin_details->task_cc_email;
+		$admin_cc = $admin_details->payroll_cc_email;
 		$from = $admin_details->email;
 		$to = trim($email);
 		$cc = $admin_cc;
@@ -1777,8 +1831,12 @@ class UserController extends Controller {
 		$data['year'] = $year->year_name;
 		$data['week_month'] = $week_month;
 		$data['client_name'] = $client_details->firstname;
+		$admin_details = DB::table('admin')->first();
+	    $data['signature'] = $admin_details->payroll_signature;
+
 		$contentmessage = view('user/email_notify_tasks', $data);
-		$subject = 'EasyPayroll.ie: Payroll Task Notification';
+		
+		$subject = 'Easypayroll.ie: Payroll Task Notification';
 		$email = new PHPMailer();
 		if($to != '')
 		{
@@ -1852,7 +1910,7 @@ class UserController extends Controller {
 		    		</table>';
 			    $pdf = PDF::loadHTML($output);
 			    $pdf->save('papers/Notify_Report_For_Year-'.$year_id->year_name.'_Month-'.$year->month.'.pdf');
-	   		 	$subject = 'EasyPayroll.ie: Notify Report For Year '.$year_id->year_name.' Month'.$year->month.'';	
+	   		 	$subject = 'Easypayroll.ie: Notify Report For Year '.$year_id->year_name.' Month'.$year->month.'';	
 	   		 	echo $subject;
 	}
 	public function alltask_report_pdf(){
@@ -3801,7 +3859,7 @@ class UserController extends Controller {
 		    		</table>';
 			    $pdf = PDF::loadHTML($output);
 			    $pdf->save('papers/Task_Report_For_Year-'.$year_id->year_name.'_Month-'.$year->month.'.pdf');
-				$subject = 'EasyPayroll.ie: Task Report For Year '.$year_id->year_name.' Month'.$year->month.'';	
+				$subject = 'Easypayroll.ie: Task Report For Year '.$year_id->year_name.' Month'.$year->month.'';	
 	   		 	echo $subject;
 	}
 	public function alltask_report_pdf_month(){
@@ -5366,15 +5424,17 @@ class UserController extends Controller {
 	            $files.='<p><input type="checkbox" name="check_attachment[]" value="'.$attch->id.'" id="label_'.$attch->id.'" checked><label for="label_'.$attch->id.'">'.$attch->attachment.'</label></p>';
 	        }
 	        $html.='</ul>';
+	        
 	      }
+	      
 	      if($result->task_week != 0)
 	      {
 	      	$week_details = DB::table('week')->where('week_id',$result->task_week)->first();
-	      	$subject = 'EasyPayroll.ie: '.$result->task_name.' Payroll for WEEK '.$week_details->week.'';
+	      	$subject = 'Easypayroll.ie: '.$result->task_name.' Payroll for WEEK '.$week_details->week.'';
 	      }
 	      else{
 	      	$month_details = DB::table('month')->where('month_id',$result->task_month)->first();
-	      	$subject = 'EasyPayroll.ie: '.$result->task_name.' Payroll for MONTH '.$month_details->month.'';
+	      	$subject = 'Easypayroll.ie: '.$result->task_name.' Payroll for MONTH '.$month_details->month.'';
 	      }
 	      if($result->secondary_email != '')
 	      {
@@ -5431,15 +5491,16 @@ class UserController extends Controller {
 	            $files.='<p><input type="checkbox" name="check_attachment[]" value="'.$attch->id.'" id="label_'.$attch->id.'" checked><label for="label_'.$attch->id.'">'.$attch->attachment.'</label></p>';
 	        }
 	        $html.='</ul>';
+
 	      }
 	      if($result->task_week != 0)
 	      {
 	      	$week_details = DB::table('week')->where('week_id',$result->task_week)->first();
-	      	$subject = 'EasyPayroll.ie: '.$result->task_name.' Payroll for WEEK '.$week_details->week.'';
+	      	$subject = 'Easypayroll.ie: '.$result->task_name.' Payroll for WEEK '.$week_details->week.'';
 	      }
 	      else{
 	      	$month_details = DB::table('month')->where('month_id',$result->task_month)->first();
-	      	$subject = 'EasyPayroll.ie: '.$result->task_name.' Payroll for MONTH '.$month_details->month.'';
+	      	$subject = 'Easypayroll.ie: '.$result->task_name.' Payroll for MONTH '.$month_details->month.'';
 	      }
 	      if($result->secondary_email != '')
 	      {
@@ -5682,6 +5743,8 @@ class UserController extends Controller {
                 $prev_attachment_div = '';
 				$prev_text_one = 'No Period';
 				$prev_text_two = '';
+				$prev_t1 = '';
+				$prev_t2 = '';
 				$prev_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$prev_month.'" style="float:right;display:none"></a>';
 				$prev_text_three = '';
 				$prevv_text_three = '';
@@ -5694,6 +5757,8 @@ class UserController extends Controller {
 				$curr_attachment_div = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
+				$curr_t1 = '';
+				$curr_t2 = '';
 				$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$curr_month.'" style="float:right;display:none"></a>';
 				$curr_text_three = '';
 				$currr_text_three = '';
@@ -5705,6 +5770,8 @@ class UserController extends Controller {
 				$next_attachment_div = '';
 				$next_text_one = 'No Period';
 				$next_text_two = '';
+				$next_t1 = '';
+				$next_t2 = '';
 				$next_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$next_month.'" style="float:right;display:none"></a>';
 				$next_text_three = '';
 				$nextt_text_three = '';
@@ -5727,7 +5794,27 @@ class UserController extends Controller {
                 	$i= 0; $j=0;
                 	foreach($check_reviews_prev as $prev)
                 	{
-                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" download>'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prev_month.'"></a></p>'; }
+                		if($prev->type == 1){ 
+                			$ext = explode('.',$prev->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" title="'.$prev->filename.'" download>'.$img.'</a> 
+
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prev_month.'"></a></p>'; 
+
+                			$prev_t1 = $prev->t1;
+                			$prev_t2 = $prev->t2;
+                		}
 
                 		if($prev->type == 2){ $prev_text_one = $prev->from_period.' to '.$prev->to_period; }
 
@@ -5778,7 +5865,26 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$curr_month.'"></a></p>'; }
+                		if($curr->type == 1){ 
+                			$ext = explode('.',$curr->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" title="'.$curr->filename.'" download>'.$img.'</a> 
+
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$curr_month.'"></a></p>'; 
+                			$curr_t1 = $curr->t1;
+                			$curr_t2 = $curr->t2;
+                		}
 
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
@@ -5829,7 +5935,27 @@ class UserController extends Controller {
                 	$i= 0; $j=0;
                 	foreach($check_reviews_next as $next)
                 	{
-                		if($next->type == 1){ $next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" download>'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$next_month.'"></a></p>'; }
+                		if($next->type == 1){ 
+                			$ext = explode('.',$next->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" title="'.$next->filename.'" download>'.$img.'</a> 
+
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$next_month.'"></a></p>'; 
+
+                			$next_t1 = $next->t1;
+                			$next_t2 = $next->t2;
+                		}
 
                 		if($next->type == 2){ $next_text_one = $next->from_period.' to '.$next->to_period; }
 
@@ -5882,6 +6008,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$prev_month.'" data-client="'.$client->client_id.'" '.$prev_checked.'><label for="" class="records_receive_label '.$prev_check_box_color.' '.$prev_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$prev_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$prev_text_one.'</spam></p>
 						<p>Submitted: '.$prev_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$prev_month.'" style="float:right" value="'.$prev_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$prev_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$prev_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$prev_attachment_div.'</div></div>
 					</td>
 					<td id="add_files_vat_client_'.$curr_month.'">
@@ -5890,6 +6018,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$curr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$curr_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$curr_text_one.'</spam></p>
 						<p>Submitted: '.$curr_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$curr_month.'" style="float:right" value="'.$curr_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$curr_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$curr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a><div class="attachment_div">'.$curr_attachment_div.'</div></div>
 					</td>
 					<td id="add_files_vat_client_'.$next_month.'">
@@ -5898,12 +6028,18 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$next_month.'" data-client="'.$client->client_id.'" '.$next_checked.'><label for="" class="records_receive_label '.$next_check_box_color.' '.$next_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$next_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$next_text_one.'</spam></p>
 						<p>Submitted: '.$next_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$next_month.'" style="float:right" value="'.$next_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$next_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$next_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$next_attachment_div.'</div></div>
 					</td>
 				</tr>';
 			}
 		}
-		echo json_encode(array("output" => $output,"prev_no_sub_due" => $prev_no_sub_due,"curr_no_sub_due" => $curr_no_sub_due,"next_no_sub_due" => $next_no_sub_due));
+		$prev_month = date('M-Y', strtotime('first day of previous month'));
+		$curr_month = date('M-Y');
+		$next_month = date('M-Y', strtotime('first day of next month'));
+
+		echo json_encode(array("output" => $output,"prev_no_sub_due" => $prev_no_sub_due,"curr_no_sub_due" => $curr_no_sub_due,"next_no_sub_due" => $next_no_sub_due, "prev_month" => $prev_month, "curr_month" => $curr_month, "next_month" => $next_month));
 	}
 	public function show_prev_month()
 	{
@@ -5943,6 +6079,8 @@ class UserController extends Controller {
 				$prev_attachment_div = '';
 				$prev_text_one = 'No Period';
 				$prev_text_two = '';
+				$prev_t1 = '';
+				$prev_t2 = '';
 				$prev_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'" style="float:right;display:none"></a>';
 				$prev_text_three = '';
 				$prevv_text_three = '';
@@ -5954,6 +6092,8 @@ class UserController extends Controller {
 				$curr_attachment_div = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
+				$curr_t1 = '';
+				$curr_t2 = '';
 				$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right;display:none"></a>';
 				$curr_text_three = '';
 				$currr_text_three = '';
@@ -5965,6 +6105,8 @@ class UserController extends Controller {
 				$next_attachment_div = '';
 				$next_text_one = 'No Period';
 				$next_text_two = '';
+				$next_t1 = '';
+				$next_t2 = '';
 				$next_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'" style="float:right;display:none"></a>';
 				$next_text_three = '';
 				$nextt_text_three = '';
@@ -5985,7 +6127,27 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_prev as $prev)
                 	{
-                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" download>'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; }
+                		if($prev->type == 1){ 
+                			$ext = explode('.',$prev->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" title="'.$prev->filename.'" download>'.$img.'</a> 
+
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; 
+
+                			$prev_t1 = $prev->t1;
+                			$prev_t2 = $prev->t2;
+                		}
                 		if($prev->type == 2){ $prev_text_one = $prev->from_period.' to '.$prev->to_period; }
 
                 		if($prev->type == 3){ 
@@ -6033,7 +6195,7 @@ class UserController extends Controller {
                 			else if($current_str < $prev_str)
                 			{
                 				$prev_color_status = 'white_import'; 
-                				$prev_color_text = 'Not Due';
+                				$prev_color_text = '`';
                 				$prev_check_box_color = 'not_due_td';
                 			}
                 		}
@@ -6051,7 +6213,25 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
+                		if($curr->type == 1){ 
+                			$ext = explode('.',$curr->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" title="'.$curr->filename.'" download>'.$img.'</a> 
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; 
+                			$curr_t1 = $curr->t1;
+                			$curr_t2 = $curr->t2;
+                		}
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
                 		if($curr->type == 3){ 
@@ -6117,7 +6297,26 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_next as $next)
                 	{
-                		if($next->type == 1){ $next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" download>'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; }
+                		if($next->type == 1){ 
+                			$ext = explode('.',$next->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" title="'.$next->filename.'" download>'.$img.'</a>  
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; 
+
+                			$next_t1 = $next->t1;
+                			$next_t2 = $next->t2;
+                		}
                 		if($next->type == 2){ $next_text_one = $next->from_period.' to '.$next->to_period; }
 
                 		if($next->type == 3){ 
@@ -6189,6 +6388,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'" '.$prev_checked.'><label for="" class="records_receive_label '.$prev_check_box_color.' '.$prev_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$prev_text_one.'</spam></p>
 						<p>Submitted: '.$prev_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'" style="float:right" value="'.$prev_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$prev_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$prevv_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$prev_attachment_div.'</div></div>');
 
 				array_push($curr_cell, '<p style="text-align:center"><label class="import_icon '.$curr_color_status.'">'.$curr_color_text.'</label></p>
@@ -6196,6 +6397,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$currr_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$curr_text_one.'</spam></p>
 						<p>Submitted: '.$curr_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$curr_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$curr_attachment_div.'</div></div>');
 
 				array_push($next_cell, '<p style="text-align:center"><label class="import_icon '.$next_color_status.'">'.$next_color_text.'</label></p>
@@ -6203,6 +6406,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'" '.$next_checked.'><label for="" class="records_receive_label '.$next_check_box_color.' '.$next_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$next_text_one.'</spam></p>
 						<p>Submitted: '.$next_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'" style="float:right" value="'.$next_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$next_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$nextt_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$next_attachment_div.'</div></div>');
 			}
 		}
@@ -6246,6 +6451,8 @@ class UserController extends Controller {
 				$prev_attachment_div = '';
 				$prev_text_one = 'No Period';
 				$prev_text_two = '';
+				$prev_t1 = '';
+				$prev_t2 = '';
 				$prev_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'" style="float:right;display:none"></a>';
 				$prev_text_three = '';
 				$prevv_text_three = '';
@@ -6257,6 +6464,8 @@ class UserController extends Controller {
 				$curr_attachment_div = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
+				$curr_t1 = '';
+				$curr_t2 = '';
 				$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right;display:none"></a>';
 				$curr_text_three = '';
 				$currr_text_three = '';
@@ -6268,6 +6477,8 @@ class UserController extends Controller {
 				$next_attachment_div = '';
 				$next_text_one = 'No Period';
 				$next_text_two = '';
+				$next_t1 = '';
+				$next_t2 = '';
 				$next_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'" style="float:right;display:none"></a>';
 				$next_text_three = '';
 				$nextt_text_three = '';
@@ -6288,7 +6499,26 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_prev as $prev)
                 	{
-                		if($prev->type == 1){ $prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" download>'.$prev->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; }
+                		if($prev->type == 1){ 
+                			$ext = explode('.',$prev->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" title="'.$prev->filename.'" download>'.$img.'</a> 
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; 
+
+                			$prev_t1 = $prev->t1;
+                			$prev_t2 = $prev->t2;
+                		}
                 		if($prev->type == 2){ $prev_text_one = $prev->from_period.' to '.$prev->to_period; }
 
                 		if($prev->type == 3){ 
@@ -6354,7 +6584,25 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
+                		if($curr->type == 1){ 
+                			$ext = explode('.',$curr->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" title="'.$curr->filename.'" download>'.$img.'</a> 
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; 
+                			$curr_t1 = $curr->t1;
+                			$curr_t2 = $curr->t2;
+                		}
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
                 		if($curr->type == 3){ 
@@ -6420,7 +6668,25 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_next as $next)
                 	{
-                		if($next->type == 1){ $next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" download>'.$next->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; }
+                		if($next->type == 1){ 
+                			$ext = explode('.',$next->filename);
+                			if(end($ext) == "pdf") {
+                				$img = '<img src="'.URL::to('assets/images/pdf.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "doc" || end($ext) == "docx") {
+                				$img = '<img src="'.URL::to('assets/images/file.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "xls" || end($ext) == "xlsx") {
+                				$img = '<img src="'.URL::to('assets/images/excel.png').'" style="width:100px">';
+                			}
+                			if(end($ext) == "jpg" || end($ext) == "jpeg" || end($ext) == "png" || end($ext) == "gif") {
+                				$img = '<img src="'.URL::to('assets/images/image.png').'" style="width:100px">';
+                			}
+                			$next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" title="'.$next->filename.'" download>'.$img.'</a>  
+                			<a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; 
+                			$next_t1 = $next->t1;
+                			$next_t2 = $next->t2;
+                		}
                 		if($next->type == 2){ $next_text_one = $next->from_period.' to '.$next->to_period; }
 
                 		if($next->type == 3){ 
@@ -6492,6 +6758,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'" '.$prev_checked.'><label for="" class="records_receive_label '.$prev_check_box_color.' '.$prev_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$prev_text_one.'</spam></p>
 						<p>Submitted: '.$prev_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'" style="float:right" value="'.$prev_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$prev_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$prevv_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$prev_attachment_div.'</div></div>');
 
 				array_push($curr_cell, '<p style="text-align:center"><label class="import_icon '.$curr_color_status.'">'.$curr_color_text.'</label></p>
@@ -6499,6 +6767,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$currr_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$curr_text_one.'</spam></p>
 						<p>Submitted: '.$curr_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$curr_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$curr_attachment_div.'</div></div>');
 
 				array_push($next_cell, '<p style="text-align:center"><label class="import_icon '.$next_color_status.'">'.$next_color_text.'</label></p>
@@ -6506,6 +6776,8 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'" '.$next_checked.'><label for="" class="records_receive_label '.$next_check_box_color.' '.$next_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$next_text_one.'</spam></p>
 						<p>Submitted: '.$next_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'" style="float:right" value="'.$next_text_two.'"></p>
+						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam></p>
+						<p>T2: <spam class="t2_spam">'.$next_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$nextt_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$next_attachment_div.'</div></div>');
 			}
 		}
@@ -6544,8 +6816,15 @@ class UserController extends Controller {
 				if($client->cm_client_id != "")
 				{
 					$client_details = DB::table('cm_clients')->where('client_id',$client->cm_client_id)->first();
-					$company_name = $client_details->company.' - '.$client_details->client_id;
-					$cm_client_id = $client_details->client_id;
+					if(count($client_details))
+					{
+						$company_name = $client_details->company.' - '.$client_details->client_id;
+						$cm_client_id = $client_details->client_id;
+					}
+					else{
+						$company_name = '';
+						$cm_client_id = '';
+					}
 				}
 				else{
 					$company_name = '';
@@ -6554,6 +6833,8 @@ class UserController extends Controller {
 				$curr_attachment_div = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
+				$curr_t1 = '<p>T1: <spam class="t1_spam_overlay"></spam></p>';
+				$curr_t2 = '<p>T2: <spam class="t2_spam_overlay"></spam></p>';
 				$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:left;display:none"></a>';
 				$curr_text_three = '';
 				$currr_text_three = '';
@@ -6574,7 +6855,12 @@ class UserController extends Controller {
                 	$i= 0; $j=0;$k=0;
                 	foreach($check_reviews_curr as $curr)
                 	{
-                		if($curr->type == 1){ $curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; }
+                		if($curr->type == 1){ 
+                			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>';
+                			$curr_t1 ='<p>T1: <spam class="t1_spam_overlay">'.$curr->t1.'</spam></p>';
+							$curr_t2 ='<p>T2: <spam class="t2_spam_overlay">'.$curr->t2.'</spam></p>'; 
+
+                		}
                 		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
                 		if($curr->type == 3){ 
@@ -6662,8 +6948,9 @@ class UserController extends Controller {
 					</td>
 					<td>'.$curr_remove_two.'<input type="text" class="submitted_import_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'">
 						<input type="hidden" name="date_sort_val" class="date_sort_val" value="'.$curr_text_two.'">
+						
 					</td>
-					<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div_overlay">'.$curr_attachment_div.'</div></td>
+					<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div_overlay">'.$curr_attachment_div.' '.$curr_t1.' '.$curr_t2.'</div></td>
 				</tr>';
 			}
 		}
@@ -6790,7 +7077,7 @@ class UserController extends Controller {
                 elseif($client->status == 0 && $client->self_manage == 'yes') { $fontcolor = 'purple'; }
                 else{$fontcolor = '#fff';}
 
-                $columns1 = array($client->cm_client_id,$client->name,$curr_color_text,$curr_text_three,$curr_checked,$curr_text_two,$curr_attachment_div);
+                $columns1 = array(preg_replace('/[^[:print:]]/','',$client->cm_client_id),$client->name,$curr_color_text,$curr_text_three,$curr_checked,$curr_text_two,$curr_attachment_div);
 				fputcsv($file, $columns1);
 			}
 		}
@@ -6802,11 +7089,22 @@ class UserController extends Controller {
 		$client_id = Input::get('hidden_client_id_vat');
 		$month_year = Input::get('hidden_month_year_vat');
 
+		$get_vat_details = DB::table('vat_clients')->where('client_id',$client_id)->first();
+		$tax_no = $get_vat_details->taxnumber;
+
 		$upload_dir = 'uploads/vat_reviews';
 		if (!file_exists($upload_dir)) {
 			mkdir($upload_dir);
 		}
 		$upload_dir = $upload_dir.'/'.$client_id;
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir);
+		}
+		$upload_dir = $upload_dir.'/'.$month_year;
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir);
+		}
+		$upload_dir = $upload_dir.'/'.time();
 		if (!file_exists($upload_dir)) {
 			mkdir($upload_dir);
 		}
@@ -6821,23 +7119,40 @@ class UserController extends Controller {
 			$fname = str_replace("%","",$fname);
 			$fname = str_replace("%","",$fname);
 			$fname = str_replace("%","",$fname);
+			$fname = $fname;
 
 			$filename = $upload_dir.'/'.$fname;
 			move_uploaded_file($tmpFile,$filename);
 
-			$data['client_id'] = $client_id;
-			$data['month_year'] = $month_year;
-			$data['type'] = 1;
-			$data['filename'] = $fname;
-			$data['url'] = $upload_dir;
-
-			$insertedid = DB::table('vat_reviews')->insertGetid($data);
-
 			$download_url = URL::to($filename);
-			$delete_url = URL::to('user/delete_vat_files?file_id='.$insertedid.'');
 			
-		 	echo json_encode(array('id' => $insertedid,'filename' => $fname,'client_id' => $client_id,'month_year' => $month_year, 'download_url' => $download_url, 'delete_url' => $delete_url));
+		 	echo json_encode(array('filename' => $fname,'upload_dir' => $upload_dir,'client_id' => $client_id,'month_year' => $month_year, 'download_url' => $download_url,'tax_no' => $tax_no));
 		}
+	}
+	public function vat_commit_upload_images(){
+		$client_id = Input::get('client_id');
+		$month_year = Input::get('month_year');
+		$filename = Input::get('filename');
+		$url = Input::get('dir');
+		$t1 = Input::get('t1');
+		$t2 = Input::get('t2');
+		$reg = Input::get('reg');
+
+		$data['client_id'] = $client_id;
+		$data['month_year'] = $month_year;
+		$data['type'] = 1;
+		$data['filename'] = $filename;
+		$data['url'] = $url;
+		$data['t1'] = $t1;
+		$data['t2'] = $t2;
+		$data['reg'] = $reg;
+
+		$insertedid = DB::table('vat_reviews')->insertGetid($data);
+
+		$filename = $url.'/'.$filename;
+		$download_url = URL::to($filename);
+		$delete_url = URL::to('user/delete_vat_files?file_id='.$insertedid.'');
+		echo json_encode(array('id' => $insertedid, 'download_url' => $download_url, 'delete_url' => $delete_url));
 	}
 	public function vat_upload_csv()
 	{
@@ -6973,13 +7288,7 @@ class UserController extends Controller {
 		$id = Input::get('id');
 		$client_id = Input::get('client_id');
 		DB::table('vat_clients')->where('client_id', $id)->update(['name' => $name, 'pemail' => $pemail, 'semail' => $semail, 'salutation' => $salutation, 'self_manage' => $self_manage, 'always_nil' => $always_nil,'cm_client_id' => $client_id]);
-		$saluation_client = Input::get('hidden_salutation');
-		$clientid = Input::get('client_id');
-		if($saluation_client == 1)
-		{
-			$data['salutation'] = trim(Input::get('salutation'));
-			DB::table('cm_clients')->where('client_id',$clientid)->update($data);
-		}
+		
 		$check_status = DB::table('vat_clients')->where('client_id',$id)->first();
 		$red = DB::table('vat_clients')->where('status',1)->count();
 		$green = DB::table('vat_clients')->where('status',0)->where('pemail','!=', '')->where('self_manage','no')->count();
@@ -7473,6 +7782,7 @@ class UserController extends Controller {
 			$data['due_date'] = $due_date;
 			$data['signature'] = $admin_details->signature;
 			$contentmessage = view('user/email_vat_notify', $data);
+		
 			$subject = 'GBS & Co: VAT Reminder for '.$client_details->name.'';
 			$email = new PHPMailer();
 			$email->SetFrom($from); //Name is optional
@@ -7512,6 +7822,7 @@ class UserController extends Controller {
 			$data['due_date'] = $due_date;
 			$data['signature'] = $admin_details->signature;
 			$contentmessage = view('user/email_vat_notify', $data);
+			
 			$subject = 'GBS & Co: VAT Reminder for '.$client_details->name.'';
 			$email = new PHPMailer();
 			$email->SetFrom($from); //Name is optional
@@ -7787,6 +8098,12 @@ class UserController extends Controller {
 		$client_details = DB::table('cm_clients')->where('client_id',$clientid)->first();
 		echo $client_details->email2;
 	}
+	public function getclient_salutation()
+	{
+		$clientid= Input::get('clientid');
+		$client_details = DB::table('cm_clients')->where('client_id',$clientid)->first();
+		echo $client_details->firstname;
+	}
 	public function taskmanager_upload_images()
 	{
 		$task_id = $_GET['task_id'];
@@ -7885,7 +8202,7 @@ class UserController extends Controller {
 		$task_details = DB::table('task')->where('task_id',$task_id)->first();
 		if($task_details->task_week == 0) { $label = 'Month'; } else { $label = 'Week'; }
 		$task_created_id = $task_details->task_created_id;
-		$get_email_dates = DB::table('task_email_sent')->where('task_created_id',$task_created_id)->get();
+		$get_email_dates = DB::table('task_email_sent')->where('task_created_id',$task_created_id)->where('options','!=','n')->get();
 		$output = '<h4>Report for Email sent Date & Time</h4>
 					<table style="width: 100%;border-collapse:collapse">
 				          <tr>
@@ -8229,7 +8546,7 @@ class UserController extends Controller {
 			{
 				if($task->task_week != 0) { $period = 'Weekly'; }
 				else { $period = 'Monthly'; }
-				$get_dates = DB::table('task_email_sent')->where('task_id',$task->task_id)->get();
+				$get_dates = DB::table('task_email_sent')->where('task_id',$task->task_id)->where('options','!=','n')->get();
 				$columns1 = array($task->task_name,$period,$task->network,$task->task_email,$task->secondary_email,count($get_dates),$task->liability);
 				fputcsv($file, $columns1);
 			}
@@ -9007,6 +9324,7 @@ class UserController extends Controller {
 							}
 
 							$check_submitted = DB::table('vat_reviews')->where('client_id',$check_tax->client_id)->where('month_year',$due_month_year)->where('type',4)->first();
+
 							if(count($check_submitted))
 							{
 								$dataid['textval'] = $data['import_id'];
@@ -9234,7 +9552,7 @@ class UserController extends Controller {
 	{
 		$journal_id = Input::get('journal_id');
 		$details = DB::table('journals')->where('connecting_journal_reference',$journal_id)->first();
-		$get_details = DB::table('journals')->where('reference',$details->reference)->get();
+		$get_details = DB::table('journals')->where('reference',$details->reference)->orderBy('connecting_journal_reference','asc')->get();
 		$output = '';
 		$total_debit_value = 0;
 		$total_credit_value = 0;
@@ -9243,13 +9561,18 @@ class UserController extends Controller {
 			foreach($get_details as $detail)
 			{
 				$nominal_des = DB::table('nominal_codes')->where('code',$detail->nominal_code)->first();
+				$desval = '';
+				if(count($nominal_des))
+				{
+					$desval = $nominal_des->description;
+				}
 				$output.='<tr>
 					<td>'.$detail->connecting_journal_reference.'</td>
 					<td>'.date('d-M-Y', strtotime($detail->journal_date)).'</td>
 					<td>'.$detail->description.'</td>
 					<td><a href="javascript:" class="journal_source_link">'.$detail->journal_source.'</a></td>
 					<td>'.$detail->nominal_code.'</td>
-					<td>'.$nominal_des->description.'</td>
+					<td>'.$desval.'</td>
 					<td style="text-align: right;">'.number_format_invoice_empty($detail->dr_value).'</td>
 					<td style="text-align: right;">'.number_format_invoice_empty($detail->cr_value).'</td>
 				</tr>';
@@ -9357,6 +9680,8 @@ class UserController extends Controller {
 			$curr_attachment_div = '';
 			$curr_text_one = 'No Period';
 			$curr_text_two = '';
+			$curr_t1 = '<p>T1: <spam class="t1_spam_overlay"></spam></p>';
+			$curr_t2 = '<p>T2: <spam class="t2_spam_overlay"></spam></p>';
 			$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:left;display:none"></a>';
 			$curr_text_three = '';
 			$currr_text_three = '';
@@ -9379,7 +9704,9 @@ class UserController extends Controller {
             	foreach($check_reviews_curr as $curr)
             	{
             		if($curr->type == 1){ 
-            			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; 
+            			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>';
+            			$curr_t1 ='<p>T1: <spam class="t1_spam_overlay">'.$curr->t1.'</spam></p>';
+						$curr_t2 ='<p>T2: <spam class="t2_spam_overlay">'.$curr->t2.'</spam></p>'; 
             		}
             		if($curr->type == 2){ $curr_text_one = $curr->from_period.' to '.$curr->to_period; }
 
@@ -9461,7 +9788,7 @@ class UserController extends Controller {
 				<td>'.$curr_remove_two.'<input type="text" class="form-control submitted_import_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'">
 					<input type="hidden" name="date_sort_val" class="date_sort_val" value="'.$curr_text_two.'">
 				</td>
-				<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div_overlay">'.$curr_attachment_div.'</div></td>
+				<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div_overlay">'.$curr_attachment_div.' '.$curr_t1.' '.$curr_t2.'</div></td>
 				<td><input type="checkbox" class="check_records_received_overlay" id="check_records_received_overlay" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label_overlay '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label>
 					<input type="hidden" name="record_sort_val" class="record_sort_val" value="'.$curr_checked.'">
 				</td>
@@ -9514,6 +9841,85 @@ class UserController extends Controller {
 	            }
 			}
 			echo $zipFileName;
+		}
+	}
+	public function payroll_settings()
+	{
+		return view('user/emailsettings', array('title' => 'Payroll Settings'));
+	}
+	public function save_payroll_settings()
+	{
+		$signature = Input::get('message_editor');
+		$cc = Input::get('payroll_cc_input');
+
+		$data['payroll_signature'] = $signature;
+		$data['payroll_cc_email'] = $cc;
+
+		DB::table('admin')->where('id',1)->update($data);
+
+		return Redirect::back()->with('message',"Payroll Settings Saved successfully.");
+	}
+	public function update_practice_setting()
+	{
+		$data['practice_name'] = (Input::get('practice_name') != "")?Input::get('practice_name'):'';
+		$data['address_1'] = (Input::get('address_1') != "")?Input::get('address_1'):'';
+		$data['address_2'] = (Input::get('address_2') != "")?Input::get('address_2'):'';
+		$data['address_3'] = (Input::get('address_3') != "")?Input::get('address_3'):'';
+		$data['address_4'] = (Input::get('address_4') != "")?Input::get('address_4'):'';
+		$data['link_1'] = (Input::get('link_1') != "")?Input::get('link_1'):'';
+		$data['link_2'] = (Input::get('link_2') != "")?Input::get('link_2'):'';
+		$data['link_3'] = (Input::get('link_3') != "")?Input::get('link_3'):'';
+		$data['phone_no'] = (Input::get('phone_no') != "")?Input::get('phone_no'):'';
+
+
+		$check_statement = DB::table('settings')->where('source','practice')->first();
+		
+		$dataval['source'] = 'practice';
+		$dataval['settings'] = serialize($data);
+		$dataval['fields'] = 'practice_name,address_1,address_2,address_3,address_4,link_1,link_2,link_3,phone_no';
+		
+		if(count($check_statement))
+		{
+			DB::table('settings')->where('id',$check_statement->id)->update($dataval);
+		}
+		else{
+			DB::table('settings')->insert($dataval);
+		}
+		return Redirect::back()->with('message','Settings Saved Successfully');
+	}
+	public function reset_vat_reviews_folder() {
+		$dir = 'uploads/vat_reviews';
+		$folders = scandir($dir, 0);
+		foreach($folders as $folder){
+			if($folder != "." && $folder != ".." && $folder != "ros_vat_due"){
+				$subfoldersdir = $dir.'/'.$folder;
+				$subfolders = scandir($subfoldersdir, 0);
+				foreach($subfolders as $subfolder){
+					if($subfolder != "." && $subfolder != ".."){
+						$filesdir = $subfoldersdir.'/'.$subfolder;
+						$files = scandir($filesdir, 0);
+						foreach($files as $file){
+							if($file != "." && $file != ".."){
+								if(!is_dir($filesdir.'/'.$file))
+								{
+									$fileexp = explode("_",$file);
+									$get_new_folder =  $fileexp[0];
+									if(!is_dir($filesdir.'/'.$get_new_folder)){
+										mkdir($filesdir.'/'.$get_new_folder);
+									}
+									rename($filesdir.'/'.$file, $filesdir.'/'.$get_new_folder.'/'.$fileexp[1]);
+									$check_db = DB::table('vat_reviews')->where('filename',$file)->first();
+									if(count($check_db)){
+										$dbval['filename'] = $fileexp[1];
+										$dbval['url'] = $filesdir.'/'.$get_new_folder;
+										DB::table('vat_reviews')->where('id',$check_db->id)->update($dbval);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

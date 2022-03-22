@@ -536,7 +536,7 @@ body.loading_apply .modal_load_apply {
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Access a quick system that shows all clients ROS and PAYE Task Liabilities allowing for an uncultters view of the prem system." data-placement="left"></a>
                   </li>
                   <li style="width:100%">
-                    <a href="javascript:" class="quick_access_email" style="width:90%;">Quick Access Email Distribution</a>
+                    <a href="<?php echo URL::to('user/paye_p30_email_distribution/'.base64_encode($year->year_id).''); ?>" class="quick_access_email" style="width:90%;">Quick Access Email Distribution</a>
                     <a href="javascript:" class="fa fa-question" data-toggle="popover" data-trigger="focus" data-content="Quickly Send emails to all reconciled PAYE Cleints" data-placement="left"></a>
                   </li>
                 </ul>

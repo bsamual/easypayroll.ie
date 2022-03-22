@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Easypayroll - TaskAdmin</title>
+<title>Bubble - TaskAdmin</title>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/bootstrap.min.css')?>">
 <script type="text/javascript" src="<?php echo URL::to('assets/js/jquery-1.11.2.min.js')?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/bootstrap-theme.min.css')?>" />
@@ -56,10 +56,10 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right menu">
             <!-- <li class="{{ Request::is( 'admin/manage_year') ? 'active' : '' }}"><a href="<?php //echo URL::to('admin/manage_year')?>">Manage Year</a></li> -->
-            <li class="{{ Request::is( 'admin/manage_task') ? 'active' : '' }}"><a href="<?php echo URL::to('admin/manage_task')?>">Manage Year</a></li>
-            <li class="{{ Request::is( 'admin/manage_user') ? 'active' : '' }}"><a href="<?php echo URL::to('admin/manage_user')?>">Manage Users</a></li>
+            <!-- <li class="{{ Request::is( 'admin/manage_task') ? 'active' : '' }}"><a href="<?php echo URL::to('admin/manage_task')?>">Manage Year</a></li>
+            <li class="{{ Request::is( 'admin/manage_user') ? 'active' : '' }}"><a href="<?php echo URL::to('admin/manage_user')?>">Manage Users</a></li> -->
 
-            <li class="{{ Request::is( 'admin/central_locations') ? 'active' : '' }}"><a href="<?php echo URL::to('admin/central_locations')?>">Central Location</a></li>
+            <!-- <li class="{{ Request::is( 'admin/central_locations') ? 'active' : '' }}"><a href="<?php echo URL::to('admin/central_locations')?>">Central Location</a></li> -->
             
             <!-- <li class="dropdown <?php if($segment1 == "p30_task_leval" || $segment1 == "p30_due_date" || $segment1 == "p30_period") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage P30</a>
                 <ul class="dropdown-menu">
@@ -75,31 +75,44 @@
                     <li><a href="<?php echo URL::to('admin/gbs_p30_period')?>">Manage Period</a></li>
                 </ul>
             </li> -->
-            <li class="dropdown <?php if($segment1 == "manage_rctclients" || $segment1 == "manage_rctemail_salution" || $segment1 == "manage_rctbackground" || $segment1 == "rct_profile") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage RCT</a>
+            <!-- <li class="dropdown <?php if($segment1 == "manage_rctclients" || $segment1 == "manage_rctemail_salution" || $segment1 == "manage_rctbackground" || $segment1 == "rct_profile") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage RCT</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo URL::to('admin/manage_rctclients')?>">Manage Clients</a></li>
                     <li><a href="<?php echo URL::to('admin/manage_rctemail_salution')?>">Email Salution</a></li>
                     <li><a href="<?php echo URL::to('admin/manage_rctbackground')?>">Letterpad Background</a></li>
                     
                 </ul>
-            </li>
+            </li> -->
             <li class="dropdown <?php if($segment1 == "manage_cm_class" || $segment1 == "manage_cm_paper" || $segment1 == "manage_cm_fields" || $segment1 == "cm_clients_list" || $segment1 == "cm_profile") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Manage CM System</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo URL::to('admin/cm_clients_list')?>">Edit Client's Class</a></li>
                     <li><a href="<?php echo URL::to('admin/manage_cm_fields')?>">Manage Column</a></li>
                     <li><a href="<?php echo URL::to('admin/manage_cm_class')?>">Add/Remove Class</a></li>
                     <li><a href="<?php echo URL::to('admin/manage_cm_paper')?>">Manage Print Label</a></li>     
-                    <li><a href="<?php echo URL::to('admin/cm_profile')?>">CM system Crypt Pin</a></li>               
+                    <!-- <li><a href="<?php echo URL::to('admin/cm_profile')?>">CM system Crypt Pin</a></li> -->               
                 </ul>
             </li>
             <!-- <li class="<?php if($segment1 == "setup_request_category") { echo 'active'; } ?>""><a href="<?php echo URL::to('admin/setup_request_category')?>">Setup Request Categories</a></li> -->
+            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Receipt System</a>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:" data-element="<?php echo URL::to('admin/clear_receipt_system'); ?>" class="clear_receipt_system">Clear Receipt System</a></li>            
+                </ul>
+            </li>
+
+            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Payment System</a>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:" data-element="<?php echo URL::to('admin/clear_payment_system')?>" class="clear_payment_system">Clear Payment System</a></li>            
+                </ul>
+            </li>
+
             <li class="<?php if($segment1 == "clear_opening_balance") { echo 'active'; } ?>"><a href="<?php echo URL::to('admin/clear_opening_balance')?>">Clear Opening Balance</a></li>
+            <li class="<?php if($segment1 == "table_viewer") { echo 'active'; } ?>"><a href="<?php echo URL::to('admin/table_viewer')?>">Table Viewer</a></li>
             <li class="dropdown <?php if($segment1 == "profile" || $segment1 == "vat_profile" || $segment1 == "manage_cro") { echo 'active'; } ?>"><a href="javascript:" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo URL::to('admin/profile')?>">Manage Admin/User Login</a></li>
-                    <li><a href="<?php echo URL::to('admin/manage_cro')?>">Manage CRO</a></li>
-                    <li><a href="<?php echo URL::to('admin/vat_profile')?>">VAT Email Signature</a></li>
-                    <li><a href="<?php echo URL::to('admin/email_settings')?>">Email Settings</a></li>
+                    <!-- <li><a href="<?php echo URL::to('admin/manage_cro')?>">Manage CRO</a></li> -->
+                    <!-- <li><a href="<?php echo URL::to('admin/vat_profile')?>">VAT Email Signature</a></li> -->
+                    <!-- <li><a href="<?php echo URL::to('admin/email_settings')?>">Email Settings</a></li> -->
                 </ul>
             </li>
             <li><a href="<?php echo URL::to('admin/logout')?>">Logout</a></li>
@@ -115,8 +128,27 @@
    
 </div>
 @yield('content')
-<div class="footer_row">© Copyright <?php echo date('Y'); ?> All Rights Reserved EasyPayroll</div>
+<div class="footer_row">© Copyright <?php echo date('Y'); ?> All Rights Reserved BubbleAccounting</div>
 
 <script type="text/javascript" src="<?php echo URL::to('assets/js/bootstrap.min.js')?>"></script>
+
+<script>
+$(window).click(function(e) {
+    if($(e.target).hasClass('clear_receipt_system')) {
+        var r = confirm("Are you sure you want to delete all data's from the Receipt System?");
+        var hrefval = $(e.target).attr("data-element");
+        if(r){
+            window.location.replace(hrefval);
+        }
+    }
+    if($(e.target).hasClass('clear_payment_system')) {
+        var r = confirm("Are you sure you want to delete all data's from the Payment System?");
+        var hrefval = $(e.target).attr("data-element");
+        if(r){
+            window.location.replace(hrefval);
+        }
+    }
+});
+</script>
 </body>
 </html>

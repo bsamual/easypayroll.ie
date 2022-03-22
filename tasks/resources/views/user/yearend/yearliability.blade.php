@@ -614,6 +614,9 @@ $(window).click(function(e) {
         {
           $(e.target).parents("td").find(".date_class").val(result)
         }
+        if(status == "0"){
+          $(e.target).parents("td").find(".date_class").val("")
+        }
         ajaxdatecomplete();
       }
     });    

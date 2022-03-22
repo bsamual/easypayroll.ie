@@ -1,4 +1,4 @@
-@extends('userheader')
+﻿@extends('userheader')
 @section('content')
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
@@ -8,7 +8,7 @@
 <script src="<?php echo URL::to('assets/js/dataTables.fixedHeader.min.js'); ?>"></script>
 
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
-<script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+<script src="<?php echo URL::to('assets/js/html2canvas.js'); ?>"></script>
 
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
@@ -514,7 +514,7 @@ if(!empty($_GET['import_type_existing']))
       </div>
   </div>
 </div>
-<div class="modal fade crypt_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+<!-- <div class="modal fade crypt_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -534,7 +534,7 @@ if(!empty($_GET['import_type_existing']))
       </div>
     </div>
   </div>
-</div>
+</div> -->
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <form id="form-validation" action="<?php echo URL::to('user/add_cm_clients'); ?>" method="post" class="addsp" enctype="multipart/form-data" autocomplete="off">
@@ -790,12 +790,10 @@ if(!empty($_GET['import_type_existing']))
           </div>
           <div class="modal-footer">
             <div class="col-md-3">
-              <label style="float: left;">CRYPT-PIN : </label>
+              <!-- <label style="float: left;">CRYPT-PIN : </label>
               <div class="form-group">                
                   <input class="form-control" name="crypt_pin" placeholder="Enter Pin" type="password" autocomplete="new-password" required readonly onfocus="this.removeAttribute('readonly');">
-              </div>
-            </div>
-            <div class="col-md-3">
+              </div> -->
               <input type="submit" id="formvalid_id" style="float: left;margin-top:21px"  value="Submit" class="common_black_button">
             </div>
           </div>
@@ -1018,6 +1016,7 @@ if(!empty($_GET['import_type_existing']))
                   <li role="presentation" class="cm_full_ul"><a href="#bank_tab" aria-controls="bank" role="tab" data-toggle="tab">Bank</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#message_tab" aria-controls="message" role="tab" data-toggle="tab">Messages Sent</a></li>
                   <li role="presentation" class="cm_full_ul"><a href="#coms_tab" aria-controls="coms" role="tab" data-toggle="tab">Module Coms</a></li>
+                  <li role="presentation" class="cm_full_ul"><a href="#statement_tab" aria-controls="statement" role="tab" data-toggle="tab">Statement</a></li>
             </ul>
           </div>
           <div class="tab-content ">
@@ -1201,13 +1200,12 @@ if(!empty($_GET['import_type_existing']))
                 <div class="modal-footer">
                   
                   <div class="col-md-3">
-                    <label style="float: left;">CRYPT-PIN : </label>
+                    <!-- <label style="float: left;">CRYPT-PIN : </label>
                     <div class="form-group">                
                         <input class="form-control" name="crypt_pin" id="edit_crypt_pin" placeholder="Enter Pin" type="password" autocomplete="new-password" required readonly onfocus="this.removeAttribute('readonly');">
-                        <input type="hidden" name="id" value="Submit" class="id_class">
-                    </div>
-                  </div>
-                  <div class="col-md-3">
+                        
+                    </div> -->
+                    <input type="hidden" name="id" value="Submit" class="id_class">
                     <input type="submit" style="float: left;margin-top:21px" id="formvalid_id" value="Submit" class="common_black_button">
                   </div>
                   <div class="col-md-6">
@@ -1305,6 +1303,14 @@ if(!empty($_GET['import_type_existing']))
                 </div>                                
               </div>
             </div>
+            <div role="tabpanel" class="tab-pane cm_full_content" id="statement_tab">
+              <div class="modal-body" style="height: 450px; overflow-y: scroll;border-bottom:2px solid #bdbdbd; padding-top: 0px;">
+                <h4 class="load_more_cm_message" style="margin-bottom: 15px;">Statement</h4>
+                <div id="statement_tbody">
+
+                </div>                                
+              </div>
+            </div>
           </div>
       </div>         
     </div>
@@ -1345,14 +1351,29 @@ if(!empty($_GET['import_type_existing']))
         <h4 class="col-lg-12 padding_00 new_main_title">
                 Client Management System                
             </h4>
-            <div class="col-lg-2" style="padding: 0px; line-height: 35px;">
+            <div class="col-lg-6" style="padding: 0px; line-height: 35px;">
+
+               <div style="float: left; margin-right: 10px;">
+                <label style="float: left;">Search Client ID: </label>
+              </div>
+              <div style="float: left; margin-right: 6px;">          
+                <input type="text" class="form-control client_common_search ui-autocomplete-input" placeholder="Enter Client Name" style="font-weight: 500;margin-bottom: 13px;margin-top:2px;width:250px;float:left" value="" autocomplete="off">
+                <input type="button" class="common_black_button load_single_client" value="Load" style="float: left;width: 100px;margin-top: 3px;">
+                <input type="hidden" class="client_search_common" id="client_search_hidden_infile" value="" name="client_id">
+              </div>
+
+              <div style="float: left;">
+                <input type="button" class="common_black_button load_all_clients" value="Load All Clients" style="float: left;width:100%;margin-top: 3px;">
+              </div>
+              <div style="float: left; padding-left: 10px; padding-top: 10px;">
                 <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->cm_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
-                <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked;?>><label for="show_incomplete">Hide Deactivated Accounts</label>
+                <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked;?>><label for="show_incomplete">Hide Inactive</label>
+              </div>
             </div>
-            <div class="col-lg-2 text-right" style="padding-right: 0px;">
+            <div class="col-lg-1 text-right" style="padding-right: 0px;">
               <input type="text" name="" placeholder="Search" class="form-control search_input_class" >
             </div>
-            <div class="col-lg-2 text-right" style="padding-right: 0px;">
+            <div class="col-lg-1 text-right" style="padding-right: 0px;">
               <select class="form-control search_select_class">
                 <option value="">Select Type</option>
                 <option value="client_id">Client Id</option>
@@ -1364,12 +1385,12 @@ if(!empty($_GET['import_type_existing']))
                 <option value="phone">Phone</option>
               </select>
             </div>
-            <div class="col-lg-6 text-right"  style="padding: 0px;" >
+            <div class="col-lg-4 text-right"  style="padding: 0px;" >
               <div class="select_button" style=" margin-left: 10px;">
                 <ul>
                 <li><a href="javascript:" id="search_button" style="font-weight: 600;">Search</a></li>
                 <li><a href="" style="font-weight: 600;">Reset</a></li>
-                <li><a href="javascript:" class="bulkemail_button" style="font-weight: 600;" data-toggle="modal" data-target=".crypt_modal">Bulk Email</a></li>
+                <li><a href="javascript:" class="bulkemail_button crypt_submit" id="crypt_submit" style="font-weight: 600;">Bulk Email</a></li>
                 <li><a href="javascript:" class="report_button" style="font-weight: 600;">Report</a></li>
                 <li><a href="javascript:" class="addclientbutton" style="font-weight: 600;" data-toggle="modal" data-target=".bs-example-modal-sm" style="font-weight: 600;">Add Client</a></li>
                 <li><a href="javascript:" class="importclientbutton" style="font-weight: 600;">Import Client</a></li>
@@ -1378,7 +1399,6 @@ if(!empty($_GET['import_type_existing']))
                     <input type="radio" name="import_client" id="import_yes" value="1"><label for="import_yes">Yes</label>
                     <input type="radio" name="import_client" id="import_no" value="1"><label for="import_no">No</label>
                 </div>
-                <li><a href="javascript:" class="importclientbutton" style="font-weight: 600;">Client Account Review</a></li>
               </ul>
             </div>
             <br/>
@@ -1392,13 +1412,6 @@ if(!empty($_GET['import_type_existing']))
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><?php echo Session::get('message'); ?></p>
 
     <?php }
-    if(isset($_GET['pin_invalid'])) { ?>
-        <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Crypt Pin You have entered is incorrect. </p>
-        <script>
-            window.history.replaceState(null, null, "<?php echo URL::to('user/client_management'); ?>");
-        </script>
-    <?php } 
-    
     if(isset($_GET['email_sent'])) { DB::table('cm_email_attachment')->delete(); ?>
         <p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Email Sent successfully. </p>
         <script>
@@ -1410,64 +1423,29 @@ if(!empty($_GET['import_type_existing']))
 <table class="display nowrap fullviewtablelist own_table_white" id="client_expand" width="100%">
                         <thead>
                         <tr style="background: #fff;">
-                             <th width="2%" style="text-align: left;">S.No</th>
+                            <th width="2%" style="text-align: left;">S.No</th>
                             <th style="text-align: left;">Client ID</th>
                             <th style="text-align: left;">First Name</th>
                             <th style="text-align: left;">Surname</th>
                             <th style="text-align: left;">Company Name</th>
                             <th style="text-align: left; width:300px; max-width: 300px;">Address</th>
                             <th style="text-align: left;">Primary Email</th> 
-                            <th style="text-align: left;">Telephone</th> 
-                            
+                            <th style="text-align: left;">Telephone</th>                            
                             <th style="text-align: left;">Statement</th>
                         </tr>
                         </thead>                            
                         <tbody id="clients_tbody">
-                        <?php
-                            $i=1;
-                            if(count($clientlist)){              
-                              foreach($clientlist as $key => $client){
-                                $address = $client->address1.' '.$client->address2.' '.$client->address3.' '.$client->address4.' '.$client->address5;
-                                  $disabled='';
-                                  if($client->active != "")
-                                  {
-                                    if($client->active == 2)
-                                    {
-                                      $disabled='disabled';
-                                    }
-                                    $check_color = DB::table('cm_class')->where('id',$client->active)->first();
-                                    $style="color:#".$check_color->classcolor."";
-                                  }
-                                  else{
-                                    $style="color:#000";
-                                  }
-                                  
-                          ?>
-                            <tr class="edit_task <?php echo $disabled; ?>" id="clientidtr_<?php echo $client->id; ?>">
-                                <td style="<?php echo $style; ?>"><?php echo $i; ?></td>
-                                <td align="left"><a href="javascript:" id="<?php echo base64_encode($client->id); ?>" class="invoice_class" style="<?php echo $style; ?>"><?php echo $client->client_id; ?></a></td>
-                                <td align="left"><a href="javascript:" id="<?php echo base64_encode($client->id); ?>" class="invoice_class" style="<?php echo $style; ?>"><?php echo $client->firstname; ?></a></td>
-                                <td align="left"><a href="javascript:" id="<?php echo base64_encode($client->id); ?>" class="invoice_class" style="<?php echo $style; ?>"><?php echo $client->surname; ?></a></td>
-                                <td align="left"><a href="javascript:" id="<?php echo base64_encode($client->id); ?>" class="invoice_class" style="<?php echo $style; ?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
-                                <td style="word-wrap: break-word; white-space:normal; min-width:300px; max-width: 300px;" align="left"><a href="javascript:" id="<?php echo base64_encode($client->id); ?>" class="invoice_class" style="<?php echo $style; ?>"><?php echo $address; ?></a></td>
-                                <td align="left"><a style="<?php echo $style; ?>" href="mailto:<?php echo $client->email; ?>"><?php echo $client->email; ?></a></td>
-                                <td align="left"><a href="javascript:" id="'.base64_encode($client->id).'" class="invoice_class" style="'.$style.'"><?php echo $client->phone; ?></a></td>
-<!-- 
-                                <td align="center"><a href="javascript:" id="<?php echo base64_encode($client->client_id); ?>" class="payroll_class" style="<?php echo $style; ?>">Payroll Tasks</a></td> -->
-
-                                <td style="<?php echo $style; ?>" align="left">
-                                  <input type="checkbox" class="client_statement" id="statement_<?php echo $client->client_id; ?>" data-element="<?php echo $client->id; ?>" <?php echo($client->statement == "yes")?'checked':''; ?>><label for="statement_<?php echo $client->client_id; ?>">Yes</label>
-                                </td>
+                            <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td style="text-align:center; font-weight: normal !important;">No Data found</td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
                             </tr>
-                            <?php
-                              $i++;
-                              }              
-                            }
-                            if($i == 1)
-                            {
-                              echo'<tr><td colspan="9" align="center">Empty</td></tr>';
-                            }
-                          ?> 
                         </tbody>
                     </table>
 </div>
@@ -1535,7 +1513,9 @@ if(!empty($_GET['import_type_existing']))
 
 
 
+<div class="modal_load modal_client_all"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Please wait until All clients are loaded... </h5></div>
 
+<div class="modal_load modal_single_client"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Please wait until this client is loaded... </h5></div>
 
 <div class="modal_load"></div>
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
@@ -1563,8 +1543,6 @@ if(!empty($_GET['divid']))
             $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:green>Client Activated Successfully.</p>",width:"30%",fixed:true});
         <?php } else if(isset($_GET['deactivate'])) { ?>
             $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:#f00>Client Deactivated Successfully.</p>",width:"30%",fixed:true});
-        <?php } else if(isset($_GET['status_pin_invalid'])) { ?>
-            $.colorbox({html:"<p style=text-align:center;font-size:18px;font-weight:600;color:#f00>Crypt Pin You have entered is Incorrect.</p>",width:"30%",fixed:true});
         <?php } ?>
       }
       $("body").removeClass("loading"); 
@@ -1690,6 +1668,109 @@ $(document).ready(function() {
 });
 
 $(window).click(function(e) {
+
+if($(e.target).hasClass('load_all_clients'))
+{
+  $(".modal_client_all").show();
+  setTimeout(function() {
+      $("#client_expand").dataTable().fnDestroy();
+      $.ajax({
+        url:"<?php echo URL::to('user/load_all_clients_cm_system'); ?>",
+        type:"post",
+        success:function(result)
+        {
+          $("#hidden_client_id").val("all");
+          $("#clients_tbody").html(result);
+          $("#client_search_hidden_infile").val("");
+          $(".client_common_search").val("");
+          $('#client_expand').DataTable({
+              fixedHeader: {
+                headerOffset: 75
+              },
+              autoWidth: true,
+              scrollX: false,
+              fixedColumns: false,
+              searching: false,
+              paging: false,
+              info: false
+          });
+
+          $(".modal_client_all").hide();
+        }
+      })
+  },1000);
+}
+
+if($(e.target).hasClass('load_single_client'))
+{
+  var client_id = $("#client_search_hidden_infile").val();
+  if(client_id == "")
+  {
+    alert("Please select the client and then click on the load button");
+  }
+  else{
+    $(".modal_single_client").show();
+    $("#client_expand").dataTable().fnDestroy();
+    $.ajax({
+      url:"<?php echo URL::to('user/load_single_cm_system'); ?>",
+      type:"post",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        $("#hidden_client_id").val(client_id);
+        $("#clients_tbody").html(result);
+        $('#client_expand').DataTable({
+            fixedHeader: {
+              headerOffset: 75
+            },
+            autoWidth: true,
+            scrollX: false,
+            fixedColumns: false,
+            searching: false,
+            paging: false,
+            info: false
+        });
+
+        $(".modal_single_client").hide();
+      }
+    })
+  }
+}
+
+
+
+
+  if($(e.target).hasClass('ok_to_send_statement'))
+  {
+    var client_id = $(e.target).attr("data-client");
+    if($(e.target).is(":checked"))
+    {
+      var status = 1;
+      $.ajax({
+        url:"<?php echo URL::to('user/change_send_statement_status'); ?>",
+        type:"post",
+        data:{client_id:client_id,status:status},
+        success:function(result)
+        {
+          $(".statement_p").html("Statements will be sent to this Client as part of the automated process");
+          $(".statement_p").css("color","green");
+        }
+      })
+    }
+    else{
+      var status = 0;
+      $.ajax({
+        url:"<?php echo URL::to('user/change_send_statement_status'); ?>",
+        type:"post",
+        data:{client_id:client_id,status:status},
+        success:function(result)
+        {
+          $(".statement_p").html("Statements will NOT be sent to this client as part of the automated process");
+          $(".statement_p").css("color","#f00");
+        }
+      })
+    }
+  }
   if($(e.target).hasClass('invoice_inside_class')){
     var editid = $(e.target).attr("data-element");
     $.ajax({
@@ -1764,6 +1845,15 @@ $(window).click(function(e) {
           $(".vat_module_"+taskid).find(".edit_task_module").attr("data-salutation",salutation);
           $(".vat_module_"+taskid).find(".edit_task_module").attr("data-primary",primary);
           $(".vat_module_"+taskid).find(".edit_task_module").attr("data-secondary",secondary);
+        }
+        else if(type == "3")
+        {
+          $(".statement_module_"+taskid).find(".salutation_mod").html(salutation);
+          $(".statement_module_"+taskid).find(".primary_mod").html(primary);
+          $(".statement_module_"+taskid).find(".secondary_mod").html(secondary);
+          $(".statement_module_"+taskid).find(".edit_task_module").attr("data-salutation",salutation);
+          $(".statement_module_"+taskid).find(".edit_task_module").attr("data-primary",primary);
+          $(".statement_module_"+taskid).find(".edit_task_module").attr("data-secondary",secondary);
         }
         else{
           $(".pms_module_"+taskid).find(".salutation_mod").html(salutation);
@@ -2009,54 +2099,28 @@ $(window).click(function(e) {
   }
   if(e.target.id == "crypt_submit")
   {
-    if (CKEDITOR.instances.editor_1) CKEDITOR.instances.email_content.destroy();
-    var input = $("#crypt_pin_input").val();
-    if(input == "")
-    {
-      alert("Please Enter the Crypt Pin");
-    }
-    else{
-      e.preventDefault();
-      $("body").addClass("loading");
-      $.ajax({
-        url:"<?php echo URL::to('user/email_check_crypt_pin'); ?>",
-        type:"post",
-        data:{pin:input},
-        success: function(result){
-          if(result == 1)
-          {
+    if (CKEDITOR.instances.email_content) CKEDITOR.instances.email_content.destroy();
+    $("body").addClass("loading");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_cm_bulk_clients'); ?>",
+      type:"get",
+      success: function(result){
+        $("#bulk_email_tbody").html(result);
+        $(".bulk_email_modal").modal("show");
+        $("body").removeClass("loading");
+        setTimeout(function(){  
 
-            $("body").addClass("loading");
-            setTimeout(function(){ 
-              $.ajax({
-                url:"<?php echo URL::to('user/get_cm_bulk_clients'); ?>",
-                type:"get",
-                success: function(result){
-                  $("#bulk_email_tbody").html(result);
-                  $(".crypt_modal").modal("hide");
-                  $(".bulk_email_modal").modal("show");
-                  $("body").removeClass("loading");
-                  setTimeout(function(){  
+           CKEDITOR.replace('email_content',
 
-                     CKEDITOR.replace('email_content',
+           {
 
-                     {
+            height: '150px',
 
-                      height: '150px',
+           }); 
 
-                     }); 
-
-                  },500);
-                }
-              });
-            }, 2000);
-          }
-          else{
-            window.location.replace("<?php echo URL::to('user/client_management?pin_invalid=1'); ?>")
-          }
-        }
-      })
-    }
+        },500);
+      }
+    });
   }
   if(e.target.id == "send_bulk_email")
   {
@@ -2477,14 +2541,11 @@ $(window).click(function(e) {
   }
   if($(e.target).hasClass('deactivate_clients'))
   {
-    var crypt_pin = $("#edit_crypt_pin").val();
     var client_id = $(e.target).attr("data-element");
-    if(crypt_pin != "")
-    {
-      $.ajax({
+    $.ajax({
         url:"<?php echo URL::to('user/cm_status_clients'); ?>",
         type:"post",
-        data:{hidden_status:1,client_id:client_id,crypt_pin:crypt_pin},
+        data:{hidden_status:1,client_id:client_id},
         success: function(result)
         {
           if(result == 1)
@@ -2496,21 +2557,15 @@ $(window).click(function(e) {
           }
         }
       })
-    }
-    else{
-      alert("Crypt Pin is Empty! Please Enter the Crypt Pin & Deactivate this client");
-    }
   }
   if($(e.target).hasClass('activate_clients'))
   {
-    var crypt_pin = $("#edit_crypt_pin").val();
     var client_id = $(e.target).attr("data-element");
-    if(crypt_pin != "")
-    {
+
       $.ajax({
         url:"<?php echo URL::to('user/cm_status_clients'); ?>",
         type:"post",
-        data:{hidden_status:0,client_id:client_id,crypt_pin:crypt_pin},
+        data:{hidden_status:0,client_id:client_id},
         success: function(result)
         {
           if(result == 1)
@@ -2522,10 +2577,6 @@ $(window).click(function(e) {
           }
         }
       })
-    }
-    else{
-      alert("Crypt Pin is Empty! Please Enter the Crypt Pin & Activate this client");
-    }
   }
   if($(e.target).hasClass('download_clients'))
   {
@@ -2774,6 +2825,7 @@ $(window).click(function(e) {
                  $(".bank_client_class").val(result['bank_client_id']);
                  $(".invoice_client_id").val(result['clientid']);
                  $("#coms_tbody").html(result['outputmodule']);
+                 $("#statement_tbody").html(result['outputstatement']);
 
                  CKEDITOR.replace('editor_2',
                  {
@@ -3136,6 +3188,27 @@ $(function(){
         info: false
     });
 });
+
+
+$(".client_common_search").autocomplete({
+  source: function(request, response) {        
+    $.ajax({
+      url:"<?php echo URL::to('user/client_review_client_common_search'); ?>",
+      dataType: "json",
+      data: {
+          term : request.term
+      },
+      success: function(data) {
+          response(data);
+      }
+    });
+  },
+  delay:1000,
+  minLength: 1,
+  select: function( event, ui ) {
+    $("#client_search_hidden_infile").val(ui.item.id);
+  }
+  });
 
 </script>
 

@@ -9,7 +9,7 @@
     
     <div style="width:100%; height:auto; float:left;">
     <b>Cheers,</b><br>
-    EasyPayroll Team<br/>
+    Easypayroll Team<br/>
     </div>  
 </div>  
 

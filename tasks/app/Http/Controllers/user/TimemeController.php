@@ -130,9 +130,11 @@ class TimemeController extends Controller {
 		$type = Input::get("task_type");
 		
 		if($type == 0){
+			$project = Input::get('select_projects');
 			$data['clients'] ='';
 			$data['task_name'] = Input::get("task_name");
 			$data['task_type'] = Input::get("task_type");
+			$data['project_id'] = $project;
 		}
 		else{
 			$data['clients'] = implode(",",Input::get('select_client'));
@@ -194,24 +196,16 @@ class TimemeController extends Controller {
 
 
 		$id = base64_decode(Input::get('id'));
-		$status = Input::get('status');		
-		$crypt = Input::get('crypt');		
+		$status = Input::get('status');	
 
 		$admin_details = DB::table('admin')->first();
 
-		if(Hash::check($crypt,$admin_details->cm_crypt))
-		{
-			DB::table('time_task')->where('id', $id)->update(['status' => $status]);
-			if($status == '1'){
-				return redirect::back()->with('message','Lock Success');
-			}
-			else{
-				return redirect::back()->with('message','Unlock Success');
-			}
-			
+		DB::table('time_task')->where('id', $id)->update(['status' => $status]);
+		if($status == '1'){
+			return redirect::back()->with('message','Lock Success');
 		}
 		else{
-			return redirect::back()->with('message','Crypt Pin You have entered is Incorrect.');
+			return redirect::back()->with('message','Unlock Success');
 		}
 	}
 
@@ -219,7 +213,7 @@ class TimemeController extends Controller {
 		$id = base64_decode(Input::get('id'));
 		$task_details = DB::table('time_task')->where('id',$id)->first();
 
-		echo json_encode(array('taskname' => $task_details->task_name,'taskid' => $task_details->id,'clients' => $task_details->clients, 'tasktype' => $task_details->task_type));
+		echo json_encode(array('taskname' => $task_details->task_name,'taskid' => $task_details->id,'clients' => $task_details->clients, 'tasktype' => $task_details->task_type, 'project_id' => $task_details->project_id));
 	}
 
 	public function time_task_update(){
@@ -228,6 +222,7 @@ class TimemeController extends Controller {
 		$type = Input::get("task_type");
 		
 		if($type == 0){
+			$data['project_id'] = Input::get('select_projects_edit');
 			$data['clients'] = '';
 			$data['task_name'] = Input::get("task_name");
 			$data['task_type'] = Input::get("task_type");
@@ -300,7 +295,68 @@ class TimemeController extends Controller {
 		}
 		echo json_encode($array);
 	}
+	public function import_client_list_timeme()
+	{
+		$import_file = $_FILES['import_file']['name'];
+		$tmp_name = $_FILES['import_file']['tmp_name'];
 
+		$upload_dir = 'papers/timeme_import';
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir);
+		}
+		move_uploaded_file($tmp_name, $upload_dir.'/'.$import_file);
+
+		$filepath = $upload_dir.'/'.$import_file;
+		$objPHPExcel = PHPExcel_IOFactory::load($filepath);
+		$i = 0;
+		$message = '';
+		$client_codes = array();
+		$client_firstname = array();
+		$client_surname = array();
+		$client_company = array();
+		$client_errors = array();
+		foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+			$worksheetTitle     = $worksheet->getTitle();
+			$highestRow         = $worksheet->getHighestRow(); // e.g. 10
+			$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
+			$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+			$nrColumns = ord($highestColumn) - 64;
+			$height = $highestRow;
+
+			$client_id_header = $worksheet->getCellByColumnAndRow(0, 1); $client_id_header = trim($client_id_header->getValue());
+			
+			if($client_id_header == "Client Code")
+			{
+				for ($row = 2; $row <= $height; ++ $row) {
+					$client_code = $worksheet->getCellByColumnAndRow(0,$row); $client_code = trim($client_code->getValue());
+					$client_details = DB::table('cm_clients')->where('client_id',$client_code)->first();
+					if(count($client_details))
+					{
+						if(!in_array($client_code,$client_codes))
+						{
+							array_push($client_codes,$client_code);
+							array_push($client_firstname,$client_details->firstname);
+							array_push($client_surname,$client_details->surname);
+							array_push($client_company,$client_details->company);
+						}
+					}
+					else{
+						if(!in_array($client_code,$client_errors))
+						{
+							array_push($client_errors,$client_code);
+						}
+						$i = $i + 1;
+						$message = "This file contains Invalid Client ID's as follows";
+					}
+				}
+			}
+			else{
+				$i = $i + 1;
+				$message = 'Invalid CSV File Format';
+			}
+		}
+		echo json_encode(array("error" => $i, "message" => $message, "client_codes" => $client_codes, "client_errors" => $client_errors, "client_firstname" => $client_firstname, "client_surname" => $client_surname, "client_company" => $client_company));
+	}
 }
 
 

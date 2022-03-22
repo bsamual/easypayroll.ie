@@ -25,11 +25,11 @@
 }
 .fullviewtablelist>tbody>tr>td{
   font-weight:800 !important;
-  font-size:15px !important;
+  font-size:14px !important;
 }
 .fullviewtablelist>tbody>tr>td a{
   font-weight:800 !important;
-  font-size:15px !important;
+  font-size:14px !important;
 }
 .modal { overflow: auto !important;z-index: 999999;}
 .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover
@@ -278,8 +278,27 @@ a:hover{text-decoration: underline;}
      <?php }   
     ?>
     </div>
-        
-    <div class="col-lg-12 text-right">
+    <div class="col-lg-9">
+      <div style="float: left; margin-right: 10px">
+        <label style="float: left; padding-top: 10px;">Search Client ID: </label>
+      </div>
+      <div style="float: left; margin-right: 6px;">
+          
+        <input type="text" class="form-control client_common_search ui-autocomplete-input" placeholder="Enter Client Name" style="font-weight: 500;margin-bottom: 13px;margin-top:2px;width:350px;float:left" value="" autocomplete="off">
+        <input type="button" class="common_black_button load_single_client" value="Load" style="float: left;width: 100px;margin-top: 3px;">
+        <input type="hidden" class="client_search_common" id="client_search_hidden_infile" value="" name="client_id">
+      </div>
+
+      <div style="float: left;">
+        <input type="button" class="common_black_button load_all_clients" value="Load All Clients" style="float: left;width:100%;margin-top: 3px;">
+      </div>
+      <div style="float: left; margin-right: 20px;margin-left:20px;margin-top:10px">
+        <input type="checkbox" name="hide_inactive" class="hide_inactive" id="hide_inactive" value="1"><label for="hide_inactive" title="Hides the Inactive Clients">Hide Inactive</label>
+      </div>
+
+
+    </div>
+    <div class="col-lg-3 text-right">
         <input type="button" class="common_black_button apply_time_allocations" value="Apply Time Allocations to all Clients">
     </div>
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:30px; margin-top:30px">
@@ -309,107 +328,17 @@ a:hover{text-decoration: underline;}
                         </tr>
                         </thead>                            
                         <tbody id="clients_tbody">
-                        <?php
-                            $i=1;
-                            if(count($clientlist)){              
-                              foreach($clientlist as $client){
-                                // $task_job_details = DB::table('task_job')->where('client_id',$client->client_id)->where('status',1)->select('id', 'job_time', 'client_id')->get();
-                                // if(count($task_job_details))
-                                // {
-                                //   $allocated_time = 0;
-                                //   $unallocated_time = 0;
-                                //   foreach($task_job_details as $jobs)
-                                //   {
-                                //     $client_id = $jobs->client_id;
-                                //     $get_client_invoice = DB::table('ta_client_invoice')->where('client_id',$client_id)->first();
-                                //     if(count($get_client_invoice))
-                                //     {
-                                //       if(strpos($get_client_invoice->tasks, '"'.$jobs->id.'"') !== false) {
-                                //         $explode_job_minutes = explode(":",$jobs->job_time);
-                                //         $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
-
-                                //         $allocated_time = $allocated_time + $total_minutes;
-                                //       }
-                                //       else{
-                                //         $explode_job_minutes = explode(":",$jobs->job_time);
-                                //         $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
-
-                                //         $unallocated_time = $unallocated_time + $total_minutes;
-                                //       }
-                                //     }
-                                //     else{
-                                //       $explode_job_minutes = explode(":",$jobs->job_time);
-                                //       $total_minutes = ($explode_job_minutes[0]*60) + ($explode_job_minutes[1]);
-
-                                //       $unallocated_time = $unallocated_time + $total_minutes;
-                                //     }
-                                //   }
-
-                                //   $hour_calculate = strtok(($allocated_time/60), '.');
-                                //   $minutes_calculate = $allocated_time-($hour_calculate*60);
-
-                                //   if($hour_calculate <= 9){
-                                //     $hour_calculate = '0'.$hour_calculate;
-                                //   }
-                                //   else{
-                                //     $hour_calculate = $hour_calculate;
-                                //   }
-
-                                //   if($minutes_calculate <= 9){
-                                //     $minutes_calculate = '0'.$minutes_calculate;
-                                //   }
-                                //   else{
-                                //     $minutes_calculate = $minutes_calculate;
-                                //   }
-
-
-                                //   $hour_calculate_unallocated = strtok(($unallocated_time/60), '.');
-                                //   $minutes_calculate_unallocated = $unallocated_time-($hour_calculate_unallocated*60);
-
-                                //   if($hour_calculate_unallocated <= 9){
-                                //     $hour_calculate_unallocated = '0'.$hour_calculate_unallocated;
-                                //   }
-                                //   else{
-                                //     $hour_calculate_unallocated = $hour_calculate_unallocated;
-                                //   }
-
-                                //   if($minutes_calculate_unallocated <= 9){
-                                //     $minutes_calculate_unallocated = '0'.$minutes_calculate_unallocated;
-                                //   }
-                                //   else{
-                                //     $minutes_calculate_unallocated = $minutes_calculate_unallocated;
-                                //   }
-                                // }
-                                // else{
-                                //   $allocated_time = 0;
-                                //   $unallocated_time = 0;
-                                //   $hour_calculate = '00';
-                                //   $minutes_calculate = '00';
-                                //   $hour_calculate_unallocated = '00';
-                                //   $minutes_calculate_unallocated = '00';
-                                // } 
-                          ?>
-                            <tr class="edit_task edit_task_<?php echo $client->client_id; ?>">
-                                <td align="left"><a href="javascript:" class="load_unallocated fa fa-cog" data-element="<?php echo $client->client_id; ?>" title="Apply time allocations to this Client"></a></td>
-                                <td><?php echo $i; ?></td>
-                                <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo $client->client_id; ?></a></td>
-                                <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
-                                <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo $client->firstname; ?></a></td>
-                                <td align="left"><a href="<?php echo URL::to('user/ta_allocation?client_id='.$client->client_id)?>"><?php echo $client->surname; ?></a></td>
-                                <td align="left" class="allocated_time_client allocated_time_client_<?php echo $client->client_id; ?>"></td>
-                                <td align="left" class="unallocated_time_client unallocated_time_client_<?php echo $client->client_id; ?>"></td>
-                                
-                                
-                            </tr>
-                            <?php
-                              $i++;
-                              }              
-                            }
-                            if($i == 1)
-                            {
-                              echo'<tr><td colspan="7" align="center">Empty</td></tr>';
-                            }
-                          ?> 
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td style="text-align:center; font-weight: normal !important;">No Data found</td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          
+                        </tr>
                         </tbody>
                     </table>
 </div>
@@ -482,7 +411,9 @@ a:hover{text-decoration: underline;}
 
 
 
+<div class="modal_load modal_client_all"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Please wait until All clients are loaded... </h5></div>
 
+<div class="modal_load modal_single_client"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Please wait until this client is loaded... </h5></div>
 
 <div class="modal_load"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Applying Time Allocations to Clients.</h5></div>
 <div class="modal_load_one"><h5 style="text-align: center;margin-top: 30%;font-weight: 800;font-size: 18px;">Applying Time Allocations to this Client.</h5></div>
@@ -603,6 +534,102 @@ $(window).click(function(e){
       }
     })
   }
+
+
+if($(e.target).hasClass('load_all_clients'))
+{
+  //$("body").addClass("loading");
+  $(".modal_client_all").show();
+  setTimeout(function() {
+      $("#ta_expand").dataTable().fnDestroy();
+      $.ajax({
+        url:"<?php echo URL::to('user/load_all_clients_ta_system'); ?>",
+        type:"post",
+        success:function(result)
+        {
+          $("#hidden_client_id").val("all");
+          $("#clients_tbody").html(result);
+          $("#client_search_hidden_infile").val("");
+          $(".client_common_search").val("");
+          $(".modal_client_all").hide();
+          $('#ta_expand').DataTable({
+              fixedHeader: {
+                headerOffset: 75
+              },
+              autoWidth: true,
+              scrollX: false,
+              fixedColumns: false,
+              searching: false,
+              paging: false,
+              info: false,
+              columnDefs: [ {
+              'targets': [0,6,7], // column index (start from 0)
+              'orderable': false, // set orderable false for selected columns
+              }]
+          });
+
+          $("body").removeClass("loading");
+        }
+      })
+  },1000);
+}
+
+if($(e.target).hasClass('load_single_client'))
+{
+  var client_id = $("#client_search_hidden_infile").val();
+  if(client_id == "")
+  {
+    alert("Please select the client and then click on the load button");
+  }
+  else{
+    //$("body").addClass("loading");
+    $(".modal_single_client").show();
+    $("#ta_expand").dataTable().fnDestroy();
+    $.ajax({
+      url:"<?php echo URL::to('user/load_single_client_ta_system'); ?>",
+      type:"post",
+      data:{client_id:client_id},
+      success:function(result)
+      {
+        $("#hidden_client_id").val(client_id);
+        $("#clients_tbody").html(result);
+        $('#ta_expand').DataTable({
+            fixedHeader: {
+              headerOffset: 75
+            },
+            autoWidth: true,
+            scrollX: false,
+            fixedColumns: false,
+            searching: false,
+            paging: false,
+            info: false,
+            columnDefs: [ {
+            'targets': [0,6,7], // column index (start from 0)
+            'orderable': false, // set orderable false for selected columns
+            }]
+        });
+        $(".modal_single_client").hide();
+        //$("body").removeClass("loading");
+      }
+    })
+  }
+}
+
+if($(e.target).hasClass('hide_inactive'))
+{
+  $(".edit_task").show();
+  if($(".show_incomplete").is(":checked"))
+  {
+    $(".complete_cls").hide();
+  }
+  if($(e.target).is(":checked"))
+  {
+    $(".inactive_cls").hide();
+  }
+}
+
+
+
   // if($(e.target).hasClass("apply_time_allocations"))
   // {
   //   $("body").addClass("loading_apply");
@@ -632,6 +659,27 @@ $(window).click(function(e){
   //   });
   // }
 });
+
+
+$(".client_common_search").autocomplete({
+  source: function(request, response) {        
+    $.ajax({
+      url:"<?php echo URL::to('user/client_review_client_common_search'); ?>",
+      dataType: "json",
+      data: {
+          term : request.term
+      },
+      success: function(data) {
+          response(data);
+      }
+    });
+  },
+  delay:1000,
+  minLength: 1,
+  select: function( event, ui ) {
+    $("#client_search_hidden_infile").val(ui.item.id);
+  }
+  });
 </script>
 
 

@@ -618,7 +618,7 @@ if(!empty($_GET['import_type_existing']))
         <input type="radio" name="notify_radio" id="identity_received"><label for="identity_received" style="float:right;margin-right:30px;">Hide Accounts with ID</label>
         <input type="radio" name="notify_radio" id="inactive_clients"><label for="inactive_clients" style="float:right;margin-right:60px;">Inactive Clients</label>
       </div>
-      <div class="modal-body notify_place_div">
+      <div class="modal-body notify_place_div modal_max_height">
       </div>
       <div class="modal-footer">
         <input type="hidden" id="notify_type" value="">

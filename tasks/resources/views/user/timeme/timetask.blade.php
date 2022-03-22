@@ -143,7 +143,20 @@ a:hover{text-decoration: underline;}
 
               <div class="col-lg-12 selectall">
                 <div class="col-lg-4" style="padding: 0px;"><input type="text" class="form-control" name="task_name" placeholder="Enter Task Name" required /></div>
-                <div class="col-lg-6" style="padding-top: 5px;"><input type="checkbox" class="mark_internal" id="mark_internal" value="1"><label for="mark_internal" style="font-size: 14px; font-weight: normal;">Make The Task Internal </label></div>
+                <div class="col-lg-8" style="padding-top: 5px;"><input type="checkbox" class="mark_internal" id="mark_internal" value="1"><label for="mark_internal" style="font-size: 14px; font-weight: normal;float:left;margin-left: 0px;margin-right: 20px;">Make The Task Internal </label>
+                <select name="select_projects" class="form-control select_projects" style="display:none;width:50%;margin-right:20px; margin-top:-20px">
+                  <option value="">Select Project</option>
+                  <?php
+                  $projects = DB::table('projects')->get();
+                  if(count($projects))
+                  {
+                    foreach($projects as $project){
+                      echo '<option value="'.$project->project_id.'">'.$project->project_name.'</option>';
+                    }
+                  }
+                  ?>
+                </select>
+                </div>
               </div>
 
               <div class="check_mark" style="width: 100%; height: auto; text-align: left; padding: 15px; margin-top: 20px; float: left; font-size: 15px; font-weight: bold; display: none;"><i class="fa fa-exclamation-triangle" style="margin-right: 15px;"></i>Internal Tasks Can Not Be Assigned to Clients</div>
@@ -209,7 +222,21 @@ a:hover{text-decoration: underline;}
 
               <div class="col-lg-12 selectall">
                 <div class="col-lg-4" style="padding: 0px;"><input type="text" class="form-control task_class" name="task_name" placeholder="Enter Task Name" required /></div>
-                <div class="col-lg-6" style="padding-top: 5px;"><input type="checkbox" class="mark_internal" id="mark_internal_edit" value="1"><label for="mark_internal_edit" style="font-size: 14px; font-weight: normal;">Make The Task Internal </label></div>
+                <div class="col-lg-8" style="padding-top: 5px;"><input type="checkbox" class="mark_internal_edit" id="mark_internal_edit" value="1"><label for="mark_internal_edit" style="font-size: 14px; font-weight: normal;float:left;margin-left: 0px;margin-right: 20px;">Make The Task Internal </label>
+
+                <select name="select_projects_edit" class="form-control select_projects_edit" style="display:none;width:50%;margin-right:20px; margin-top:-20px">
+                  <option value="0">Select Project</option>
+                  <?php
+                  $projects = DB::table('projects')->get();
+                  if(count($projects))
+                  {
+                    foreach($projects as $project){
+                      echo '<option value="'.$project->project_id.'">'.$project->project_name.'</option>';
+                    }
+                  }
+                  ?>
+                </select>
+                </div>
               </div>
 
               <div class="check_mark" style="width: 100%; height: auto; text-align: left; padding: 15px; margin-top: 20px; float: left; font-size: 15px; font-weight: bold; display: none;"><i class="fa fa-exclamation-triangle" style="margin-right: 15px;"></i>Internal Tasks Can Not Be Assigned to Clients</div>
@@ -326,9 +353,7 @@ a:hover{text-decoration: underline;}
             </div>
           </div>
           <div class="crypt_class">
-            <label>Enter Crypt Pin : </label>
             <div class="form-group">            
-                <input class="form-control" name="crypt" id="crypt_pin_input" placeholder="Enter Crypt Pin" type="password" required>
                 <input type="hidden" value="" class="lock_status" name="status">
                 <input type="hidden" value="" class="lock_id" name="id">
             </div>
@@ -569,6 +594,7 @@ $(window).click(function(e) {
     $(".class_selectall").show();
     $(".client_list").show();
     $(".check_mark").hide();
+    $(".select_projects").hide();
     /*$("body").addClass("loading");
     $.ajax({
       url: "<?php echo URL::to('user/time_task_client_details') ?>",
@@ -612,12 +638,33 @@ $(window).click(function(e) {
       $(".client_list").hide();
       $(".task_type").val('0');
       $(".check_mark").show();
+      $(".select_projects").show();
     }
     else{
       $(".class_selectall").show();
       $(".client_list").show(); 
       $(".task_type").val('1');
       $(".check_mark").hide();
+      $(".select_projects").hide();
+      $(".select_projects").val("0");
+    }
+  }
+
+  if($(e.target).hasClass('mark_internal_edit'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      $(".class_selectall").hide();
+      $(".client_list").hide();
+      $(".check_mark").show();
+      $(".select_projects_edit").show();
+    }
+    else{
+      $(".class_selectall").show();
+      $(".client_list").show();
+      $(".check_mark").hide();
+      $(".select_projects_edit").hide();
+      $(".select_projects_edit").val("0");
     }
   }
 
@@ -697,12 +744,16 @@ $(window).click(function(e) {
           $(".class_selectall").hide();
           $(".client_list").hide();
           $(".check_mark").show();
+          $(".select_projects_edit").val(result['project_id']);
+          $(".select_projects_edit").show();
         }
         else{
           $("#mark_internal_edit").prop("checked",false);
           $(".class_selectall").show();
           $(".client_list").show();
           $(".check_mark").hide();
+          $(".select_projects_edit").val('0');
+          $(".select_projects_edit").hide();
         }
       }
     });

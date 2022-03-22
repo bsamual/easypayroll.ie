@@ -3,18 +3,29 @@
 <?php require_once(app_path('Http/helpers.php')); ?>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
-
 <script src="<?php echo URL::to('assets/js/jquery.dataTables.min.js'); ?>"></script>
 <script src="<?php echo URL::to('assets/js/dataTables.fixedHeader.min.js'); ?>"></script>
-
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
-
 <style>
-
+.opening_bal_h5 {
+  float: left;
+  width: 100%;
+  font-size: 18px;
+}
+#client_account_tbody > tr > td {
+    padding: 12px !important;
+}
+.opening_bal_transaction_h5 {
+  float: left;
+  width: 100%;
+  font-size: 18px;
+}
+#transaction_tbody > tr > td {
+    padding: 12px !important;
+}
 #receipt_tbody > tr > td{
   padding:12px !important;
 }
@@ -106,85 +117,47 @@ body{
                 no-repeat;
 }
 .ui-widget{z-index: 999999999}
-
 .dropzone .dz-preview.dz-image-preview {
-
     background: #949400 !important;
-
 }
-
 .dz-message span{text-transform: capitalize !important; font-weight: bold;}
-
 .trash_imageadd{
-
   cursor:pointer;
-
 }
-
 .dropzone.dz-clickable .dz-message, .dropzone.dz-clickable .dz-message *{
-
       margin-top: 40px;
-
 }
-
 .dropzone .dz-preview {
-
   margin:0px !important;
-
   min-height:0px !important;
-
   width:100% !important;
-
   color:#000 !important;
-
     float: left;
-
   clear: both;
-
 }
-
 .dropzone .dz-preview p {
-
   font-size:12px !important;
-
 }
-
 .remove_dropzone_attach{
-
   color:#f00 !important;
-
   margin-left:10px;
-
 }
-
 .img_div_add{
-
         border: 1px solid #000;
-
     width: 300px;
-
     position: absolute !important;
-
     min-height: 118px;
-
     background: rgb(255, 255, 0);
-
     display:none;
-
 }
-
 .dropzone.dz-clickable{margin-bottom: 0px !important;}
-
 .report_model_selectall{padding:10px 15px; background-image:linear-gradient(to bottom,#f5f5f5 0,#e8e8e8 100%); background: #f5f5f5; border:1px solid #ddd; margin-top: 20px; border-radius: 3px;  }
-
-
 body.loading {
     overflow: hidden;   
 }
 body.loading .modal_load {
     display: block;
 }
-
 .modal_load_apply {
     display:    none;
     position:   fixed;
@@ -225,13 +198,35 @@ function popitup(url) {
     if (window.focus) {newwindow.focus()}
     return false;
 }
-
 </script>
-
 <style>
 .error{color: #f00; font-size: 12px;}
 a:hover{text-decoration: underline;}
 </style>
+
+
+<!-- <div class="modal fade receipt_payment_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-lg" role="document" style="width: 80%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title receipt_payment_title" id="myModalLabel"></h4>
+      </div>
+      <div class="modal-body">
+          <table class="table own_table_white" id="result_payment_receipt" style="background: #fff;"></table>
+      </div>
+      <div class="modal-footer">
+        
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+
+
+
+
 <div class="modal fade download_pdf_folder_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -348,26 +343,19 @@ a:hover{text-decoration: underline;}
             .account_table .account_row .account_row_td{font-size: 14px; line-height: 20px; float:left;}
             .account_table .account_row .account_row_td.left{width:40%;}
             .account_table .account_row .account_row_td.right{width:60%;}
-
             .tax_table_div{width: 100%; height: auto; float: left;}
             .tax_table{width: 80%; height: auto; float: left;margin-left: 10%;}
             .tax_table .tax_row .tax_row_td.right{width:30%;text-align: right; padding-right: 10px; border-top:2px solid #000; }
-
             .class_row{width: 100%; height: 20px;}
-
             .details_table .class_row .class_row_td, .tax_table .tax_row .tax_row_td{ font-size: 14px; font-weight: 600;float:left;}
             .details_table .class_row .class_row_td.left{width:70%;min-height:10px; text-align: left; float: left; height:20px;}
             .details_table .class_row .class_row_td.left_corner{width:10%;text-align: right; float: left;height:20px;}
             .details_table .class_row .class_row_td.right_start{width:10%;text-align: right; float: left;height:20px;}
             .details_table .class_row .class_row_td.right{width:10%;text-align: right; padding-right: 10px; float: right;height:20px;}
-
             .tax_table .tax_row .tax_row_td.left{width:70%;text-align: left; float: left;}
             .tax_table .tax_row .tax_row_td.right{width:30%;text-align: right; padding-right: 10px; float: right;}
-
             .details_table .class_row, .tax_table .tax_row{line-height: 30px; clear: both;}
-
             .company_details_class{width: 100%; margin: 0px auto; height: auto;}
-
             .company_details_div{width: 40%; height: auto; float: left; margin-top: 220px; margin-left: 10%}
             .firstname_div{width: 100%; float: left; margin-top: 55px;}
             .aib_account{ width: 200px; height: auto; float: right; line-height: 20px; color: #ccc; font-size: 12px; }
@@ -408,27 +396,20 @@ a:hover{text-decoration: underline;}
             <div class="tax_details_class"></div> 
           </div>
         </div>
-
         <div class="modal-footer">
-
             <input type="button" class="common_black_button saveas_pdf" value="Save as PDF">
             <input type="button" class="common_black_button print_pdf" value="Print">
-
         </div>
-
       </div>
-
   </div>
-
 </div>
-
 <div class="content_section" style="margin-bottom:200px">
   	<div class="page_title">
         <h4 class="col-lg-12 padding_00 new_main_title">
                 Client Account Review           
             </h4>
-        <div class="col-lg-3" style="padding-right: 0px;">
-        	<div class="col-lg-4 padding_00">
+        <div class="col-lg-5" style="padding-right: 0px;">
+        	<div class="col-lg-3 padding_00">
     				<h5 style="font-weight: 600">Enter Client Name: </h5>
     			</div>
     			<div class="col-lg-7" style="padding: 0px;">
@@ -448,18 +429,15 @@ a:hover{text-decoration: underline;}
     				    ?>
     				    <input type="text" class="form-control client_common_search" placeholder="Enter Client Name" style="font-weight: 500;" value="<?php echo $companyname_val; ?>" required />                      
     				    <input type="hidden" class="client_search_common" id="client_search_hidden_infile" value="<?php echo $hiddenval; ?>" name="client_id">
-
     				</div>                  
     			</div>
     			<div class="col-md-1" style="padding: 0px">
     				<input type="button" name="load_client_review" class="common_black_button load_client_review" value="Load">
     			</div>
-
     			<div class="col-md-12 client_details_div">
-
     			</div>
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-1">
         	&nbsp;
         </div>
         <div class="col-lg-6" style="padding:0px 40px">
@@ -486,7 +464,6 @@ a:hover{text-decoration: underline;}
                 </tbody>
               </table>
         </div>
-
         <div class="col-md-4">
         	<h3>Invoice List</h3>
         	<input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_1" value="1"><label for="invoice_date_option_1">Year</label>
@@ -495,6 +472,7 @@ a:hover{text-decoration: underline;}
           <br/>
         	<input type="button" name="download_selected_pdf" class="common_black_button download_selected_pdf" value="Download Selected PDF" style="display:none">
         	<input type="button" name="email_selected_pdf" class="common_black_button email_selected_pdf" value="Email Selected PDF" style="display:none">
+          <input type="button" name="selected_export_csv" class="common_black_button selected_export_csv" value="Export CSV" style="display:none">
 
         	<div class="col-md-12 invoice_year_div padding_00" style="margin-top: 7px;display:none">
   	    		<h5 class="col-md-1 padding_00" style="font-weight: 600; width: 80px;">Select Year:</h5>
@@ -528,10 +506,8 @@ a:hover{text-decoration: underline;}
           <input type="radio" name="receipt_date_option" class="receipt_date_option" id="receipt_date_option_1" value="1"><label for="receipt_date_option_1">Year</label>
           <input type="radio" name="receipt_date_option" class="receipt_date_option" id="receipt_date_option_2" value="2"><label for="receipt_date_option_2">All Receipt</label>
           <input type="radio" name="receipt_date_option" class="receipt_date_option" id="receipt_date_option_3" value="3"><label for="receipt_date_option_3">Custom Date</label>
-
           <!-- <input type="button" name="download_selected_pdf" class="common_black_button download_selected_pdf" value="Download Selected PDF" style="display:none">
           <input type="button" name="email_selected_pdf" class="common_black_button email_selected_pdf" value="Email Selected PDF" style="display:none"> -->
-
           <div class="col-md-12 receipt_year_div padding_00" style="margin-top: 20px;display:none">
             <h5 class="col-md-1 padding_00" style="font-weight: 600; width: 80px;">Select Year:</h5>
             <div class="col-md-3">
@@ -564,40 +540,46 @@ a:hover{text-decoration: underline;}
   	    	<div class="col-md-12 transaction_table_div padding_00">
   	    		<ul class="nav nav-tabs">
               <li class="nav-item active">
-                <a class="nav-link active" href="javascript:" id="listing-tab" data-toggle="tab" data-target="#listing"  role="tab" aria-controls="home" aria-selected="true">Transaction Listing</a>
+                <a class="nav-link transaction_tab active" href="javascript:" id="listing-tab" data-toggle="tab" data-target="#listing"  role="tab" aria-controls="home" aria-selected="true">Transaction Listing</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="javascript:" id="account-tab" data-toggle="tab" data-target="#account"  role="tab" aria-controls="home" aria-selected="true">Client Account</a>
+                <a class="nav-link client_tab" href="javascript:" id="account-tab" data-toggle="tab" data-target="#account"  role="tab" aria-controls="home" aria-selected="true">Client Account</a>
               </li>
             </ul>
-            <div class="tab-content" id="myTabContent" style="position: absolute;width: 100%;top: 150px;">
+            <div class="tab-content" id="myTabContent">
               <div class="tab-pane fade in active" id="listing" role="tabpanel" aria-labelledby="listing-tab">
-                <table class="table">
+                <a href="javascript:" class="load_transaction_listing common_black_button" style="margin-top: 10px;float:left">Load Transaction Listing</a>
+                <a href="javascript:" class="export_transaction_details common_black_button" style="margin-top: 10px;float:right;display: none">EXPORT CSV</a>
+                <h5 class="opening_bal_transaction_h5" style="display:none">Opening Balance: <spam id="opening_bal_transaction"></spam></h5>
+                <table class="table own_table_white transaction_table" style="width: 100%;margin-top: 27px;float:left;display:none">
                   <thead>
                     <th>Date</th>
-                    <th>Transaction Detail</th>
+                    <th>Source</th>
+                    <th>Description</th>
                     <th>€</th>
+                    <th>Balance</th>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td colspan="3">No Records found</td>
-                    </tr>
+                  <tbody id="transaction_tbody">
                   </tbody>
                 </table>
+                <p style="margin-top:75%;clear:both;float:left">&nbsp;</p>
               </div>
               <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
-                <table class="table">
+                <a href="javascript:" class="load_client_account_details common_black_button" style="margin-top: 10px;float:left">Load Client Account Details</a>
+                <a href="javascript:" class="export_client_account_details common_black_button" style="margin-top: 10px;float:right">EXPORT CSV</a>
+                <h5 class="opening_bal_h5" style="display:none">Opening Balance: <spam id="opening_bal_client"></spam></h5>
+                <table class="table own_table_white client_account_table" style="width: 100%;margin-top: 27px;float:left;display:none">
                   <thead>
                     <th>Date</th>
-                    <th>Transaction Detail</th>
+                    <th>Source</th>
+                    <th>Description</th>
                     <th>€</th>
+                    <th>Balance</th>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td colspan="3">No Records found</td>
-                    </tr>
+                  <tbody id="client_account_tbody">
                   </tbody>
                 </table>
+                <p style="margin-top:75%;clear:both;float:left">&nbsp;</p>
               </div>
             </div>
       		</div> 
@@ -615,22 +597,69 @@ a:hover{text-decoration: underline;}
 	<input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
 	<input type="hidden" name="show_alert" id="show_alert" value="">
 	<input type="hidden" name="pagination" id="pagination" value="1">
-
   <input type="hidden" name="sno_sortoptions" id="sno_sortoptions" value="asc">
   <input type="hidden" name="invoice_sortoptions" id="invoice_sortoptions" value="asc">
   <input type="hidden" name="date_sortoptions" id="date_sortoptions" value="asc">
   <input type="hidden" name="net_sortoptions" id="net_sortoptions" value="asc">
   <input type="hidden" name="vat_sortoptions" id="vat_sortoptions" value="asc">
   <input type="hidden" name="gross_sortoptions" id="gross_sortoptions" value="asc">
-
   <input type="hidden" name="receipt_sno_sortoptions" id="receipt_sno_sortoptions" value="asc">
   <input type="hidden" name="debit_sortoptions" id="debit_sortoptions" value="asc">
   <input type="hidden" name="credit_sortoptions" id="credit_sortoptions" value="asc">
   <input type="hidden" name="receipt_date_sortoptions" id="receipt_date_sortoptions" value="asc">
   <input type="hidden" name="amount_sortoptions" id="amount_sortoptions" value="asc">
 </div>
-
 <script>
+
+$(window).click(function(e) { 
+
+/*if($(e.target).hasClass('receipt_class')){
+  var id = $(e.target).attr("data-element");
+
+  setTimeout(function() {
+  $.ajax({
+      url:"<?php echo URL::to('user/load_single_client_receipt_payment'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{id:id, type:0},
+      success: function(result)
+      {
+        $(".receipt_payment_title").html(result['page_title']);
+        $("#result_payment_receipt").html(result['output']);
+
+        $(".receipt_payment_modal").modal('show');        
+        $("body").removeClass("loading");           
+      }
+    })
+  },500);
+
+}
+
+if($(e.target).hasClass('payment_class')){
+  var id = $(e.target).attr("data-element");
+
+  setTimeout(function() {
+  $.ajax({
+      url:"<?php echo URL::to('user/load_single_client_receipt_payment'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{id:id, type:1},
+      success: function(result)
+      {
+        $(".receipt_payment_title").html(result['page_title']);
+        $("#result_payment_receipt").html(result['output']);
+
+        $(".receipt_payment_modal").modal('show');        
+        $("body").removeClass("loading");           
+      }
+    })
+  },500);
+
+}*/
+
+})
+
+
 $(document).ready(function() {
 	$(".client_common_search").autocomplete({
 		source: function(request, response) {        
@@ -662,7 +691,6 @@ $(document).ready(function() {
        format: 'L',
        format: 'DD/MM/YYYY',
     });
-
     $(".from_receipt").datetimepicker({
        defaultDate: fullDate,       
        format: 'L',
@@ -695,7 +723,6 @@ var convertToNumeric = function(value){
       value = value.replace(',','');
       value = value.replace(',','');
       value = value.replace(',','');
-
        return parseInt(value.toLowerCase());
 }
 $(window).click(function(e) { 
@@ -723,6 +750,12 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#invoice_tbody').html(sorted);
   }
+
+
+
+
+
+
   if($(e.target).hasClass('sort_sno_receipt'))
   {
     var sort = $("#receipt_sno_sortoptions").val();
@@ -953,6 +986,114 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#invoice_tbody').html(sorted);
   }
+  if($(e.target).hasClass('load_client_account_details'))
+  {
+    var client_id = $("#client_search_hidden_infile").val();
+    if(client_id == "")
+    {
+      alert("Please select the Client");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_client_account_review_listing'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{client_id:client_id},
+        success:function(result)
+        {
+          $(".opening_bal_h5").show();
+          $(".client_account_table").show();
+          $(".export_client_account_details").show();
+          $('#opening_bal_client').html(result['opening_balance']);
+          $("#client_account_tbody").html(result['output']);
+        }
+      });
+    }
+  }
+  if($(e.target).hasClass('load_transaction_listing'))
+  {
+    var client_id = $("#client_search_hidden_infile").val();
+    if(client_id == "")
+    {
+      alert("Please select the Client");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_transaction_review_listing'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{client_id:client_id},
+        success:function(result)
+        {
+
+          $(".opening_bal_transaction_h5").show();
+          $(".transaction_table").show();
+          $(".export_transaction_details").show();
+          $('#opening_bal_transaction').html(result['opening_balance']);
+          $("#transaction_tbody").html(result['output']);
+          $('[data-toggle="popover"]').popover();
+        }
+      });
+    }
+  }
+  if($(e.target).hasClass('export_client_account_details'))
+  {
+    var client_id = $("#client_search_hidden_infile").val();
+    if(client_id == "")
+    {
+      alert("Please select the Client");
+    }
+    else{
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/export_client_account_review_listing'); ?>",
+        type:"post",
+        data:{client_id:client_id},
+        success:function(result)
+        {
+          $("body").removeClass("loading");
+          SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        }
+      });
+    }
+  }
+  if($(e.target).hasClass('export_transaction_details'))
+  {
+    var client_id = $("#client_search_hidden_infile").val();
+    if(client_id == "")
+    {
+      alert("Please select the Client");
+    }
+    else{
+      $("body").addClass("loading");
+      $.ajax({
+        url:"<?php echo URL::to('user/export_transaction_review_listing'); ?>",
+        type:"post",
+        data:{client_id:client_id},
+        success:function(result)
+        {
+          $("body").removeClass("loading");
+          SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        }
+      });
+    }
+  }
+  if($(e.target).hasClass('client_tab'))
+  {
+    $(".opening_bal_h5").hide();
+    $(".client_account_table").hide();
+    $(".export_client_account_details").hide();
+    $('#opening_bal_client').html('');
+    $("#client_account_tbody").html('');
+  }
+  if($(e.target).hasClass('transaction_tab'))
+  {
+    $(".opening_bal_transaction_h5").hide();
+    $(".transaction_table").hide();
+    $(".export_transaction_details").hide();
+    $('#opening_bal_transaction').html('');
+    $("#transaction_tbody").html('');
+  }
 	if($(e.target).hasClass('load_all_cm_invoice')) {
 		var type = $(".invoice_date_option:checked").val();
 		if(type == "1")
@@ -979,6 +1120,7 @@ $(window).click(function(e) {
 			                $(".invoice_table_div").show();
 			                 $(".download_selected_pdf").show();
 			                $(".email_selected_pdf").show();
+                      $(".selected_export_csv").show();
 			                $("body").removeClass("loading");
 			                $('#invoice_expand').DataTable({
 			                    autoWidth: true,
@@ -1016,6 +1158,7 @@ $(window).click(function(e) {
 		                $(".invoice_table_div").show();
 		                 $(".download_selected_pdf").show();
 			                $(".email_selected_pdf").show();
+                      $(".selected_export_csv").show();
 		                $("body").removeClass("loading");
 		                $('#invoice_expand').DataTable({
 		                    autoWidth: true,
@@ -1111,7 +1254,6 @@ $(window).click(function(e) {
       $(".invoice_check").prop("checked",false);
     }
   }
-
   if($(e.target).hasClass('select_all_receipt'))
   {
     if($(e.target).is(":checked"))
@@ -1201,15 +1343,14 @@ $(window).click(function(e) {
 				$(".invoice_year_div").show();
 				$(".custom_date_div").hide();
 				$(".invoice_table_div").html("");
-
 				$(".download_selected_pdf").hide();
+        $(".selected_export_csv").hide();
 				$(".email_selected_pdf").hide();
 			}
 			else if(value == "2")
 			{
 				$(".invoice_year_div").hide();
 				$(".custom_date_div").hide();
-
 				$("body").addClass("loading");
 			    setTimeout(function(){ 
 			        var client_id = $("#client_search_hidden_infile").val();
@@ -1226,6 +1367,7 @@ $(window).click(function(e) {
 			                $(".invoice_table_div").show();
 			                $(".download_selected_pdf").show();
 							$(".email_selected_pdf").show();
+              $(".selected_export_csv").show();
 			                $("body").removeClass("loading");
 			                $('#invoice_expand').DataTable({
 			                    autoWidth: true,
@@ -1236,7 +1378,6 @@ $(window).click(function(e) {
 			                    info: false,
 			                    ordering: false
 			                });
-
 			                
 			          }
 			        });
@@ -1248,6 +1389,7 @@ $(window).click(function(e) {
 				$(".custom_date_div").show();
 				$(".invoice_table_div").html("");
 				$(".download_selected_pdf").hide();
+        $(".selected_export_csv").hide();
 				$(".email_selected_pdf").hide();
 			}
 		}
@@ -1272,7 +1414,6 @@ $(window).click(function(e) {
       {
         $(".receipt_year_div").hide();
         $(".custom_date_div_receipt").hide();
-
         $("body").addClass("loading");
           setTimeout(function(){ 
               var client_id = $("#client_search_hidden_infile").val();
@@ -1322,47 +1463,48 @@ $(window).click(function(e) {
         data:{client_id:client_id},
         success:function(result)
         {
-          console.log(result);
           $(".company_name").val(result['company']);
           $(".cro_number").val(result['cro']);
           $(".cm_ard_date").val(result['ard']);
           $(".cro_ard_date").val("");
           $(".cro_type").val(result['type']);
-
           $(".invoice_select_year").html(result['invoice_year']);
           $(".receipt_select_year").html(result['receipt_year']);
           $(".client_details_div").html(result['client_details']);
           $(".client_email").val(result['client_email']);
-
           $(".cro_ard_date").css("color","#000 !important");
           $(".company_name").css("color","#000 !important");
-
           $(".update_ard").hide();
-
           $(".invoice_year_div").hide();
           $(".custom_date_div").hide();
-
           $(".receipt_year_div").hide();
           $(".custom_date_div_receipt").hide();
-
           $(".receipt_year_div").hide();
           $(".custom_date_div_receipt").hide();
-
           $(".download_selected_pdf").hide();
           $(".email_selected_pdf").hide();
+          $(".selected_export_csv").hide();
           $(".invoice_table_div").hide();
           $(".receipt_table_div").hide();
-
           /*$(".receipt_table_div").hide();*/
-
           $(".from_invoice").val("");
           $(".to_invoice").val("");
-
           $(".from_receipt").val("");
           $(".to_receipt").val("");
-
           $(".invoice_date_option").prop("checked",false);
           $(".receipt_date_option").prop("checked",false);
+          $(".opening_bal_h5").hide();
+          $(".client_account_table").hide();
+          $(".export_client_account_details").hide();
+          $('#opening_bal_client').html('');
+          $("#client_account_tbody").html('');
+
+          $(".opening_bal_transaction_h5").hide();
+          $(".transaction_table").hide();
+          $(".export_transaction_details").hide();
+          $('#opening_bal_transaction').html('');
+          $("#transaction_tbody").html('');
+          
           $("body").removeClass("loading");
         }
       })
@@ -1397,7 +1539,6 @@ $(window).click(function(e) {
 						$(".cro_ard_date").val(result['next_ard']);
 						$(".update_ard").hide();
 					}
-
 					if(result['companystatus'] == "1")
 					{
 						$(".company_name").val(result['company_name']);
@@ -1415,7 +1556,6 @@ $(window).click(function(e) {
 	{
 		var client_id = $("#client_search_hidden_infile").val();
 		var cro_ard = $(".cro_ard_date").val();
-
 		$.ajax({
 			url:"<?php echo URL::to('user/update_cro_ard_date'); ?>",
 			type:"post",
@@ -1434,7 +1574,6 @@ $(window).click(function(e) {
 		if(checked > 0)
 		{
       // $(".download_pdf_folder_modal").modal("show");
-
       $("body").addClass("loading");
       var ids = '';
       $(".invoice_check:checked").each(function() {
@@ -1461,6 +1600,38 @@ $(window).click(function(e) {
 			alert("Please select atleast one invoice to download");
 		}
 	}
+  if($(e.target).hasClass('selected_export_csv'))
+  {
+    var checked = $(".invoice_check:checked").length;
+    if(checked > 0)
+    {
+      // $(".download_pdf_folder_modal").modal("show");
+      $("body").addClass("loading");
+      var ids = '';
+      $(".invoice_check:checked").each(function() {
+          if(ids == "")
+          {
+            ids = $(this).attr("data-element");
+          }
+          else{
+            ids = ids+','+$(this).attr("data-element");
+          }
+      });
+      $.ajax({
+        url:"<?php echo URL::to('user/invoice_export_selected_csvs'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{ids:ids},
+        success:function(result)
+        {
+          SaveToDisk("<?php echo URL::to('papers'); ?>/"+result['timefolder']+'/'+result['filename'],result['filename']);
+        }
+      })
+    }
+    else{
+      alert("Please select atleast one invoice to export as csv");
+    }
+  }
   if($(e.target).hasClass('save_pdfs_in_folder'))
   {
     var folder_path = $(".download_folder_path").val();
@@ -1524,7 +1695,6 @@ $(window).click(function(e) {
           {
             height: '300px',
           });
-
           CKEDITOR.instances['editor_1'].setData("<p>Hi,</p><p>We have attached a copy of the following Invoices</p>"+result['pdfs']);
 					$(".sent_to_client").modal("show");
 					$(".zip_name").html(result);
@@ -1547,7 +1717,6 @@ $(window).click(function(e) {
 		}
 	}
 })
-
 $(window).keyup(function(e) {
     var valueTimmer;                //timer identifier
     var valueInterval = 500;  //time in ms, 5 second for example
@@ -1572,8 +1741,4 @@ function doneTyping (signature_value,id) {
       });
 }
 </script>
-
-
-
-
 @stop

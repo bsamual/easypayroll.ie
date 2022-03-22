@@ -5,7 +5,7 @@
     //header('Set-Cookie: fileDownload=true; path=/');
     header('Cache-Control: max-age=60, must-revalidate');
  ?>
-<title>Easypayroll - Tasks</title>
+<title>Bubble - Tasks</title>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/bootstrap.min.css')?>">
 <script type="text/javascript" src="<?php echo URL::to('assets/js/jquery-1.11.2.min.js')?>"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/bootstrap-theme.min.css')?>" />

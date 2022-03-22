@@ -523,7 +523,6 @@ if($(e.target).hasClass('add_new')){
           $(".form-group-add").show();
           $(".form-group-add").html(result['form_details']);
           $(".button_submit").html(result['create_button']);
-          $(".crypt_button_add").hide();
           $(".button_submit").show();
 
           $("#attachments_text").show();
@@ -586,20 +585,6 @@ if($(e.target).hasClass('edit_setting')){
     }
   });
 }
-
-
-if($(e.target).hasClass('crypt_button_add')){
-  var crypt = $(".crypt_pin").val();
-  if(crypt == "" || typeof crypt === "undefined")
-  {
-    alert("Please Enter CRYPT PIN");
-    return false;
-  }
-  else{
-    
-  } 
-}
-
 
 if($(e.target).hasClass('attachmentsdownload')){
     e.preventDefault();

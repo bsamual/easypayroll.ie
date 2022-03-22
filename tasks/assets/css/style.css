@@ -226,6 +226,48 @@ textarea:disabled {
 .payroll_menu_section{z-index:999; position: fixed; width: 100%; background: #fff; top: 160px; }
 
 
+.taskmanager_rate {
+    float: left;
+    height: 46px;
+    padding: 0 10px;
+}
+.taskmanager_rate > label{
+    display: block !important;
+    margin-left: 0px !important;
+    padding-left: 0px !important;
+    background: none !important;
+}
+.taskmanager_rate > input{
+    left : -9999px;
+  position: absolute;
+}
+.taskmanager_rate:not(:checked) > label {
+    float:right;
+    width:1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:30px;
+    color:#ccc;
+}
+.taskmanager_rate:not(:checked) > label:before {
+    content: '★ ';
+}
+.taskmanager_rate > .taskmanager_star_red.checked_input ~ label {
+    color: #f00 !important;    
+}
+.taskmanager_rate > .taskmanager_star_orange.checked_input ~ label {
+    color: orange !important;    
+}
+.taskmanager_rate > .taskmanager_star_yellow.checked_input ~ label {
+    color: #e3e300 !important;    
+}
+.taskmanager_rate > .taskmanager_star_chartreuse.checked_input ~ label {
+    color: chartreuse !important;    
+}
+.taskmanager_rate > .taskmanager_star_green.checked_input ~ label {
+    color: green !important;    
+}
 
 textarea {
     resize: none;

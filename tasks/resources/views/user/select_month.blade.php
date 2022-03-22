@@ -5,6 +5,12 @@
 <script src='<?php echo URL::to('assets/js/table-fixed-header_pms.js'); ?>'></script>
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <style>
+  .margintop20{
+  margin-top:20px !important;
+  margin-bottom: 0px !important;
+}
+  .start_group{clear:both;}
+  body{ background: #fff !important; }
   .header-copy{top: 200px !important;background: #fff; z-index:99;}
   .start_rating { cursor:pointer; font-size: 24px;margin-top: 20px;}
 
@@ -530,7 +536,7 @@ table{
 
 
 
-    top: 34px;
+    top: 43px;
 
 
 
@@ -555,7 +561,8 @@ table{
 
 }
 
-
+.close_xmark{opacity: 1 !important; padding: 4px 8px !important;}
+.close_xmark:hover{opacity: 0.6;}
 
 .notify_div
 
@@ -569,7 +576,7 @@ table{
 
 
 
-    top: 34px;
+    top: 43px;
 
 
 
@@ -920,7 +927,7 @@ body.loading .modal_load {
 
   $admin_details = Db::table('admin')->first();
 
-  $admin_cc = $admin_details->task_cc_email;
+  $admin_cc = $admin_details->payroll_cc_email;
 
 ?>        
 <!--*************************************************************************-->
@@ -946,14 +953,14 @@ body.loading .modal_load {
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">New Task Creator</h4>
+            <h4 class="modal-title job_title" style="font-weight: 700; font-size: 20px;">New Task Creator</h4>
           </div>
           <div class="modal-body">            
             <div class="row"> 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <label style="margin-top:5px">Author:</label>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3">
                   <select name="select_user" class="form-control select_user_author" required>
                     <option value="">Select User</option>        
                       <?php
@@ -969,38 +976,44 @@ body.loading .modal_load {
                       ?>
                   </select>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px">
-              <div class="col-md-3">
-                  <label style="margin-top:5px">Creation Date:</label>
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Author Email:</label>
                 </div>
-                <div class="col-md-9">
-                  <label class="input-group datepicker-only-init_date_received">
-                      <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
-                      <span class="input-group-addon">
-                          <i class="glyphicon glyphicon-calendar"></i>
-                      </span>
-                  </label>
+                <div class="col-md-4">
+                  <input  type="email" class="form-control author_email" name="author_email" placeholder="Enter Author's Email" required>
                 </div>
             </div>
-            <div class="row" style="margin-top:7px">
-              <div class="col-md-3">
+            
+            <div class="row margintop20" style="margin-top:7px">
+                <div class="col-md-2">
                   <label style="margin-top:5px">Allocate To:</label>
                 </div>
-                <div class="col-md-7">
+                <div class="col-md-3">
                   <select name="allocate_user" class="form-control allocate_user_add">
                     <option value="">Select User</option>        
                       <?php
                       $selected = '';
                       if(count($userlist)){
                         foreach ($userlist as $user) {
+                          if(Session::has('task_manager_user'))
+                          {
+                            if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }
                       ?>
-                        <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
                       <?php
                         }
                       }
                       ?>
                   </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To Email:</label>
+                </div>
+                <div class="col-md-3">
+                  <input  type="email" class="form-control allocate_email" name="allocate_email" placeholder="Enter Allocate's Email" required>
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
@@ -1009,8 +1022,8 @@ body.loading .modal_load {
                   </div>
                 </div>
             </div>
-            <div class="row" style="margin-top:14px">
-              <div class="col-md-3 client_group">
+            <div class="row margintop20" style="margin-top:14px">
+              <div class="col-md-2 client_group">
                   <label style="margin-top:5px">Client:</label>
                 </div>
                 <?php
@@ -1025,7 +1038,7 @@ body.loading .modal_load {
                   $company = '';
                 }
                 ?>
-                <div class="col-md-7 client_group">
+                <div class="col-md-8 client_group">
                   <input  type="text" class="form-control client_search_class_task" name="client_name" placeholder="Enter Client Name / Client ID" value="" required>
                   <input type="hidden" id="client_search_task" name="clientid" value=""/>
                 </div>
@@ -1054,7 +1067,7 @@ body.loading .modal_load {
                               $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
                             }
                         ?>
-                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>"><?php echo $icon.$single_task->task_name?></a></li>
+                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>" data-project="<?php echo $single_task->project_id; ?>"><?php echo $icon.$single_task->task_name?></a></li>
                         <?php
                           }
                         }
@@ -1070,19 +1083,79 @@ body.loading .modal_load {
                   </div>
                 </div>
             </div>
-            <div class="form-group start_group" style="margin-top:10px">
-                <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
-                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+            <div class="form-group start_group margintop20" style="margin-top:20px">
+
+              <div class="row">
+                <div class="col-lg-5">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <div class="form-title"><label style="margin-top:5px">Priority:</label></div>
+                    </div>
+                    <div class="col-md-7" style="padding-top: 5px;">
+                      <?php echo user_rating(); ?>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7">
+                  <div class="row"">
+                    <div class="col-md-3">
+                        <label style="margin-top:5px">Creation Date:</label>
+                      </div>
+                      <div class="col-md-9">
+                        <label class="input-group datepicker-only-init_date_received">
+                            <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+
+              
             </div>
-            <div class="form-group start_group task_specifics_add">
-                <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
-                <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+            <div class="form-group start_group margintop20" style="margin-top:15px !important">
+                <div class="row">
+                  <div class="col-lg-2">
+                    <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                  </div>
+                  <div class="col-lg-10">
+                    <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+                  </div>
+                </div>
+                
+                
             </div>
-            <div class="form-group date_group">
-                <div class="col-md-2" style="padding:0px">
+            <div class="form-group start_group task_specifics_add margintop20">
+
+                <div class="row">
+                  <div class="col-lg-7">
+                    <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
+                  </div>
+                  <div class="col-lg-5">
+                    <div class="form-group date_group" style="float: right;">
+                      <div class="form-title" style="font-weight:600;margin-left:-10px">
+                        <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                        <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                        <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                      </div>
+                  </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+                  </div>
+                </div>
+
+                
+                
+            </div>
+            <div class="form-group date_group margintop20">
+                <div class="col-md-1" style="padding:0px">
                   <label style="margin-top:5px">DueDate:</label>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-3">
                   <label class="input-group datepicker-only-init_date_received">
                       <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
                       <span class="input-group-addon">
@@ -1090,74 +1163,128 @@ body.loading .modal_load {
                       </span>
                   </label>
                 </div>
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">Project:</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="select_project" class="form-control select_project">
+                      <option value="">Select Project</option>
+                      <?php
+                          $projects = DB::table('projects')->get();
+                          if(count($projects)){
+                            foreach($projects as $project){
+                              ?>
+                              <option value="<?php echo $project->project_id; ?>"><?php echo $project->project_name; ?></option>
+                              <?php
+                            }
+                          }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <label style="margin-top:5px">Project Time:</label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_hours" class="form-control project_hours">
+                      <option value="">HH</option>
+                      <?php
+                      for($i = 0; $i <= 23; $i++)
+                      {
+                        if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_mins" class="form-control project_mins">
+                      <option value="">MM</option>
+                      <?php
+                      for($i = 0; $i <= 59; $i++)
+                      {
+                         if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
             </div>
-            <div class="form-group start_group retreived_files_div">
+            <div class="form-group start_group retreived_files_div margintop20">
 
             </div>
-            <div class="form-group start_group">
-              <label>Task Files: </label>
-              <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
-              <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
-              <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
-              <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
-              <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
-                <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
-                </form>
-                <div class="image_div_attachments">
-                  <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
-                  <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
-                      <input name="_token" type="hidden" value="">
-                  </form>              
+
+            <div class="row margintop20" style="clear: both; padding-top: 10px">
+              <div class="col-lg-8">
+                <div class="form-group start_group">
+                <label>Task Files: </label>
+                <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+                <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+                <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+                <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+                <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
+                  <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                  </form>
+                  <div class="image_div_attachments">
+                    <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                    <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                        <input name="_token" type="hidden" value="">
+                    </form>              
+                  </div>
+                 </div>
+                 <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
+                    <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
+                    <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                    <spam class="error_files_notepad_add"></spam>
                 </div>
-               </div>
-               <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
-                  <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
-                  <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-                  <spam class="error_files_notepad_add"></spam>
+              </div>
+              
+              <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
+              <div id="add_attachments_div_task">
+              </div>
+              <div id="add_notepad_attachments_div_task">
+              </div>
+              <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+              <div id="add_infiles_attachments_div">
+              </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+                </div>
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                    <div class="accept_recurring_div">
+                      <p>This Task is repeated:</p>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                        <label for="recurring_checkbox1">Monthly</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                        <label for="recurring_checkbox2">Weekly</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                        <label for="recurring_checkbox3">Daily</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                        <label for="recurring_checkbox4">Specific Number of Days</label>
+                        <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                      </div>
+                    </div>
+                </div>
               </div>
             </div>
+
+
             
-            <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
-            <div id="add_attachments_div_task">
-            </div>
-            <div id="add_notepad_attachments_div_task">
-            </div>
-            <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
-            <div id="add_infiles_attachments_div">
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
-                <div class="accept_recurring_div">
-                  <p>This Task is repeated:</p>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
-                    <label for="recurring_checkbox1">Monthly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
-                    <label for="recurring_checkbox2">Weekly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
-                    <label for="recurring_checkbox3">Daily</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
-                    <label for="recurring_checkbox4">Specific Number of Days</label>
-                    <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
-                  </div>
-                </div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px">
-                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
-                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
-                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
-                </div>
-            </div>
+            
+            
           </div>
           <div class="modal-footer">     
             <input type="hidden" name="action_type" id="action_type" value="">
@@ -1397,7 +1524,7 @@ body.loading .modal_load {
 
 <div class="modal fade notify_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
 
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog" role="document" style="width:60%">
 
     
 
@@ -1407,21 +1534,21 @@ body.loading .modal_load {
 
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 
-        <h4 class="modal-title" id="myModalLabel">Notify All Option</h4>
+        <h4 class="modal-title" id="myModalLabel">Payroll Detail Request Manager</h4>
 
       </div>
 
-      <div class="modal-body notify_place_div">
-
-          
-
+      <div class="modal-body " style="clear: both;">
+        <a href="javascript:" class="common_black_button show_os_payroll" id="show_os_payroll" style="float:right">Show OS Payroll Only</a>
+        <div class="col-md-12 notify_place_div">
+        </div>
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" style="clear: both;">
 
         <input type="hidden" id="notify_type" value="">
 
-        <input type="button" class="btn btn-primary common_black_button" id="email_notify" value="Email Notify Options">
+        <input type="button" class="btn btn-primary common_black_button" id="email_notify" value="Send Payroll Request">
 
       </div>
 
@@ -1751,7 +1878,7 @@ body.loading .modal_load {
         <p style="text-align: left;margin-top:10px"><input type="button" name="add_scheme_btn" class="common_black_button add_scheme_btn" value="Create Scheme"></p>
       </div>
       <div class="modal-footer">
-        <div id="scheme_divbody">
+        <div id="scheme_divbody" class="modal_max_height_400">
           <table class="table own_table_white">
             <thead>
               <th style="text-align:left">#</th>
@@ -3125,7 +3252,7 @@ body.loading .modal_load {
 
         
 
-        <li class="dropdown_notify" style="position: relative;"><a href="javascript:" id="notify_reports" class="dropdown_notify">NOTIFY ALL <i class="fa fa-caret-down dropdown_notify"></i></a>
+        <li class="dropdown_notify" style="position: relative;"><a href="javascript:" id="notify_reports" class="dropdown_notify">Request Payroll <i class="fa fa-caret-down dropdown_notify"></i></a>
           <div class="notify_div" style="display:none">
 
           <a href="javascript:" class="close_xmark">X</a>
@@ -3280,7 +3407,7 @@ if(Session::has('error')) { ?>
                   </td>
 
                   <td class="task_sort_std_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
-                    <br/><br/><br/>
+                    <br/><?php echo $result->client_id; ?><br/><br/>
 
                     <b style="color:#000; margin-bottom: 5px; width: 170px; height: auto; float: left;">Default Staff: </b>
 
@@ -3704,9 +3831,9 @@ if(Session::has('error')) { ?>
                       </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
-                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
+                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" oninput="keypressonlynumber(this)" <?php echo $disabled; ?>>
                           <?php } else { ?>
-                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="" disabled>
+                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="" oninput="keypressonlynumber(this)" disabled>
                           <?php } ?>
 
                           <div class="img_div">
@@ -3755,7 +3882,7 @@ if(Session::has('error')) { ?>
                     <?php
                     if($result->last_email_sent != '0000-00-00 00:00:00')
                     {
-                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
+                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->where('options','!=','n')->get();
                       $last_date = '';
                       if(count($get_dates))
                       {
@@ -3958,7 +4085,7 @@ if(Session::has('error')) { ?>
 
                   <td class="task_sort_enh_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
 
-                    <br/><br/><br/>
+                    <br/><?php echo $result->client_id; ?><br/><br/>
 
                     <b style="color:#000; margin-bottom: 5px; width: 170px; height: auto; float: left;">Default Staff: </b>
 
@@ -4379,9 +4506,9 @@ if(Session::has('error')) { ?>
                       </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
-                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
+                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" oninput="keypressonlynumber(this)" <?php echo $disabled; ?>>
                           <?php } else { ?>
-                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="" disabled>
+                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="" oninput="keypressonlynumber(this)" disabled>
                           <?php } ?>
 
                           <div class="img_div">
@@ -4421,7 +4548,7 @@ if(Session::has('error')) { ?>
                     <?php
                     if($result->last_email_sent != '0000-00-00 00:00:00')
                     {
-                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
+                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->where('options','!=','n')->get();
                       $last_date = '';
                       if(count($get_dates))
                       {
@@ -4620,7 +4747,7 @@ if(Session::has('error')) { ?>
 
                   <td class="task_sort_cmp_val" align="left"><label class="task_label <?php echo $disabled; ?>" <?php echo $task_label; ?>><?php echo $result->task_name ?></label>
 
-                    <br/><br/><br/>
+                    <br/><?php echo $result->client_id; ?><br/><br/>
 
 
                     <b style="color:#000; margin-bottom: 5px; width: 170px; height: auto; float: left;">Default Staff: </b>
@@ -5028,9 +5155,9 @@ if(Session::has('error')) { ?>
                       </div>
                           <label style="width:100%;margin-top:15px">PAYE/PRSI/USC Liability:</label>
                           <?php if(count($attachments)) { ?>
-                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" <?php echo $disabled; ?>>
+                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="<?php echo $result->liability; ?>" oninput="keypressonlynumber(this)" <?php echo $disabled; ?>>
                           <?php } else { ?>
-                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="" disabled>
+                              <input type="textbox" name="liability_input" class="liability_input form-control input-sm" data-element="<?php echo $result->task_id; ?>" value="" oninput="keypressonlynumber(this)" disabled>
                           <?php } ?>
 
                           <div class="img_div">
@@ -5071,7 +5198,7 @@ if(Session::has('error')) { ?>
                     <?php
                     if($result->last_email_sent != '0000-00-00 00:00:00')
                     {
-                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->get();
+                      $get_dates = DB::table('task_email_sent')->where('task_id',$result->task_id)->where('options','!=','n')->get();
                       $last_date = '';
                       if(count($get_dates))
                       {
@@ -5479,7 +5606,61 @@ $(".client_search_class_task").autocomplete({
         })
       }
   });
+$(window).change(function(e) {
+  if($(e.target).hasClass('select_user_author'))
+  {
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".author_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".author_email").val(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('allocate_user_add')){
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".allocate_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".allocate_email").val(result);
+        }
+      })
+    }
+  }
+});
 $(window).click(function(e) {
+  if($(e.target).hasClass('show_os_payroll'))
+  {
+    if($(e.target).hasClass('show_all'))
+    {
+      $(".notify_option").parents("tr").show();
+      $(e.target).removeClass("show_all");
+      $(e.target).html("Show OS Payroll Only");
+    }
+    else{
+      $(".notify_option").parents("tr").hide();
+      $(".notify_option:checked").parents("tr").show();
+      $(e.target).addClass("show_all");
+      $(e.target).html("Show all");
+    }
+  }
   if($(e.target).hasClass('start_rating'))
   {
     var taskid = $(e.target).attr("data-task");
@@ -5769,10 +5950,12 @@ $(window).click(function(e) {
     {
       $(".allocate_user_add").val("");
       $(".allocate_user_add").addClass("disable_user");
+      $(".allocate_email").addClass("disable_user");
     }
     else{
       $(".allocate_user_add").val("");
       $(".allocate_user_add").removeClass("disable_user");
+      $(".allocate_email").removeClass("disable_user");
     }
   }
   if($(e.target).hasClass('notepad_contents_task'))
@@ -5994,7 +6177,7 @@ $(window).click(function(e) {
         $(".create_new_task_model").find(".job_title").html("New Task Creator");
         var fullDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Dublin"});
         var user_id = $(".select_user_home").val();
-        $(".select_user_author").val(user_id);
+        $(".select_user_author").val("");
         $(".create_new_task_model").modal("show");
         if (CKEDITOR.instances.editor_2) CKEDITOR.instances.editor_2.destroy();
         $(".created_date").datetimepicker({
@@ -6057,6 +6240,7 @@ $(window).click(function(e) {
 
         $("#open_task").prop("checked",false);
         $(".allocate_user_add").removeClass("disable_user");
+        $(".allocate_email").removeClass("disable_user");
         $.ajax({
           url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
           type:"post",
@@ -7808,7 +7992,7 @@ $(window).click(function(e) {
 
             {
 
-              emails.push(user_email);
+              emails.push(user_email+'||'+id);
 
               if(toemails == '')
 
@@ -7838,7 +8022,7 @@ $(window).click(function(e) {
 
             {
 
-              emails.push(secondary_email);
+              emails.push(secondary_email+'||'+id);
 
               if(toemails == '')
 
@@ -7923,7 +8107,8 @@ $(window).click(function(e) {
         data:{id:id,value:value},
 
         success: function(result) {
-
+          $(".show_os_payroll").removeClass("show_all");
+          $(".show_os_payroll").html("Show OS Payroll Only");
           $(".notify_modal").modal('show');
 
           $(".notify_place_div").html(result);
@@ -7967,7 +8152,8 @@ $(window).click(function(e) {
         data:{id:id,value:value},
 
         success: function(result) {
-
+          $(".show_os_payroll").removeClass("show_all");
+          $(".show_os_payroll").html("Show OS Payroll Only");
           $(".notify_modal").modal('show');
 
           $(".notify_place_div").html(result);
@@ -8011,7 +8197,8 @@ $(window).click(function(e) {
         data:{id:id,value:value},
 
         success: function(result) {
-
+          $(".show_os_payroll").removeClass("show_all");
+          $(".show_os_payroll").html("Show OS Payroll Only");
           $(".notify_modal").modal('show');
 
           $(".notify_place_div").html(result);

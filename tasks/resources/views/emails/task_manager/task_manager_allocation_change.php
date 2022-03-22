@@ -6,7 +6,7 @@
         <div style="width:100%; float:left; height:auto; padding:20px;">
             <div style="width:100%; margin-bottom:15px;">
                 <p>Hi <?php echo $allocated_name; ?></p>
-                <p>The Task "<?php echo $subject; ?>" has been allocated to "<?php echo $allocated_name; ?>" by "<?php echo $allocated_person; ?>" on <?php echo $allocation_date; ?>.  Please log into to access details of this task.</p>
+                <p>The Task "<?php echo $subject; ?>" has been allocated to "<?php echo $allocated_name; ?>" by "<?php echo $author_name; ?>" on <?php echo $allocation_date; ?>.  Please log into to access details of this task.</p>
             </div>
             
             <div style="width:100%; height:auto; float:left;">

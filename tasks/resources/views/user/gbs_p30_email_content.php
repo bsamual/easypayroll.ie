@@ -17,7 +17,7 @@
     
     <div style="width:100%; height:auto; float:left;">
     <b>Regards,</b><br>
-    EasyPayroll Team<br/><br/>
+    Easypayroll Team<br/><br/>
     <b>This Email has been sent to : </b> <?php echo $sentmails; ?>
     </div>  
 </div>

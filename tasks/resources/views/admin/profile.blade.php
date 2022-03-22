@@ -125,7 +125,7 @@
           </form>
         </div>
       </div>
-      <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 col-lg-offset-2 col-md-offset-2 padding_00 border">
+      <!-- <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 col-lg-offset-2 col-md-offset-2 padding_00 border">
         <div class="col-lg-12 text-left padding_00">
           <div class="sub_title" style="margin-bottom: 0px; ">Easypayroll Notification Message :</div>
         </div>
@@ -139,7 +139,7 @@
             </div>
           </form>
         </div>
-      </div>
+      </div> -->
   </div>
 </div>
 </div>

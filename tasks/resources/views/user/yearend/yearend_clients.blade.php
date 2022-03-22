@@ -155,33 +155,6 @@ a:hover{text-decoration: underline;}
 }
 </style>
 
-<div class="modal fade crypt_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-  <div class="modal-dialog modal-sm" role="document" style="width:35%;margin-top:15%">
-      <div class="modal-content">
-        <form method="post" action="<?php echo URL::to('user/year_setting_copy_to_year')?>"> 
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">CRYPT PIN</h4>
-          </div>
-          <div class="modal-body">
-            <div class="crypt_groyp">
-              <div class="form-group" style="width:80%">
-                  <div class="form-title">Enter CRYPT PIN</div>
-                  <input type="password" class="form-control crypt_pin_setting" value="" placeholder="Enter CRYPT Pin" name="crypt" required>
-                  <label class="error crypt_error" style="display:none"></label>
-              </div>
-            </div>
-            <input type="hidden" value="<?php echo base64_encode($yearid)?>" name="yearid">            
-            
-          </div>
-          <div class="modal-footer">
-              <input type="submit" class="common_black_button" value="Submit">              
-          </div>
-        </form>
-      </div>
-  </div>
-</div>
-
 <div class="modal fade" id="review_clients_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -190,7 +163,7 @@ a:hover{text-decoration: underline;}
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title">Review Clients</h4>
           </div>
-          <div class="modal-body review_clients_tbody" id="review_clients_tbody">
+          <div class="modal-body review_clients_tbody modal_max_height" id="review_clients_tbody">
 
           </div>
         </form>
@@ -785,63 +758,7 @@ if($(e.target).hasClass('add_new')){
     $(".add_modal").modal("show");
     $(".year_input_group").hide();
     $(".year_drop").prop('required', false);
-    $(".crypt_pin").prop('required', true);
-    $(".crypt_pin").prop('disabled', false);
-    $(".crypt_pin").val('');
-    $(".crypt_error").hide();
 }
-if($(e.target).hasClass('crypt_button')){
-  var crypt = $(".crypt_pin").val();
-  if(crypt == "" || typeof crypt === "undefined")
-  {
-    alert("Please Enter CRYPT PIN");
-    return false;
-  }
-  else{
-    $.ajax({
-      url:"<?php echo URL::to('user/yearend_crypt_validdation')?>",
-      type:"post",
-      dataType:"json",
-      data:{crypt:crypt,type:0},
-      success:function(result){
-        if(result['security'] == true){
-          $(".crypt_error_first").css({"display":"block","color":"green"});
-          $(".crypt_error_first").html('CRYPT Pin validation success');
-          $(".crypt_groyp").show();
-          $(".year_input_group").show();
-          $(".year_drop").html(result['drop']);
-          $(".crypt_button").hide();
-          $(".year_button").show();
-          $(".year_class").prop('required', true);
-          $(".crypt_pin").prop('required', false);
-          $(".crypt_pin").prop('disabled', true);
-          $(".button_submit").html(result['create_button']);
-        }
-        else{
-          $(".crypt_error_first").css({"display":"block","color":"red"});
-          $(".crypt_error_first").html('CRYPT Pin is incorrect');
-          $(".crypt_groyp").show();
-          $(".year_input_group").hide();
-          $(".crypt_button").show();
-          $(".year_button").hide();
-        }
-
-      }
-    })
-  } 
-}
-
-
-
-if($(e.target).hasClass('setting_class')){
-    $(".setting_crypt_modal").modal("show");
-    $(".crypt_pin_setting").prop('required', true);
-    $(".crypt_pin_setting").prop('disabled', false);
-    $(".crypt_pin_setting").val('');
-    $(".crypt_error").hide();    
-}
-
-
 if($(e.target).hasClass('setting_button')){
   var setting_type = $(".setting_type").val();
   if(setting_type == "" || typeof setting_type === "undefined")
@@ -892,11 +809,6 @@ if($(e.target).hasClass('setting_same')){
   alert("It looks like NO new Documents were created in the settings screen since this Year has been created. Please create a new document type and then run this New Year End doc.");
   return false;
 }
-
-if($(e.target).hasClass('new_year_end_class')){
-    $(".crypt_modal").modal("show");    
-    $(".crypt_pin_setting").val('');
-}
 });
 
 $(window).keyup(function(e) {
@@ -929,34 +841,11 @@ $(".add_modal").keypress(function(e) {
     return false;
   }
 });
-
-$(".setting_crypt_modal").keypress(function(e) {
-  if (e.which == 13 && !$(e.target).is("textarea")) {
-    return false;
-  }
-});
-
-
-
-
-
-
-
 </script>
 
 <script>
-
 $(document).ready(function() {
-
   $('.table-fixed-header').fixedHeader();  
-
 });
-
 </script>
-
-
-
-
-
-
 @stop

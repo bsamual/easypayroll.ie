@@ -74,20 +74,23 @@ a:hover{text-decoration: underline;}
 <div class="content_section" style="margin-bottom:200px">
   <div class="page_title">
       <h4 class="col-lg-12 padding_00 new_main_title">
-                Opening Balance Manager
-            </h4>
-      
+        <?php
+        $user = DB::table('user_login')->first();
+        $financial_date = $user->opening_balance_date;
+        ?>
+        Client Opening Balance Manager (Balances at <?php echo date('d F Y', strtotime($financial_date)); ?>)
+      </h4>
       <div class="col-md-2 padding_00">
         
-        <input type="checkbox" name="hide_active_clients" class="hide_active_clients" id="hide_active_clients" value="1"><label for="hide_active_clients">Hide Inactive Clients</label>
+        <!-- <input type="checkbox" name="hide_active_clients" class="hide_active_clients" id="hide_active_clients" value="1"><label for="hide_active_clients">Hide Inactive Clients</label> -->
       </div>
-      <div class="col-lg-10 padding_00">
+      <!-- <div class="col-lg-10 padding_00">
         <div class="select_button">
           <ul>
             <li><a href="<?php echo URL::to('user/import_opening_balance_manager'); ?>" class="common_black_button" style="float:right">Import Opening Balance Manager</a></li>
           </ul>
         </div>
-      </div>
+      </div> -->
       <div style="clear: both;">
         <?php
         if(Session::has('message')) { ?>
@@ -96,13 +99,23 @@ a:hover{text-decoration: underline;}
         ?>
       </div> 
       <div class="col-lg-12 padding_00" style="margin-top: 19px;">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item waves-effect waves-light active" style="width:20%;text-align: center">
+            <a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">
+              <spam id="open_task_count">Client Opening Balances</spam>
+            </a>
+          </li>
+          <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
+            <a href="<?php echo URL::to('user/opening_balance_invoices_issued'); ?>" class="nav-link" id="profile-tab">Invoices Issued</a>
+          </li>
+        </ul>
         <table class="display nowrap fullviewtablelist own_table_white" id="client_expand" width="100%">
           <thead>
             <tr style="background: #fff;">
                 <th width="2%" style="text-align: left;">S.No</th>
                 <th style="text-align: left;">Client ID</th>
-                <th style="text-align: left;">Company</th>
-                <th style="text-align: left;">Name</th>
+                <th style="text-align: left;width:20%">Client</th>
+                <th style="text-align: left;width:10%">Invoices Issued at O/B Date</th>
                 <th style="text-align: left;">Balance</th>
                 <th width="10%" style="text-align: left;">Action</th>
             </tr>
@@ -159,8 +172,14 @@ a:hover{text-decoration: underline;}
                         <td><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $i; ?></a></td>
                         <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $client->client_id; ?></a></td>
                         <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo ($client->company == "")?$client->firstname.' & '.$client->surname:$client->company; ?></a></td>
-                        <td align="left"><a href="<?php echo URL::to('user/client_opening_balance_manager?client_id='.$client->client_id.''); ?>" style="<?php echo $style; ?>"><?php echo $client->firstname.' & '.$client->surname; ?></a></td>
-                        
+
+                        <td align="left">
+                          <?php
+                          $invoice_issued = DB::table('invoice_system')->where('client_id',$client->client_id)->where('invoice_date','<=',$financial_date)->sum('gross');
+                          echo number_format_invoice($invoice_issued);
+                          ?>
+                        </td>
+
                         <td align="left">
                           <?php echo $balance; ?>
                         </td>

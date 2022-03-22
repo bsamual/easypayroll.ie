@@ -423,7 +423,7 @@ if(isset($_GET['client_id']))
       $result_time_job.='               
               <tr class="'.$allocated_class.'">
                 <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
-                <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                 <td>'.$time_task->task_name.'</td>
                 <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                 <td style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
@@ -455,7 +455,7 @@ if(isset($_GET['client_id']))
       <tr>
         <td><input type="radio" name="invoice_item" class="invoice_item_class" data-element="'.$invoice->invoice_number.'" name=""><label>&nbsp;</label></td>
         <td><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'">'.$invoice->invoice_number.'</td>
-        <td>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+        <td><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
         <td  style="text-align:right">'.number_format_invoice_without_decimal($invoice->inv_net).'</td>
         <td  style="text-align:right">'.number_format_invoice_without_decimal($invoice->vat_value).'</td>
         <td  style="text-align:right">'.number_format_invoice_without_decimal($invoice->gross).'</td>                  

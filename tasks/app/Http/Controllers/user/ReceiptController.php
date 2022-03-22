@@ -40,6 +40,14 @@ class ReceiptController extends Controller {
 	 */
 	public function receipt_management()
 	{
+		$receipts = DB::table('receipts')->get();
+		foreach($receipts as $receipt)
+		{
+			$code = explode('-',$receipt->client_code);
+			$client_id = trim(end($code));
+			$dataa['client_code'] = $client_id;
+			DB::table('receipts')->where('id',$receipt->id)->update($dataa);
+		}
 		$receipt_nominal_codes_arr = DB::table('receipt_nominal_codes')->get();
 		$code_array = array();
 		if(count($receipt_nominal_codes_arr))
@@ -101,7 +109,7 @@ class ReceiptController extends Controller {
 	public function receipt_commonclient_search()
 	{
 		$value = Input::get('term');
-		$details = DB::table('cm_clients')->Where('client_id','like','%'.$value.'%')->Where('status', 0)->get();
+		$details = DB::table('cm_clients')->Where('status', 0)->Where('client_id','like','%'.$value.'%')->orWhere('company','like','%'.$value.'%')->get();
 
 		$data=array();
 		foreach ($details as $single) {
@@ -131,6 +139,9 @@ class ReceiptController extends Controller {
 		$comment = Input::get('comment');
 		$amount = Input::get('amount');
 
+		echo $client_code;
+		exit;
+
 		$data['receipt_date'] = $date[2].'-'.$date[1].'-'.$date[0];
 		$data['debit_nominal'] = $debit;
 		$data['credit_nominal'] = $credit;
@@ -138,6 +149,9 @@ class ReceiptController extends Controller {
 		$data['credit_description'] = $des;
 		$data['comment'] = $comment;
 		$data['amount'] = $amount;
+
+		print_r($data);
+		exit;
 
 		$id = DB::table('receipts')->insertGetid($data);
 		echo $id;
@@ -183,16 +197,6 @@ class ReceiptController extends Controller {
 			foreach($get_imported_receipts as $receipt)
 			{
 				$daata['imported'] = 0;
-				$client_name = '';
-				if($receipt->client_code != "")
-				{
-					$get_client_name = DB::table('cm_clients')->where('client_id',strtoupper($receipt->client_code))->first();
-					if(count($get_client_name))
-					{
-						$client_name = $get_client_name->company.' - '.$get_client_name->client_id;
-					}
-				}
-				$daata['client_code'] = $client_name;
 				DB::table('receipts')->where('id',$receipt->id)->update($daata);
 			}
 		  	return redirect('user/receipt_management')->with('message_import', 'Receipt Imported successfully.');
@@ -341,7 +345,7 @@ class ReceiptController extends Controller {
 		$expto = explode('/',Input::get('to'));
 		$client = Input::get('client');
 		$debit = Input::get('debit');
-		$credit = Input::get('credit');
+		$credit = Input::get('credit');		
 
 		if(count($expfrom) > 2)
 		{
@@ -377,12 +381,18 @@ class ReceiptController extends Controller {
 		{
 			$get_receipts = DB::table('receipts')->where('imported',0)->orderBy('id','desc')->limit(300)->get();
 		}
+		elseif($filter == "7")
+		{
+			$current_year = date('Y');
+			$previous_year = $current_year-1;			
+			$get_receipts = DB::table('receipts')->where('receipt_date','like',$previous_year.'%')->where('imported',0)->get();
+		}
 		$output = '';
 		if(count($get_receipts))
 		{
 			foreach($get_receipts as $receipt)
 			{
-				if($receipt->status == 1)
+				/*if($receipt->status == 1)
 				{
 					$font_color = 'color:#f00;font-weight:600';
 				}
@@ -392,7 +402,7 @@ class ReceiptController extends Controller {
 				}
 				else{
 					$font_color = '';
-				}
+				}*/
 				$get_details = DB::table('receipt_nominal_codes')->where('code',$receipt->debit_nominal)->first();
 				$debit_nominal = '';
 				if(count($get_details))
@@ -401,24 +411,40 @@ class ReceiptController extends Controller {
 				}
 				if($receipt->hold_status == 0)
 				{
-					$hold_status = '<a href="javascript:" class="common_black_button change_to_unhold" data-element="'.$receipt->id.'">Hold</a>';
+					$hold_status = '<a href="javascript:" class="change_to_unhold" data-element="'.$receipt->id.'" data-nominal="'.$get_details->code.'">Outstanding</a>';
+					$delete_icon = '<a href="javascript:" class="fa fa-trash delete_outstading" data-element="'.$receipt->id.'" title="Delete Receipt" type="1"></a>';
+				}
+				elseif($receipt->hold_status == 2)
+				{
+					$hold_status = '<a href="javascript:" class="change_to_unhold" data-element="'.$receipt->id.'" data-nominal="'.$get_details->code.'">Reconciled</a>';
+					$delete_icon = '<a href="javascript:" class="fa fa-trash delete_receipt" title="Delete Receipt"></a>';
 				}
 				else{
-					$hold_status = '<a href="javascript:" class="common_black_button unhold_receipt" data-element="'.$receipt->id.'">Unhold</a>';
+					$hold_status = '<a href="javascript:" class="unhold_receipt" data-element="'.$receipt->id.'">Cleared</a>';
+					$delete_icon = '<a href="javascript:" class="fa fa-trash delete_receipt" title="Delete Receipt"></a>';
 				}
-				$output.='<tr>
-					<td style="'.$font_color.'"><spam class="date_sort_val" style="display:none">'.strtotime($receipt->receipt_date).'</spam>'.date('d/m/Y', strtotime($receipt->receipt_date)).'</td>
-					<td class="debit_sort_val" style="'.$font_color.'">'.$debit_nominal.'</td>
-					<td class="credit_sort_val" style="'.$font_color.'">'.$receipt->credit_nominal.'</td>
-					<td class="client_sort_val" style="'.$font_color.'">'.$receipt->client_code.'</td>	
-					<td class="des_sort_val" style="'.$font_color.'">'.$receipt->credit_description.'</td>
-					<td class="comment_sort_val" style="'.$font_color.'">'.$receipt->comment.'</td>	
-					<td style="'.$font_color.';text-align:right"><spam class="amount_sort_val" style="display:none">'.$receipt->amount.'</spam>'.number_format_invoice_empty($receipt->amount).'</td>	
-					<td style="'.$font_color.';text-align:right"></td>	
+
+				if($receipt->journal_id != 0){
+					$journal_id_view = '<a href="javascript:" class="journal_id_viewer" data-element="'.$receipt->journal_id.'">'.$receipt->journal_id.'</a>';
+				}
+				else{
+					$journal_id_view = '';
+				}
+
+
+				$output.='<tr class="receipt_payment_'.$receipt->id.'">
+					<td style=""><spam class="date_sort_val" style="display:none">'.strtotime($receipt->receipt_date).'</spam>'.date('d/m/Y', strtotime($receipt->receipt_date)).'</td>
+					<td class="debit_sort_val" style="">'.$debit_nominal.'</td>
+					<td class="credit_sort_val" style="">'.$receipt->credit_nominal.'</td>
+					<td class="client_sort_val" style="">'.$receipt->client_code.'</td>	
+					<td class="des_sort_val" style="">'.$receipt->credit_description.'</td>
+					<td class="comment_sort_val" style="">'.$receipt->comment.'</td>	
+					<td style=";text-align:right"><spam class="amount_sort_val" style="display:none">'.$receipt->amount.'</spam>'.number_format_invoice_empty($receipt->amount).'</td>	
+					<td style=";text-align:right">'.$journal_id_view.'</td>	
 					<td>'.$hold_status.'</td>	
 					<td>
 						<a href="javascript:" class="fa fa-edit edit_receipt" title="Edit Receipt"></a>&nbsp;&nbsp;
-						<a href="javascript:" class="fa fa-trash delete_receipt" title="Delete Receipt"></a>
+						'.$delete_icon.'
 					</td>	
 				</tr>';
 			}
@@ -456,7 +482,7 @@ class ReceiptController extends Controller {
 				{
 					$debit_nominal = $get_debit_details->code;
 				}
-				$columns_2 = array(date('d/m/Y', strtotime($get_details->receipt_date)),$debit_nominal,$get_details->credit_nominal,$get_details->client_code,$get_details->credit_description,$get_details->comment,number_format_invoice($get_details->amount),'','On Hold');
+				$columns_2 = array(date('d/m/Y', strtotime($get_details->receipt_date)),$debit_nominal,$get_details->credit_nominal,$get_details->client_code,$get_details->credit_description,$get_details->comment,number_format_invoice($get_details->amount),'','Outstanding');
 				fputcsv($file, $columns_2);
 			}
 		}
@@ -525,13 +551,17 @@ class ReceiptController extends Controller {
 				}
 				if($receipt->hold_status == 0)
 				{
-					$hold_status = 'Hold';
+					$hold_status = 'Outstanding';
+				}
+				elseif($receipt->hold_status == 2)
+				{
+					$hold_status = 'Reconciled';
 				}
 				else{
-					$hold_status = 'Unhold';
+					$hold_status = 'Cleared';
 				}
 
-				$columns_2 = array(date('d/m/Y', strtotime($receipt->receipt_date)),$debit_nominal,$receipt->credit_nominal,$receipt->client_code,$receipt->credit_description,$receipt->comment,number_format_invoice($receipt->amount),'',$hold_status);
+				$columns_2 = array(date('d/m/Y', strtotime($receipt->receipt_date)),$debit_nominal,$receipt->credit_nominal,$receipt->client_code,$receipt->credit_description,$receipt->comment,number_format_invoice($receipt->amount),$receipt->journal_id,$hold_status);
 				fputcsv($file, $columns_2);
 			}
 		}
@@ -553,6 +583,7 @@ class ReceiptController extends Controller {
 			$errorlist = array();
 			$output = '';
 			$error_code = "";
+			$k = 0;
 			if(move_uploaded_file($tmp_name, "$uploads_dir/$name")){
 				$filepath = $uploads_dir.'/'.$name;
 				$objPHPExcel = PHPExcel_IOFactory::load($filepath);
@@ -576,7 +607,7 @@ class ReceiptController extends Controller {
 					$client_header = $worksheet->getCellByColumnAndRow(3, 1); $client_header = trim($client_header->getValue());
 					$comment_header = $worksheet->getCellByColumnAndRow(5, 1); $comment_header = trim($comment_header->getValue());
 					$amount_header = $worksheet->getCellByColumnAndRow(6, 1); $amount_header = trim($amount_header->getValue());
-					if($date_header == "Date" && $debit_header == "Debit Nominal" && $credit_header == "Credit Nominal" && $client_header == "Client Code" && $comment_header == "Comment")
+					if($date_header == "Date" && $debit_header == "Debit Nominal" && $credit_header == "Credit Nominal" && $client_header == "Client Code" && $comment_header == "Comment" && $amount_header == "Amount")
 					{
 						for ($row = 2; $row <= $height; $row++) {
 							$date = $worksheet->getCellByColumnAndRow(0, $row); $date = trim($date->getValue());
@@ -597,35 +628,44 @@ class ReceiptController extends Controller {
 							$amount = str_replace(",","",$amount);
 
 							$exp_date = explode('/',$date);
-							if($date == "")
-							{
-								$dateval = '';
-							}
-							else{
+							$dateval = '';
+							if(count($exp_date) == 3)
+					        {
 								$dateval = $exp_date[2].'-'.$exp_date[1].'-'.$exp_date[0];
 							}
 							$description = '';
-							if($credit == "712" || $credit == "813A")
+							if($credit_description != "")
 							{
-								$client_details = DB::table('cm_clients')->where('client_id',$client)->first();
-								if(count($client_details))
-								{
-									$description = $client_details->company.' - '.$client_details->client_id;
-								}
+								$description = $credit_description;
 							}
 							else{
-								$get_nominal_code_description = DB::table('nominal_codes')->where('code',$credit)->first();
-								if(count($get_nominal_code_description))
+								if($credit == "712" || $credit == "813A")
 								{
-									$description = $get_nominal_code_description->description;
+									$client_details = DB::table('cm_clients')->where('client_id',$client)->first();
+									if(count($client_details))
+									{
+										$description = $client_details->company.' - '.$client_details->client_id;
+									}
+								}
+								else{
+									$get_nominal_code_description = DB::table('nominal_codes')->where('code',$credit)->first();
+									if(count($get_nominal_code_description))
+									{
+										$description = $get_nominal_code_description->description;
+									}
 								}
 							}
 
 							$data['receipt_date'] = $dateval;
 							$data['debit_nominal'] = $debit;
 							$data['credit_nominal'] = $credit;
-							$data['client_code'] = $client;
-							$data['credit_description'] = $credit_description;
+							if($credit == "712" || $credit == "813A")
+					        {
+								$data['client_code'] = $client;
+							}else{
+								$data['client_code'] = '';
+							}
+							$data['credit_description'] = $description;
 							$data['comment'] = $comment;
 							$data['amount'] = $amount;
 							$data['imported'] = 1;
@@ -652,49 +692,91 @@ class ReceiptController extends Controller {
 							}
 
 							$i = 0;
-							if($date == "")
+							$j = 0;
+							$k = 0;
+
+							$error_text = '';
+							if($date == "" || $debit == "" || $credit == "" || ($credit == "813A" && $client == "") || ($credit == "813" && $client == "") || $amount == "")
+							{
+								$j = 1;
+							}
+
+							if($date != "")
 					        {
-					          $i = $i + 1;
+					        	$explodedate = explode('/',$date);
+					        	if(count($explodedate) != 3)
+					        	{
+					        		$i = $i + 1;
+					        		$error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Date Format is wrong on Line '.$row.'<br/>';
+					        	}
 					        }
 					        if($debit_nominal == "")
 					        {
 					          $i = $i + 1;
+					          $error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Debit Nominal is Invalid on Line '.$row.'<br/>';
 					        }
 					        if($credit_nominal == "")
 					        {
 					          $i = $i + 1;
+					          $error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Credit Nominal is Invalid on Line '.$row.'<br/>';
 					        }
-					        if($description == "")
-					        {
-					          $i = $i + 1;
-					        }
+
 					        if($credit == "712" || $credit == "813A")
 					        {
 					          if($client_name == "")
 					          {
 					            $i = $i + 1;
+					            $error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Client Code is Invalid on Line '.$row.'<br/>';
 					          }
 					        }
-					        if($amount == "")
+
+					        $amount_val = $amount;
+					        if($amount != "")
 					        {
-					          $i = $i + 1;
+					        	if(is_numeric($amount) != 1)
+					        	{
+					        		$i = $i + 1;
+					        		$error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Invalid Numeric value for Amount in Line '.$row.'<br/>';
+					        	}
+					        	else{
+					        		$amount_val = number_format_invoice_empty($amount);
+					        	}
 					        }
 
 							DB::table('receipts')->insert($data);
-
-							if($i > 0)
+							if($j > 0)
 							{
 								$data['status'] = 1;
 								$font_color = 'color:#f00;font-weight:600';
 								$error_code = "3";
 								$error_cls = "error_tr";
+								$error_text = '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Line '.$row.' Does not have sufficient fields<br/>';
+								$k++;
 							}
-							else
+							else{
+								if($i > 0 && $k == 0)
+								{
+									$data['status'] = 1;
+									$font_color = 'color:#f00;font-weight:600';
+									$error_code = "3";
+									$error_cls = "error_tr";
+								}
+								else
+								{
+									$data['status'] = 0;
+									$font_color = 'color:green;font-weight:600';
+									$error_code = "0";
+									$error_cls = "";
+									$error_text = '';
+								}
+							}
+
+							if($error_text == "")
 							{
-								$data['status'] = 0;
-								$font_color = 'color:blue;font-weight:600';
-								$error_code = "0";
-								$error_cls = "";
+								$error_html = '';
+							}
+							else{
+								$error_html = $error_text;
 							}
 
 							$output.='<tr class="'.$error_cls.'">
@@ -704,12 +786,15 @@ class ReceiptController extends Controller {
 								<td style="'.$font_color.'">'.$client.'</td>  
 								<td style="'.$font_color.'">'.$credit_description.'</td>
 								<td style="'.$font_color.'">'.$comment.'</td>  
-								<td style="'.$font_color.'">'.number_format_invoice_empty($amount).'</td>
+								<td style="text-align:right;'.$font_color.'">'.$amount.'</td>
+								<td style="vertical-align:middle;color:#f00">'.$error_html.'</td>
 							</tr>';
 						}
 					}
 					else{
 						$error_code = "1";
+						echo json_encode(array("error_code" => $error_code, "output" =>$output, "import_type_new" => "0"));
+						exit;
 					}
 				}
 				if($height >= $highestRow)
@@ -717,7 +802,7 @@ class ReceiptController extends Controller {
 					echo json_encode(array("error_code" => $error_code,"output" => $output, "import_type_new" => "0"));
 				}
 				else{
-					echo json_encode(array("error_code" => $error_code,"output" => $output,"filename" => $name, "height" => $height, "round" => "2","highestrow" => $highestRow, "import_type_new" => "1"));
+					echo json_encode(array("error_code" => $error_code,"output" => $output,"filename" => $name, "height" => $height, "round" => "2","highestrow" => $highestRow, "import_type_new" => "1", "kval" => $k));
 				}
 			}
 			else{
@@ -772,36 +857,44 @@ class ReceiptController extends Controller {
 				$amount = str_replace(",","",$amount);
 
 				$exp_date = explode('/',$date);
-				if($date == "")
-				{
-					$dateval = '';
-				}
-				else{
+				$dateval = '';
+				if(count($exp_date) == 3)
+		        {
 					$dateval = $exp_date[2].'-'.$exp_date[1].'-'.$exp_date[0];
 				}
-
 				$description = '';
-				if($credit == "712" || $credit == "813A")
+				if($credit_description != "")
 				{
-					$client_details = DB::table('cm_clients')->where('client_id',$client)->first();
-					if(count($client_details))
-					{
-						$description = $client_details->company.' - '.$client_details->client_id;
-					}
+					$description = $credit_description;
 				}
 				else{
-					$get_nominal_code_description = DB::table('nominal_codes')->where('code',$credit)->first();
-					if(count($get_nominal_code_description))
+					if($credit == "712" || $credit == "813A")
 					{
-						$description = $get_nominal_code_description->description;
+						$client_details = DB::table('cm_clients')->where('client_id',$client)->first();
+						if(count($client_details))
+						{
+							$description = $client_details->company.' - '.$client_details->client_id;
+						}
+					}
+					else{
+						$get_nominal_code_description = DB::table('nominal_codes')->where('code',$credit)->first();
+						if(count($get_nominal_code_description))
+						{
+							$description = $get_nominal_code_description->description;
+						}
 					}
 				}
 
 				$data['receipt_date'] = $dateval;
 				$data['debit_nominal'] = $debit;
 				$data['credit_nominal'] = $credit;
-				$data['client_code'] = $client;
-				$data['credit_description'] = $credit_description;
+				if($credit == "712" || $credit == "813A")
+		        {
+					$data['client_code'] = $client;
+				}else{
+					$data['client_code'] = '';
+				}
+				$data['credit_description'] = $description;
 				$data['comment'] = $comment;
 				$data['amount'] = $amount;
 				$data['imported'] = 1;
@@ -828,50 +921,91 @@ class ReceiptController extends Controller {
 				}
 
 				$i = 0;
-				if($date == "")
+				$j = 0;
+				$k = 0;
+
+				$error_text = '';
+				if($date == "" || $debit == "" || $credit == "" || ($credit == "813A" && $client == "") || ($credit == "813" && $client == "") || $amount == "")
+				{
+					$j = 1;
+				}
+
+				if($date != "")
 		        {
-		          $i = $i + 1;
+		        	$explodedate = explode('/',$date);
+		        	if(count($explodedate) != 3)
+		        	{
+		        		$i = $i + 1;
+		        		$error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Date Format is wrong on Line '.$row.'<br/>';
+		        	}
 		        }
 		        if($debit_nominal == "")
 		        {
 		          $i = $i + 1;
+		          $error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Debit Nominal is Invalid on Line '.$row.'<br/>';
 		        }
 		        if($credit_nominal == "")
 		        {
-		          
 		          $i = $i + 1;
+		          $error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Credit Nominal is Invalid on Line '.$row.'<br/>';
 		        }
-		        if($description == "")
-		        {
-		          $i = $i + 1;
-		        }
+
 		        if($credit == "712" || $credit == "813A")
 		        {
 		          if($client_name == "")
 		          {
 		            $i = $i + 1;
+		            $error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Client Code is Invalid on Line '.$row.'<br/>';
 		          }
 		        }
-		        if($amount == "")
+
+		        $amount_val = $amount;
+		        if($amount != "")
 		        {
-		          $i = $i + 1;
+		        	if(is_numeric($amount) != 1)
+		        	{
+		        		$i = $i + 1;
+		        		$error_text.= '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Invalid Numeric value for Amount in Line '.$row.'<br/>';
+		        	}
+		        	else{
+		        		$amount_val = number_format_invoice_empty($amount);
+		        	}
 		        }
 
 				DB::table('receipts')->insert($data);
-
-				if($i > 0)
+				if($j > 0)
 				{
 					$data['status'] = 1;
 					$font_color = 'color:#f00;font-weight:600';
 					$error_code = "3";
 					$error_cls = "error_tr";
+					$error_text = '<i class="fa fa-exclamation-triangle" style="color:#f00"></i> Line '.$row.' Does not have sufficient fields<br/>';
+					$k++;
 				}
-				else
+				else{
+					if($i > 0 && $k == 0)
+					{
+						$data['status'] = 1;
+						$font_color = 'color:#f00;font-weight:600';
+						$error_code = "3";
+						$error_cls = "error_tr";
+					}
+					else
+					{
+						$data['status'] = 0;
+						$font_color = 'color:green;font-weight:600';
+						$error_code = "0";
+						$error_cls = "";
+						$error_text = '';
+					}
+				}
+
+				if($error_text == "")
 				{
-					$data['status'] = 0;
-					$font_color = 'color:blue;font-weight:600';
-					$error_code = "0";
-					$error_cls = "";
+					$error_html = '';
+				}
+				else{
+					$error_html = $error_text;
 				}
 
 				$output.='<tr class="'.$error_cls.'">
@@ -881,7 +1015,8 @@ class ReceiptController extends Controller {
 					<td style="'.$font_color.'">'.$client.'</td>  
 					<td style="'.$font_color.'">'.$credit_description.'</td>
 					<td style="'.$font_color.'">'.$comment.'</td>  
-					<td style="'.$font_color.'">'.number_format_invoice_empty($amount).'</td>
+					<td style="text-align:right;'.$font_color.'">'.$amount.'</td>
+					<td style="vertical-align:middle;color:#f00">'.$error_html.'</td>
 				</tr>';
 			}
 		}
@@ -893,4 +1028,377 @@ class ReceiptController extends Controller {
 			echo json_encode(array("error_code" => $error_code,"output" => $output,"filename" => $name, "height" => $height, "round" => $nextround,"highestrow" => $highestRow, "import_type_new" => "1"));
 		}
 	}
+
+	public function payment_receipdt_delete_outstading(){
+		$id = Input::get('id');
+		$type = Input::get('type');
+
+		if($type == '1'){
+			$receipt = DB::table('receipts')->where('id', $id)->first();
+
+			if(count($receipt)){
+
+				$get_details = DB::table('receipt_nominal_codes')->where('code',$receipt->debit_nominal)->first();
+				$debit_nominal = '';
+				if(count($get_details))
+				{
+					$debit_nominal = $get_details->code.' - '.$get_details->description;
+				}
+
+				if($receipt->hold_status == 0)
+				{
+					$hold_status = 'Outstanding';
+					
+				}
+				elseif($receipt->hold_status == 2)
+				{
+					$hold_status = 'Reconciled';
+					
+				}
+				else{
+					$hold_status = 'Cleared';
+					
+				}
+
+				if($receipt->journal_id != 0){
+					$journal_id_view = $receipt->journal_id;
+				}
+				else{
+					$journal_id_view = '';
+				}
+
+
+				$output ='
+					<tr>
+						<td>Date</td>
+						<td style=""><spam class="date_sort_val" style="display:none">'.strtotime($receipt->receipt_date).'</spam>'.date('d/m/Y', strtotime($receipt->receipt_date)).'</td>
+					</tr>
+					<tr>
+						<td>Debit Nominal & Description</td>
+						<td>'.$debit_nominal.'</td>
+					</tr>
+					<tr>
+						<td>Credit Nominal</td>
+						<td>'.$receipt->credit_nominal.'</td>
+					</tr>
+					<tr>
+						<td>Client Code</td>
+						<td>'.$receipt->client_code.'</td>	
+					</tr>
+					<tr>
+						<td>Credit Nominal Description</td>
+						<td>'.$receipt->credit_description.'</td>
+					</tr>
+					<tr>
+						<td>Comment</td>
+						<td>'.$receipt->comment.'</td>
+					</tr>
+					<tr>
+						<td>Amount</td>
+						<td>'.number_format_invoice_empty($receipt->amount).'</td>
+					</tr>
+					<tr>
+						<td>Journal ID</td>
+						<td>'.$journal_id_view.'</td>	
+					</tr>
+					<tr>
+						<td>Status</td>
+						<td>'.$hold_status.'</td>							
+					</tr>';
+			}
+
+			$title = 'Delete Outstanding Receipt';
+			$message = 'ARE YOU SURE YOU WANT TO DELETE THIS RECEIPT?';
+		}
+		else{
+			$payment = DB::table('payments')->where('payments_id', $id)->first();
+			if(count($payment)){
+
+				$get_details = DB::table('payment_nominal_codes')->where('code',$payment->credit_nominal)->first();
+				$credit_nominal = '';
+				if(count($get_details))
+				{
+					$credit_nominal = $get_details->code.' - '.$get_details->description;
+				}
+				if($payment->hold_status == 0)
+				{
+					$hold_status = 'Outstanding';
+					
+				}
+				elseif($payment->hold_status == 2)
+				{
+					$hold_status = 'Reconciled';
+					
+				}
+				else{
+					$hold_status = 'Cleared';
+					
+				}
+
+
+				if($payment->journal_id != 0){
+					$journal_id_view = $payment->journal_id;
+				}
+				else{
+					$journal_id_view = '';
+				}
+
+				$output='
+				<tr>
+					<td>Date</td>
+					<td>'.date('d/m/Y', strtotime($payment->payment_date)).'</td>
+				</tr>
+				<tr>
+					<td>Debit Nominal</td>
+					<td>'.$payment->debit_nominal.'</td>
+				</tr>
+				<tr>
+					<td>Credit Nominal & Description</td>
+					<td>'.$credit_nominal.'</td>
+				</tr>
+				<tr><td>Client/Supplier Code</td>';
+					if($payment->debit_nominal == "813") {
+						$supplier_details = DB::table('suppliers')->where('id',$payment->supplier_code)->first();
+						$output.='<td class="client_sort_val" style="">'.$supplier_details->supplier_code.'</td>';
+					}
+					else {
+						$output.='<td class="client_sort_val" style="">'.$payment->client_code.'</td>';
+					}
+					$output.='</tr>
+					<tr>
+						<td>Debit Nominal Description</td>
+						<td>'.$payment->debit_description.'</td>
+					</tr>
+					<tr>
+						<td>Comment</td>
+						<td>'.$payment->comment.'</td>	
+					</tr>
+					<tr>
+						<td>Amount</td>
+						<td>'.number_format_invoice_empty($payment->amount).'</td>	
+					</tr>
+						<td>Journal ID</td>
+						<td>'.$journal_id_view.'</td>	
+					<tr>
+						<td>Status</td>
+						<td>'.$hold_status.'</td>	
+					</tr>
+						
+				</tr>
+				';
+			}
+			$title = 'Delete Outstanding Payment';
+			$message = 'ARE YOU SURE YOU WANT TO DELETE THIS PAYMENT?';
+		}
+
+
+
+		echo json_encode(array('id' => $id, 'type' => $type, 'title' => $title, 'output' => $output, 'message' => $message ));	
+	}
+
+	public function outstanding_payment_receipt_download(){
+
+		$id = Input::get('id');
+		$type = Input::get('type');
+
+		$style = 'style="padding: 8px; border-bottom: 1px solid #c3c3c3; text-align:left; border-right: 1px solid #c3c3c3; border-bottom: 1px solid #c3c3c3;"';
+
+		if($type == '1'){
+			$receipt = DB::table('receipts')->where('id', $id)->first();
+
+			if(count($receipt)){
+
+				$get_details = DB::table('receipt_nominal_codes')->where('code',$receipt->debit_nominal)->first();
+				$debit_nominal = '';
+				if(count($get_details))
+				{
+					$debit_nominal = $get_details->code.' - '.$get_details->description;
+				}
+
+				if($receipt->hold_status == 0)
+				{
+					$hold_status = 'Outstanding';
+					
+				}
+				elseif($receipt->hold_status == 2)
+				{
+					$hold_status = 'Reconciled';
+					
+				}
+				else{
+					$hold_status = 'Cleared';
+					
+				}
+
+				if($receipt->journal_id != 0){
+					$journal_id_view = $receipt->journal_id;
+				}
+				else{
+					$journal_id_view = '';
+				}
+
+				
+
+
+				$output ='
+					<div style="float:left; width:100%; padding: 8px; text-align:center; font-family: Roboto, sans-serif; ">
+						<h4>Deleted Receipt Detailed Summary</h4>
+					</div>
+					<table class="table own_table_white" border="0px" cellpadding="0px" cellspacing="0px" style="font-family: Roboto, sans-serif; font-size: 13px; max-width: 600px; width: 100%; border-top: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3;">
+
+					<tr>
+						<td '.$style.'>Date</td>
+						<td '.$style.'><spam class="date_sort_val" style="display:none">'.strtotime($receipt->receipt_date).'</spam>'.date('d/m/Y', strtotime($receipt->receipt_date)).'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Debit Nominal & Description</td>
+						<td '.$style.'>'.$debit_nominal.'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Credit Nominal</td>
+						<td '.$style.'>'.$receipt->credit_nominal.'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Client Code</td>
+						<td '.$style.'>'.$receipt->client_code.'</td>	
+					</tr>
+					<tr>
+						<td '.$style.'>Credit Nominal Description</td>
+						<td '.$style.'>'.$receipt->credit_description.'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Comment</td>
+						<td '.$style.'>'.$receipt->comment.'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Amount</td>
+						<td '.$style.'><spam class="amount_sort_val" style="display:none">'.$receipt->amount.'</spam>'.number_format_invoice_empty($receipt->amount).'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Journal ID</td>
+						<td '.$style.'>'.$journal_id_view.'</td>	
+					</tr>
+					<tr>
+						<td '.$style.'>Status</td>
+						<td '.$style.'>'.$hold_status.'</td>							
+					</tr></table>';
+			}
+
+			$filename = 'Deleted Receipt Detail Summary';
+		}
+		else{
+			$payment = DB::table('payments')->where('payments_id', $id)->first();
+			if(count($payment)){
+
+				$get_details = DB::table('payment_nominal_codes')->where('code',$payment->credit_nominal)->first();
+				$credit_nominal = '';
+				if(count($get_details))
+				{
+					$credit_nominal = $get_details->code.' - '.$get_details->description;
+				}
+				if($payment->hold_status == 0)
+				{
+					$hold_status = 'Outstanding';
+					
+				}
+				elseif($payment->hold_status == 2)
+				{
+					$hold_status = 'Reconciled';
+					
+				}
+				else{
+					$hold_status = 'Cleared';
+					
+				}
+
+
+				if($payment->journal_id != 0){
+					$journal_id_view = $payment->journal_id;
+				}
+				else{
+					$journal_id_view = '';
+				}
+
+				$output='
+				<div style="float:left; width:100%; padding: 8px; text-align:center; font-family: Roboto, sans-serif; ">
+						<h4>Deleted Payment Detailed Summary</h4>
+					</div>
+				<table class="table own_table_white" border="0px" cellpadding="0px" cellspacing="0px" style="font-family: Roboto, sans-serif; font-size: 13px; max-width: 600px; width: 100%; border-top: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3;">
+				<tr>
+					<td '.$style.'>Date</td>
+					<td '.$style.'>'.date('d/m/Y', strtotime($payment->payment_date)).'</td>
+				</tr>
+				<tr>
+					<td '.$style.'>Debit Nominal</td>
+					<td '.$style.'>'.$payment->debit_nominal.'</td>
+				</tr>
+				<tr>
+					<td '.$style.'>Credit Nominal & Description</td>
+					<td '.$style.'>'.$credit_nominal.'</td>
+				</tr>
+				<tr><td '.$style.'>Client/Supplier Code</td>';
+					if($payment->debit_nominal == "813") {
+						$supplier_details = DB::table('suppliers')->where('id',$payment->supplier_code)->first();
+						$output.='<td '.$style.'>'.$supplier_details->supplier_code.'</td>';
+					}
+					else {
+						$output.='<td '.$style.'>'.$payment->client_code.'</td>';
+					}
+					$output.='</tr>
+					<tr>
+						<td '.$style.'>Debit Nominal Description</td>
+						<td '.$style.'>'.$payment->debit_description.'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Comment</td>
+						<td '.$style.'>'.$payment->comment.'</td>	
+					</tr>
+					<tr>
+						<td '.$style.'>Amount</td>
+						<td '.$style.'>'.number_format_invoice_empty($payment->amount).'</td>	
+					</tr>
+					<tr>
+						<td '.$style.'>Journal ID</td>
+						<td '.$style.'>'.$journal_id_view.'</td>
+					</tr>
+					<tr>
+						<td '.$style.'>Status</td>
+						<td '.$style.'>'.$hold_status.'</td>	
+					</tr>
+						
+				</table>
+				';
+			}	
+			$filename = 'Deleted Payment Detail Summary';
+		}
+
+		$time=time();
+		$pdf = PDF::loadHTML($output);
+	    $pdf->setPaper('A4', 'portrait');
+	    $pdf->save('papers/'.$filename.'_'.$time.'.pdf');
+
+	    $filename_download = $filename.'_'.$time.'.pdf';
+	    echo $filename_download;
+
+	}
+
+	public function outstanding_payment_receipt_delete(){
+
+		$id = Input::get('id');
+		$type = Input::get('type');
+
+		if($type == 1){
+			$receipt = DB::table('receipts')->where('id', $id)->delete();
+			$message = 'Receipt Detail Summary was successfully deleted';
+		}
+		else{
+			$payment = DB::table('payments')->where('payments_id', $id)->delete();
+			$message = 'Payment Detail Summary was successfully deleted';
+		}
+
+		echo json_encode(array('message' => $message));
+
+	}
+
+
 }

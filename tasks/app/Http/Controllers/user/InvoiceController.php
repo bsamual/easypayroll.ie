@@ -1667,7 +1667,7 @@ class InvoiceController extends Controller {
 	                <div class="tax_row_td right" width="13%">'.number_format_invoice($invoice_details->inv_net).'</div>
 	              </div>
 	              <div class="tax_row">
-	                <div class="tax_row_td left">VAT @ 23%</div>
+	                <div class="tax_row_td left">VAT @ '.$invoice_details->vat_rate.'%</div>
 	                <div class="tax_row_td right" style="border-top:0px;">'.number_format_invoice($invoice_details->vat_value).'</div>
 	              </div>
 	              <div class="tax_row">
@@ -1794,7 +1794,7 @@ class InvoiceController extends Controller {
 			$data['cr_value'] = '0.00';
 			DB::table('journals')->where('reference',$check_invoice->reference)->where('nominal_code','712')->update($data);
 
-			echo $check_invoice->connecting_journal_reference;
+			echo '<a href="javascript:" class="journal_id_viewer" data-element="'.$check_invoice->connecting_journal_reference.'">'.$check_invoice->connecting_journal_reference.'</a>';
 		}
 		else{
 			$count_total_journals = DB::table('journals')->groupBy('reference')->get();
@@ -1823,7 +1823,7 @@ class InvoiceController extends Controller {
 			$data['cr_value'] = '0.00';
 			DB::table('journals')->insert($data);
 
-			echo $next_connecting_journal;
+			echo '<a href="javascript:" class="journal_id_viewer" data-element="'.$next_connecting_journal.'">'.$next_connecting_journal.'</a>';
 		}
 		
 	}
@@ -1927,17 +1927,17 @@ class InvoiceController extends Controller {
 							<td align="left" style="'.$textcolor.'">'.$invoice->client_id.'</td>
 							<td align="left" style="'.$textcolor.'">'.$company.'</td>';
 							$get_journal_ids = DB::table('journals')->where('reference',$invoice->invoice_number)->first();
-                            $jids = '';
+                            $jids = '<a href="javascript:" class="create_journal_for_invoice common_black_button" data-element="'.$invoice->invoice_number.'">Create Journal</a>';
                             if(count($get_journal_ids))
                             {
-                              $jids = $get_journal_ids->connecting_journal_reference;
+                              $jids = '<a href="javascript:" class="journal_id_viewer" data-element="'.$get_journal_ids->connecting_journal_reference.'">'.$get_journal_ids->connecting_journal_reference.'</a>';
                             }
                             $output.='
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->inv_net).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->vat_value).'</td>
 							<td align="right" style="'.$textcolor.'">'.number_format_invoice($invoice->gross).'</td>
 							<td align="left" style="'.$textcolor.'">'. $invoice->statement.'</td>
-							<td class="jids" align="left" style="'.$textcolor.'"><a href="javascript:" class="journal_id_viewer" data-element="'.$jids.'">'.$jids.'</a></td>
+							<td class="jids" align="left" style="'.$textcolor.'">'.$jids.'</td>
 						</tr>
 					';
 					$i++;

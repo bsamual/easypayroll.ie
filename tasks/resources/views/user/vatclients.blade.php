@@ -9,6 +9,10 @@
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 <script src="http://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 <style>
+.disabled{
+  pointer-events: none;
+  cursor: not-allowed;
+}
 .fa-sort { margin-top:3px; }
 /*.nav>li>a:focus, .nav>li>a:hover { background: #d6d6d6;
     color: #000;
@@ -284,7 +288,7 @@ if(Session::has('message_import')) { ?>
   <div class="modal-dialog" role="document" style="z-index: 999999">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">Alert</h4>
+        <h4 class="modal-title" id="myModalLabel">Link Client Options</h4>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -292,7 +296,7 @@ if(Session::has('message_import')) { ?>
             <label>Do you want to update the Primary Email Address?</label>
           </div>
           <div class="col-md-4">
-            <input type="radio" name="pemail_update" class="pemail_update" id="pemail_yes" value="1"><label for="pemail_yes">Yes</label>
+            <input type="radio" name="pemail_update" class="pemail_update" id="pemail_yes" value="1" checked><label for="pemail_yes">Yes</label>
             <input type="radio" name="pemail_update" class="pemail_update" id="pemail_no" value="0"><label for="pemail_no">No</label>
           </div>
         </div>
@@ -301,7 +305,7 @@ if(Session::has('message_import')) { ?>
             <label>Do you want to update the Secondary Email Address?</label>
           </div>
           <div class="col-md-4">
-            <input type="radio" name="semail_update" class="semail_update" id="semail_yes" value="1"><label for="semail_yes">Yes</label>
+            <input type="radio" name="semail_update" class="semail_update" id="semail_yes" value="1" checked><label for="semail_yes">Yes</label>
             <input type="radio" name="semail_update" class="semail_update" id="semail_no" value="0"><label for="semail_no">No</label>
           </div>
         </div>
@@ -310,7 +314,7 @@ if(Session::has('message_import')) { ?>
             <label>Do you want to update the Salutation?</label>
           </div>
           <div class="col-md-4">
-            <input type="radio" name="salutation_update" class="salutation_update" id="salutation_yes" value="1"><label for="salutation_yes">Yes</label>
+            <input type="radio" name="salutation_update" class="salutation_update" id="salutation_yes" value="1" checked><label for="salutation_yes">Yes</label>
             <input type="radio" name="salutation_update" class="salutation_update" id="salutation_no" value="0"><label for="salutation_no">No</label>
           </div>
         </div>
@@ -325,7 +329,7 @@ if(Session::has('message_import')) { ?>
   <div class="modal-dialog" role="document" style="z-index: 999999">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">Alert</h4>
+        <h4 class="modal-title" id="myModalLabel">Link Client Options</h4>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -333,7 +337,7 @@ if(Session::has('message_import')) { ?>
             <label>Do you want to update the Primary Email Address?</label>
           </div>
           <div class="col-md-4">
-            <input type="radio" name="pemail_update_edit" class="pemail_update_edit" id="pemail_yes_edit" value="1"><label for="pemail_yes_edit">Yes</label>
+            <input type="radio" name="pemail_update_edit" class="pemail_update_edit" id="pemail_yes_edit" value="1" checked><label for="pemail_yes_edit">Yes</label>
             <input type="radio" name="pemail_update_edit" class="pemail_update_edit" id="pemail_no_edit" value="0"><label for="pemail_no_edit">No</label>
           </div>
         </div>
@@ -342,7 +346,7 @@ if(Session::has('message_import')) { ?>
             <label>Do you want to update the Secondary Email Address?</label>
           </div>
           <div class="col-md-4">
-            <input type="radio" name="semail_update_edit" class="semail_update_edit" id="semail_yes_edit" value="1"><label for="semail_yes_edit">Yes</label>
+            <input type="radio" name="semail_update_edit" class="semail_update_edit" id="semail_yes_edit" value="1" checked><label for="semail_yes_edit">Yes</label>
             <input type="radio" name="semail_update_edit" class="semail_update_edit" id="semail_no_edit" value="0"><label for="semail_no_edit">No</label>
           </div>
         </div>
@@ -351,7 +355,7 @@ if(Session::has('message_import')) { ?>
             <label>Do you want to update the Salutation?</label>
           </div>
           <div class="col-md-4">
-            <input type="radio" name="salutation_update_edit" class="salutation_update_edit" id="salutation_yes_edit" value="1"><label for="salutation_yes_edit">Yes</label>
+            <input type="radio" name="salutation_update_edit" class="salutation_update_edit" id="salutation_yes_edit" value="1" checked><label for="salutation_yes_edit">Yes</label>
             <input type="radio" name="salutation_update_edit" class="salutation_update_edit" id="salutation_no_edit" value="0"><label for="salutation_no_edit">No</label>
           </div>
         </div>
@@ -375,13 +379,56 @@ if(Session::has('message_import')) { ?>
       </div>
   </div>
 </div>
+<div class="modal fade vat_settings_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-lg" role="document" style="margin-top:6%;width:75%">
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">VAT Settings</h4>
+          </div>
+          <div class="modal-body" style="clear:both">
+            <div class="admin_content_section">  
+              <div>
+              <div class="table-responsive">
+                <div>
+                  <?php
+                  if(Session::has('message')) { ?>
+                      <p class="alert alert-info"><?php echo Session::get('message'); ?></p>
+                  <?php }
+                  $admin_details = DB::table('admin')->first();
+                  ?>
+                </div>      
+                  <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 col-lg-offset-2 col-md-offset-2 padding_00 border">
+                    <div class="col-lg-12 text-left padding_00">
+                      <div class="sub_title" style="margin-bottom: 0px; ">VAT EMail Signature :</div>
+                    </div>
+                    <div class="col-lg-12 text-left padding_00">
+                      <form action="<?php echo URL::to('user/update_user_signature'); ?>" method="post" id="update_user_signature_form">
+                        <textarea class="form-control input-sm" id="editor_1"  name="user_signature" style="height:100px"><?php echo $admin_details->signature; ?></textarea>
+                        <div class="row">
+                          <div class="col-md-12" style="text-align:center; margin-top:20px">
+                              <input type="submit" name="notify_submit" id="notify_submit" class="btn common_black_button" value="Update">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          <div class="modal-footer" style="clear:both">
+          </div>
+      </div>
+  </div>
+</div>
 <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <form id="form-validation-edit" action="<?php echo URL::to('user/update_vat_clients'); ?>" method="post" class="editsp">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Edit Clients</h4>
+            <h4 class="modal-title edit_title">Edit Clients</h4>
           </div>
           <div class="modal-body">
             <div class="row">
@@ -476,7 +523,6 @@ if(Session::has('message_import')) { ?>
           </div>
           <div class="modal-footer">
             <input type="hidden" name="hidden_client_id_edit" id="hidden_client_id_edit" value="">
-            <input type="hidden" name="hidden_client_salutation_edit" id="hidden_client_salutation_edit" value="">
             <input type="hidden" value="" name="id" class="name_id">
             <input type="button" value="Update Clients" class="btn_add" id="edit_client_details">
           </div>
@@ -662,7 +708,7 @@ if(Session::has('message_import')) { ?>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Email Sent Date and Time</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body modal_max_height">
           <table class="table">
             <thead>
               <th>S.No</th>
@@ -744,6 +790,7 @@ if(Session::has('message_import')) { ?>
       <div style="float:right;">
         <a href="javascript:" class="import_button common_black_button">Import VAT Clients from ROS Extract</a>
         <a href="javascript:" class="compare_button common_black_button" type="button" >Notify Clients of VAT Returns Due</button></a>
+        <a href="javascript:" class="common_black_button fa fa-cog vat_settings_btn"></a>
       </div>
 
 
@@ -768,7 +815,8 @@ if(Session::has('message_import')) { ?>
               <th style="text-align: left; ;">Client Name <i class="fa fa-sort client_sort" style="float:right" aria-hidden="true"></th>
               <th style="text-align: left; ">Tax Regn./Trader No <i class="fa fa-sort tax_sort" style="float:right" aria-hidden="true"></th>
               <th style="text-align: left; ">Email <i class="fa fa-sort pemail_sort" style="float:right" aria-hidden="true"></th>
-              <th style="text-align: left; ">Secondary Email <i class="fa fa-sort semail_sort" style="float:right" aria-hidden="true"></th>                            
+              <th style="text-align: left; ">Secondary Email <i class="fa fa-sort semail_sort" style="float:right" aria-hidden="true"></th>  
+              <th style="text-align: left; ">Salutation </th>                               
               <th style="text-align: left; width:10%">Action</th>
 
           </tr>
@@ -778,20 +826,21 @@ if(Session::has('message_import')) { ?>
               $i=1;
               if(count($clientlist)){              
                 foreach($clientlist as $client){                
-                if($client->status == 1) { $fontcolor = 'red'; }
-                elseif($client->status == 0 && $client->pemail != '' && $client->self_manage == 'no') { $fontcolor = 'green'; }
-                elseif($client->status == 0 && $client->pemail == '' && $client->self_manage == 'no') { $fontcolor = '#bd510a'; }
+                if($client->status == 1) { $fontcolor = 'red'; $disabled = 'disabled'; }
+                elseif($client->status == 0 && $client->pemail != '' && $client->self_manage == 'no') { $fontcolor = 'green'; $disabled = ''; }
+                elseif($client->status == 0 && $client->pemail == '' && $client->self_manage == 'no') { $fontcolor = '#bd510a'; $disabled = ''; }
                 elseif($client->status == 0 && $client->self_manage == 'yes') { $fontcolor = 'purple'; }
-                else{$fontcolor = '#fff';}
+                else{$fontcolor = '#fff'; $disabled = ''; }
             ?>
           <tr class="task_tr task_<?php echo $client->client_id; ?>" style="text-align:center">
               <td class="sno_sort_val" width="5%" style="text-align: left;"><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->cm_client_id; ?></label></th>
               <td class="client_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->name; ?></label></td>
               <td class="tax_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->taxnumber; ?></label></td>
               <td class="pemail_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->pemail; ?></label></td>
-              <td class="semail_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->semail; ?></label></td>                            
+              <td class="semail_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->semail; ?></label></td>
+              <td class="salutation_sort_val" style="text-align: left; "><label style="color:<?php echo $fontcolor; ?> !important;"><?php echo $client->salutation; ?></label></td>                      
               <td style="text-align: left; ">
-                  <a href="javascript:" style="width:auto; float: none; padding: 5px;" id="<?php echo base64_encode($client->client_id); ?>" class="editclass" title="Edit Client"><i class="fa fa-pencil-square editclass" id="<?php echo base64_encode($client->client_id); ?>" aria-hidden="true"></i></a>
+                  <a href="javascript:" style="width:auto; float: none; padding: 5px;" id="<?php echo base64_encode($client->client_id); ?>" class="editclass <?php echo $disabled; ?>" title="Edit Client"><i class="fa fa-pencil-square editclass" id="<?php echo base64_encode($client->client_id); ?>" aria-hidden="true"></i></a>
 
                             &nbsp; 
                   <a href="javascript:" style="width:auto; float: none; padding: 5px;" id="<?php echo base64_encode($client->client_id); ?>" class="email_sent" title="Email Sent Date & Time"><i class="fa fa-envelope email_sent" id="<?php echo base64_encode($client->client_id); ?>" aria-hidden="true"></i></a>
@@ -885,6 +934,10 @@ var parseconvertToNumber = function(value){
 }
 $(window).click(function(e) {  
   var ascending = false;
+  if($(e.target).hasClass('vat_settings_btn'))
+  {
+    $(".vat_settings_modal").modal('show');
+  }
   if($(e.target).hasClass('sno_sort'))
   {
     var sort = $("#sno_sortoptions").val();
@@ -1010,7 +1063,6 @@ $(window).click(function(e) {
       var self_manage = $(".self_manage_class:checked").val();
       var always_nil = $(".always_nil_class:checked").val();
       var client_id = $("#hidden_client_id_edit").val();
-      var hidden_salutation = $("#hidden_client_salutation_edit").val();
       if(pemail == "")
       {
         $(".error_pemail").text("Please Enter your Primary Email Address");
@@ -1025,17 +1077,20 @@ $(window).click(function(e) {
         url:"<?php echo URL::to('user/update_vat_clients'); ?>",
         type:"post",
         dataType:"json",
-        data:{name:name,pemail:pemail,semail:semail,salutation:salutation,self:self_manage,always_nil:always_nil,id:id,client_id:client_id,hidden_salutation:hidden_salutation},
+        data:{name:name,pemail:pemail,semail:semail,salutation:salutation,self:self_manage,always_nil:always_nil,id:id,client_id:client_id},
         success: function(result)
         {
           $(".bs-example-modal-sm").modal("hide");
           $(".task_"+id).find(".semail_sort_val").find("label").text(semail);
+          $(".task_"+id).find(".salutation_sort_val").find("label").text(salutation);
           $(".task_"+id).find(".pemail_sort_val").find("label").text(pemail);
           $(".task_"+id).find(".client_sort_val").find("label").text(name);
           if(result['cm_client_id'] != "")
           {
             $(".task_"+id).find(".icon_div").find(".fa").removeClass("fa-chain-broken").addClass("fa-link");            
             $(".task_"+id).find(".icon_div").css({"color":"blue"});
+
+            $(".task_"+id).find(".sno_sort_val").html('<label style="color:green !important;">'+result['cm_client_id']+'</label>');
           }
           else{
             $(".task_"+id).find(".icon_div").find(".fa").removeClass("fa-link").addClass("fa-chain-broken");
@@ -1051,22 +1106,41 @@ $(window).click(function(e) {
           {
             if(pemail != "" && self_manage == "no")
             {
+              $(".task_"+id).find(".sno_sort_val").find("label").attr("style","color:green !important");
               $(".task_"+id).find(".client_sort_val").find("label").attr("style","color:green !important");
+              $(".task_"+id).find(".tax_sort_val").find("label").attr("style","color:green !important");
+              $(".task_"+id).find(".pemail_sort_val").find("label").attr("style","color:green !important");
+              $(".task_"+id).find(".semail_sort_val").find("label").attr("style","color:green !important");
+              $(".task_"+id).find(".salutation_sort_val").find("label").attr("style","color:green !important");
             }
             else if(pemail == "" && self_manage == "no")
             {
+              $(".task_"+id).find(".sno_sort_val").find("label").attr("style","color:#bd510a !important");
               $(".task_"+id).find(".client_sort_val").find("label").attr("style","color:#bd510a !important");
+              $(".task_"+id).find(".tax_sort_val").find("label").attr("style","color:#bd510a !important");
+              $(".task_"+id).find(".pemail_sort_val").find("label").attr("style","color:#bd510a !important");
+              $(".task_"+id).find(".semail_sort_val").find("label").attr("style","color:#bd510a !important");
+              $(".task_"+id).find(".salutation_sort_val").find("label").attr("style","color:#bd510a !important");
             }
             else if(self_manage == "yes")
             {
+              $(".task_"+id).find(".sno_sort_val").find("label").attr("style","color:purple !important");
               $(".task_"+id).find(".client_sort_val").find("label").attr("style","color:purple !important");
+              $(".task_"+id).find(".tax_sort_val").find("label").attr("style","color:purple !important");
+              $(".task_"+id).find(".pemail_sort_val").find("label").attr("style","color:purple !important");
+              $(".task_"+id).find(".semail_sort_val").find("label").attr("style","color:purple !important");
+              $(".task_"+id).find(".salutation_sort_val").find("label").attr("style","color:purple !important");
             }
             else{
+              $(".task_"+id).find(".sno_sort_val").find("label").attr("style","color:#fff !important");
               $(".task_"+id).find(".client_sort_val").find("label").attr("style","color:#fff !important");
+              $(".task_"+id).find(".tax_sort_val").find("label").attr("style","color:#fff !important");
+              $(".task_"+id).find(".pemail_sort_val").find("label").attr("style","color:#fff !important");
+              $(".task_"+id).find(".semail_sort_val").find("label").attr("style","color:#fff !important");
+              $(".task_"+id).find(".salutation_sort_val").find("label").attr("style","color:#fff !important");
             }
           }
           $(".message_edit").html('<p class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a> Clients Updated successfully</p>');
-
         }
       });
   }
@@ -1130,6 +1204,14 @@ $(window).click(function(e) {
         success:function(result){
            $(".bs-example-modal-sm").modal("toggle");
            $(".modal-content").css({"top":"90px"});
+           if(result['cm_client_id'] == "")
+           {
+            $(".edit_title").html('Edit Client - '+result['name']);
+           }
+           else{
+            $(".edit_title").html('Edit Client - '+result['name']+' '+result['cm_client_id']);
+           }
+           
            $(".editsp").show();           
            $("#hidden_client_id_edit").val(result['cm_client_id']);
            $(".name_class").val(result['name']);           
@@ -1261,10 +1343,15 @@ $(window).click(function(e) {
       }
       if(salutation == 1)
       {
-        $("#hidden_client_salutation_edit").val(1);
-      }
-      else{
-        $("#hidden_client_salutation_edit").val(0);
+        $.ajax({
+          url:"<?php echo URL::to('user/getclient_salutation'); ?>",
+          type:"post",
+          data:{clientid:clientid},
+          success: function(result)
+          {
+            $(".salutation_class_edit").val(result);
+          }
+        });
       }
       $("#alert_modal_edit").modal("hide");
     }
@@ -1338,13 +1425,6 @@ $(document).ready(function() {
               $(".firstname_class").val(result['firstname']);
               $("#hidden_client_id").val(ui.item.id);
               $('#alert_modal').modal({backdrop: 'static', keyboard: false});
-              $(".pemail_update_edit").prop("checked",false);
-              $(".semail_update_edit").prop("checked",false);
-              $(".salutation_update_edit").prop("checked",false);
-
-              $(".pemail_update").prop("checked",false);
-              $(".semail_update").prop("checked",false);
-              $(".salutation_update").prop("checked",false);
             }
           })
         }
@@ -1375,14 +1455,6 @@ $(document).ready(function() {
               $(".firstname_class_edit").val(result['firstname']);
               $("#hidden_client_id_edit").val(ui.item.id);
               $('#alert_modal_edit').modal({backdrop: 'static', keyboard: false});
-
-              $(".pemail_update_edit").prop("checked",false);
-              $(".semail_update_edit").prop("checked",false);
-              $(".salutation_update_edit").prop("checked",false);
-
-              $(".pemail_update").prop("checked",false);
-              $(".semail_update").prop("checked",false);
-              $(".salutation_update").prop("checked",false);
             }
           })
         }

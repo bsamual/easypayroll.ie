@@ -37,7 +37,7 @@ class AdminRedirect {
 		if(Session::get('admin_userid') != '')
 		{
 			
-		  return new RedirectResponse(url('admin/manage_task'));
+		  return new RedirectResponse(url('admin/profile'));
 		}
 		return $next($request);
 	}

@@ -173,6 +173,25 @@ body.loading {
 body.loading .modal_load {
     display: block;
 }
+.modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
     .table thead th:focus{background: #ddd !important;}
     .form-control{border-radius: 0px;}
     .disabled{cursor :auto !important;pointer-events: auto !important}
@@ -220,7 +239,7 @@ a:hover{text-decoration: underline;}
               <label>From</label>
             </div>
             <div class="col-md-9">
-              <select name="from_user" id="from_user" class="form-control input-sm" value="" required>
+              <select name="from_user" id="from_user" class="form-control " value="" required>
                   <option value="">Select User</option>
                   <?php
                     $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
@@ -246,12 +265,12 @@ a:hover{text-decoration: underline;}
               if($client_details->email2 == "")
               {
                 ?>
-                <input type="text" name="to_user" id="to_user" class="form-control input-sm" value="<?php echo $client_details->email; ?>" required>
+                <input type="text" name="to_user" id="to_user" class="form-control " value="<?php echo $client_details->email; ?>" required>
                 <?php
               }
               else{
                 ?>
-                <input type="text" name="to_user" id="to_user" class="form-control input-sm" value="<?php echo $client_details->email.','.$client_details->email2; ?>" required>
+                <input type="text" name="to_user" id="to_user" class="form-control " value="<?php echo $client_details->email.','.$client_details->email2; ?>" required>
                 <?php
               }
               ?>
@@ -266,7 +285,7 @@ a:hover{text-decoration: underline;}
                 $admin_details = Db::table('admin')->first();
                 $admin_cc = $admin_details->p30_cc_email;
               ?>
-              <input type="text" name="cc_unsent" class="form-control input-sm" id="cc_unsent" value="<?php echo $admin_cc; ?>" readonly>
+              <input type="text" name="cc_unsent" class="form-control " id="cc_unsent" value="<?php echo $admin_cc; ?>" readonly>
             </div>
           </div>
           <div class="row" style="margin-top:10px">
@@ -274,7 +293,7 @@ a:hover{text-decoration: underline;}
               <label>Subject</label>
             </div>
             <div class="col-md-9">
-              <input type="text" name="subject_unsent" class="form-control input-sm subject_unsent" value="RCT LIABILITY ASSESSMENT" required>
+              <input type="text" name="subject_unsent" class="form-control  subject_unsent" value="RCT LIABILITY ASSESSMENT" required>
             </div>
           </div>
           <div class="row" style="margin-top:10px">
@@ -303,7 +322,75 @@ a:hover{text-decoration: underline;}
     </form>
   </div>
 </div>
-
+<div class="modal fade batch_email_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">RCT SUBMISSION EMAIL</h4>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+            <div class="col-md-3">
+              <label>From</label>
+            </div>
+            <div class="col-md-9">
+              <select name="from_user_batch" id="from_user_batch" class="form-control " value="" required>
+                  <option value="">Select User</option>
+                  <?php
+                    $users = DB::table('user')->where('user_status',0)->where('disabled',0)->where('email','!=', '')->orderBy('lastname','asc')->get();
+                    if(count($users))
+                    {
+                      foreach($users as $user)
+                      {
+                          ?>
+                            <option value="<?php echo trim($user->email); ?>"><?php echo $user->lastname.' '.$user->firstname; ?></option>
+                          <?php
+                      }
+                    }
+                  ?>
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>To</label>
+            </div>
+            <div class="col-md-9">
+              <?php
+              if($client_details->email2 == "")
+              {
+                ?>
+                <input type="text" name="to_user_batch" id="to_user_batch" class="form-control " value="<?php echo $client_details->email; ?>" required>
+                <?php
+              }
+              else{
+                ?>
+                <input type="text" name="to_user_batch" id="to_user_batch" class="form-control " value="<?php echo $client_details->email.','.$client_details->email2; ?>" required>
+                <?php
+              }
+              ?>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>CC</label>
+            </div>
+            <div class="col-md-9">
+              <?php 
+                $admin_details = Db::table('admin')->first();
+                $admin_cc = $admin_details->p30_cc_email;
+              ?>
+              <input type="text" name="cc_unsent_batch" class="form-control " id="cc_unsent_batch" value="<?php echo $admin_cc; ?>" readonly>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <input type="button" class="btn btn-primary common_black_button send_batch_email" value="Send Email">
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade edit_submissions_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-md" role="document">
       <div class="modal-content">
@@ -548,6 +635,7 @@ a:hover{text-decoration: underline;}
    <div class="col-lg-4">
     <div class="select_button">
       <ul style="float: right; margin-top: 15px;">                                    
+        <li><a href="javascript:" class="email_batch_send" style="font-size: 13px; font-weight: 500;">Send Batch Email</a></li>
         <li><a href="javascript:" class="email_class" style="font-size: 13px; font-weight: 500;">Email to Client</a></li>
         <li><a href="javascript:" class="extract_pdf_class" style="font-size: 13px; font-weight: 500;">Extract to PDF</a></li>
         <li><a href="javascript:" class="extract_csv_class" style="font-size: 13px; font-weight: 500;">Extract to CSV</a></li>
@@ -574,7 +662,7 @@ a:hover{text-decoration: underline;}
             <th style="text-align:left;width: 130px;">Value Gross</th>
             <th style="text-align:left;width: 130px;">Value Net</th>
             <th style="text-align:left;width: 130px;">Deduction</th>
-            <th style="text-align:left" align="center" style="width: 120px;">Action</th>
+            <th style="text-align:left;width: 160px;" align="center">Action</th>
           </tr>
         </thead>
         <tbody class="view_liability_class">
@@ -705,6 +793,16 @@ a:hover{text-decoration: underline;}
 
                     if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
                     if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
+                    $sub_id_val = $rct_id[$key].$type;
+                    $emails_sent = DB::table('rct_submission_email')->where('submission_id',$sub_id_val)->where('client_id',$client_id)->get();
+                    $ee = '';
+                    if(count($emails_sent))
+                    {
+                      foreach($emails_sent as $sent)
+                      {
+                        $ee.='<label>'.date('F d, Y', strtotime($sent->email_sent)).'</label>';
+                      }
+                    }
                     $outputsubmission.='
                     <tr>
                       <td style="text-align:left"><input type="checkbox" class="select_class select_class_'.$type.'" value="'.$key.'"  /><label>&nbsp;</label></td>
@@ -723,7 +821,8 @@ a:hover{text-decoration: underline;}
                       <td style="text-align:left">
                         <a href="javascript:" title="Download Pdf"><i class="fa fa-download download_submission" data-element="'.$type.'" id="'.$key.'"></i></a>&nbsp;&nbsp;
                         <a href="javascript:" title="View / Edit"><i class="fa fa-pencil edit_class"  data-element="'.$type.'" id="'.$key.'"></i></a>&nbsp;&nbsp;
-                        <a href="javascript:" title="Email"><i class="fa fa-envelope email_class_single"  data-element="'.$type.'" id="'.$key.'"></i></a>
+                        <a href="javascript:" title="Email"><i class="fa fa-envelope email_class_single"  data-element="'.$type.'" id="'.$key.'"></i></a><br/>
+                        '.$ee.'
                       </td>
                     </tr>
                     ';
@@ -820,6 +919,17 @@ a:hover{text-decoration: underline;}
 
                     if(isset($explode_tax_name[$principal_key])) { $exp_tax_name = $explode_tax_name[$principal_key]; } else { $exp_tax_name = ''; }
                     if(isset($explode_tax_number[$principal_key])) { $exp_tax_number = $explode_tax_number[$principal_key]; } else { $exp_tax_number = ''; }
+
+                    $sub_id_val = $rct_id[$key].$type;
+                    $emails_sent = DB::table('rct_submission_email')->where('submission_id',$sub_id_val)->where('client_id',$client_id)->get();
+                    $ee = '';
+                    if(count($emails_sent))
+                    {
+                      foreach($emails_sent as $sent)
+                      {
+                        $ee.='<label>'.date('F d, Y', strtotime($sent->email_sent)).'</label>';
+                      }
+                    }
                     
                     $outputsubmission.='
                     <tr>
@@ -839,7 +949,8 @@ a:hover{text-decoration: underline;}
                       <td style="text-align:left">
                         <a href="javascript:" title="Download Pdf"><i class="fa fa-download download_submission" data-element="'.$type.'" id="'.$key.'"></i></a>&nbsp;&nbsp;
                         <a href="javascript:" title="View / Edit"><i class="fa fa-pencil edit_class"  data-element="'.$type.'" id="'.$key.'"></i></a>&nbsp;&nbsp;
-                        <a href="javascript:" title="Email"><i class="fa fa-envelope email_class_single"  data-element="'.$type.'" id="'.$key.'"></i></a>
+                        <a href="javascript:" title="Email"><i class="fa fa-envelope email_class_single"  data-element="'.$type.'" id="'.$key.'"></i></a><br/>
+                        '.$ee.'
                       </td>
                     </tr>
                     ';
@@ -1087,12 +1198,147 @@ a:hover{text-decoration: underline;}
 
 
 <div class="modal_load"></div>
+<div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Emails are Processed.</p>
+  <p style="font-size:18px;font-weight: 600;">Sending Emails: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
 <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
 <input type="hidden" name="show_alert" id="show_alert" value="">
 <input type="hidden" name="pagination" id="pagination" value="1">
 
 <script>
+function next_email_check(count)
+{
+  var from_user = $("#from_user_batch").val();
+  var to_user = $("#to_user_batch").val();
+  var cc_unsent = $("#cc_unsent_batch").val();
+
+  var client_id = $("#client_id").val();
+  var type = $(".select_class:checked:eq("+count+")").parents("tr").find(".email_class_single").attr("data-element");
+  var key = $(".select_class:checked:eq("+count+")").parents("tr").find(".email_class_single").attr("id");
+
+  if(type == "1")
+  {
+    var subject = "RCT Contract";
+  }
+  else{
+    var subject = "RCT Payment";
+  }
+
+  $.ajax({
+    url:"<?php echo URL::to('user/send_batch_email_single'); ?>",
+    type:"post",
+    data:{client_id:client_id,type:type,key:key,from_user:from_user,to_user:to_user,cc_unsent:cc_unsent,subject:subject},
+    success:function(result)
+    {
+      setTimeout( function() {
+        var countval = count + 1;
+        if($(".select_class:checked:eq("+countval+")").length > 0)
+        {
+          $("#apply_first").html(countval);
+          next_email_check(countval);
+        }
+        else{
+          $("#from_user_batch").val("");
+            $("body").removeClass("loading_apply");
+            $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:green">Email Sent Successfully</p>',fixed:true,width:"800px"});
+        }
+      },200);
+    }
+  });
+
+
+  var inv_id = $(".include_tr:eq("+count+")").find(".invoice_class").html();
+  $.ajax({
+    url:"<?php echo URL::to('user/insert_update_invoice_nominals'); ?>",
+    type:"post",
+    data:{inv_id:inv_id},
+    success:function(result)
+    {
+      $(".include_tr:eq("+count+")").find(".jids").html(result);
+      setTimeout( function() {
+        var countval = count + 1;
+        if($(".include_tr:eq("+countval+")").length > 0)
+        {
+          next_invoice_check(countval);
+          $("#apply_first").html(countval);
+        }
+        else{
+          $("#hidden_financial_opening_date").val("");
+          $("body").removeClass("loading_apply");
+        }
+      },200);
+    }
+  });
+}
 $(window).click(function(e) {
+if($(e.target).hasClass('email_batch_send'))
+{
+  var length = $(".select_class:checked").length;
+  if(length > 0)
+  {
+    $(".batch_email_modal").modal("show");
+  }
+  else{
+     alert('Please Select atleast one RCT Submission');
+  }
+}
+if($(e.target).hasClass('send_batch_email'))
+{
+  var from_user = $("#from_user_batch").val();
+  var to_user = $("#to_user_batch").val();
+  var cc_unsent = $("#cc_unsent_batch").val();
+  if(from_user == "")
+  {
+    alert("Please select the From User to send a Email");
+  }
+  else if(to_user == "")
+  {
+    alert("Please Enter the To User to send a Email");
+  }
+  else if(cc_unsent == ""){
+    alert("Please Enter the CC to send a Email");
+  }
+  else{
+    $(".batch_email_modal").modal("hide");
+    $("body").addClass("loading_apply");
+    var length = $(".select_class:checked").length;
+    $("#apply_last").html(length);
+
+    var client_id = $("#client_id").val();
+    var type = $(".select_class:checked:eq(0)").parents("tr").find(".email_class_single").attr("data-element");
+    var key = $(".select_class:checked:eq(0)").parents("tr").find(".email_class_single").attr("id");
+
+    if(type == "1")
+    {
+      var subject = "RCT Contract";
+    }
+    else{
+      var subject = "RCT Payment";
+    }
+
+    $.ajax({
+      url:"<?php echo URL::to('user/send_batch_email_single'); ?>",
+      type:"post",
+      data:{client_id:client_id,type:type,key:key,from_user:from_user,to_user:to_user,cc_unsent:cc_unsent,subject:subject},
+      success:function(result)
+      {
+        setTimeout( function() {
+          if($(".select_class:checked:eq(1)").length > 0)
+          {
+            $("#apply_first").html(1);
+            next_email_check(1);
+          }
+          else{
+            $("#from_user_batch").val("");
+            $("body").removeClass("loading_apply");
+            $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:green">Email Sent Successfully</p>',fixed:true,width:"800px"});
+          }
+        },200);
+      }
+    });
+  }
+}
 if($(e.target).hasClass('download_submission'))
 {
   $("body").addClass("loading");

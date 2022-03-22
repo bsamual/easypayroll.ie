@@ -10,12 +10,14 @@
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <script src="<?php echo URL::to('assets/js/slideupdown.js'); ?>"></script>
 <style>
+  .start_group{clear:both;}
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 .table-fixed-header {
   text-align: left;
   position: relative;
@@ -64,7 +66,44 @@ body.loading_apply {
 body.loading_apply .modal_load_apply {
     display: block;
 }
-
+.modal_load_number {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_number {
+    overflow: hidden;   
+}
+body.loading_number .modal_load_number {
+    display: block;
+}
+.modal_load_attachments {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_attachments {
+    overflow: hidden;   
+}
+body.loading_attachments .modal_load_attachments {
+    display: block;
+}
 .modal_load_available {
     display:    none;
     position:   fixed;
@@ -234,7 +273,7 @@ font-size: 18px;
 
 }
 
-.delete_all_image, .delete_all_notes_only, .delete_all_notes, .download_all_image, .download_rename_all_image, .download_all_notes_only, .download_all_notes{cursor: pointer;}
+.delete_all_image, .delete_all_notes_only, .delete_all_notes, .download_all_image, .download_rename_all_image, .download_all_notes_only, .download_all_notes, .summary_infile_attachments{cursor: pointer;}
 
 .notepad_div {
 
@@ -296,6 +335,14 @@ font-size: 18px;
 
     display:none;
 
+}
+.img_div{
+  width:90%;
+}
+
+.img_div_bpso{
+  width:90%;
+  display:none;
 }
 table.dataTable.row-border tbody tr:first-child th, table.dataTable.row-border tbody tr:first-child td, table.dataTable.display tbody tr:first-child th, table.dataTable.display tbody tr:first-child td{ z-index:9; }
 .notepad_div_notes_add,.notepad_div_notes_task {
@@ -573,7 +620,12 @@ a:hover{text-decoration: underline;}
 .submit_button{background: #000; text-align: center; padding: 8px 12px; color: #fff; float: left; border: none; font-size: 14px; font-weight: normal; transition: 0.3s; opacity: 0.6;}
 
 .submit_button:hover{background: #000; opacity: 1;}
-
+.close_bpso{
+  position: absolute;
+right: 15px;
+font-size: 20px !important;
+color: #f00;
+}
 </style>
 <?php 
   $admin_details = Db::table('admin')->first();
@@ -601,6 +653,134 @@ elseif(Session::has('countupdated'))
 }
 ?>
 <!--*************************************************************************-->
+<div class="modal fade task_specifics_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:40%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close close_task_specifics" data-dismiss="modal" aria-label="Close"><span class="close_task_specifics" aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-weight:700;font-size:20px">Task Specifics: <spam class="task_title_spec"></spam></h4>
+            <h5 class="title_task_details" style="font-size:18px;font-weight:600"></h5>
+            <div class="user_ratings_div"></div>
+          </div>
+          <div class="modal-body" style="min-height: 193px;padding: 5px;">
+            <label class="col-md-12" style="padding: 0px;">
+              <label style="margin-top:10px">Existing Task Specific Comments:</label>
+
+              <a href="javascript:" class="common_black_button download_pdf_spec" style="float: right;">Download as PDF</a> 
+              <img src="<?php echo URL::to('assets/2bill.png'); ?>" class="2bill_image 2bill_image_comments" style="width:32px;margin-left:10px;float:right;margin-top: 4px;display:none" title="this is a 2Bill Task">
+            </label>
+            <div class="col-md-12" style="padding: 0px;">
+              <div class="existing_comments" id="existing_comments" style="width:100%;background: #c7c7c7;padding:10px;min-height:300px;height:300px;overflow-y: scroll;font-size: 16px"></div>
+            </div>
+
+            <label class="col-md-12" style="margin-top:15px;padding: 0px">New Comment:</label>
+            <div class="col-md-12" style="padding: 0px">
+              <textarea name="new_comment" class="form-control new_comment" id="editor_1" style="height:150px"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding: 18px 5px;">  
+            <input type="hidden" name="hidden_task_id_task_specifics" id="hidden_task_id_task_specifics" value="">
+            <input type="hidden" name="show_auto_close_msg" id="show_auto_close_msg" value="">
+            
+            <div class="col-md-12" style="padding:0px;margin-top:10px">
+              <input type="button" class="common_black_button add_comment_allocate_to_btn" value="Add Comment and Allocate To" style="float: left;font-size:12px">
+              <select name="add_comment_allocate_to" class="form-control add_comment_allocate_to" style="float: left;width:20%;font-size:12px">
+                <option value="">Select User</option>
+                <?php
+                  if(count($userlist)){
+                    foreach ($userlist as $user) {
+                  ?>
+                    <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                  <?php
+                    }
+                  }
+                ?>
+              </select>
+
+              <input type="button" class="common_black_button add_task_specifics" id="add_task_specifics" value="Add Comment Now" style="float: right;font-size:12px">
+              <input type="button" class="common_black_button add_comment_and_allocate" id="add_comment_and_allocate" value="Add Comment and Allocate Back" style="float: right;font-size:12px">
+              
+              <div class="col-md-6" style="float:left;margin-top:10px;padding:0px">
+                <input type="button" class="common_black_button add_progress_files_from_task_specifics" id="add_progress_files_from_task_specifics" value="Add Progress Files" data-element="" style="float: left;font-size:12px">
+                <spam class="progress_spam" style="font-weight:600;color:green;margin-top:10px"></spam>
+              </div>
+              <div class="col-md-6" style="float:right;margin-top:10px;padding:0px">
+                  <input type='checkbox' name="auto_close_task_comment" class="auto_close_task_comment" id="auto_close_task_comment" value="1"/> <label for="auto_close_task_comment" style="margin-top: 10px;">Make this task is an Auto Close Task</label>
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+</div>
+<div class="modal fade dropzone_progress_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Add Progress Files Attachments</h4>
+          </div>
+          <div class="modal-body" style="min-height:280px">  
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label>Select User</label>
+                    <select class="form-control files_user_drop" required>
+                      <option value="">Select User</option>
+                      <?php
+                      $selected = '';                      
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                          if(Session::has('taskmanager_user'))
+                          {
+                            if($user->user_id == Session::get('taskmanager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }
+
+                      ?>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                    </select>
+                    <spam class="error_files_user_drop"></spam>
+                  </div>
+                  
+                </div>
+                <div class="col-lg-12">
+                  <div class="img_div_progress" style="display: block;">
+                     <div class="image_div_attachments_progress">
+
+                      <?php
+                      if(Session::has('taskmanager_user'))
+                          {
+                            $session_user_id = Session::get('taskmanager_user');
+                          }
+                          else{
+                            $session_user_id = '';
+                          }
+                      ?>
+                      
+                        <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_progress'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUploadprogress" style="clear:both;min-height:250px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">                            
+                            <input name="hidden_task_id_progress" id="hidden_task_id_progress" type="hidden" value="">
+                            <input type="hidden" value="<?php echo $session_user_id?>" id="files_user_hidden" name="user_id">
+                        </form>
+
+                        <div class="add_progress_attachments" style="display:none">
+
+                        </div>
+                     </div>
+                  </div>
+                  
+                </div>
+              </div>
+          </div>
+          <div class="modal-footer">  
+            <a href="javascript:" class="btn btn-sm btn-primary" align="left" style="margin-left:7px; float:left;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
+          </div>
+        </div>
+  </div>
+</div>
 <div class="modal fade infiles_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:45%;">
         <div class="modal-content">
@@ -613,6 +793,22 @@ elseif(Session::has('countupdated'))
           </div>
           <div class="modal-footer">  
             <input type="button" class="common_black_button" id="link_infile_button" value="Submit">
+          </div>
+        </div>
+  </div>
+</div>
+
+<div class="modal fade summary_infile_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:45%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">Summary</h4>
+          </div>
+          <div class="modal-body" id="summary_infile_tbody" style="clear:both">  
+
+          </div>
+          <div class="modal-footer" style="clear:both">  
           </div>
         </div>
   </div>
@@ -636,25 +832,41 @@ elseif(Session::has('countupdated'))
   </div>
 </div>
 <div class="modal fade integrity_check_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
-  <div class="modal-dialog modal-sm" role="document" style="width:40%;">
+  <div class="modal-dialog modal-sm" role="document" style="width:70%;">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title job_title">Integrity Check</h4>
             <input type="button" class="check_now common_black_button" value="Check Now" style="margin-top:-32px;margin-right:28px;float:right">
+            <a href="javascript:" class="export_integrity_filename_a common_black_button" download style="margin-top:-32px;margin-right:28px;float:right">Export </a>
           </div>
-          <div class="modal-body">  
-            <div id="integrity_check_body">
+          <div class="modal-body modal_max_height">  
+            <div>
+              <table class="table">
+                <thead>
+                    <th style="text-align:left;width:20%">Client</th>
+                    <th style="text-align:left;width:10%">Client ID</th>
+                    <th style="text-align:left;width:30%">Filename</th>
+                    <th style="text-align:left;width:5%">Status</th>
+                    <th style="text-align:left;width:5%">Action</th>
+                    <th style="text-align:left;width:20%">Description</th>
+                    <th style="text-align:left;width:10%">Date Added</th>
+                </thead>
+                <tbody id="integrity_check_body">
 
+                </tbody>
+              </table>
             </div>
+            
             <div class="available_import_div">
+              <div class="col-md-12">
+                <h5>Summary: </h5>
+                <p>Number of Files:<spam class="number_of_files"></spam></p>
+                <p>Number of OK Files:<spam class="number_of_ok_files"></spam></p>
+                <p>Number of Missing Files:<spam class="number_of_missing_files"></spam></p>
+              </div>
               <form name="availability_form" id="availability_form" method="post" enctype="multipart/form-data">
                 <div class="row">
-                    <div class="col-md-12">
-                      <p>Number of Files:<spam class="number_of_files"></spam></p>
-                      <p>Number of OK Files:<spam class="number_of_ok_files"></spam></p>
-                      <p>Number of Missing Files:<spam class="number_of_missing_files"></spam></p>
-                    </div>
                     <div class="col-md-2">
                       <h5 style="font-weight:700;font-weight:18px">Location Path:</h5>
                     </div>
@@ -744,14 +956,14 @@ elseif(Session::has('countupdated'))
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">New Task Creator</h4>
+            <h4 class="modal-title job_title" style="font-weight: 700; font-size: 20px;">New Task Creator</h4>
           </div>
           <div class="modal-body">            
             <div class="row"> 
-                <div class="col-md-3">
+                <div class="col-md-2">
                 	<label style="margin-top:5px">Author:</label>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3">
                 	<select name="select_user" class="form-control select_user_author" required>
 	                  <option value="">Select User</option>        
 	                    <?php
@@ -767,48 +979,54 @@ elseif(Session::has('countupdated'))
 	                    ?>
 	                </select>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px">
-            	<div class="col-md-3">
-                	<label style="margin-top:5px">Creation Date:</label>
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Author Email:</label>
                 </div>
-                <div class="col-md-9">
-                	<label class="input-group datepicker-only-init_date_received">
-	                    <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
-	                    <span class="input-group-addon">
-	                        <i class="glyphicon glyphicon-calendar"></i>
-	                    </span>
-	                </label>
+                <div class="col-md-4">
+                  <input  type="email" class="form-control author_email" name="author_email" placeholder="Enter Author's Email" required>
                 </div>
             </div>
+            
             <div class="row" style="margin-top:7px">
-            	<div class="col-md-3">
-                	<label style="margin-top:5px">Allocate To:</label>
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To:</label>
                 </div>
-                <div class="col-md-7">
-                	<select name="allocate_user" class="form-control allocate_user_add">
-	                  <option value="">Select User</option>        
-	                    <?php
-	                    $selected = '';
-	                    if(count($userlist)){
-	                      foreach ($userlist as $user) {
-	                    ?>
-	                      <option value="<?php echo $user->user_id ?>"><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
-	                    <?php
-	                      }
-	                    }
-	                    ?>
-	                </select>
+                <div class="col-md-3">
+                  <select name="allocate_user" class="form-control allocate_user_add">
+                    <option value="">Select User</option>        
+                      <?php
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                          if(Session::has('task_manager_user'))
+                          {
+                            if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }
+                      ?>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To Email:</label>
+                </div>
+                <div class="col-md-3">
+                  <input  type="email" class="form-control allocate_email" name="allocate_email" placeholder="Enter Allocate's Email" required>
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
-                  	<input type='checkbox' name="open_task" id="open_task" value="1"/>
-                  	<label for="open_task">OpenTask</label>
+                    <input type='checkbox' name="open_task" id="open_task" value="1"/>
+                    <label for="open_task">OpenTask</label>
                   </div>
                 </div>
             </div>
             <div class="row" style="margin-top:14px">
-            	<div class="col-md-3 client_group">
+            	<div class="col-md-2 client_group">
                 	<label style="margin-top:5px">Client:</label>
                 </div>
                 <?php
@@ -823,7 +1041,7 @@ elseif(Session::has('countupdated'))
                 	$company = '';
                 }
                 ?>
-                <div class="col-md-7 client_group">
+                <div class="col-md-8 client_group">
                 	<input  type="text" class="form-control client_search_class_task" name="client_name" placeholder="Enter Client Name / Client ID" value="<?php echo $company; ?>" required disabled>
                 	<input type="hidden" id="client_search_task" name="clientid" value="<?php echo $client_id; ?>"/>
                 </div>
@@ -852,7 +1070,7 @@ elseif(Session::has('countupdated'))
 		                          $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
 		                        }
 		                    ?>
-		                      <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>"><?php echo $icon.$single_task->task_name?></a></li>
+		                      <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>" data-project="<?php echo $single_task->project_id; ?>"><?php echo $icon.$single_task->task_name?></a></li>
 		                    <?php
 		                      }
 		                    }
@@ -868,94 +1086,212 @@ elseif(Session::has('countupdated'))
                   </div>
                 </div>
             </div>
+            <div class="form-group start_group" style="margin-top:20px">
+
+              <div class="row">
+                <div class="col-lg-5">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <div class="form-title"><label style="margin-top:5px">Priority:</label></div>
+                    </div>
+                    <div class="col-md-7" style="padding-top: 5px;">
+                      <?php echo user_rating(); ?>
+                    </div>
+                  </div>
+                  
+                </div>
+                <div class="col-lg-7">
+                  <div class="row" style="margin-top:0px">
+                    <div class="col-md-3">
+                        <label style="margin-top:5px">Creation Date:</label>
+                      </div>
+                      <div class="col-md-9">
+                        <label class="input-group datepicker-only-init_date_received">
+                            <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+
+              
+            </div>
             <div class="form-group start_group" style="margin-top:10px">
-                <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
-                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+                <div class="row">
+                  <div class="col-lg-2">
+                    <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                  </div>
+                  <div class="col-lg-10">
+                    <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+                  </div>
+                </div>
+
+                
+                
             </div>
             <div class="form-group start_group task_specifics_add">
-                <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
-                <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+
+                <div class="row">
+                  <div class="col-lg-7">
+                    <div class="form-title" style="float:none"><label style="margin-top:5px">Task Specifics:</label></div>
+                  </div>
+                  <div class="col-lg-5">
+                    <div class="form-group date_group" style="float: right;">
+                      <div class="form-title" style="font-weight:600;">
+                        <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                        <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                        <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                      </div>
+                  </div>
+
+                  </div>
+                  <div class="col-lg-12">
+                    <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+                  </div>
+                </div>
+
+
+                
+                
             </div>
             <div class="form-group date_group">
-                <div class="col-md-2" style="padding:0px">
-                	<label style="margin-top:5px">DueDate:</label>
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">DueDate:</label>
                 </div>
-                <div class="col-md-10">
-                	<label class="input-group datepicker-only-init_date_received">
-	                    <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
-	                    <span class="input-group-addon">
-	                        <i class="glyphicon glyphicon-calendar"></i>
-	                    </span>
-	                </label>
+                <div class="col-md-3">
+                  <label class="input-group datepicker-only-init_date_received">
+                      <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
+                      <span class="input-group-addon">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                      </span>
+                  </label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">Project:</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="select_project" class="form-control select_project">
+                      <option value="">Select Project</option>
+                      <?php
+                          $projects = DB::table('projects')->get();
+                          if(count($projects)){
+                            foreach($projects as $project){
+                              ?>
+                              <option value="<?php echo $project->project_id; ?>"><?php echo $project->project_name; ?></option>
+                              <?php
+                            }
+                          }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <label style="margin-top:5px">Project Time:</label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_hours" class="form-control project_hours">
+                      <option value="">HH</option>
+                      <?php
+                      for($i = 0; $i <= 23; $i++)
+                      {
+                        if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_mins" class="form-control project_mins">
+                      <option value="">MM</option>
+                      <?php
+                      for($i = 0; $i <= 59; $i++)
+                      {
+                         if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
                 </div>
             </div>
             <div class="form-group start_group retreived_files_div">
 
             </div>
-            <div class="form-group start_group">
-              <label>Task Files: </label>
-              <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
-              <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
-              <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
-              <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
-              <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
-                <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
-                </form>
-                <div class="image_div_attachments">
-                  <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
-                  <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
-                      <input name="_token" type="hidden" value="">
-                  </form>              
+
+            <div class="row" style="padding-top: 10px; clear: both;">
+              <div class="col-lg-8">
+                <div class="form-group start_group">
+                  <label>Task Files: </label>
+                  <a href="javascript:" class="fa fa-plus fa-plus-task" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+                  <a href="javascript:" class="fa fa-pencil-square fanotepadtask" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+                  <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+                  <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+                  <div class="img_div img_div_task" style="z-index:9999999; min-height: 275px">
+                    <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                    </form>
+                    <div class="image_div_attachments">
+                      <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                      <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload5" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                          <input name="_token" type="hidden" value="">
+                      </form>              
+                    </div>
+                   </div>
+                   <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
+                      <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
+                      <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                      <spam class="error_files_notepad_add"></spam>
+                  </div>
                 </div>
-               </div>
-               <div class="notepad_div_notes_task" style="z-index:9999; position:absolute;display:none">
-                  <textarea name="notepad_contents_task" class="form-control notepad_contents_task" placeholder="Enter Contents"></textarea>
-                  <input type="button" name="notepad_submit_task" class="btn btn-sm btn-primary notepad_submit_task" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-                  <spam class="error_files_notepad_add"></spam>
+                
+                <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
+                <div id="add_attachments_div_task">
+                </div>
+                <div id="add_notepad_attachments_div_task">
+                </div>
+                <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+                <div id="add_infiles_attachments_div">
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+                </div>
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                    <div class="accept_recurring_div">
+                      <p>This Task is repeated:</p>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                        <label for="recurring_checkbox1">Monthly</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                        <label for="recurring_checkbox2">Weekly</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                        <label for="recurring_checkbox3">Daily</label>
+                      </div>
+                      <div class="form-title" style="float:none">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                        <label for="recurring_checkbox4">Specific Number of Days</label>
+                        <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                      </div>
+                    </div>
+                </div>
               </div>
             </div>
+
+
             
-            <p id="attachments_text_task" style="display:none; font-weight: bold;">Files Attached:</p>
-            <div id="add_attachments_div_task">
-            </div>
-            <div id="add_notepad_attachments_div_task">
-            </div>
-            <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
-            <div id="add_infiles_attachments_div">
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px;float:none"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
-                <div class="accept_recurring_div">
-                  <p>This Task is repeated:</p>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
-                    <label for="recurring_checkbox1">Monthly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
-                    <label for="recurring_checkbox2">Weekly</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
-                    <label for="recurring_checkbox3">Daily</label>
-                  </div>
-                  <div class="form-title" style="float:none">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
-                    <label for="recurring_checkbox4">Specific Number of Days</label>
-                    <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
-                  </div>
-                </div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px">
-                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
-                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
-                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
-                </div>
-            </div>
+            
+            
           </div>
           <div class="modal-footer">     
             <input type="hidden" name="action_type" id="action_type" value="">
@@ -1313,9 +1649,8 @@ elseif(Session::has('countupdated'))
                   <li><a href="javascript:" class="create_new">Add New File Batch</a></li>
                   <li><a href="javascript:" class="reportclassdiv">Report</a></li>
                   <li><a href="javascript:" class="integrity_check_for_all">Integrity Check</a></li>
+                  <li><a href="javascript:" class="expand_all_infile_items">Expand All Infile Items</a></li>
                   <li><a href="<?php echo URL::to('user/in_file_advance'); ?>" >Return to Infiles Main Screen</a></li>
-                  
-                  
                 </ul>
               </div>
               <div style="float: right; margin-top: 13px; margin-right: 20px;">
@@ -1529,7 +1864,20 @@ elseif(Session::has('countupdated'))
               else{
                 $url_upload = URL::to('user/in_file?infile_item='.$file->id);
               }
-              
+              if($file->integrity_check == 1)
+              {
+                $integrity_check_color = 'green';
+                $integrity_check_date = '<spam class="check_date_time" style="font-weight: 600;color: #000;margin-left: 10px;font-size: 14px;">'.date('d-m-Y H:i:s', strtotime($file->check_date_time)).'</spam>';
+              }
+              elseif($file->integrity_check == 2)
+              {
+                $integrity_check_color = 'orange';
+                $integrity_check_date = '<spam class="check_date_time" style="font-weight: 600;color: #000;margin-left: 10px;font-size: 14px;">'.date('d-m-Y H:i:s', strtotime($file->check_date_time)).'</spam>';
+              }
+              else{
+                $integrity_check_color = '#f00';
+                $integrity_check_date = '<spam class="check_date_time" style="font-weight: 600;color: #000;margin-left: 10px;font-size: 14px;"></spam>';
+              }
 
           $output.='<tr class="infile_tr_body infile_tr_body_'.$file->id.'" id="infile_'.$file->id.'" data-element="'.$file->id.'">
 				<td '.$color.' valign="top" >'.$i.'</td>
@@ -1545,8 +1893,9 @@ elseif(Session::has('countupdated'))
               		$output.='<input type="button" class="common_black_button show_previous show_previous_'.$file->id.'" value="Load Previously Entered P/S" data-element="'.$file->id.'" style="display:none"> 
               	</td>
                 <td '.$color.' colspan="3">';
-                  $output.='<input type="button" class="common_black_button integrity_check" value="Integrity Check" data-element="'.$file->id.'">
-                  <input type="button" class="common_black_button show_attachments" value="Show Attachments" data-element="'.$file->id.'">
+                  $output.='<input type="button" class="common_black_button integrity_check" value="Integrity Check" data-element="'.$file->id.'" style="background:'.$integrity_check_color.'">
+                  <input type="button" class="common_black_button show_attachments" value="Show Attachments" data-element="'.$file->id.'"><br/>
+                  '.$integrity_check_date.'
                 </td>
             </tr>
             <tr class="infile_tr_body infile_tr_body_'.$file->id.'" data-element="'.$file->id.'">
@@ -1579,7 +1928,9 @@ elseif(Session::has('countupdated'))
 						  {
 						    $task_name = DB::table('taskmanager')->where('id',$taskval->task_id)->first();
 						    $ii = 1;
-						    $output.='<p><a href="javascript:" class="download_pdf_task" data-element="'.$taskval->task_id.'" title="Download PDF" style="color:#f00">'.$ii.'. '.$task_name->taskid.' - '.$task_name->subject.'</a></p>';
+						    $output.='<p>
+                  <a href="javascript:" class="link_to_task_specifics download_pdf_task" data-element="'.$taskval->task_id.'" title="Download PDF" style="color:#f00">'.$ii.'. '.$task_name->taskid.' - '.$task_name->subject.'</a>
+                </p>';
 						    $ii++;
 						  }
 						}
@@ -1587,20 +1938,62 @@ elseif(Session::has('countupdated'))
 						  $output.='<p style="color:#f00">No Task Linked to this Infile Item.</p>';
 						}
 					$output.='</div>';
-					$output.='<div class="img_div" style="z-index:9999999">
-						<form name="image_form" id="image_form" action="'.URL::to('user/infile_image_upload').'" method="post" enctype="multipart/form-data" style="text-align: left;">
-						<input type="file" name="image_file[]" required class="form-control image_file" value="" multiple>
-						<input type="hidden" name="hidden_id" value="'.$file->id.'">
-						<input type="submit" name="image_submit" class="btn btn-sm btn-primary image_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-						<spam class="error_files"></spam>
-						</form>
- 						<div style="width:100%;text-align:center;margin-top:-10px;margin-bottom:10px;color:#000"><label style="font-weight:800;">OR</label></div>
-						<div class="image_div_attachments">
-							<form action="'.URL::to('user/infile_upload_images?file_id='.$file->id).'" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
-							   <input name="_token" type="hidden" value="'.$file->id.'">
-							</form>
-							<a href="'.$url_upload.'" class="btn btn-sm btn-primary" align="left" style="margin-left:7px; float:left;    background: #000;margin-top:-10px;margin-bottom:10px">Submit</a>
-						</div>
+					$output.='<div class="img_div_bpso" style="z-index:9999999">
+  						<table class="table">
+                <tbody>
+                  <tr>
+                    <td style="background:#ff0;font-weight:600;text-align:center;font-size:20px">Upload Bank Documents</td>
+                    <td style="background:#ff0;font-weight:600;text-align:center;font-size:20px">Upload Purchase Documents</td>
+                    <td style="background:#ff0;font-weight:600;text-align:center;font-size:20px">Upload Sales Documents</td>
+                    <td style="background:#ff0;font-weight:600;text-align:center;font-size:20px">Upload Other Documents
+                      <a href="javascript:" class="close_bpso" data-element="'.$file->id.'">X</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background:#ff0">
+                      <div class="image_div_attachments">
+                        <form action="'.URL::to('user/infile_upload_images?file_id='.$file->id).'" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                           <input name="_token" type="hidden" value="'.$file->id.'">
+                           <input type="hidden" name="hidden_infile_type" id="hidden_infile_type" value="1">
+                        </form>
+                      </div>
+                    </td>
+                    <td style="background:#ff0">
+                      <div class="image_div_attachments">
+                        <form action="'.URL::to('user/infile_upload_images?file_id='.$file->id).'" method="post" enctype="multipart/form-data" class="dropzone" id="imageUploadp" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                           <input name="_token" type="hidden" value="'.$file->id.'">
+                           <input type="hidden" name="hidden_infile_type" id="hidden_infile_type" value="2">
+                        </form>
+                      </div>
+                    </td>
+                    <td style="background:#ff0">
+                      <div class="image_div_attachments">
+                        <form action="'.URL::to('user/infile_upload_images?file_id='.$file->id).'" method="post" enctype="multipart/form-data" class="dropzone" id="imageUploads" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                           <input name="_token" type="hidden" value="'.$file->id.'">
+                           <input type="hidden" name="hidden_infile_type" id="hidden_infile_type" value="3">
+                        </form>
+                      </div>
+                    </td>
+                    <td style="background:#ff0">
+                      <div class="image_div_attachments">
+                        <form action="'.URL::to('user/infile_upload_images?file_id='.$file->id).'" method="post" enctype="multipart/form-data" class="dropzone" id="imageUploado" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                           <input name="_token" type="hidden" value="'.$file->id.'">
+                           <input type="hidden" name="hidden_infile_type" id="hidden_infile_type" value="4">
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="file_attachments_b_'.$file->id.'" class="file_attachments_b" style="background:#ff0"></td>
+                    <td id="file_attachments_p_'.$file->id.'" class="file_attachments_p" style="background:#ff0"></td>
+                    <td id="file_attachments_s_'.$file->id.'" class="file_attachments_s" style="background:#ff0"></td>
+                    <td id="file_attachments_o_'.$file->id.'" class="file_attachments_o" style="background:#ff0"></td>
+                  </tr>
+                  <tr>
+                    <td colspan="4" style="background:#ff0;text-align:center;padding:20px"><a href="javascript:" class="common_black_button submit_bpso" data-element="'.$file->id.'">Submit</a></td>
+                  </tr>
+                </tbody>
+              </table>
   					</div>
   					<div class="notepad_div" style="z-index:9999; position:absolute">
 					    <form name="notepad_form" id="notepad_form" action="'.URL::to('user/infile_notepad_upload').'" method="post" enctype="multipart/form-data" style="text-align: left;">
@@ -1744,6 +2137,10 @@ elseif(Session::has('countupdated'))
   <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Infile Items are Checked.</p>
   <p style="font-size:18px;font-weight: 600;">Checking File: <span id="apply_first"></span> of <span id="apply_last"></span></p>
 </div>
+<div class="modal_load_attachments" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Infile Items are Processed.</p>
+  <p style="font-size:18px;font-weight: 600;">Expanding: <span id="apply_first_count"></span> of <span id="apply_last_count"></span></p>
+</div>
 
 <div class="modal_load_import" style="text-align: center;">
   <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait while we import all the missing files from this folder.</p>
@@ -1752,6 +2149,10 @@ elseif(Session::has('countupdated'))
 
 <div class="modal_load_browse" style="text-align: center;">
   <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait while we load the selected folder for scanning. <br/>This may take upto 3 minutes but it may take longer depending on the number of files in this folder.</p>
+</div>
+
+<div class="modal_load_number" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please Wait While Auto Numbering is Applied to this Infile Item.</p>
 </div>
 
 <div class="modal_load_available" style="text-align: center;">
@@ -2136,8 +2537,8 @@ $(".add_text").blur(function() {
         }
   });
 });
+
 $(".supplier").blur(function() {
-  $(this).delay(300).queue(function(){
   	var input_val = $(this).val();
   	var attachmentid = $(this).attr('data-element');
   	var fileid = $(this).attr('data-file');
@@ -2152,8 +2553,8 @@ $(".supplier").blur(function() {
           }
       });
     }
-  });
 });
+
 $(".percent_one_value").blur(function() {
 	var input_val = $(this).val();
 	var attachmentid = $(this).attr('data-element');
@@ -2504,7 +2905,6 @@ function add_secondary_function()
     });
   });
   $(".supplier").blur(function() {
-    $(this).delay(300).queue(function(){
       var input_val = $(this).val();
       var attachmentid = $(this).attr('data-element');
       var fileid = $(this).attr('data-file');
@@ -2519,7 +2919,6 @@ function add_secondary_function()
             }
         });
       }
-    });
   });
   $(".percent_one_value").blur(function() {
     var input_val = $(this).val();
@@ -3166,7 +3565,7 @@ $('body').on('click', function (e) {
     });
 });
 
-function next_integrity_check(count)
+function next_integrity_check(count,filepath,filename)
 {
   var fileid = $(".integrity_attachment:eq("+count+")").attr("data-element");
   var keyval = $(".integrity_attachment:eq("+count+")").attr("data-key");
@@ -3174,24 +3573,20 @@ function next_integrity_check(count)
     url:"<?php echo URL::to('user/check_files_in_files'); ?>",
     type:"post",
     dataType:"json",
-    data:{fileid:fileid,type:keyval,round:"1"},
+    data:{fileid:fileid,filepath:filepath,filename:filename,type:"1",round:"1"},
     success:function(result)
     {
     	setTimeout( function() {
 	      $(".integrity_status_"+fileid).html(result['status']);
-
-        if(keyval == "1")
-        {
-          $(".export_integrity_filename").append('<p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
-        }
-
 	      var countval = count + 1;
 	      if($(".integrity_attachment:eq("+countval+")").length > 0)
 	      {
-	        next_integrity_check(countval);
+	        next_integrity_check(countval,filepath,filename);
 	        $("#apply_first").html(countval);
 	      }
 	      else{
+          $(".export_integrity_filename").html('<h5>Download</h5><p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
+          $(".export_integrity_filename_a").attr("href",result['url']);
           $(".available_import_div").show();
           var total_files = $(".files_spam").length;
           var ok_files = $(".ok_spam").length;
@@ -3199,38 +3594,124 @@ function next_integrity_check(count)
           $(".number_of_files").html(total_files)
           $(".number_of_ok_files").html(ok_files)
           $(".number_of_missing_files").html(missing_files)
+          if(missing_files > 0){
+            $("#availability_form").show();
+          }
+          else{
+            $("#availability_form").hide();
+          }
 	        $("body").removeClass("loading_apply");
 	        $("#export_integrity_filename").show();
+
+          $("#infile_"+result['fileitem_id']).find(".integrity_check").css("background","green");
+          $("#infile_"+result['fileitem_id']).find(".integrity_check").parents("td").find(".check_date_time").html(result['check_datetime']);
 	      }
 	  	},200);
     }
   });
 }
-function next_integrity_check_div(count)
+function next_integrity_check_div(count,filepath,filename)
 {
     var fileid = $(".integrity_check:eq("+count+")").attr("data-element");
     $.ajax({
       url:"<?php echo URL::to('user/check_integrity_files'); ?>",
       type:"post",
-      data:{fileid:fileid},
+      dataType:"json",
+      data:{fileid:fileid,filepath:filepath,filename:filename,type:"1",},
       success:function(result)
       {
       	setTimeout( function() {
-	        $("#integrity_check_body").append(result);
+          $(".integrity_check:eq("+count+")").css("background","green");
+          $(".integrity_check:eq("+count+")").parents("td").find(".check_date_time").html(result['check_datetime']);
+
+	        $("#integrity_check_body").append(result['output']);
 	        var countval = count + 1;
 	        if($(".integrity_check:eq("+countval+")").length > 0)
 	        {
-	          next_integrity_check_div(countval);
+	          next_integrity_check_div(countval,filepath,filename);
 	          $("#apply_first").html(countval);
 	        }
 	        else{
-	          $(".integrity_check_modal").modal("show");
-	          $("#export_integrity_filename").hide();
+	          $(".export_integrity_filename").html('<h5>Download</h5><p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
+            $(".export_integrity_filename_a").attr("href",result['url']);
+            $("#export_integrity_filename").show();
 	          $("body").removeClass("loading_apply");
 	        }
 	    },200);
       }
     });
+}
+function next_attachments_check_div(count)
+{
+    var fileid = $(".show_attachments:eq("+count+")").attr("data-element");
+    if($(".show_attachments:eq("+count+")").hasClass('remove_attachments'))
+    {
+      setTimeout( function() {
+        var countval = count + 1;
+        if($(".show_attachments:eq("+countval+")").length > 0)
+        {
+          next_attachments_check_div(countval);
+          $("#apply_first_count").html(countval);
+        }
+        else{
+          $('[data-toggle="tooltip"]').tooltip();
+          $("[data-toggle=popover]").each(function(i, obj) {
+
+            $(this).popover({
+              html: true,
+              content: function() {
+                var id = $(this).attr('id')
+                return $('#popover-content-' + id).html();
+              }
+            });
+
+          });
+          add_secondary_function();
+          $("body").removeClass("loading_attachments");
+        }
+      },200);
+    }
+    else{
+        $.ajax({
+          url:"<?php echo URL::to('user/show_attachments_infile'); ?>",
+          type:"post",
+          dataType:"json",
+          data:{fileid:fileid},
+          success:function(result)
+          {
+            $('.show_attachments:eq('+count+')').addClass("remove_attachments");
+            $("#show_attachments_td_"+fileid).html(result['output']);
+            $(".show_previous_"+fileid).show();
+            $(".show_previous_"+fileid).parents("td:first").append(result['ps_data_btn']);
+            $('.show_attachments:eq('+count+')').val("Hide Attachments");
+
+            setTimeout( function() {
+              var countval = count + 1;
+              if($(".show_attachments:eq("+countval+")").length > 0)
+              {
+                next_attachments_check_div(countval);
+                $("#apply_first_count").html(countval);
+              }
+              else{
+                $('[data-toggle="tooltip"]').tooltip();
+                $("[data-toggle=popover]").each(function(i, obj) {
+
+                  $(this).popover({
+                    html: true,
+                    content: function() {
+                      var id = $(this).attr('id')
+                      return $('#popover-content-' + id).html();
+                    }
+                  });
+
+                });
+                add_secondary_function();
+                $("body").removeClass("loading_attachments");
+              }
+            },200);
+          }
+        });
+    }
 }
 function next_available_check_div(count)
 { 
@@ -3275,7 +3756,815 @@ function next_available_check_div(count)
       }
     });
 }
+$(window).change(function(e) {
+  if($(e.target).hasClass('select_user_author'))
+  {
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".author_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".author_email").val(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('allocate_user_add')){
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".allocate_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".allocate_email").val(result);
+        }
+      })
+    }
+  }
+});
 $(window).click(function(e) {
+  
+  if($(e.target).parents(".img_div").length > 0){
+    $(e.target).parents(".img_div").show();
+  }
+  else{
+    $(".img_div").hide();
+  }
+
+  if($(e.target).hasClass('close_bpso')){
+    var fileid = $(e.target).attr("data-element");
+    var status = 1;
+    $.ajax({
+      url:"<?php echo URL::to('user/change_file_status_to_zero'); ?>",
+      type:"post",
+      data:{fileid:fileid,status:status},
+      success:function(result){
+        $(".img_div_bpso").hide();
+      }
+    });
+  }
+  if($(e.target).hasClass('submit_bpso')){
+    var fileid = $(e.target).attr("data-element");
+    var status = 0;
+    $.ajax({
+      url:"<?php echo URL::to('user/change_file_status_to_zero'); ?>",
+      type:"post",
+      data:{fileid:fileid,status:status},
+      success:function(result){
+        window.location.replace("<?php echo URL::to('user/infile_search?client_id='.$_GET['client_id'].'&infile_item='); ?>"+fileid);
+      }
+    });
+  }
+  if($(e.target).hasClass('summary_infile_attachments')){
+    $("body").addClass('loading');
+    var file_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_summary_infile_attachments'); ?>",
+      type:"post",
+      data:{file_id:file_id},
+      success:function(result){
+        $(".summary_infile_modal").modal("show");
+        $("#summary_infile_tbody").html(result);
+        $("body").removeClass('loading');
+      }
+    })
+  }
+  if($(e.target).hasClass('add_progress_files_from_task_specifics'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    $("#hidden_task_id_progress").val(task_id);
+    $(".dropzone_progress_modal").modal("show");
+    // Dropzone.forElement("#imageUpload").removeAllFiles(true);
+    // Dropzone.forElement("#imageUpload2").removeAllFiles(true);
+    $(".dz-message").find("span").html("Click here to BROWSE the files OR just drop files here to upload");
+  }
+  if($(e.target).hasClass('link_to_task_specifics'))
+  {
+    if (CKEDITOR.instances.editor_1) CKEDITOR.instances.editor_1.destroy();
+    $("#editor_1").val("");
+    $("body").addClass("loading");
+    setTimeout(function() {
+      var task_id = $(e.target).attr("data-element");
+      $.ajax({
+        url:"<?php echo URL::to('user/show_existing_comments'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{task_id:task_id},
+        success:function(result)
+        {
+            CKEDITOR.replace('editor_1',
+             {
+              height: '150px',
+              enterMode: CKEDITOR.ENTER_BR,
+            shiftEnterMode: CKEDITOR.ENTER_P,
+            autoParagraph: false,
+            entities: false,
+            contentsCss: "body {font-size: 16px;font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif}",
+             });
+          $("#hidden_task_id_task_specifics").val(task_id);
+          $("#add_progress_files_from_task_specifics").attr("data-element",task_id);
+          $(".progress_spam").html("");
+          $("#existing_comments").html(result['output']);
+          $(".title_task_details").html(result['title']);
+          $(".user_ratings_div").html(result['user_ratings']);
+          $(".task_specifics_modal").modal("show");
+          if(result['two_bill'] == "1"){
+            $(".2bill_image_comments").show();
+          }
+          else{
+            $(".2bill_image_comments").hide();
+          }
+          $(".task_title_spec").html(result['task_specifics_name']);
+          $(".redlight_indication_"+task_id).hide();
+          $(".redlight_indication_layout_"+task_id).hide();
+          $(".redlight_indication_layout_"+task_id).removeClass('redline_indication_layout');
+          $(".redlight_indication_"+task_id).removeClass('redline_indication');
+          if(result['auto_close'] == "1")
+          {
+            $(".auto_close_task_comment").prop("checked",true);
+          }
+          else{
+            $(".auto_close_task_comment").prop("checked",false);
+          }
+          $("#show_auto_close_msg").val(result['show_auto_close_msg']);
+          
+          $("body").removeClass("loading");
+        }
+      })
+    },500);
+  }
+  if(e.target.id == "allocate_now")
+  {
+    //$("body").addClass("loading");
+
+    var task_id = $("#hidden_task_id_allocation").val();
+    var auto_close = $("#hidden_task_id_auto_close").val();
+    var new_allocation = $(".new_allocation").val();
+    var author = $("#hidden_task_id_author").val();
+    var selected_user = $(".select_user_home").val();
+
+    if(auto_close == "1")
+    {
+      if(selected_user != author)
+      {
+        if(author == new_allocation)
+        {
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'" class="common_black_button yes_allocate_now">Yes</a><a href="javascript:" data-task="'+task_id+'" data-new="'+new_allocation+'" data-author="'+author+'" class="common_black_button no_allocate_now">No</a></p>',fixed:true,width:"800px"});
+            $("body").removeClass("loading");
+            return false;
+        }
+      }
+    }
+
+    if(new_allocation == "")
+    {
+      alert("Please choose the user to allocate the task.");
+    }
+    else{
+
+      $.ajax({
+        url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+        type:"post",
+        data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+        dataType:"json",
+        success:function(result)
+        {
+          $("body").removeClass("loading");
+          $(".allocation_modal").modal("hide");
+          var layout = $("#hidden_compressed_layout").val();
+          
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('download_pdf_spec'))
+  {
+    $("body").addClass("loading");
+    var task_id = $("#hidden_task_id_task_specifics").val();
+    $.ajax({
+      url:"<?php echo URL::to('user/download_pdf_specifics'); ?>",
+      type:"post",
+      data:{task_id:task_id},
+      success:function(result)
+      {
+        SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    })
+  }
+  if($(e.target).hasClass('close_task_specifics')){
+    if($(".add_progress_attachments").find("p").length > 0){
+      var obj = {};
+      obj.message = []; 
+      obj.task_id = []; 
+      obj.user_id = []; 
+      $(".add_progress_attachments").find('p').each(function(index,value) {
+        var message = $(this).html();
+        var task_id = $(this).attr("data-element");
+        var user_id = $(this).attr("data-user");
+
+        obj.message.push([message]);
+        obj.task_id.push([task_id]);
+        obj.user_id.push([user_id]);
+      });
+
+      var messages = JSON.stringify(obj);
+
+      $.ajax({
+        url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+        type:"post",
+        data:{messages:messages},
+        success:function(result){
+          $(".add_progress_attachments").html("");
+          $("#existing_comments").append(result);
+          $("body").removeClass("loading");
+        }
+      });
+    }
+  }
+  if($(e.target).hasClass('add_task_specifics'))
+  {
+    var comments = CKEDITOR.instances['editor_1'].getData();
+    var task_id = $("#hidden_task_id_task_specifics").val();
+    if(comments == "")
+    {
+      alert("Please enter new comments and then click on the Add New Comment Button");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/add_comment_specifics'); ?>",
+        type:"post",
+        data:{task_id:task_id,comments:comments},
+        success:function(result)
+        {
+          $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+          $("#editor_1").val("");
+
+          if($(".add_progress_attachments").find("p").length > 0){
+            var obj = {};
+            obj.message = []; 
+            obj.task_id = []; 
+            obj.user_id = []; 
+            $(".add_progress_attachments").find('p').each(function(index,value) {
+              var message = $(this).html();
+              var task_id = $(this).attr("data-element");
+              var user_id = $(this).attr("data-user");
+
+              obj.message.push([message]);
+              obj.task_id.push([task_id]);
+              obj.user_id.push([user_id]);
+            });
+
+            var messages = JSON.stringify(obj);
+
+            $.ajax({
+              url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+              type:"post",
+              data:{messages:messages},
+              success:function(result){
+                $(".add_progress_attachments").html("");
+                $("#existing_comments").append(result);
+                $("body").removeClass("loading");
+              }
+            });
+          }
+          CKEDITOR.instances['editor_1'].setData("");
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('auto_close_task_comment'))
+  {
+    var task_id = $("#hidden_task_id_task_specifics").val();
+    if($(e.target).is(":checked"))
+    {
+      var status = 1;
+    }
+    else{
+      var status = 0;
+    }
+    $.ajax({
+        url:"<?php echo URL::to('user/change_auto_close_status'); ?>",
+        type:"post",
+        data:{task_id:task_id,status:status},
+        success:function(result)
+        {
+          $("#show_auto_close_msg").val(result);
+          if($(e.target).is(":checked"))
+          {
+            $("#task_tr_"+task_id).find(".mark_as_complete").addClass("auto_close_task_complete");
+            $("#task_tr_"+task_id).find(".edit_allocate_user").addClass("auto_close_task_complete");
+          }
+          else{
+            $("#task_tr_"+task_id).find(".mark_as_complete").removeClass("auto_close_task_complete");
+            $("#task_tr_"+task_id).find(".edit_allocate_user").removeClass("auto_close_task_complete");
+          }
+        }
+    });
+  }
+  if($(e.target).hasClass('add_comment_and_allocate'))
+  {
+      var comments = CKEDITOR.instances['editor_1'].getData();
+      var task_id = $("#hidden_task_id_task_specifics").val();
+      var show_auto_close = $("#show_auto_close_msg").val();
+      if(comments == "")
+      {
+        alert("Please enter new comments and then click on the Add New Comment Button");
+      }
+      else{
+        if(show_auto_close == "1")
+        {
+          $.colorbox({html:'<p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green">This Task is an AUTOCLOSE task, by allocating are you happy that this taks is complete with no further action required by the author?  If you select YES this task will be marked COMPLETE and will not be brought to the attention of the Author, If you select NO the task will be place back in the Authors Open Tasks for review</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green"><a href="javascript:" data-task="'+task_id+'" class="common_black_button yes_allocate_back">Yes</a><a href="javascript:" data-task="'+task_id+'" class="common_black_button no_allocate_back">No</a></p>',fixed:true,width:"800px"});
+            $("body").removeClass("loading");
+            return false;
+        }
+        else{
+          $("body").addClass("loading");
+          setTimeout(function() {
+            $.ajax({
+              url:"<?php echo URL::to('user/add_comment_and_allocate'); ?>",
+              type:"post",
+              data:{task_id:task_id,comments:comments},
+              success:function(result)
+              {
+                var new_allocation = result;
+                if(new_allocation == "0")
+                {
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
+                  $("body").removeClass("loading");
+                }
+                else{
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
+
+                  $(".task_specifics_modal").modal("hide");
+                  $.ajax({
+                    url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                    type:"post",
+                    data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+                    dataType:"json",
+                    success:function(result)
+                    {
+                      $("body").removeClass("loading");
+                    }
+                  });
+                }
+              }
+            })
+          },1000);
+        }
+      }
+  }
+  if($(e.target).hasClass('yes_allocate_back'))
+  {
+      var comments = CKEDITOR.instances['editor_1'].getData();
+      var task_id = $(e.target).attr("data-task");
+
+      $("body").addClass("loading");
+      setTimeout(function() {
+        $.ajax({
+          url:"<?php echo URL::to('user/add_comment_and_allocate'); ?>",
+          type:"post",
+          data:{task_id:task_id,comments:comments},
+          success:function(result)
+          {
+            var new_allocation = result;
+            if(new_allocation == "0")
+            {
+              $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+              $("#editor_1").val("");
+              CKEDITOR.instances['editor_1'].setData("");
+
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
+              $("body").removeClass("loading");
+            }
+            else{
+              $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+              $("#editor_1").val("");
+              CKEDITOR.instances['editor_1'].setData("");
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
+              $(".task_specifics_modal").modal("hide");
+              $.ajax({
+                url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                type:"post",
+                data:{task_id:task_id,new_allocation:new_allocation,type:"1"},
+                dataType:"json",
+                success:function(result)
+                {
+                  $("body").removeClass("loading");
+
+                  $.colorbox.close();
+                }
+              });
+            }
+          }
+        })
+      },1000);
+  }
+  if($(e.target).hasClass('no_allocate_back'))
+  {
+      var comments = CKEDITOR.instances['editor_1'].getData();
+      var task_id = $(e.target).attr("data-task");
+      
+      $("body").addClass("loading");
+      setTimeout(function() {
+        $.ajax({
+          url:"<?php echo URL::to('user/add_comment_and_allocate'); ?>",
+          type:"post",
+          data:{task_id:task_id,comments:comments},
+          success:function(result)
+          {
+            var new_allocation = result;
+            if(new_allocation == "0")
+            {
+              $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+              $("#editor_1").val("");
+              CKEDITOR.instances['editor_1'].setData("");
+
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
+              $("body").removeClass("loading");
+            }
+            else{
+              $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+              $("#editor_1").val("");
+              CKEDITOR.instances['editor_1'].setData("");
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
+              $(".task_specifics_modal").modal("hide");
+              $.ajax({
+                url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                type:"post",
+                data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+                dataType:"json",
+                success:function(result)
+                {
+                  $("body").removeClass("loading");
+                  $.colorbox.close();
+                }
+              });
+            }
+          }
+        })
+      },1000);
+  }
+  if($(e.target).hasClass('add_comment_allocate_to_btn'))
+  {
+      var comments = CKEDITOR.instances['editor_1'].getData();
+      var task_id = $("#hidden_task_id_task_specifics").val();
+      var allocate_to = $(".add_comment_allocate_to").val();
+      if(comments == "")
+      {
+        alert("Please enter new comments and then click on the Add New Comment Button");
+      }
+      else if(allocate_to == "")
+      {
+        alert("Please select the user and then proceed with submit button.");
+      }
+      else{
+          $("body").addClass("loading");
+          setTimeout(function() {
+            $.ajax({
+              url:"<?php echo URL::to('user/add_comment_and_allocate_to'); ?>",
+              type:"post",
+              data:{task_id:task_id,comments:comments,allocate_to:allocate_to},
+              success:function(result)
+              {
+                var new_allocation = result;
+                if(new_allocation == "0")
+                {
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
+                }
+                else{
+                  $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
+                  $("#editor_1").val("");
+                  CKEDITOR.instances['editor_1'].setData("");
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
+                  $(".task_specifics_modal").modal("hide");
+                  $.ajax({
+                    url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
+                    type:"post",
+                    data:{task_id:task_id,new_allocation:new_allocation,type:"0"},
+                    dataType:"json",
+                    success:function(result)
+                    {
+                      $("body").removeClass("loading");
+                    }
+                  });
+                }
+              }
+            })
+          },1000);
+      }
+  }
+  if($(e.target).hasClass('expand_all_infile_items'))
+  {
+    $("body").addClass("loading_attachments");
+    var countitems = $(".show_attachments").length;
+    $("#apply_last_count").html(countitems);
+    var fileid = $(".show_attachments:eq(0)").attr("data-element");
+    if($(".show_attachments:eq(0)").hasClass('remove_attachments'))
+    {
+      setTimeout( function() {
+        if($(".show_attachments:eq(1)").length > 0)
+        {
+          next_attachments_check_div(1);
+          $("#apply_first_count").html(1);
+        }
+        else{
+          $('[data-toggle="tooltip"]').tooltip();
+          $("[data-toggle=popover]").each(function(i, obj) {
+
+            $(this).popover({
+              html: true,
+              content: function() {
+                var id = $(this).attr('id')
+                return $('#popover-content-' + id).html();
+              }
+            });
+
+          });
+          add_secondary_function();
+          $("body").removeClass("loading_attachments");
+        }
+      },200);
+    }
+    else{
+        $.ajax({
+          url:"<?php echo URL::to('user/show_attachments_infile'); ?>",
+          type:"post",
+          dataType:"json",
+          data:{fileid:fileid},
+          success:function(result)
+          {
+            $('.show_attachments:eq(0)').addClass("remove_attachments");
+            $("#show_attachments_td_"+fileid).html(result['output']);
+            $(".show_previous_"+fileid).show();
+            $(".show_previous_"+fileid).parents("td:first").append(result['ps_data_btn']);
+            $('.show_attachments:eq(0)').val("Hide Attachments");
+            setTimeout( function() {
+              if($(".show_attachments:eq(1)").length > 0)
+              {
+                next_attachments_check_div(1);
+                $("#apply_first_count").html(1);
+              }
+              else{
+                $('[data-toggle="tooltip"]').tooltip();
+                $("[data-toggle=popover]").each(function(i, obj) {
+
+                  $(this).popover({
+                    html: true,
+                    content: function() {
+                      var id = $(this).attr('id')
+                      return $('#popover-content-' + id).html();
+                    }
+                  });
+
+                });
+                add_secondary_function();
+                $("body").removeClass("loading_attachments");
+              }
+            },200);
+          }
+        });
+    }
+  }
   if($(e.target).hasClass('edit_description'))
   {
     var fileid = $(e.target).attr("data-element");
@@ -3369,156 +4658,165 @@ $(window).click(function(e) {
       alert("Sorry, can't number the infile items as none of the items are specified as Sales.")
     }
     else{
-      $.ajax({
-        url:"<?php echo URL::to('user/check_secondary_line_has_value'); ?>",
-        type:"post",
-        data:{file_id:file_id,radio:radio},
-        success:function(result)
-        {
-          if(result == 0)
+      $("body").addClass("loading_number");
+      setTimeout(function(){
+        $.ajax({
+          url:"<?php echo URL::to('user/check_secondary_line_has_value'); ?>",
+          type:"post",
+          data:{file_id:file_id,radio:radio},
+          success:function(result)
           {
-            $.ajax({
-              url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
-              type:"post",
-              data:{file_id:file_id,value:value,inc:inc,radio:radio},
-              success:function(result)
-              {
-                $("[data-toggle='popover']").popover('hide');
-                var place = inc.split(".");
-                var get_place_length = place.length;
-                if(get_place_length > 1)
+            if(result == 0)
+            {
+              $.ajax({
+                url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
+                type:"post",
+                data:{file_id:file_id,value:value,inc:inc,radio:radio},
+                success:function(result)
                 {
-                  var places = place[1].length;
+                  $("[data-toggle='popover']").popover('hide');
+                  var place = inc.split(".");
+                  var get_place_length = place.length;
+                  if(get_place_length > 1)
+                  {
+                    var places = place[1].length;
+                  }
+                  else{
+                    var places = 0;
+                  }
+                  var alert_value = 1;
+                  if(radio == "1")
+                  {
+                    $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
+                       var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+                       if(textval == "")
+                       {
+                        $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                        var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                        var subvalue = value;
+                        $(".attachment_tr_"+attachment_id).each(function() {
+                          subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                          $(this).find(".add_text").val(subvalue);
+                        });
+                        value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                        alert_value = alert_value + 1;
+                       }
+                    });
+                  }
+                  else
+                  {
+                    $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
+                       var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+                       if(textval == "")
+                       {
+                        $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                        var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                        var subvalue = value;
+                        $(".attachment_tr_"+attachment_id).each(function() {
+                          subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                          $(this).find(".add_text").val(subvalue);
+                        });
+                        value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                        alert_value = alert_value + 1;
+                       }
+                    });
+                  }
+                  if(alert_value == 1)
+                  {
+                    alert("All Infile items are already numbered. No changes made.");
+                  }
+                  $("body").removeClass("loading_number");
                 }
-                else{
-                  var places = 0;
-                }
-                var alert_value = 1;
-                if(radio == "1")
-                {
-                  $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
-                     var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
-                     if(textval == "")
-                     {
-                      $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-                      var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
-                      var subvalue = value;
-                      $(".attachment_tr_"+attachment_id).each(function() {
-                        subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
-                        $(this).find(".add_text").val(subvalue);
-                      });
-                      value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-                      alert_value = alert_value + 1;
-                     }
-                  });
-                }
-                else
-                {
-                  $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
-                     var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
-                     if(textval == "")
-                     {
-                      $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-                      var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
-                      var subvalue = value;
-                      $(".attachment_tr_"+attachment_id).each(function() {
-                        subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
-                        $(this).find(".add_text").val(subvalue);
-                      });
-                      value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-                      alert_value = alert_value + 1;
-                     }
-                  });
-                }
-                if(alert_value == 1)
-                {
-                  alert("All Infile items are already numbered. No changes made.");
-                }
-              }
-            })
+              })
+            }
+            else{
+              $("#hidden_no_file_id").val(file_id);
+              $("#hidden_no_value").val(value);
+              $("#hidden_no_inc").val(inc);
+              $("#hidden_no_radio").val(radio);
+              $("body").removeClass("loading_number");
+              $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">We find that some of the Secondary lines are already numbered. Hence, we are about to Remove the Current Numbering, and Re-number based on your Entry above. </p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><input type="button" class="common_black_button yes_number" value="Yes"> <input type="button" class="common_black_button no_number" value="No"></p>',fixed:true,width:"800px"});
+            }
           }
-          else{
-            $("#hidden_no_file_id").val(file_id);
-            $("#hidden_no_value").val(value);
-            $("#hidden_no_inc").val(inc);
-            $("#hidden_no_radio").val(radio);
-            $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">We find that some of the Secondary lines are already numbered. Hence, we are about to Remove the Current Numbering, and Re-number based on your Entry above. </p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><input type="button" class="common_black_button yes_number" value="Yes"> <input type="button" class="common_black_button no_number" value="No"></p>',fixed:true,width:"800px"});
-          }
-        }
-      });
+        });
+      },1000);
     }
   }
   if($(e.target).hasClass('yes_number'))
   {
-    var file_id = $("#hidden_no_file_id").val();
-    var value = $("#hidden_no_value").val();
-    var inc = $("#hidden_no_inc").val();
-    var radio = $("#hidden_no_radio").val();
+    $("body").addClass("loading_number");
+    setTimeout(function() {
+      var file_id = $("#hidden_no_file_id").val();
+      var value = $("#hidden_no_value").val();
+      var inc = $("#hidden_no_inc").val();
+      var radio = $("#hidden_no_radio").val();
 
-    $.ajax({
-      url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
-      type:"post",
-      data:{file_id:file_id,value:value,inc:inc,radio:radio},
-      success:function(result)
-      {
-        $("[data-toggle='popover']").popover('hide');
-        var place = inc.split(".");
-        var get_place_length = place.length;
-        if(get_place_length > 1)
+      $.ajax({
+        url:"<?php echo URL::to('user/update_infile_textvalue_item'); ?>",
+        type:"post",
+        data:{file_id:file_id,value:value,inc:inc,radio:radio},
+        success:function(result)
         {
-          var places = place[1].length;
+          $("[data-toggle='popover']").popover('hide');
+          var place = inc.split(".");
+          var get_place_length = place.length;
+          if(get_place_length > 1)
+          {
+            var places = place[1].length;
+          }
+          else{
+            var places = 0;
+          }
+          var alert_value = 1;
+          if(radio == "1")
+          {
+            $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
+               var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+               if(textval == "")
+               {
+                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                var subvalue = value;
+                $(".attachment_tr_"+attachment_id).each(function() {
+                  subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                  $(this).find(".add_text").val(subvalue);
+                });
+                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                alert_value = alert_value + 1;
+               }
+            });
+          }
+          else
+          {
+            $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
+               var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
+               if(textval == "")
+               {
+                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                var subvalue = value;
+                $(".attachment_tr_"+attachment_id).each(function() {
+                  subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                  $(this).find(".add_text").val(subvalue);
+                });
+                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+                alert_value = alert_value + 1;
+               }
+            });
+          }
+          if(alert_value == 1)
+          {
+            alert("All Infile items are already numbered. No changes made.");
+          }
+          $("body").removeClass("loading_number");
+          $("#hidden_no_file_id").val("");
+          $("#hidden_no_value").val("");
+          $("#hidden_no_inc").val("");
+          $("#hidden_no_radio").val("");
+          $.colorbox.close();
         }
-        else{
-          var places = 0;
-        }
-        var alert_value = 1;
-        if(radio == "1")
-        {
-          $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
-             var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
-             if(textval == "")
-             {
-              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
-              var subvalue = value;
-              $(".attachment_tr_"+attachment_id).each(function() {
-                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
-                $(this).find(".add_text").val(subvalue);
-              });
-              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-              alert_value = alert_value + 1;
-             }
-          });
-        }
-        else
-        {
-          $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
-             var textval = $(this).parents(".attachment_tr:first").find(".add_text").val();
-             if(textval == "")
-             {
-              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
-              var subvalue = value;
-              $(".attachment_tr_"+attachment_id).each(function() {
-                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
-                $(this).find(".add_text").val(subvalue);
-              });
-              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-              alert_value = alert_value + 1;
-             }
-          });
-        }
-        if(alert_value == 1)
-        {
-          alert("All Infile items are already numbered. No changes made.");
-        }
-        $("#hidden_no_file_id").val("");
-        $("#hidden_no_value").val("");
-        $("#hidden_no_inc").val("");
-        $("#hidden_no_radio").val("");
-        $.colorbox.close();
-      }
-    })
+      })
+    },1000);
   }
   if($(e.target).hasClass('no_number'))
   {
@@ -3568,62 +4866,66 @@ $(window).click(function(e) {
   }
   if($(e.target).hasClass('yes_renumber'))
   {
-    var file_id = $("#hidden_re_no_file_id").val();
-    var value = $("#hidden_re_no_value").val();
-    var inc = $("#hidden_re_no_inc").val();
-    var radio = $("#hidden_re_no_radio").val();
+    $("body").addClass("loading_number");
+    setTimeout(function() {
+      var file_id = $("#hidden_re_no_file_id").val();
+      var value = $("#hidden_re_no_value").val();
+      var inc = $("#hidden_re_no_inc").val();
+      var radio = $("#hidden_re_no_radio").val();
 
-    $.ajax({
-      url:"<?php echo URL::to('user/renumber_infile_textvalue_item'); ?>",
-      type:"post",
-      data:{file_id:file_id,value:value,inc:inc,radio:radio},
-      success:function(result)
-      {
-        $("[data-toggle='popover']").popover('hide');
-        var place = inc.split(".");
-        var get_place_length = place.length;
-        if(get_place_length > 1)
+      $.ajax({
+        url:"<?php echo URL::to('user/renumber_infile_textvalue_item'); ?>",
+        type:"post",
+        data:{file_id:file_id,value:value,inc:inc,radio:radio},
+        success:function(result)
         {
-          var places = place[1].length;
-        }
-        else{
-          var places = 0;
-        }
-        if(radio == "1")
-        {
-          $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
-              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
-              var subvalue = value;
-              $(".attachment_tr_"+attachment_id).each(function() {
-                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
-                $(this).find(".add_text").val(subvalue);
-              });
+          $("[data-toggle='popover']").popover('hide');
+          var place = inc.split(".");
+          var get_place_length = place.length;
+          if(get_place_length > 1)
+          {
+            var places = place[1].length;
+          }
+          else{
+            var places = 0;
+          }
+          if(radio == "1")
+          {
+            $("#bspo_id_"+file_id).find(".p_check:checked").each(function() {
+                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                var subvalue = value;
+                $(".attachment_tr_"+attachment_id).each(function() {
+                  subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                  $(this).find(".add_text").val(subvalue);
+                });
 
-              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-          });
-        }
-        else
-        {
-          $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
-              $(this).parents(".attachment_tr:first").find(".add_text").val(value);
-              var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
-              var subvalue = value;
-              $(".attachment_tr_"+attachment_id).each(function() {
-                subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
-                $(this).find(".add_text").val(subvalue);
-              });
+                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+            });
+          }
+          else
+          {
+            $("#bspo_id_"+file_id).find(".s_check:checked").each(function() {
+                $(this).parents(".attachment_tr:first").find(".add_text").val(value);
+                var attachment_id = $(this).parents(".attachment_tr:first").find(".add_text").attr("data-element");
+                var subvalue = value;
+                $(".attachment_tr_"+attachment_id).each(function() {
+                  subvalue = parseFloat(parseFloat(subvalue) + .001).toFixed(3);
+                  $(this).find(".add_text").val(subvalue);
+                });
 
-              value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
-          });
+                value = parseFloat(parseFloat(value) + parseFloat(inc)).toFixed(places);
+            });
+          }
+          $("#hidden_re_no_file_id").val("");
+          $("#hidden_re_no_value").val("");
+          $("#hidden_re_no_inc").val("");
+          $("#hidden_re_no_radio").val("");
+          $("body").removeClass("loading_number");
+          $.colorbox.close();
         }
-        $("#hidden_re_no_file_id").val("");
-        $("#hidden_re_no_value").val("");
-        $("#hidden_re_no_inc").val("");
-        $("#hidden_re_no_radio").val("");
-        $.colorbox.close();
-      }
-    })
+      })
+    },1000);
   }
   if($(e.target).hasClass('no_renumber'))
   {
@@ -3756,7 +5058,7 @@ $(window).click(function(e) {
               });
 
             });
-
+            history.pushState({}, null, "<?php echo URL::to('user/infile_search?client_id='.$_GET['client_id'].'&infile_item='); ?>"+fileid);
 
             add_secondary_function();
             $("body").removeClass("loading");
@@ -3775,20 +5077,27 @@ $(window).click(function(e) {
     $.ajax({
       url:"<?php echo URL::to('user/check_integrity_files'); ?>",
       type:"post",
-      data:{fileid:fileid},
+      dataType:"json",
+      data:{fileid:fileid,filepath:"",filename:"",type:"0"},
       success:function(result)
       {
+        $(".integrity_check:eq(0)").css("background","green");
+          $(".integrity_check:eq(0)").parents("td").find(".check_date_time").html(result['check_datetime']);
+
         $(".available_import_div").hide();
+        $(".integrity_check_modal").modal("show");
         setTimeout( function() {
-        	$("#integrity_check_body").append(result);
+        	$("#integrity_check_body").append(result['output']);
 	        if($(".integrity_check:eq(1)").length > 0)
 	        {
-	          next_integrity_check_div(1);
+	          next_integrity_check_div(1,result['filepath'],result['filename']);
 	          $("#apply_first").html(1);
 	        }
 	        else{
-	          $(".integrity_check_modal").modal("show");
-	          $("#export_integrity_filename").hide();
+	          
+	          $(".export_integrity_filename").html('<h5>Download</h5><p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
+            $(".export_integrity_filename_a").attr("href",result['url']);
+            $("#export_integrity_filename").show();
 	          $("body").removeClass("loading_apply");
 	        }
         },200);
@@ -3802,23 +5111,27 @@ $(window).click(function(e) {
     $.ajax({
       url:"<?php echo URL::to('user/check_integrity_files'); ?>",
       type:"post",
-      data:{fileid:fileid},
+      dataType:"json",
+      data:{fileid:fileid,filepath:"",filename:"",type:"0"},
       success:function(result)
       {
         $(".available_import_div").hide();
-        $("#integrity_check_body").html(result);
+        $("#integrity_check_body").html(result['output']);
         $(".integrity_check_modal").modal("show");
+        $(".export_integrity_filename").html(result['files']);
+        $(".export_integrity_filename_a").attr("href",result['url']);
         $("#export_integrity_filename").show();
-        $.ajax({
-          url:"<?php echo URL::to('user/get_infile_check_reports'); ?>",
-          type:"post",
-          data:{fileid:fileid},
-          success:function(result)
-          {
-            $("#export_integrity_filename").html(result);
-            $("body").removeClass("loading");
-          }
-        })
+        $("body").removeClass("loading");
+        // $.ajax({
+        //   url:"<?php echo URL::to('user/get_infile_check_reports'); ?>",
+        //   type:"post",
+        //   data:{fileid:fileid},
+        //   success:function(result)
+        //   {
+        //     //$("#export_integrity_filename").html(result);
+        //     $("body").removeClass("loading");
+        //   }
+        // })
       }
     });
   }
@@ -3833,19 +5146,37 @@ $(window).click(function(e) {
       url:"<?php echo URL::to('user/check_files_in_files'); ?>",
       type:"post",
       dataType:"json",
-      data:{fileid:fileid,type:"0",round:"0"},
+      data:{fileid:fileid,filepath:"",filename:"",type:"0",round:"0"},
       success:function(result)
       {
       	setTimeout( function() {
 	        $(".integrity_status_"+fileid).html(result['status']);
-          $(".export_integrity_filename").append('<p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
 	        if($(".integrity_attachment:eq(1)").length > 0)
 	        {
-	          next_integrity_check(1);
+	          next_integrity_check(1,result['filepath'],result['filename']);
 	          $("#apply_first").html(1);
 	        }
 	        else{
-	          $("body").removeClass("loading_apply");
+            $(".export_integrity_filename").append('<p><a href="'+result['url']+'" download="">'+result['filename']+'</a></p>');
+            $(".export_integrity_filename_a").attr("href",result['url']);
+            $(".available_import_div").show();
+            var total_files = $(".files_spam").length;
+            var ok_files = $(".ok_spam").length;
+            var missing_files = $(".missing_spam").length;
+            $(".number_of_files").html(total_files);
+            $(".number_of_ok_files").html(ok_files);
+            $(".number_of_missing_files").html(missing_files);
+            if(missing_files > 0){
+              $("#availability_form").show();
+            }
+            else{
+              $("#availability_form").hide();
+            }
+            $("body").removeClass("loading_apply");
+            $("#export_integrity_filename").show();
+
+            $("#infile_"+result['fileitem_id']).find(".integrity_check").css("background","green");
+            $("#infile_"+result['fileitem_id']).find(".integrity_check").parents("td").find(".check_date_time").html(result['check_datetime']);
 	        }
 	    },200);
       }
@@ -3997,7 +5328,7 @@ $(window).click(function(e) {
 	if($(e.target).hasClass('show_iframe_next'))
 	{
     $(e.target).parents(".show_iframe").slideRow("up",1000);
-		var html = $(e.target).parents(".show_iframe").nextAll(".show_iframe:first").prevAll(".attachment_tr_main:first").find(".fileattachment").trigger("click");
+		var html = $(e.target).parents(".show_iframe").nextAll(".show_iframe:first").prevAll(".attachment_tr_main:first").find(".fileattachment").eq(1).trigger("click");
     $('html, body').animate({
        scrollTop: ($(e.target).parents(".show_iframe").nextAll(".show_iframe:first").offset().top - 135)
      }, 2000);
@@ -4005,7 +5336,7 @@ $(window).click(function(e) {
 	if($(e.target).hasClass('show_iframe_prev'))
 	{
 		$(e.target).parents(".show_iframe").slideRow("up",1000);
-    var html = $(e.target).parents(".show_iframe").prevAll(".show_iframe:first").prevAll(".attachment_tr_main:first").find(".fileattachment").trigger("click");
+    var html = $(e.target).parents(".show_iframe").prevAll(".show_iframe:first").prevAll(".attachment_tr_main:first").find(".fileattachment").eq(1).trigger("click");
     $('html, body').animate({
        scrollTop: ($(e.target).parents(".show_iframe").prevAll(".show_iframe:first").offset().top - 135)
      }, 2000);
@@ -4516,7 +5847,7 @@ $(window).click(function(e) {
     $(".create_new_task_model").find(".job_title").html("New Task Creator");
     var fullDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Dublin"});
     var user_id = $(".select_user_home").val();
-    $(".select_user_author").val(user_id);
+    $(".select_user_author").val("");
     $(".create_new_task_model").modal("show");
     if (CKEDITOR.instances.editor_2) CKEDITOR.instances.editor_2.destroy();
     $(".created_date").datetimepicker({
@@ -4579,6 +5910,7 @@ $(window).click(function(e) {
 
     $("#open_task").prop("checked",false);
     $(".allocate_user_add").removeClass("disable_user");
+    $(".allocate_email").removeClass("disable_user");
     $.ajax({
       url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
       type:"post",
@@ -5121,37 +6453,13 @@ $(window).click(function(e) {
   }
 
   if($(e.target).hasClass('image_submit'))
-
   {
-
     var files = $(e.target).parent().find('.image_file').val();
-
     if(files == '' || typeof files === 'undefines')
-
     {
-
       $(e.target).parent().find(".error_files").text("Please Choose the files to proceed");
-
       return false;
-
     }
-
-    else{
-
-      $(e.target).parents('td').find('.img_div').toggle();
-
-    }
-
-  }
-
-  else{
-
-    $(".img_div").each(function() {
-
-      $(this).hide();
-
-    });
-
   }
 
   if($(e.target).hasClass('image_submit_add'))
@@ -5169,22 +6477,6 @@ $(window).click(function(e) {
       return false;
 
     }
-
-    else{
-
-      $(e.target).parents('.modal-body').find('.img_div').toggle();
-
-    }
-
-  }
-
-  else{
-
-    $(".img_div").each(function() {
-
-      $(this).hide();
-
-    });
 
   }
 
@@ -5261,54 +6553,6 @@ $(window).click(function(e) {
       $(this).hide();
 
     });
-
-  }
-
-  if($(e.target).hasClass('image_file'))
-
-  {
-
-    $(e.target).parents('td').find('.img_div').toggle();
-
-    $(e.target).parents('.modal-body').find('.img_div').toggle();
-
-  }
-
-  if($(e.target).hasClass('image_file_add'))
-
-  {
-
-    $(e.target).parents('.modal-body').find('.img_div').toggle();
-
-  }
-
-  if($(e.target).hasClass("dropzone"))
-
-  {
-
-    $(e.target).parents('td').find('.img_div').show();    
-
-    $(e.target).parents('.modal-body').find('.img_div').show();    
-
-  }
-
-  if($(e.target).hasClass("remove_dropzone_attach"))
-
-  {
-
-    $(e.target).parents('td').find('.img_div').show();   
-
-    $(e.target).parents('.modal-body').find('.img_div').show(); 
-
-  }
-
-  if($(e.target).parent().hasClass("dz-message"))
-
-  {
-
-    $(e.target).parents('td').find('.img_div').show();
-
-    $(e.target).parents('.modal-body').find('.img_div').show();    
 
   }
 
@@ -5748,8 +6992,13 @@ $(window).click(function(e) {
     var pos = $(e.target).position();
     var leftposi = parseInt(pos.left);
     var id= $(e.target).parents("tr:first").attr("data-element");
-    $(".infile_tr_body_last_"+id).find('.img_div').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
+    $(".infile_tr_body_last_"+id).find('.img_div_bpso').css({"position":"absolute","top":pos.top,"left":leftposi}).toggle();
     $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+
+    $(".file_attachments_b").html("");
+    $(".file_attachments_p").html("");
+    $(".file_attachments_s").html("");
+    $(".file_attachments_o").html("");
   }
 
   if($(e.target).hasClass('fileattachment'))
@@ -5948,7 +7197,7 @@ $(window).click(function(e) {
       success: function(result)
 
       {
-
+        $(e.target).parents("p").detach();
         var countval = $(e.target).parents(".dropzone").find(".dz-preview").length;
 
         if(countval == 1)
@@ -7220,30 +8469,11 @@ Dropzone.options.imageUpload = {
 
             file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
 
-            if(obj.id != 0)
+            $(".dz-preview").detach();
+            $(".dz-message").show();
+            $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
 
-            {
-
-              file.previewElement.innerHTML = "<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach' data-element='"+obj.id+"' data-task='"+obj.task_id+"'>Remove</a></p>";
-
-            }
-
-            else{
-
-              $("#attachments_text").show();
-
-              $("#add_attachments_div").append("<p>"+obj.filename+" </p>");
-
-              $(".img_div").each(function() {
-
-                $(this).hide();
-
-              });
-
-            }
-
-
-
+            $("#file_attachments_b_"+obj.file_id).append("<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach' data-element='"+obj.id+"' data-task='"+obj.file_id+"'>Remove</a></p>");
         });
 
         this.on("complete", function (file) {
@@ -7257,6 +8487,251 @@ Dropzone.options.imageUpload = {
 	      
 
 	       });
+
+        this.on("error", function (file) {
+
+            //console.log(file);
+
+            $("body").removeClass("loading");
+
+      });
+
+        this.on("canceled", function (file) {
+
+            $("body").removeClass("loading");
+
+      });
+
+        
+
+        this.on("removedfile", function(file) {
+
+            if (!file.serverId) { return; }
+
+            $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+
+        });
+
+    },
+
+};
+
+Dropzone.options.imageUploadp = {
+
+    acceptedFiles: null,
+
+    maxFilesize:50000,
+
+    timeout: 10000000,
+
+    dataType: "HTML",
+    
+    parallelUploads: 1,
+
+    init: function() {
+
+        this.on('sending', function(file) {
+
+            $("body").addClass("loading");
+
+        });
+
+        this.on("drop", function(event) {
+
+            $("body").addClass("loading");        
+
+        });
+
+        this.on("success", function(file, response) {
+
+            var obj = jQuery.parseJSON(response);
+
+            file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
+
+            $(".dz-preview").detach();
+            $(".dz-message").show();
+            $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+
+            $("#file_attachments_p_"+obj.file_id).append("<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach' data-element='"+obj.id+"' data-task='"+obj.file_id+"'>Remove</a></p>");
+
+
+
+        });
+
+        this.on("complete", function (file) {
+
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+
+            $("body").removeClass("loading");
+
+          }
+
+        
+
+         });
+
+        this.on("error", function (file) {
+
+            //console.log(file);
+
+            $("body").removeClass("loading");
+
+      });
+
+        this.on("canceled", function (file) {
+
+            $("body").removeClass("loading");
+
+      });
+
+        
+
+        this.on("removedfile", function(file) {
+
+            if (!file.serverId) { return; }
+
+            $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+
+        });
+
+    },
+
+};
+
+Dropzone.options.imageUploads = {
+
+    acceptedFiles: null,
+
+    maxFilesize:50000,
+
+    timeout: 10000000,
+
+    dataType: "HTML",
+    
+    parallelUploads: 1,
+
+    init: function() {
+
+        this.on('sending', function(file) {
+
+            $("body").addClass("loading");
+
+        });
+
+        this.on("drop", function(event) {
+
+            $("body").addClass("loading");        
+
+        });
+
+        this.on("success", function(file, response) {
+
+            var obj = jQuery.parseJSON(response);
+
+            file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
+
+            $(".dz-preview").detach();
+            $(".dz-message").show();
+            $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+
+            $("#file_attachments_s_"+obj.file_id).append("<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach' data-element='"+obj.id+"' data-task='"+obj.file_id+"'>Remove</a></p>");
+
+
+
+        });
+
+        this.on("complete", function (file) {
+
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+
+            $("body").removeClass("loading");
+
+          }
+
+        
+
+         });
+
+        this.on("error", function (file) {
+
+            //console.log(file);
+
+            $("body").removeClass("loading");
+
+      });
+
+        this.on("canceled", function (file) {
+
+            $("body").removeClass("loading");
+
+      });
+
+        
+
+        this.on("removedfile", function(file) {
+
+            if (!file.serverId) { return; }
+
+            $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+
+        });
+
+    },
+
+};
+
+Dropzone.options.imageUploado = {
+
+    acceptedFiles: null,
+
+    maxFilesize:50000,
+
+    timeout: 10000000,
+
+    dataType: "HTML",
+    
+    parallelUploads: 1,
+
+    init: function() {
+
+        this.on('sending', function(file) {
+
+            $("body").addClass("loading");
+
+        });
+
+        this.on("drop", function(event) {
+
+            $("body").addClass("loading");        
+
+        });
+
+        this.on("success", function(file, response) {
+
+            var obj = jQuery.parseJSON(response);
+
+            file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
+
+            $(".dz-preview").detach();
+            $(".dz-message").show();
+            $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+
+            $("#file_attachments_o_"+obj.file_id).append("<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach' data-element='"+obj.id+"' data-task='"+obj.file_id+"'>Remove</a></p>");
+
+
+        });
+
+        this.on("complete", function (file) {
+
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+
+            $("body").removeClass("loading");
+
+          }
+
+        
+
+         });
 
         this.on("error", function (file) {
 
@@ -7448,6 +8923,90 @@ Dropzone.options.imageUpload5 = {
         this.on("removedfile", function(file) {
             if (!file.serverId) { return; }
             $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+        });
+    },
+};
+
+Dropzone.options.imageUploadprogress = {
+    maxFiles: 2000,
+    acceptedFiles: null,
+    maxFilesize:500000,
+    timeout: 10000000,
+    dataType: "HTML",
+    parallelUploads: 1,
+    maxfilesexceeded: function(file) {
+        this.removeAllFiles();
+        this.addFile(file);
+    },
+    init: function() {
+        this.on('sending', function(file) {
+            $("body").addClass("loading");
+        });
+        this.on("drop", function(event) {
+            $("body").addClass("loading");        
+        });
+        this.on("success", function(file, response) {
+            var obj = jQuery.parseJSON(response);
+            file.serverId = obj.id;
+            $("#add_files_attachments_progress_div_"+obj.task_id).append("<p><a href='"+obj.download_url+"' class='file_attachments' download>"+obj.filename+"</a> <a href='"+obj.delete_url+"' class='fa fa-trash delete_attachments'></a></p>");
+            $(".dropzone_progress_modal").modal("hide");
+            $(".dropzone_completion_modal").modal("hide");
+
+            $(".add_progress_attachments").append('<p class="pending_attachment" data-element="'+obj.task_id+'" data-user="'+obj.from_user+'">'+obj.message+'</p>')
+        });
+        this.on("complete", function (file) {
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+            var acceptedcount= this.getAcceptedFiles().length;
+            var rejectedcount= this.getRejectedFiles().length;
+            var totalcount = acceptedcount + rejectedcount;
+            $("#total_count_files").val(totalcount);
+            $("body").removeClass("loading");
+            $(".progress_spam").html("Progress files added Successfully");
+            Dropzone.forElement("#imageUploadprogress").removeAllFiles(true);
+            $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+
+            if($(".task_specifics_modal").hasClass('in')){
+
+            }
+            else{
+              var obj = {};
+              obj.message = []; 
+              obj.task_id = []; 
+              obj.user_id = []; 
+              $(".add_progress_attachments").find('p').each(function(index,value) {
+                var message = $(this).html();
+                var task_id = $(this).attr("data-element");
+                var user_id = $(this).attr("data-user");
+
+                obj.message.push([message]);
+                obj.task_id.push([task_id]);
+                obj.user_id.push([user_id]);
+              });
+
+              var messages = JSON.stringify(obj);
+
+              $.ajax({
+                url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                type:"post",
+                data:{messages:messages},
+                success:function(result){
+                  $(".add_progress_attachments").html("");
+                }
+              });
+            }
+          }
+        });
+        this.on("error", function (file) {
+          //$(".add_progress_attachments").html("");
+          $("body").removeClass("loading");
+        });
+        this.on("canceled", function (file) {
+          //$(".add_progress_attachments").html("");
+            $("body").removeClass("loading");
+        });
+        this.on("removedfile", function(file) {
+            if (!file.serverId) { return; }
+            //$.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
         });
     },
 };

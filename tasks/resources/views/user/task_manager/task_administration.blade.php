@@ -45,6 +45,26 @@ body.loading_apply .modal_load_apply {
     display: block;
 }
 
+.modal_load_export {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_export {
+    overflow: hidden;   
+}
+body.loading_export .modal_load_export {
+    display: block;
+}
+
 .disclose_label{ width:300px; }
 .option_label{width:100%;}
 table{
@@ -296,6 +316,22 @@ input:checked + .slider:before {
                 <div class="form-title">Task Subject</div>
                 <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
             </div>
+            <div class="form-group start_group">
+                <div class="form-title">Project</div>
+                <select name="project_id" class="form-control project_id_add">
+                  <option value="">Select Project</option>        
+                    <?php
+                    $projects = DB::table('projects')->get();
+                    if(count($projects)){
+                      foreach ($projects as $project) {
+                    ?>
+                      <option value="<?php echo $project->project_id ?>"><?php echo $project->project_name; ?></option>
+                    <?php
+                      }
+                    }
+                    ?>
+                </select>
+            </div>
             <div class="col-md-12 internal_tasks_grp internal_tasks_group" style="padding:0px">
               <label style="margin-top:5px">Select Task:</label>
             </div>
@@ -387,8 +423,40 @@ input:checked + .slider:before {
         </div>
   </div>
 </div>
+<div class="modal fade integrity_check_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog" role="document" style="width:85%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title">Taskmanager Integrity Check</h4>
+          </div>
+          <div class="modal-body" style="clear:both">  
+            <input type="button" class="common_black_button export_integrity" value="Export CSV" style="float:right">
+            <input type="hidden" name="hidden_page_no_integrity" id="hidden_page_no_integrity" value="0">
+            <table class="table own_table_white" style="float:left;margin-top:20px">
+              <thead>
+                  <th>Task ID</th>
+                  <th >Task Name</th>
+                  <th>Subject</th>
+                  <th>Task FIles</th>
+                  <th>Status</th>
+                  <th>Progress FIles</th>
+                  <th>Status</th>
+                  <th>Completion Files</th>
+                  <th>Status</th>
+              </thead>
+              <tbody id="integrity_check_tbody">
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer" style="clear:both">  
+           
+          </div>
+        </div>
+  </div>
+</div>
 <div class="content_section" style="margin-bottom:200px">
-  <div style="width:100%;position: fixed; background: #f5f5f5; z-index: 9999">
+  <div style="width:100%;position: fixed; background: #f5f5f5; z-index: 99; top: 83px;">
   <div class="page_title" style="z-index:999">
     <h4 class="col-lg-12 padding_00 new_main_title">Task Administration</h4>
     <div class="col-lg-3 padding_00">
@@ -401,6 +469,7 @@ input:checked + .slider:before {
       
 
       <a href="javascript:" class="load_closed_jobs common_black_button" style="float:left;">Load Closed Tasks</a>
+      <a href="javascript:" class="integrity_check common_black_button" style="float:left;">Integrity Check</a>
       <input type="hidden" name="hidden_load_closed" id="hidden_load_closed" value="0">
     </div>
   </div>
@@ -434,10 +503,12 @@ input:checked + .slider:before {
           <a href="#home" class="nav-link" id="profile-tab" data-toggle="tab" role="tab" aria-controls="profile" aria-selected="false" style="border-bottom: 2px solid #fff">
             Task Administration</a>
         </li>
-        
+        <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
+          <a href="<?php echo URL::to('user/task_overview'); ?>" class="nav-link" id="profile-tab">Task Overview</a>
+        </li>
       </ul>
   </div>
-    <div style="width: 100%; float: left;margin-top:195px; background: #fff">
+    <div style="width: 100%; float: left;margin-top:170px; background: #fff">
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane active in" id="home" role="tabpanel" aria-labelledby="home-tab">
             <table class="table own_table_white" id="table_administration" style="width:100%; background: #fff">
@@ -451,6 +522,7 @@ input:checked + .slider:before {
                     <th>Retain Orignal Specifics</th>
                     <th>Retain Original Files</th>
                     <th>Subject</th>
+                    <th>Project</th>
                     <th>Repeat</th>
                     <th>Repeat</th>
                     <th>Due Time</th>
@@ -536,6 +608,13 @@ input:checked + .slider:before {
                       if($task->retain_files == "0"){ $retain_files = '-'; }
                       else{ $retain_files = '<i class="fa fa-check"></i>'; }
 
+                      $project_name = '';
+                      if($task->project_id != 0)
+                      {
+                        $details = DB::table('projects')->where('project_id',$task->project_id)->first();
+                        $project_name = $details->project_name;
+                      }
+
                       $outputtask.='<tr id="tr_task_'.$task->id.'" class="tr_task '.$tr_status.'">
                         <td class="taskid_td" style="'.$color.'">'.$task->taskid.'</td>
                         <td class="taskid_td task_name_val" style="'.$color.'">'.$title.' '.$two_bill_icon.'</td>
@@ -553,12 +632,15 @@ input:checked + .slider:before {
                         <td class="retain_spec_td" style="'.$color.'">'.$retain_specifics.'</td>
                         <td class="retain_files_td" style="'.$color.'">'.$retain_files.'</td>
                         <td class="subject_td" style="'.$color.'">'.$task->subject.'</td>
+
+                        <td class="project_td" style="'.$color.'">'.$project_name.'</td>
+
                         <td class="recurring_days_td" style="'.$color.'">'.$recurring_days.'</td>
                         <td class="recurring_task_td" style="'.$color.'">'.$recurring_task.'</td>
                         <td class="due_date_td" style="'.$color.'"><spam style="display:none">'.strtotime($task->due_date).'</spam>'.date('d-M-Y', strtotime($task->due_date)).'</td>
                         <td style="'.$color.'">
                           <a href="javascript:" class="fa fa-download download_pdf_task" data-element="'.$task->id.'" title="Download PDF"></a>
-                          <a href="javascript:" class="fa fa-edit edit_task edit_task_'.$task->id.'" data-element="'.$task->id.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'" data-specifics="'.$task->retain_specifics.'" data-files="'.$task->retain_files.'" data-recurring="'.$task->recurring_task.'" data-taskname="'.$tasktitle.'" data-tasktype="'.$task->task_type.'" data-internal="'.$internaltask.'" title="EDIT TASK"></a>
+                          <a href="javascript:" class="fa fa-edit edit_task edit_task_'.$task->id.'" data-element="'.$task->id.'" data-author="'.$task->author.'" data-allocated="'.$task->allocated_to.'" data-specifics="'.$task->retain_specifics.'" data-files="'.$task->retain_files.'" data-recurring="'.$task->recurring_task.'" data-taskname="'.$tasktitle.'" data-tasktype="'.$task->task_type.'" data-internal="'.$internaltask.'" data-projectid="'.$task->project_id.'" title="EDIT TASK"></a>
                         </td>
                       </tr>';
                     }
@@ -587,6 +669,10 @@ input:checked + .slider:before {
 <div class="modal_load_apply" style="text-align: center;">
   <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the tasks are loaded.</p>
   <p style="font-size:18px;font-weight: 600;">Tasks Loaded: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
+<div class="modal_load_export" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the tasks are Exported.</p>
+  <p style="font-size:18px;font-weight: 600;">Exporting Tasks: <span id="apply_first_export"></span> of <span id="apply_last_export"></span></p>
 </div>
 <script>
 $(function(){
@@ -693,6 +779,70 @@ function load_all_tasks(count)
     $("body").removeClass("loading_apply");
   }
 }
+function load_all_tasks_integrity(count)
+{
+  var page_no = $("#hidden_page_no_integrity").val();
+  var tasks_count = $("#hidden_tasks_count").val();
+  var next_count = count + 1;
+  var total_round = parseInt(tasks_count) / 100;
+  total_round = Math.round(total_round);
+  var prev= parseInt(page_no);
+  var offset = parseInt(prev) * 100;
+  $("#apply_first").html(offset);
+  if(next_count <= total_round)
+  {
+    $.ajax({
+      url:"<?php echo URL::to('user/integrity_check_all_tasks'); ?>",
+      type:"post",
+      data:{page_no:page_no},
+      success: function(result)
+      {
+        $("#integrity_check_tbody").append(result);
+        var pageno = parseInt(page_no) + 1;
+        $("#hidden_page_no_integrity").val(pageno);
+        load_all_tasks_integrity(next_count);
+      }
+    });
+  }
+  else{
+    $('[data-toggle="tooltip"]').tooltip();
+    $("#hidden_page_no_integrity").val("0");
+    $("#apply_first").html("0");
+    $("body").removeClass("loading_apply");
+  }
+}
+function export_all_tasks_integrity(count,filename)
+{
+  var page_no = $("#hidden_page_no_integrity").val();
+  var tasks_count = $("#hidden_tasks_count").val();
+  var next_count = count + 1;
+  var total_round = parseInt(tasks_count) / 100;
+  total_round = Math.round(total_round);
+  var prev= parseInt(page_no);
+  var offset = parseInt(prev) * 100;
+  $("#apply_first_export").html(offset);
+  if(next_count <= total_round)
+  {
+    $.ajax({
+      url:"<?php echo URL::to('user/export_integrity_tasks'); ?>",
+      type:"post",
+      data:{page_no:page_no,filename:filename},
+      success: function(result)
+      {
+        var pageno = parseInt(page_no) + 1;
+        $("#hidden_page_no_integrity").val(pageno);
+        export_all_tasks_integrity(next_count,filename);
+      }
+    });
+  }
+  else{
+    $("#hidden_page_no_integrity").val("0");
+    $("#apply_first_export").html("0");
+
+    SaveToDisk("<?php echo URL::to('papers'); ?>/"+filename,filename);
+    $("body").removeClass("loading_export");
+  }
+}
 $(window).click(function(e) {
   if($(e.target).hasClass('download_pdf_task'))
   {
@@ -796,6 +946,81 @@ $(window).click(function(e) {
       $("body").removeClass("loading_apply");
     }
   }
+  if($(e.target).hasClass('integrity_check'))
+  {
+    $("body").addClass("loading_apply");
+    var page_no = $("#hidden_page_no_integrity").val();
+    var tasks_count = $("#hidden_tasks_count").val();
+    $("#apply_last").html(tasks_count);
+
+    var total_round = parseInt(tasks_count) / 100;
+    total_round = Math.round(total_round);
+
+    var count = 1;
+    var prev= parseInt(page_no);
+
+    var offset = parseInt(prev) * 100;
+    $("apply_first").html(offset);
+    $("#integrity_check_tbody").html("");
+    $(".integrity_check_modal").modal("show");
+    if(count <= total_round)
+    {
+      $.ajax({
+        url:"<?php echo URL::to('user/integrity_check_all_tasks'); ?>",
+        type:"post",
+        data:{page_no:page_no},
+        success: function(result)
+        {
+          $("#integrity_check_tbody").html(result);
+          var pageno = parseInt(page_no) + 1;
+          $("#hidden_page_no_integrity").val(pageno);
+          load_all_tasks_integrity(count);
+        }
+      });
+    }
+    else{
+      $("#hidden_page_no_integrity").val("0");
+      $("#apply_first").html("0");
+      $('[data-toggle="tooltip"]').tooltip()
+      $("body").removeClass("loading_apply");
+    }
+  }
+  if($(e.target).hasClass('export_integrity'))
+  {
+    $("body").addClass("loading_export");
+    var page_no = $("#hidden_page_no_integrity").val();
+    var tasks_count = $("#hidden_tasks_count").val();
+    $("#apply_last_export").html(tasks_count);
+
+    var total_round = parseInt(tasks_count) / 100;
+    total_round = Math.round(total_round);
+
+    var count = 1;
+    var prev= parseInt(page_no);
+
+    var offset = parseInt(prev) * 100;
+    $("apply_first_export").html(offset);
+    if(count <= total_round)
+    {
+      $.ajax({
+        url:"<?php echo URL::to('user/export_integrity_tasks'); ?>",
+        type:"post",
+        data:{page_no:page_no},
+        success: function(result)
+        {
+          var pageno = parseInt(page_no) + 1;
+          $("#hidden_page_no_integrity").val(pageno);
+          export_all_tasks_integrity(count,result);
+        }
+      });
+    }
+    else{
+      $("#hidden_page_no_integrity").val("0");
+      $("#apply_first_export").html("0");
+      $("body").removeClass("loading_export");
+    }
+  }
+  
   if($(e.target).hasClass('load_closed_jobs'))
   {
     var value = $("#hidden_load_closed").val();
@@ -863,9 +1088,13 @@ $(window).click(function(e) {
     var taskname = $(e.target).attr("data-taskname");
     var tasktype = $(e.target).attr("data-tasktype");
 
+    var projectid = $(e.target).attr("data-projectid");
+
     $("#hidden_task_id_copy_task").val(task_id);
     $(".select_user_author").val(author);
     $(".allocate_user_add").val(allocated);
+
+    $(".project_id_add").val(projectid);
 
     if(specifics == "1")
     {
@@ -936,6 +1165,7 @@ $(window).click(function(e) {
     var specific_recurring = $(".specific_recurring").val();
     var task_type = $("#idtask_change").val();
     var subject = $(".subject_class").val();
+    var project_id = $(".project_id_add").val();
 
     if(author == "")
     {
@@ -949,7 +1179,7 @@ $(window).click(function(e) {
       $.ajax({
         url:"<?php echo URL::to('user/update_taskmanager_details'); ?>",
         type:"post",
-        data:{task_id:task_id,author:author,allocated:allocated,specifics:specifics,files:files,recurring:recurring,days:days,specific_recurring:specific_recurring,task_type:task_type,subject:subject},
+        data:{task_id:task_id,author:author,allocated:allocated,specifics:specifics,files:files,recurring:recurring,days:days,specific_recurring:specific_recurring,task_type:task_type,subject:subject,project_id:project_id},
         dataType:"json",
         success:function(result)
         {
@@ -960,6 +1190,7 @@ $(window).click(function(e) {
           $("#tr_task_"+task_id).find(".recurring_days_td").html(result['recurring_days']);
           $("#tr_task_"+task_id).find(".recurring_task_td").html(result['recurring_task']);
           $("#tr_task_"+task_id).find(".subject_td").html(result['subject']);
+          $("#tr_task_"+task_id).find(".project_td").html(result['project']);
           if(result['task_type'] == "0")
           {
 
@@ -973,6 +1204,8 @@ $(window).click(function(e) {
             $(".edit_task_"+task_id).attr("data-taskname",result['task_name_val']);
             $(".edit_task_"+task_id).attr("data-tasktype",result['task_type']);
           }
+
+          $(".edit_task_"+task_id).attr("data-projectid",project_id);
           $(".edit_task_modal").modal("hide");
           $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Task Updated successfully.</p>',fixed:true,width:"800px"});
         }

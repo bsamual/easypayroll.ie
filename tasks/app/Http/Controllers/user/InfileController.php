@@ -66,12 +66,10 @@ class InfileController extends Controller {
 	 */
 
 	public function infile(){	
-		if(Session::has('notepad_attach_add'))
-		{
+		if(Session::has('notepad_attach_add')) {
 			Session::forget("notepad_attach_add");
 		}
-		if(Session::has('file_attach_add'))
-		{
+		if(Session::has('file_attach_add')) {
 			Session::forget("file_attach_add");
 		}
 
@@ -508,10 +506,28 @@ class InfileController extends Controller {
 		 	if(move_uploaded_file($tmpFile,$filename))
 		 	{
 		 		$data['file_id'] = $data_img->id;
+
+		 		if(isset($_POST['hidden_infile_type']))
+		 		{
+		 			$type = $_POST['hidden_infile_type'];
+		 			if($type == 1){ $data['b'] = 1; }
+		 			if($type == 2){ $data['p'] = 1; }
+		 			if($type == 3){ $data['s'] = 1; }
+		 			if($type == 4){ $data['o'] = 1; }
+		 		}
 				$data['attachment'] = $fname;
 				$data['url'] = $upload_dir;
 				$data['textstatus'] = 1;
+				$data['status'] = 1;
 				$id = DB::table('in_file_attachment')->insertGetId($data);
+
+				$infile_item = DB::table('in_file')->where('id',$data_img->id)->first();
+				if(count($infile_item)) {
+					if($infile_item->integrity_check == 1) {
+						$datafile['integrity_check'] = 2;
+						DB::table('in_file')->where('id',$data_img->id)->update($datafile);
+					}
+				}
 				echo json_encode(array('id' => $id,'filename' => $fname,'file_id' => $data_img->id));
 		 	}
 		}
@@ -879,7 +895,9 @@ class InfileController extends Controller {
               if(count($attachments)){
                 $deleteall = '<i class="fa fa-minus-square delete_all_image '.$disable_class.'" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Delete All Attachments"></i>
                 
-                <i class="fa fa-cloud-download download_rename_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download & Rename All Attachments"></i>';
+                <i class="fa fa-cloud-download download_rename_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download & Rename All Attachments"></i>
+
+                <i class="fa fa-file-text-o summary_infile_attachments" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Summary"></i>';
               }
               else{
                 $deleteall = '';
@@ -1308,6 +1326,20 @@ class InfileController extends Controller {
 			Session::forget("file_attach_add");
 		}
 
+		// $infile_items = DB::table('in_file')->where('integrity_check',0)->get();
+		// if(count($infile_items)) {
+		// 	foreach($infile_items as $item) {
+		// 		$get_id = $item->id;
+		// 		$path = 'papers/infile_report/'.$get_id;
+		// 		$mtime = file_exists($path)?filemtime($path):'';
+		// 		if($mtime != "") {
+		// 			$dataval['integrity_check'] = 1;
+		// 			$dataval['check_date_time'] = date('Y-m-d H:i:s', $mtime);
+		// 			DB::table('in_file')->where('id',$get_id)->update($dataval);
+		// 		}
+		// 	}
+		// }
+
 		$dir = "uploads/infile_image/temp";//"path/to/targetFiles";
 	    
 	    // Open a known directory, and proceed to read its contents
@@ -1388,7 +1420,7 @@ class InfileController extends Controller {
 
 
 
-		$subject = 'EasyPayroll.ie: Infile Task Notification';
+		$subject = 'Easypayroll.ie: Infile Task Notification';
 
 
 
@@ -3349,118 +3381,169 @@ class InfileController extends Controller {
 	{
 		$fileid = Input::get('fileid');
 		$infile_details = DB::table('in_file')->where('id',$fileid)->first();
+
+		$company = '';
+		if(count($infile_details))
+		{
+			$client_details = DB::table('cm_clients')->where('client_id',$infile_details->client_id)->first();
+			$company = $client_details->company;
+		}
 		$infile_attacments = DB::table('in_file_attachment')->where('file_id',$fileid)->where('secondary',0)->where('notes_type',0)->get();
-		$output = '<table class="table">
-			<tr>
-				<td>Description</td>
-				<td>'.$infile_details->description.'</td>
-			</tr>
-			<tr>
-				<td>Date Added</td>
-				<td>'.date("d-M-Y", strtotime($infile_details->date_added)).'</td>
-			</tr>
-			<tr>
-				<td>No of Files Listed</td>
-				<td>'.count($infile_attacments).'</td>
-			</tr>
-		</table>
-		<div class="row" style="max-height:500px;overflow-y:scroll">
-		<table class="table">
-			<thead>
-				<th style="text-align:left;width:60%">Filename</th>
-				<th style="text-align:left;width:20%">Status</th>
-				<th style="text-align:left;width:20%">Action</th>
-			</thead>
-			<tbody>';
-				if(count($infile_attacments))
-				{
-					foreach($infile_attacments as $key => $attachment)
-					{
-						$key = $key + 1;
-						$output.='<tr>
-							<td class="integrity_attachment overflow-wrap-hack" data-element="'.$attachment->id.'" data-file="'.$attachment->file_id.'" data-key="'.$key.'"><div class="content_check">'.$attachment->attachment.'</div></td>
-							<td class="integrity_status integrity_status_'.$attachment->id.'"> - </td>
-							<td class="action_status action_status_'.$attachment->id.'"> - </td>
-						</tr>';
-					}
-				}
-			$output.='</tbody>
-		</table>
-		</div>';
-		echo $output;
+		$output = '';
+
+		if(count($infile_attacments))
+		{
+			foreach($infile_attacments as $key => $attachment)
+			{
+				$key = $key + 1;
+				$output.='<tr>
+					<td>'.$company.'</td>
+					<td>'.$infile_details->client_id.'</td>
+					<td class="integrity_attachment overflow-wrap-hack" data-element="'.$attachment->id.'" data-file="'.$attachment->file_id.'" data-key="'.$key.'"><div class="content_check">'.$attachment->attachment.'</div></td>
+					<td class="integrity_status integrity_status_'.$attachment->id.'"> - </td>
+					<td class="action_status action_status_'.$attachment->id.'"> - </td>
+					<td>'.$infile_details->description.'</td>
+					<td>'.date("d-M-Y", strtotime($infile_details->date_added)).'</td>
+				</tr>';
+
+				
+			}
+		}
+
+		$dir = "papers/infile_report/".$fileid;
+		$files = '<h5>Download</h5>';
+		$url = '';
+		// Open a directory, and read its contents
+		if (is_dir($dir)){
+		  if ($dh = opendir($dir)){
+		    while (($file = readdir($dh)) !== false){
+		    	if($file != '.' && $file != '..'){
+		    		$files.='<p><a href="'.URL::to($dir.'/'.$file).'" download="">'.$file.'</a></p>';
+		    		$url = URL::to($dir.'/'.$file);
+		    	}
+		    }
+		    closedir($dh);
+		  }
+		}
+
+		echo json_encode(array("output" => $output,"files" => $files,'url' => $url));
 	}
 	public function check_integrity_files_client_id()
 	{
 		$client_id = Input::get('client_id');
 		$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+		$company = $client_details->company;
 		$infile_details = DB::table('in_file')->where('client_id',$client_id)->get();
-		$output = '<h5 style="text-align:center;border-top:1px solid #dfdfdf">'.$client_details->company.' ('.$client_id.')</h5>';
+		$output = '';
+
+		$type = Input::get('type');
+		$filepath = Input::get('filepath');
+		$filename = Input::get('filename');
+
+		if($type == "0")
+		{
+			$columns = array("Client","Client ID", "Filename", "Status", "Description", "Date Added");
+
+			$upload_dir = 'papers/infile_report';
+			if (!file_exists($upload_dir)) {
+				mkdir($upload_dir);
+			}
+			$upload_dir = $upload_dir.'/'.$client_id;
+			if (!file_exists($upload_dir)) {
+				mkdir($upload_dir);
+			}
+
+			$filename = "IntegrityCheckReport".date('d-M-Y')."_".time().".csv";
+			$file = fopen($upload_dir."/".$filename,"w");
+			fputcsv($file, $columns);
+
+			$filename_url = URL::to($upload_dir."/".$filename);
+			$ffname = $filename;
+			$filepath = $upload_dir."/".$filename;
+		}
+		else{
+			$file = fopen($filepath,"a");
+
+			$filename_url = URL::to($filepath);
+			$ffname = $filename;
+			$filepath = $filepath;
+		}
 		if(count($infile_details))
 		{
 			foreach($infile_details as $infile)
 			{
 				$fileid = $infile->id;
 				$infile_attacments = DB::table('in_file_attachment')->where('file_id',$fileid)->where('secondary',0)->where('notes_type',0)->get();
-				$output.= '<table class="table">
-					<tr>
-						<td>Description</td>
-						<td>'.$infile->description.'</td>
-					</tr>
-					<tr>
-						<td>Date Added</td>
-						<td>'.date("d-M-Y", strtotime($infile->date_added)).'</td>
-					</tr>
-					<tr>
-						<td>No of Files Listed</td>
-						<td>'.count($infile_attacments).'</td>
-					</tr>
-				</table>
-				<div class="row" style="max-height:500px;overflow-y:scroll">
-					<table class="table">
-						<thead>
-							<th style="text-align:left;width:60%">Filename</th>
-							<th style="text-align:left;width:20%">Status</th>
-							<th style="text-align:left;width:20%">Action</th>
-						</thead>
-						<tbody>';
-							if(count($infile_attacments))
-							{
-								foreach($infile_attacments as $key => $attachment)
-								{
-									if(!file_exists($attachment->url.'/'.$attachment->attachment))
-									{
-										$status = '<spam class="files_spam missing_spam" style="color:#f00;font-weight:600"><spam class="hide_attach" style="display:none">'.strtolower($attachment->attachment).'</spam>Missing</spam><input type="hidden" name="hidden_file_missing" class="hidden_file_missing" id="hidden_file_missing" value="">';
-									}
-									else{
-										$status = '<spam class="files_spam ok_spam" style="color:green;font-weight:600">Ok</spam>';
-									}
-									$key = $key + 1;
-									$output.='<tr>
-										<td class="overflow-wrap-hack"><div class="content_check">'.$attachment->attachment.'</div></td>
-										<td class="integrity_status integrity_status_'.$attachment->id.'">'.$status.'</td>
-										<td class="action_status action_status_'.$attachment->id.'"> - </td>
-									</tr>';
-								}
-							}
-						$output.='</tbody>
-					</table>
-				</div>';
+				
+				if(count($infile_attacments))
+				{
+					foreach($infile_attacments as $key => $attachment)
+					{
+						if(!file_exists($attachment->url.'/'.$attachment->attachment))
+						{
+							$status = 'Missing';
+						}
+						else{
+							$status = 'Ok';
+						}
+						$key = $key + 1;
+						$output.='<tr>
+							<td>'.$company.'</td>
+							<td>'.$infile->client_id.'</td>
+							<td class="integrity_attachment overflow-wrap-hack" data-element="'.$attachment->id.'" data-file="'.$attachment->file_id.'" data-key="'.$key.'"><div class="content_check">'.$attachment->attachment.'</div></td>
+							<td class="integrity_status integrity_status_'.$attachment->id.'">'.$status.'</td>
+							<td class="action_status action_status_'.$attachment->id.'"> - </td>
+							<td>'.$infile->description.'</td>
+							<td>'.date("d-M-Y", strtotime($infile->date_added)).'</td>
+						</tr>';
+
+
+						if($type == "0")
+						{
+							$columns1 = array($company,$infile->client_id, $attachment->attachment, $status, $infile->description, date("d-M-Y", strtotime($infile->date_added)));
+							fputcsv($file, $columns1);
+						}
+						else{
+							$columns1 = array($company,$infile->client_id, $attachment->attachment, $status, $infile->description, date("d-M-Y", strtotime($infile->date_added)));
+							fputcsv($file, $columns1);
+						}
+					}
+				}
 			}
 		}
 		else{
-			$output.='<p>No Infile Items Found</p>';
+			$output.='<tr>
+							<td>'.$company.'</td>
+							<td>'.$client_id.'</td>
+							<td>No Infile Items Found</td>
+							<td>-</td>
+							<td> - </td>
+							<td> - </td>
+							<td> - </td>
+						</tr>';
+			$columns1 = array($company,$client_id, 'No Infile Items Found', '-', '-', '-');
+			fputcsv($file, $columns1);
 		}
-		echo $output;
+		fclose($file);
+
+		echo json_encode(array("output" => $output, "url" => $filename_url, "filename" => $ffname, 'filepath' => $filepath));
 	}
 	public function check_files_in_files()
 	{
 		$fileid = Input::get('fileid');
 		$type = Input::get('type');
 		$round = Input::get('round');
+		$filepath = Input::get('filepath');
+		$filename = Input::get('filename');
 
 		$check_file = DB::table('in_file_attachment')->where('id',$fileid)->first();
 		if(count($check_file))
 		{
+			$check_datetime = date('Y-m-d H:i:s');
+			$datavalll['integrity_check'] = 1;
+			$datavalll['check_date_time'] = $check_datetime;
+			DB::table('in_file')->where('id',$check_file->file_id)->update($datavalll);
+
 			if(!file_exists($check_file->url.'/'.$check_file->attachment))
 			{
 				$status = 'Missing';
@@ -3472,14 +3555,8 @@ class InfileController extends Controller {
 			if($type == "0")
 			{
 				$item_details = DB::table('in_file')->where('id',$check_file->file_id)->first();
-				$list = array (
-				  array("Integrity Check" ,"", "",""),
-				  array("Description:", $item_details->description, "",""),
-				  array("Date Added:", date('d-M-Y', strtotime($item_details->date_added)), "",""),
-				  array("","","",""),
-				  array("Filename","Status","",""),
-				  array($check_file->attachment,$status,"","",""),
-				);
+				$client_details = DB::table('cm_clients')->where('client_id',$item_details->client_id)->first();
+				$columns = array("Client","Client ID", "Filename", "Status", "Description", "Date Added");
 
 				$upload_dir = 'papers/infile_report';
 				if (!file_exists($upload_dir)) {
@@ -3490,79 +3567,49 @@ class InfileController extends Controller {
 					mkdir($upload_dir);
 				}
 
-				$data['url'] = $upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv";
-				$data['filename'] = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
+				$filename = "IntegrityCheckReport".date('d-M-Y')."_".time().".csv";
+
+				$data['url'] = $upload_dir."/".$filename;
+				$data['filename'] = $filename;
 				$data['fileid'] = $check_file->file_id;
 
 				DB::table('infile_check_report')->insert($data);
 
-				
-				$file = fopen($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv","w");
-				foreach ($list as $line) {
-				  fputcsv($file, $line);
-				}
+				$file = fopen($upload_dir."/".$filename,"w");
+				fputcsv($file, $columns);
+
+				$columns1 = array($client_details->company,$item_details->client_id, $check_file->attachment, $status, $item_details->description, date("d-M-Y", strtotime($item_details->date_added)));
+				fputcsv($file, $columns1); //@Optimist
+
 				fclose($file);
 
-				$filename_url = URL::to($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv");
-				$ffname = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
-			}
-			elseif($type == "1")
-			{
-				$item_details = DB::table('in_file')->where('id',$check_file->file_id)->first();
-				$list = array (
-				  array("" ,"", "", ""),
-				  array("" ,"", "", ""),
-				  array("Description:", $item_details->description, "", ""),
-				  array("Date Added:", date('d-M-Y', strtotime($item_details->date_added)), "", ""),
-				  array("","","",""),
-				  array("Filename","Status","",""),
-				  array($check_file->attachment,$status,"","",""),
-				);
-
-				$upload_dir = 'papers/infile_report';
-				if (!file_exists($upload_dir)) {
-					mkdir($upload_dir);
-				}
-				$upload_dir = $upload_dir.'/'.$check_file->file_id;
-				if (!file_exists($upload_dir)) {
-					mkdir($upload_dir);
-				}
-
-				$data['url'] = $upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv";
-				$data['filename'] = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
-				$data['fileid'] = $check_file->file_id;
-
-				DB::table('infile_check_report')->insert($data);
-
-				$file = fopen($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv","a");
-				foreach ($list as $line) {
-				  fputcsv($file, $line);
-				}
-				fclose($file);
-
-				$filename_url = URL::to($upload_dir."/IntegrityCheckReport".date('d-M-Y_H i s').".csv");
-				$ffname = "IntegrityCheckReport".date('d-M-Y_H i s').".csv";
+				$filename_url = URL::to($upload_dir."/".$filename);
+				$ffname = $filename;
+				$filepath = $upload_dir."/".$filename;
 			}
 			else{
-				$infile_report = DB::table('infile_check_report')->where('fileid',$check_file->file_id)->orderBy('id','desc')->first();
-				$file = fopen($infile_report->url,"a");
+				$item_details = DB::table('in_file')->where('id',$check_file->file_id)->first();
+				$client_details = DB::table('cm_clients')->where('client_id',$item_details->client_id)->first();
+				$file = fopen($filepath,"a");
 				//fwrite($fp, $row1.",".$row2); //Append row,row to file
-				fputcsv($file, array($check_file->attachment,$status,"","")); //@Optimist
+				$columns = array($client_details->company,$item_details->client_id, $check_file->attachment, $status, $item_details->description, date("d-M-Y", strtotime($item_details->date_added)));
+
+				fputcsv($file, $columns); //@Optimist
 				fclose($file); //Close the file to free memory.
 
-				$filename_url = URL::to($infile_report->url);
-				$ffname = $infile_report->filename;
+				$filename_url = URL::to($filepath);
+				$ffname = $filename;
+				$filepath = $filepath;
 			}
 
-			if(!file_exists($check_file->url.'/'.$check_file->attachment))
-			{
+			if(!file_exists($check_file->url.'/'.$check_file->attachment)) {
 				$status = '<spam class="files_spam missing_spam" style="color:#f00;font-weight:600"><spam class="hide_attach" style="display:none">'.strtolower($check_file->attachment).'</spam>Missing</spam><input type="hidden" name="hidden_file_missing" id="hidden_file_missing" class="hidden_file_missing" value="">';
 			}
 			else{
 				$status = '<spam class="files_spam ok_spam" style="color:green;font-weight:600">Ok</spam>';
 			}
 
-			echo json_encode(array("status" => $status, "url" => $filename_url, "filename" => $ffname));
+			echo json_encode(array("status" => $status, "url" => $filename_url, "filename" => $ffname, 'filepath' => $filepath, 'fileitem_id' => $check_file->file_id));
 		}
 
 	}
@@ -3873,7 +3920,9 @@ class InfileController extends Controller {
 		if(count($attachments)){
 			$deleteall = '<i class="fa fa-minus-square delete_all_image '.$disable_class.'" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Delete All Attachments"></i>
 
-			<i class="fa fa-cloud-download download_rename_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download & Rename All Attachments"></i>';
+			<i class="fa fa-cloud-download download_rename_all_image" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Download & Rename All Attachments"></i>
+
+			<i class="fa fa-file-text-o summary_infile_attachments" data-element="'.$file->id.'" style="margin-top:10px; margin-left:10px;" aria-hidden="true" title="Summary"></i>';
 		}
 		else{
 			$deleteall = '';
@@ -4194,6 +4243,128 @@ class InfileController extends Controller {
 		$value = Input::get('value');
 		$data['description'] = $value;
 		DB::table('in_file')->where('id',$fileid)->update($data);
+	}
+	public function get_summary_infile_attachments(){
+		$file_id = Input::get('file_id');
+		$file_details = DB::table('in_file')->where('id',$file_id)->first();
+
+		$client_details = DB::table('cm_clients')->where('client_id',$file_details->client_id)->first();
+
+		$client_id = $file_details->client_id;
+		$client_name = $client_details->company;
+		$description = $file_details->description;
+
+		$filecount_purchase = DB::table('in_file_attachment')->where('file_id',$file_id)->where('p',1)->get();
+		$filecount_sales = DB::table('in_file_attachment')->where('file_id',$file_id)->where('s',1)->get();
+		$filecount_bank = DB::table('in_file_attachment')->where('file_id',$file_id)->where('b',1)->get();
+		$filecount_others = DB::table('in_file_attachment')->where('file_id',$file_id)->where('o',1)->get();
+
+		$filecount_unspecified = DB::table('in_file_attachment')->where('file_id',$file_id)->where('b',0)->where('p',0)->where('s',0)->where('o',0)->where('status',0)->where('notes_type',0)->get();
+		$filecount_totals = count($filecount_purchase) + count($filecount_sales) + count($filecount_bank) + count($filecount_others) + count($filecount_unspecified);
+
+
+		$net_purchase = DB::table('in_file_attachment')->where('file_id',$file_id)->where('p',1)->sum('net');
+		$net_sales = DB::table('in_file_attachment')->where('file_id',$file_id)->where('s',1)->sum('net');
+		$net_others = DB::table('in_file_attachment')->where('file_id',$file_id)->where('o',1)->sum('net');
+
+		$net_unspecified = DB::table('in_file_attachment')->where('file_id',$file_id)->where('b',0)->where('p',0)->where('s',0)->where('o',0)->where('status',0)->where('notes_type',0)->sum('net');
+		$net_totals = DB::table('in_file_attachment')->where('file_id',$file_id)->where('status',0)->where('notes_type',0)->sum('net');
+
+
+		$vat_purchase = DB::table('in_file_attachment')->where('file_id',$file_id)->where('p',1)->sum('vat');
+		$vat_sales = DB::table('in_file_attachment')->where('file_id',$file_id)->where('s',1)->sum('vat');
+		$vat_others = DB::table('in_file_attachment')->where('file_id',$file_id)->where('o',1)->sum('vat');
+
+		$vat_unspecified = DB::table('in_file_attachment')->where('file_id',$file_id)->where('b',0)->where('p',0)->where('s',0)->where('o',0)->where('status',0)->where('notes_type',0)->sum('vat');
+		$vat_totals = DB::table('in_file_attachment')->where('file_id',$file_id)->where('status',0)->where('notes_type',0)->sum('vat');
+
+		$gross_purchase = DB::table('in_file_attachment')->where('file_id',$file_id)->where('p',1)->sum('gross');
+		$gross_sales = DB::table('in_file_attachment')->where('file_id',$file_id)->where('s',1)->sum('gross');
+		$gross_others = DB::table('in_file_attachment')->where('file_id',$file_id)->where('o',1)->sum('gross');
+
+		$gross_unspecified = DB::table('in_file_attachment')->where('file_id',$file_id)->where('b',0)->where('p',0)->where('s',0)->where('o',0)->where('status',0)->where('notes_type',0)->sum('gross');
+		$gross_totals = DB::table('in_file_attachment')->where('file_id',$file_id)->where('status',0)->where('notes_type',0)->sum('gross');
+
+		$outputresult = '<div class="col-md-12" style="padding:0px">
+			<div class="col-md-5" style="padding:0px">
+				<label>Client Name:</label> '.$client_name.'
+			</div>
+			<div class="col-md-3" style="padding:0px">
+				<label>Client Code:</label> '.$client_id.'
+			</div>
+			<div class="col-md-4" style="padding:0px">
+				<label>Description:</label> '.$description.'
+			</div>
+
+			<table class="table" style="margin-top:20px">
+				<thead>
+					<th></th>
+					<th>Purchase</th>
+					<th>Sales</th>
+					<th>Bank</th>
+					<th>Other</th>
+					<th>Unspecified</th>
+					<th>NonEuro</th>
+					<th>Total</th>
+				</thead>
+				<tbody>
+					<tr>
+						<td>FileCount</td>
+						<td>'.count($filecount_purchase).'</td>
+						<td>'.count($filecount_sales).'</td>
+						<td>'.count($filecount_bank).'</td>
+						<td>'.count($filecount_others).'</td>
+						<td>'.count($filecount_unspecified).'</td>
+						<td></td>
+						<td>'.$filecount_totals.'</td>
+					</tr>
+					<tr>
+						<td>Net</td>
+						<td>'.number_format_invoice($net_purchase).'</td>
+						<td>'.number_format_invoice($net_sales).'</td>
+						<td></td>
+						<td>'.number_format_invoice($net_others).'</td>
+						<td>'.number_format_invoice($net_unspecified).'</td>
+						<td></td>
+						<td>'.number_format_invoice($net_totals).'</td>
+					</tr>
+					<tr>
+						<td>VAT</td>
+						<td>'.number_format_invoice($vat_purchase).'</td>
+						<td>'.number_format_invoice($vat_sales).'</td>
+						<td></td>
+						<td>'.number_format_invoice($vat_others).'</td>
+						<td>'.number_format_invoice($vat_unspecified).'</td>
+						<td></td>
+						<td>'.number_format_invoice($vat_totals).'</td>
+					</tr>
+					<tr>
+						<td>Gross</td>
+						<td>'.number_format_invoice($gross_purchase).'</td>
+						<td>'.number_format_invoice($gross_sales).'</td>
+						<td></td>
+						<td>'.number_format_invoice($gross_others).'</td>
+						<td>'.number_format_invoice($gross_unspecified).'</td>
+						<td></td>
+						<td>'.number_format_invoice($gross_totals).'</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>';
+
+		echo $outputresult;
+	}
+	public function change_file_status_to_zero(){
+		$fileid = Input::get('fileid');
+		$status = Input::get('status');
+
+		if($status == 1){
+			DB::table('in_file_attachment')->where('file_id',$fileid)->where('status',1)->where('secondary',0)->delete();
+		}
+		else{
+			$data['status'] = 0;
+			DB::table('in_file_attachment')->where('file_id',$fileid)->where('status',1)->where('secondary',0)->update($data);
+		}
 	}
 }
 

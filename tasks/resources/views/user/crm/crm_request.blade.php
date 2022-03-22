@@ -462,7 +462,7 @@ a:hover{text-decoration: underline;}
 <div class="modal fade view_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
-        <div class="modal_view_result"></div>
+        <div class="modal_view_result modal_max_height"></div>
       </div>
   </div>
 </div>

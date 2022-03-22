@@ -563,6 +563,7 @@ $(window).click(function(e) {
     var r = confirm("Are you sure you want to remove 2Bill Status from this Task?");
     if(r)
     {
+      $("#table_administration").dataTable().fnDestroy();
       $.ajax({
         url:"<?php echo URL::to('user/remove_2bill_status'); ?>",
         type:"post",
@@ -570,6 +571,18 @@ $(window).click(function(e) {
         success:function(result)
         {
           $(e.target).parents("tr:first").detach();
+          $('#table_administration').DataTable({
+              fixedHeader: {
+                headerOffset: 75
+              },
+              autoWidth: true,
+              scrollX: false,
+              fixedColumns: false,
+              searching: false,
+              paging: false,
+              info: false,
+              aaSorting: [],
+          });
         }
       })
     }

@@ -12,8 +12,7 @@
             </div>
             
             <div style="width:100%; height:auto; float:left;">
-            <b>Regards,</b><br>
-            EasyPayroll Team<br/>
+                <?php echo $signature; ?>
             </div>  
         </div>
     </div>

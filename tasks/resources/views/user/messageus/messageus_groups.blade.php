@@ -667,9 +667,8 @@ $(window).click(function(e) {
         success:function(result)
         {
         	$("#group_table").dataTable().fnDestroy();
-			$("#client_table").dataTable().fnDestroy();
-			$("#selected_table").dataTable().fnDestroy();
-
+    			$("#client_table").dataTable().fnDestroy();
+    			$("#selected_table").dataTable().fnDestroy();
           $("#group_tbody").find("tr").removeClass("highlight_group");
           $("#group_tbody").append(result['group_tr']);
           $("#selected_grp_name").html(result['group_name']);
@@ -678,40 +677,40 @@ $(window).click(function(e) {
           $(".hide_group_div").show();
           $(".create_new_group_modal").modal("hide");
           $("#selected_tbody").html("");
-
+          $(".client_tr").show();
           $('#group_table').DataTable({
-			    fixedHeader: {
-			      headerOffset: 75
-			    },
-			    autoWidth: true,
-			    scrollX: false,
-			    fixedColumns: false,
-			    searching: false,
-			    paging: false,
-			    info: false
-			});
-		  $('#client_table').DataTable({
-			    fixedHeader: {
-			      headerOffset: 75
-			    },
-			    autoWidth: true,
-			    scrollX: false,
-			    fixedColumns: false,
-			    searching: false,
-			    paging: false,
-			    info: false
-			});
-		  $('#selected_table').DataTable({
-			    fixedHeader: {
-			      headerOffset: 75
-			    },
-			    autoWidth: true,
-			    scrollX: false,
-			    fixedColumns: false,
-			    searching: false,
-			    paging: false,
-			    info: false
-			});
+    			    fixedHeader: {
+    			      headerOffset: 75
+    			    },
+    			    autoWidth: true,
+    			    scrollX: false,
+    			    fixedColumns: false,
+    			    searching: false,
+    			    paging: false,
+    			    info: false
+    			});
+    		  $('#client_table').DataTable({
+    			    fixedHeader: {
+    			      headerOffset: 75
+    			    },
+    			    autoWidth: true,
+    			    scrollX: false,
+    			    fixedColumns: false,
+    			    searching: false,
+    			    paging: false,
+    			    info: false
+    			});
+    		  $('#selected_table').DataTable({
+    			    fixedHeader: {
+    			      headerOffset: 75
+    			    },
+    			    autoWidth: true,
+    			    scrollX: false,
+    			    fixedColumns: false,
+    			    searching: false,
+    			    paging: false,
+    			    info: false
+    			});
         }
       })
     }

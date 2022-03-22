@@ -13,6 +13,25 @@
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 
 <style>
+  .modal_load_apply {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply {
+    overflow: hidden;   
+}
+body.loading_apply .modal_load_apply {
+    display: block;
+}
 #colorbox{
   z-index:99999999;
 }
@@ -182,6 +201,149 @@ body.loading {
 body.loading .modal_load {
     display: block;
 }
+.modal_load_trial {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_trial {
+    overflow: hidden;   
+}
+body.loading_trial .modal_load_trial {
+    display: block;
+}
+.modal_load_balance {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_balance {
+    overflow: hidden;   
+}
+body.loading_balance .modal_load_balance {
+    display: block;
+}
+
+.modal_load_receipt {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_receipts {
+    overflow: hidden;   
+}
+body.loading_receipts .modal_load_receipt {
+    display: block;
+}
+
+.modal_load_pratice {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_pratice {
+    overflow: hidden;   
+}
+body.loading_pratice .modal_load_pratice {
+    display: block;
+}
+
+
+
+
+
+.modal_load_payment {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_payments {
+    overflow: hidden;   
+}
+body.loading_payments .modal_load_payment {
+    display: block;
+}
+
+.modal_load_delay {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_delay {
+    overflow: hidden;   
+}
+body.loading_delay .modal_load_delay {
+    display: block;
+}
+
+
+.modal_load_calculation {
+    display:    none;
+    position:   fixed;
+    z-index:    999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_calculations {
+    overflow: hidden;   
+}
+body.loading_calculations .modal_load_calculation {
+    display: block;
+}
     .table thead th:focus{background: #ddd !important;}
     .form-control{border-radius: 0px;}
     .disabled{cursor :auto !important;pointer-events: auto !important}
@@ -196,6 +358,21 @@ body.loading .modal_load {
         display: block;
       }
     }
+.table-fixed-header {
+  text-align: left;
+  position: relative;
+  border-collapse: collapse; 
+}
+.table-fixed-header thead tr th {
+  background: white;
+  position: sticky;
+  top: 0; /* Don't forget this, required for the stickiness */
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+.orange_value_refresh{
+  color:orange;
+  font-weight:600;
+}
 </style>
 <script>
 function popitup(url) {
@@ -210,103 +387,422 @@ function popitup(url) {
 .error{color: #f00; font-size: 12px;}
 a:hover{text-decoration: underline;}
 </style>
+
+
+<div class="modal fade practice_overview_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-sm" role="document" style="width:80%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Practice Overview</h4>
+      </div>
+      <div class="modal-body">
+        
+          <div class="row">
+            <?php
+            $first_year = DB::table('invoice_system')->groupBy('invoice_date')->orderBy('invoice_date', 'ASC')->first();
+            $last_year = DB::table('invoice_system')->groupBy('invoice_date')->orderBy('invoice_date', 'DESC')->first();
+            ?>
+            <input type="hidden" value="<?php echo date('Y', strtotime($first_year->invoice_date)) ?>" class="practice_first_year" readonly>
+            <input type="hidden" value="<?php echo date('Y', strtotime($last_year->invoice_date)) ?>" class="practice_last_year" readonly>
+            <div class="col-lg-5">
+              <h4>TURNOVER REVIEW</h4>
+            </div>
+            <div class="col-lg-1 text-center">
+              
+            </div>
+            <div class="col-lg-6">
+              <div class="row">
+                <div class="col-lg-4">
+                  <a href="javascript:" class="common_black_button export_turnover" style="margin-left: 0px; float: left; width: 100%">EXPORT TURNOVER REVIEW</a>
+                </div>
+                <div class="col-lg-4">
+                  <a href="javascript:" class="common_black_button load_turnover_review" style="margin-left: 0px; float: left; width: 100%">LOAD TURNOVER REVIEW</a>
+                </div>
+                <div class="col-lg-4">
+                  <a href="javascript:" class="common_black_button practice_load_icon" style="margin-left: 0px; float: left; width: 100%">LOAD ALL SECTIONS</a>
+                </div>
+              </div>              
+            </div>
+            <div class="col-lg-12">              
+              <div style="max-height: 300px; overflow: scroll; overflow-x: hidden;">
+              <table class="own_table_white table" id="practice_turnover_table">
+                <thead>
+                  <tr>
+                    <th style="text-align: left">YEAR</th>
+                    <?php
+                    $i=1;
+                    $turnover_table_month='';
+                    for($i = 1; $i <= 12; $i++){
+                      $month = date('Y-'.$i.'-01');
+                      $turnover_table_month.='<th style="text-align: right">'.date('M', strtotime($month)).'</th>';
+                    }
+                    $turnover_table_month.='<th style="text-align: right">Total</th>';
+                    echo $turnover_table_month;
+
+                    ?>                    
+                  </tr>
+                </thead>
+                <tbody class="tbody_turnover_load">
+                  
+                </tbody>
+              </table>
+              </div>
+              
+            
+            </div>
+          </div>
+          <div class="row" id="client_review_div" style="margin-top: 30px;display:none">
+            <?php
+            $client_review = DB::table('cm_clients')->get();
+            ?>
+            
+            <input type="hidden" class="client_review_total" readonly value="<?php echo count($client_review)?>" name="">
+            <div class="col-lg-5">
+              <h4>CLIENT REVIEW</h4>
+            </div>
+            <div class="col-lg-1 text-center">
+              
+            </div>
+            <div class="col-lg-6">
+              <div class="row">
+                <div class="col-lg-4">
+                  <a href="javascript:" class="common_black_button export_client_review" style="margin-left: 0px; float: left; width: 100%">EXPORT CLIENT REVIEW</a>
+                </div>
+                <div class="col-lg-4">
+                  <a href="javascript:" class="common_black_button load_client_review" style="margin-left: 0px; float: left; width: 100%">LOAD CLIENT REVIEW</a>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <input type="checkbox" id="redact_name" class="redact_name" name="">
+                    <label for="redact_name">Redact Name</label>
+                  </div>
+                </div>
+              </div>              
+            </div>
+            <div class="col-lg-12">
+              ACTIVE CLIENTS: 
+              <?php
+              $active_client = DB::table('cm_clients')->where('active', '!=', '2')->get();
+              echo count($active_client);
+              ?>
+            </div>
+
+            <div class="col-lg-12">              
+              <div style="max-height: 300px; overflow: scroll; overflow-x: hidden;">
+              <table class="own_table_white table" id="practice_client_table">
+                <thead>
+                  <tr>
+                    <th style="text-align: left">#</th>
+                    <th style="text-align: left">CLIENT CODE</th>
+                    <th style="text-align: left" class="practice_client_name">CLIENT NAME</th>
+                    <?php
+                    $first_year = date('Y', strtotime($first_year->invoice_date));
+                    $last_year = date('Y', strtotime($last_year->invoice_date));
+
+                    $client_table_month='';
+                    for($i = $first_year; $i <= $last_year; $i++){
+                      $year = $i;
+                      $client_table_month.='<th style="text-align: right">'.$year.'</th>';
+                    }
+                    /*$client_table_month.='<th>Total</th>'*/;
+                    echo $client_table_month;
+
+                    ?>
+                    <th style="text-align: right">Total</th>
+                  </tr>
+                </thead>
+                <tbody class="tbody_client_load">
+                  
+                </tbody>
+              </table>
+              </div>
+              
+            
+            </div>
+          </div>
+
+          <div class="row" id="staff_review_div" style="margin-top: 30px;display:none">
+            <div class="col-lg-5">
+              <h4>STAFF REVIEW</h4>
+            </div>
+            <div class="col-lg-1 text-center">
+              
+            </div>
+            <div class="col-lg-6">
+              <div class="row">
+                <div class="col-lg-4">
+                  <a href="javascript:" class="common_black_button export_staff_review" style="margin-left: 0px; float: left; width: 100%">EXPORT STAFF REVIEW</a>
+                </div>
+                <div class="col-lg-4">
+                  <a href="javascript:" class="common_black_button load_staff_review" style="margin-left: 0px; float: left; width: 100%">LOAD STAFF REVIEW</a>
+                </div>
+                <div class="col-lg-4">
+                  
+                </div>
+              </div>              
+            </div>
+
+            <div class="col-lg-12">              
+              <div style="max-height: 300px; overflow: scroll; overflow-x: hidden;">
+              <table class="own_table_white table" id="practice_staff_table">
+                <thead>
+                  <tr>
+                    <th style="text-align: left">STAFF NAME</th>
+                    <th style="text-align: left">BREAK EVEN POINT</th>
+                                      
+                  </tr>
+                </thead>
+                <tbody class="tbody_staff_load">
+                  
+                </tbody>
+              </table>
+              </div>
+              
+            
+            </div>
+          </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <div class="modal fade client_finance_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog" role="document" style="width:80%">
     <div class="modal-content">
       <div class="modal-header" style="padding-bottom: 0px;border-bottom:0px">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">
-          Client Account Opening Balance Manager
+          Client Account Balance Manager
           <div style="float:right;margin-right: 24px;font-size: 16px;margin-top: 5px;">
             <input type="button" name="export_csv_client_opening" class="common_black_button export_csv_client_opening" value="Export CSV">
+            <input type="button" name="export_detail_analysis" class="common_black_button export_detail_analysis" value="Report" style="display: none;">
+            <input type="button" name="export_csv_summary" class="common_black_button export_csv_summary" value="Export CSV" style="display:none">
             <label>Client Account Opening Balance Date: </label> <spam class="opening_balance_date_spam"></spam>
           </div>
         </h4>
-
-         <table class="table own_table_white" style="margin-bottom: 0px;margin-top:40px">
-            <thead>
-              <tr>
-                <th style="text-align: left;width:8%">Client Code <i class="fa fa-sort client_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                <th style="text-align: left;width:12%">Surname <i class="fa fa-sort surname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                <th style="text-align: left;width:12%">Firstname <i class="fa fa-sort firstname_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                <th style="text-align: left;width:32%">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                <th style="text-align: left;width:9%">Debit <i class="fa fa-sort debit_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                <th style="text-align: left;width:9%">Credit <i class="fa fa-sort credit_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                <th style="text-align: left;width:9%">Balance <i class="fa fa-sort balance_fin_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                <th style="text-align: left;width:9%">Commit</th>
-              </tr>
-            </thead>
-          </table>
       </div>
       <div class="modal-body" style="min-height:700px;max-height: 700px;overflow-y:scroll;padding-top: 0px;">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item active">
+            <a class="nav-link active" id="analysis-tab" data-toggle="tab" href="#analysistab" role="tab" aria-controls="analysistab" aria-selected="false">Analysis</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="detail-analysis-tab" data-toggle="tab" href="#detailanalysistab" role="tab" aria-controls="analysistab" aria-selected="false">Detailed Analysis</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="opening-balance-tab" data-toggle="tab" href="#openingtab" role="tab" aria-controls="openingtab" aria-selected="true">Opening Balance</a>
+          </li>
+          
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade active in" id="analysistab" role="tabpanel" aria-labelledby="analysis-tab">
+            <a href="javascript:" class="common_black_button load_summary_clients" style="clear: both;float: left;margin-top: 10px;" title="Load Clients">Load Clients</a>
+            <table class="table table-fixed" id="summary_financial" style="display:none">
+              <thead>
+                  <tr>
+                    <th style="text-align: left;width:8%">Client Code <i class="fa fa-sort client_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:10%">Surname <i class="fa fa-sort surname_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:10%">Firstname <i class="fa fa-sort firstname_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:26%">Company Name <i class="fa fa-sort company_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: right;width:12%">Opening Balance <i class="fa fa-sort opening_bal_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: right;width:12%">Client Money <br/>Received <i class="fa fa-sort receipt_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: right;width:12%">Payments Made <i class="fa fa-sort payment_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: right;width:12%">Balance <i class="fa fa-sort balance_summary_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                  </tr>
+                </thead>
+                <tbody id="summary_tbody">
 
-        <table class="table table-fixed" id="client_financial">
-            <tbody id="client_tbody">
-            <?php 
-              $clients = DB::table('cm_clients')->get();
-              if(count($clients))
-              {
-                foreach($clients as $client)
-                {
-                  $finance_client = DB::table('finance_clients')->where('client_id',$client->client_id)->first();
-                  $debit = '0.00';
-                  $credit = '0.00';
-                  $balance = '0.00';
-                  $bal_style = '';
-                  $owed_text = '';
-                  $commit_style="display:none";
-                  $commit_btn = '<input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" data-element="'.$client->client_id.'" style="'.$commit_style.'">';
-                  if(count($finance_client))
+                </tbody>
+                <tr>
+                  <td colspan="4"></td>
+                  <td class="total_opening_balance_summary" style="text-align: right"></td>
+                  <td class="total_receipt_summary" style="text-align: right"></td>
+                  <td class="total_payment_summary" style="text-align: right"></td>
+                  <td class="total_balance_summary" style="text-align: right"></td>
+                </tr>
+              </table>
+          </div>
+          <div class="tab-pane fade" id="detailanalysistab" role="tabpanel" aria-labelledby="detail-analysis-tab">
+            <a href="javascript:" class="common_black_button load_details_analysis" style="clear: both;float: left;margin-top: 10px;" title="Load Detailed Analysis">Load Detailed Analysis</a>
+            <div class="div_details_analysis">
+              
+            </div>
+
+
+
+          </div>
+          <div class="tab-pane fade" id="openingtab" role="tabpanel" aria-labelledby="opening-balance-tab">
+            <table class="table table-fixed table-fixed-header" id="client_financial">
+              <thead>
+                  <tr>
+                    <th style="text-align: left;width:10%">Client Code <i class="fa fa-sort client_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:12%">Surname <i class="fa fa-sort surname_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:12%">Firstname <i class="fa fa-sort firstname_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:32%">Company Name <i class="fa fa-sort company_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:9%">Debit <i class="fa fa-sort debit_fin_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:9%">Credit <i class="fa fa-sort credit_fin_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:9%">Balance <i class="fa fa-sort balance_fin_sort" aria-hidden="true" style="margin-top: 4px;margin-left: 10px;"></i></th>
+                    <th style="text-align: left;width:9%">Commit</th>
+                  </tr>
+                </thead>
+                <tbody id="client_tbody">
+                <?php 
+                  $clients = DB::table('cm_clients')->get();
+                  if(count($clients))
                   {
-                    $debit = ($finance_client->debit != "")?$finance_client->debit:"0.00";
-                    $credit = ($finance_client->credit != "")?$finance_client->credit:"0.00";
-                    if($debit != "" && $debit != "0.00" && $debit != "0" && $credit != "" && $credit != "0.00" && $credit != "0")
+                    foreach($clients as $client)
                     {
-                      $balance = 'ERROR';
-                      $bal_style = 'color:#f00;font-weight:600';
-                    }
-                    else{
-                      $balance = ($finance_client->balance != "")?number_format_invoice_empty($finance_client->balance):"0.00";
+                      $finance_client = DB::table('finance_clients')->where('client_id',$client->client_id)->first();
+                      $debit = '0.00';
+                      $credit = '0.00';
+                      $balance = '0.00';
                       $bal_style = '';
-                      if($balance != "0.00" && $balance != "" && $balance != "0")
-                      {
-                        if($finance_client->balance >= 0) { $owed_text = '<spam style="color:green;font-size:12px;font-weight:600">Client Owes Back</spam>'; }
-                        else { $owed_text = '<spam style="color:#f00;font-size:12px;font-weight:600">Client Is Owed</spam>'; }
-
-                        $commit_style = 'display:block'; 
-                      }
-                    }
-
-                    if($finance_client->journal_id == "")
-                    {
+                      $owed_text = '';
+                      $commit_style="display:none";
                       $commit_btn = '<input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" data-element="'.$client->client_id.'" style="'.$commit_style.'">';
-                    }
-                    else{
-                      $commit_btn = '<a href="javascript:" class="journal_id_viewer" data-element="'.$finance_client->journal_id.'">'.$finance_client->journal_id.'</a>';
+                      if(count($finance_client))
+                      {
+                        $debit = ($finance_client->debit != "")?$finance_client->debit:"0.00";
+                        $credit = ($finance_client->credit != "")?$finance_client->credit:"0.00";
+                        if($debit != "" && $debit != "0.00" && $debit != "0" && $credit != "" && $credit != "0.00" && $credit != "0")
+                        {
+                          $balance = 'ERROR';
+                          $bal_style = 'color:#f00;font-weight:600';
+                        }
+                        else{
+                          $balance = ($finance_client->balance != "")?number_format_invoice_empty($finance_client->balance):"0.00";
+                          $bal_style = '';
+                          if($balance != "0.00" && $balance != "" && $balance != "0")
+                          {
+                            if($finance_client->balance >= 0) { $owed_text = '<spam style="color:green;font-size:12px;font-weight:600">Client Owes Back</spam>'; }
+                            else { $owed_text = '<spam style="color:#f00;font-size:12px;font-weight:600">Client Is Owed</spam>'; }
+
+                            $commit_style = 'display:block'; 
+                          }
+                        }
+
+                        if($finance_client->journal_id == "")
+                        {
+                          $commit_btn = '<input type="button" class="common_black_button commit_btn commit_btn_'.$client->client_id.'" value="Commit" data-element="'.$client->client_id.'" style="'.$commit_style.'">';
+                        }
+                        else{
+                          $commit_btn = '<a href="javascript:" class="journal_id_viewer" data-element="'.$finance_client->journal_id.'">'.$finance_client->journal_id.'</a>';
+                        }
+                      }
+                      echo '<tr class="client_tr_'.$client->client_id.'">
+                          <td class="client_sort_val" style="width:8%">'.$client->client_id.'</td>
+                          <td class="surname_sort_val" style="width:12%">'.$client->surname.'</td>
+                          <td class="firstname_sort_val" style="width:12%">'.$client->firstname.'</td>
+                          <td class="company_sort_val" style="width:32%">'.$client->company.'</td>
+                          <td style="width:9%"><input type="text" class="form-control debit_fin_sort_val debit_fin_sort_val_'.$client->client_id.'" id="debit_fin_sort_val" value="'.number_format_invoice($debit).'" data-element="'.$client->client_id.'"></td>
+                          <td style="width:9%"><input type="text" class="form-control credit_fin_sort_val credit_fin_sort_val_'.$client->client_id.'" id="credit_fin_sort_val" value="'.number_format_invoice($credit).'" data-element="'.$client->client_id.'"></td>
+                          <td style="width:9%">
+                            <input type="text" class="form-control balance_fin_sort_val balance_fin_sort_val_'.$client->client_id.'" id="balance_fin_sort_val" value="'.$balance.'" style="'.$bal_style.'" disabled>
+                            '.$owed_text.'
+                          </td>
+                          <td style="width:9%">
+                              '.$commit_btn.'
+                          </td>
+                        </tr>';
                     }
                   }
-                  echo '<tr class="client_tr_'.$client->client_id.'">
-                      <td class="client_sort_val" style="width:8%">'.$client->client_id.'</td>
-                      <td class="surname_sort_val" style="width:12%">'.$client->surname.'</td>
-                      <td class="firstname_sort_val" style="width:12%">'.$client->firstname.'</td>
-                      <td class="company_sort_val" style="width:32%">'.$client->company.'</td>
-                      <td style="width:9%"><input type="text" class="form-control debit_fin_sort_val debit_fin_sort_val_'.$client->client_id.'" id="debit_fin_sort_val" value="'.number_format_invoice($debit).'" data-element="'.$client->client_id.'"></td>
-                      <td style="width:9%"><input type="text" class="form-control credit_fin_sort_val credit_fin_sort_val_'.$client->client_id.'" id="credit_fin_sort_val" value="'.number_format_invoice($credit).'" data-element="'.$client->client_id.'"></td>
-                      <td style="width:9%">
-                        <input type="text" class="form-control balance_fin_sort_val balance_fin_sort_val_'.$client->client_id.'" id="balance_fin_sort_val" value="'.$balance.'" style="'.$bal_style.'" disabled>
-                        '.$owed_text.'
-                      </td>
-                      <td style="width:9%">
-                          '.$commit_btn.'
-                      </td>
-                    </tr>';
-                }
-              }
-            ?>
-            </tbody>
-          </table>
+                ?>
+                </tbody>
+              </table>
+          </div>
+
+          
+        </div>
       </div>
       <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade detail_analysis_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="background: rgb(0,0,0,0.5); z-index: 999999">
+  <div class="modal-dialog modal-md" role="document"  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Detailed Analysis Report</h4>
+      </div>
+      <div class="modal-body" style="clear:both">
+
+          <div class="row">
+            <div class="col-lg-12">
+              <input type="radio" class="report_type_class" id="summary_report" name="analysis_report" value="1">
+              <label for="summary_report">Summary Report</label>
+
+              <input type="radio" class="report_type_class" id="details_report" name="analysis_report" value="2">
+              <label for="details_report">Details Report</label>
+
+              <input type="hidden" value="" class="analysis_report_type_input" name="">
+              <label class="error error_report_type" style="padding-left: 8px; clear: both;  width: 100%"></label>
+            </div>
+            
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <div class="col-lg-12">
+              <input type="radio" class="report_format_class" id="report_format_pdf" name="analysis_report_frmat" value="3">
+              <label for="report_format_pdf">PDF</label>
+
+              <input type="radio" class="report_format_class" id="report_format_csv" name="analysis_report_frmat" value="4">
+              <label for="report_format_csv">CSV</label>
+
+              <input type="hidden" value="" class="analysis_report_format_input" name="">              
+              <label class="error error_report_format" style="padding-left: 8px; clear: both; width: 100%"></label>
+            </div>
+            
+            
+          </div>
+          
+      </div>
+      <div class="modal-footer" style="clear:both">
+        <input type="button" class="analysis_report_button common_black_button" value="Export" name="">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade open_client_review_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document" style="width:95%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Client Account Review</h4>
+      </div>
+      <div class="modal-body" style="clear:both">
+          <iframe src="" id="client_revew_iframe" class="client_revew_iframe" style="width:100%;height:900px;border:0px"></iframe>
+      </div>
+      <div class="modal-footer" style="clear:both">
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade trial_balance_journal_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document" style="width:50%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">View Journals</h4>
+      </div>
+      <div class="modal-body" id="trial_balance_journal_tbody" style="min-height:500px;max-height: 600px;overflow-y:scroll">
+        
+      </div>
+      <div class="modal-footer">
+        
       </div>
     </div>
   </div>
@@ -470,7 +966,8 @@ a:hover{text-decoration: underline;}
                     <td><a href="javascript:" class="journal_id_viewer" data-element="'.$journal_id.'">'.$journal_id.'</a></td>
                     <td>
                       <a href="javascript:" class="fa fa-edit edit_bank_account" data-element="'.$bank->id.'" title="Edit Bank Description"></a>
-                      <a href="javascript:" class="edit_opening_balance" title="Opening Balance" data-element="'.$bank->id.'"><img src="'.URL::to('assets/images/opening_balance.png').'" class="edit_opening_balance" data-element="'.$bank->id.'" style="width:30px"></a>
+                      <a href="javascript:" class="edit_opening_balance" title="Opening Balance" data-element="'.$bank->id.'"><img src="'.URL::to('assets/images/opening_balance.png').'" class="edit_opening_balance" data-element="'.$bank->id.'" style="width:30px"></a>&nbsp;&nbsp;
+                      <a href="javascript:" title="Reconcile"><i class="fa fa-retweet reconcile_icon" data-element="'.base64_encode($bank->id).'"></i></a>
                     </td>
                 </tr>';
               }
@@ -490,6 +987,7 @@ a:hover{text-decoration: underline;}
     </div>
   </div>
 </div>
+
 <div class="modal fade add_bank_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
@@ -571,96 +1069,176 @@ a:hover{text-decoration: underline;}
     </div>
   </div>
 </div>
-
-<div class="content_section" style="margin-bottom:200px">
+<div class="content_section" style="">
     <div class="page_title">
       <h4 class="col-lg-12 padding_00 new_main_title">
                 Financials               
             </h4>
-        <div class="c0l-md-12" style="text-align: right">
-          <input type="button" name="financial_setup" class="common_black_button financial_setup" value="Financial Setup">
-          <input type="button" name="journal_source" class="common_black_button journal_source" value="Journal Source">
-          <input type="button" class="common_black_button client_finance_account_btn" value="Client Finance Account" style="float:right;font-size: 14px;margin-bottom: 10px;">
-        </div>
-        <div class="col-md-6 padding_00" style="margin-top: 10px;">
+        <?php
+          $first_date = date('d/m/Y',strtotime('first day of this month'));
+          $last_date = date('d/m/Y',strtotime('last day of this month'));
+          $curr_year = date('Y');
+          $prev_year = date('Y') - 1;
+          ?>
+        <div class="col-md-6 padding_00" style="">
           <h4>NOMINAL JOURNAL LISTING</h4>
           <div class="col-md-12" style="padding: 0px;margin-top:10px">
             <div class="col-md-8 padding_00">
-              <input type="radio" name="date_selection" class="date_selection" id="curr_year" value="1"><label for="curr_year">Current Year</label>
-              <input type="radio" name="date_selection" class="date_selection" id="prev_year" value="2"><label for="prev_year">Previous Year</label>
-              <input type="radio" name="date_selection" class="date_selection" id="curr_month" value="3" checked><label for="curr_month">Current Month</label>
+              <input type="radio" name="date_selection" class="date_selection" id="curr_year" value="1" data-from="01/01/<?php echo $curr_year; ?>" data-to="31/12/<?php echo $curr_year; ?>"><label for="curr_year">Current Year</label>
+              <input type="radio" name="date_selection" class="date_selection" id="prev_year" value="2" data-from="01/01/<?php echo $prev_year; ?>" data-to="31/12/<?php echo $prev_year; ?>"><label for="prev_year">Previous Year</label>
+              <input type="radio" name="date_selection" class="date_selection" id="curr_month" value="3" data-from="<?php echo $first_date; ?>" data-to="<?php echo $last_date; ?>" checked><label for="curr_month">Current Month</label>
               <input type="radio" name="date_selection" class="date_selection" id="custom" value="4"><label for="custom">Custom</label>
+
             </div>
             <div class="col-md-4">
               <a href="javascript:" class="common_black_button load_journals" style="position: absolute;top: 10px;z-index: 9999;height: 74px;padding-top: 16px;width: 122px;">Load <br/> Journals</a>
+              <a href="javascript:" class="class_general_journal common_black_button" style="position: absolute; top: 10px; width:122px; height: 74px; padding-top: 18px; left: 150px;">General<br/>Journal</a>
             </div>
           </div>
           <div class="col-md-12" style="padding: 0px; margin-top: 20px;" >
             <label class="col-md-1 padding_00" style="margin-top: 6px;text-align: left;">From:</label>
             <div class="col-md-3">
-              <input type="text" name="from_custom_date" class="form-control from_custom_date" value="" disabled>
+              <input type="text" name="from_custom_date" class="form-control from_custom_date" value="<?php echo $first_date; ?>" disabled>
             </div>
 
             <label class="col-md-1" style="margin-top: 6px;text-align: right;">To:</label>
             <div class="col-md-3">
-              <input type="text" name="to_custom_date" class="form-control to_custom_date" value="" disabled>
+              <input type="text" name="to_custom_date" class="form-control to_custom_date" value="<?php echo $last_date; ?>" disabled>
             </div>
           </div>
           <div class="col-md-12" style="margin-top:5px">
             
           </div>
-          <div class="col-md-12 load_journal_div" style="margin-top:30px;background: #fff; height:800px;max-height: 800px;overflow-y: scroll">
-
+          <div class="col-md-12 load_journal_div" style="margin-top:20px;background: #fff; height:650px;max-height: 650px;overflow-y: scroll">
+            <table class="table own_table_white" id="journal_table">
+              <thead>
+                <tr>
+                  <th style="text-align:left">Journal <br>ID <i class="fa fa-sort journal_id_sort" style="float: right"></i></th>
+                  <th style="text-align:left">Journal <br>Date <i class="fa fa-sort journal_date_sort" style="float: right"></i></th>
+                  <th style="text-align:left">Journal <br>Description <i class="fa fa-sort journal_des_sort" style="float: right"></i></th>
+                  <th style="text-align:left">Nominal <br>Code <i class="fa fa-sort nominal_code_sort" style="float: right"></i></th>
+                  <th style="text-align:left">Nominal Code <br>Description <i class="fa fa-sort nominal_des_sort" style="float: right"></i></th>
+                  <th style="text-align:left">Journal <br>Source <i class="fa fa-sort source_sort" style="float: right"></i></th>
+                  <th style="text-align:left">Debit <br>Value <i class="fa fa-sort debit_journal_sort" style="float: right"></i></th>
+                  <th style="text-align:left">Credit <br>Value <i class="fa fa-sort credit_journal_sort" style="float: right"></i></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
         <div class="col-md-6">
-          <h4>TRIAL BALANCE</h4>
-          <div class="col-md-12" style="padding: 0px;margin-top:10px">
-            <div class="col-md-8 padding_00">
-              <input type="radio" name="date_selectio_trialn" class="date_selection_trial" id="curr_year_trial" value="1"><label for="curr_year_trial">Current Year</label>
-              <input type="radio" name="date_selection_trial" class="date_selection_trial" id="prev_year_trial" value="2"><label for="prev_year_trial">Previous Year</label>
-              <input type="radio" name="date_selection_trial" class="date_selection_trial" id="curr_month_trial" value="3" checked><label for="curr_month_trial">Current Month</label>
-              <input type="radio" name="date_selection_trial" class="date_selection_trial" id="custom_trial" value="4"><label for="custom_trial">Custom</label>
-            </div>
-            <div class="col-md-4">
-              <a href="javascript:" class="common_black_button load_balance" style="position: absolute;top: 10px;z-index: 9999;height: 74px;padding-top: 16px;width: 122px;">Load Trial<br/> Balance</a>
-            </div>
-          </div>
-          <div class="col-md-12" style="padding: 0px; margin-top: 20px;" >
-            <label class="col-md-1 padding_00" style="margin-top: 6px;text-align: left;">From:</label>
-            <div class="col-md-3">
-              <input type="text" name="from_custom_date_trial" class="form-control from_custom_date_trial" value="" disabled>
-            </div>
+          <div class="row">
+            <h4 class="col-lg-8 padding_00">TRIAL BALANCE</h4>
+            <div class="col-lg-4 padding_00" style="position: absolute; top: 0px; right: 15px;">
 
-            <label class="col-md-1" style="margin-top: 6px;text-align: right;">To:</label>
-            <div class="col-md-3">
-              <input type="text" name="to_custom_date_trial" class="form-control to_custom_date_trial" value="" disabled>
+              <div class="row">
+                <div class="col-lg-6">
+                  <input type="button" name="journal_source" class="common_black_button journal_source" value="Journal Source" style="float: left; width: 100%; margin-left: 0px; padding: 7px 0px;">
+                </div>
+                <div class="col-lg-6 padding_00">
+                  <input type="button" name="financial_setup" class="common_black_button financial_setup" value="Financial Setup" style="float: right; width: 100%; margin-left: 0px; padding: 7px 0px;">          
+                </div>
+                <div class="col-lg-6" style="margin-top: 7px;">
+                  <a href="javascript:" class="common_black_button question_mark_btn" title="Initial Journal Process" style="width: 100%; padding: 7px 0px; float: left; margin-left: 0px; ">Initial Journal Process</a>
+                </div>
+                <div class="col-lg-6 padding_00" style="margin-top: 7px;">
+                  <a href="javascript:" class="common_black_button bank_account_manager" style="float: right; width: 100%; margin-left: 0px; padding: 7px 0px;">Bank Account Manager</a>
+                </div>
+                <div class="col-lg-6" style="margin-top: 7px;">
+                  <a href="javascript:" class="common_black_button practice_overview" style="float: left; width: 100%; margin-left: 0px; padding: 7px 0px;">Practice Overview</a>
+                </div>
+                <div class="col-lg-6 padding_00" style="margin-top: 7px;">
+                  <input type="button" class="common_black_button client_finance_account_btn" value="Client Finance Account" style="float:right;font-size: 14px; width: 100%; margin-left: 0px; padding: 7px 0px;"> 
+                </div>
+              </div>
+
+
+              
+
+              
             </div>
           </div>
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="row">
+                <div class="col-md-12" style="padding: 0px;margin-top:10px">
+                  <div class="col-md-8 padding_00">
+                    <input type="radio" name="date_selection_trial" class="date_selection_trial" id="curr_year_trial" value="1" data-from="01/01/<?php echo $curr_year; ?>" data-to="31/12/<?php echo $curr_year; ?>"><label for="curr_year_trial">Current Year</label>
+                    <input type="radio" name="date_selection_trial" class="date_selection_trial" id="prev_year_trial" value="2" data-from="01/01/<?php echo $prev_year; ?>" data-to="31/12/<?php echo $prev_year; ?>"><label for="prev_year_trial">Previous Year</label>
+                    <input type="radio" name="date_selection_trial" class="date_selection_trial" id="curr_month_trial" value="3" data-from="<?php echo $first_date; ?>" data-to="<?php echo $last_date; ?>" checked><label for="curr_month_trial">Current Month</label>
+                    <input type="radio" name="date_selection_trial" class="date_selection_trial" id="custom_trial" value="4"><label for="custom_trial">Custom</label>
+                  </div>
+                  <div class="col-md-4">
+                    <a href="javascript:" class="common_black_button load_balance" style="position: absolute;top: 10px;z-index: 9999;height: 74px;padding-top: 16px;width: 122px;">Load Trial<br/> Balance</a>
+                    <a href="javascript:" class="common_black_button remove_nil_balances" style="position: absolute;top: 10px;z-index: 9999;height: 74px;padding-top: 16px;width: 122px;left:148px;display:none">Remove Nil <br/>Balance</a>
+                  </div>
+                  
+                </div>
+                <div class="col-md-12" style="padding: 0px; margin-top: 20px;" >
+                  <label class="col-md-1 padding_00" style="margin-top: 6px;text-align: left;">From:</label>
+                  <div class="col-md-3">
+                    <input type="text" name="from_custom_date_trial" class="form-control from_custom_date_trial" value="<?php echo $first_date; ?>" disabled>
+                  </div>
+
+                  <label class="col-md-1" style="margin-top: 6px;text-align: right;">To:</label>
+                  <div class="col-md-3">
+                    <input type="text" name="to_custom_date_trial" class="form-control to_custom_date_trial" value="<?php echo $last_date; ?>" disabled>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              
+            </div>
+          </div>
+
+          
+
+
           <div class="col-md-12" style="margin-top:5px">
             
           </div>
-          <div class="col-md-12 load_balance_div" style="margin-top:30px;background: #fff; height:800px;max-height: 800px;overflow-y: scroll">
+          <div class="col-md-12 load_balance_div" style="margin-top:20px;background: #fff; height:650px;max-height: 650px;overflow-y: scroll">
             <table class="table own_table_white">
               <thead>
-                <th>Nomainal Code</th>
-                <th>Nomainal Description</th>
-                <th>Primary Group</th>
-                <th>Debit Value</th>
-                <th>Credit Value</th>
+                <th>Nominal <br/>Code <i class="fa fa-sort trial_code_sort" style="float: right"></i></th>
+                <th>Nominal <br/>Description <i class="fa fa-sort trial_des_sort" style="float: right"></i></th>
+                <th>Primary <br/>Group <i class="fa fa-sort trial_primary_sort" style="float: right"></i></th>
+                <th>Debit <br/>Value <i class="fa fa-sort trial_debit_sort" style="float: right"></i></th>
+                <th>Credit <br/>Value <i class="fa fa-sort trial_credit_sort" style="float: right"></i></th>
               </thead>
-              <tbody>
+              <tbody id="trial_balance_tbody">
                 <tr>
-                  <td colspan="5" style="text-align:center">No Data's Found</td>
+                  <td colspan="5" style="text-align:center">No Data Found</td>
                 </tr>
               </tbody>
+              <tr class="total_debit_credit_tr" style="display: none">
+                <td colspan="3">Total</td>
+                <td class="total_nominal_debit" style="text-align:right"></td>
+                <td class="total_nominal_credit" style="text-align:right"></td>
             </table>
           </div>
         </div>
     </div>
     <!-- End  -->
   <div class="main-backdrop"><!-- --></div>
+  <div class="loading_pratice modal_load_pratice text-center">
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%; padding-top: 35px;">
+      <span class="modal_pratice_span1"></span> <span class="modal_pratice_span2"></span>
+    </p>
+  </div>
   <div class="modal_load"></div>
+  <div class="modal_load_apply" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until Reconcile Process to be Processed.</p>
+  <p style="font-size:18px;font-weight: 600;">Processing : <span id="apply_first"></span> of <span id="apply_last"></span></p>
+</div>
+  <div class="modal_load_balance" style="text-align: center;"> <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Loading Opening Balance</p> </div>
+  <div class="modal_load_trial" style="text-align: center;"> <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Loading Nominal Details</p> </div>
+  <div class="modal_load_receipt" style="text-align: center;"> <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Calculating Client Money Received</p> </div>
+  <div class="modal_load_payment" style="text-align: center;"> <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Calculating Payments Made</p> </div>
+  <div class="modal_load_delay" style="text-align: center;"> <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait as this may take upto 5 minutes to generate a PDF Report.</p> </div>
+  <div class="modal_load_calculation" style="text-align: center;"> <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Calculating the Sum of Balance.</p> </div>
   <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
   <input type="hidden" name="show_alert" id="show_alert" value="">
   <input type="hidden" name="pagination" id="pagination" value="1">
@@ -671,6 +1249,21 @@ a:hover{text-decoration: underline;}
   <input type="hidden" name="debit_sortoptions" id="debit_sortoptions" value="asc">
   <input type="hidden" name="credit_sortoptions" id="credit_sortoptions" value="asc">
 
+  <input type="hidden" name="journal_id_sortoptions" id="journal_id_sortoptions" value="asc">
+  <input type="hidden" name="journal_date_sortoptions" id="journal_date_sortoptions" value="asc">
+  <input type="hidden" name="journal_des_sortoptions" id="journal_des_sortoptions" value="asc">
+  <input type="hidden" name="nominal_code_sortoptions" id="nominal_code_sortoptions" value="asc">
+  <input type="hidden" name="nominal_des_sortoptions" id="nominal_des_sortoptions" value="asc">
+  <input type="hidden" name="source_sortoptions" id="source_sortoptions" value="asc">
+  <input type="hidden" name="debit_journal_sortoptions" id="debit_journal_sortoptions" value="asc">
+  <input type="hidden" name="credit_journal_sortoptions" id="credit_journal_sortoptions" value="asc">
+
+  <input type="hidden" name="trial_code_sortoptions" id="trial_code_sortoptions" value="asc">
+  <input type="hidden" name="trial_des_sortoptions" id="trial_des_sortoptions" value="asc">
+  <input type="hidden" name="trial_primary_sortoptions" id="trial_primary_sortoptions" value="asc">
+  <input type="hidden" name="trial_debit_sortoptions" id="trial_debit_sortoptions" value="asc">
+  <input type="hidden" name="trial_credit_sortoptions" id="trial_credit_sortoptions" value="asc">
+
 
   <input type="hidden" name="client_sortoptions" id="client_sortoptions" value="asc">
   <input type="hidden" name="surname_sortoptions" id="surname_sortoptions" value="asc">
@@ -679,11 +1272,449 @@ a:hover{text-decoration: underline;}
   <input type="hidden" name="debit_fin_sortoptions" id="debit_fin_sortoptions" value="asc">
   <input type="hidden" name="credit_fin_sortoptions" id="credit_fin_sortoptions" value="asc">
   <input type="hidden" name="balance_fin_sortoptions" id="balance_fin_sortoptions" value="asc">
+
+  <input type="hidden" name="client_summary_sortoptions" id="client_summary_sortoptions" value="asc">
+  <input type="hidden" name="surname_summary_sortoptions" id="surname_summary_sortoptions" value="asc">
+  <input type="hidden" name="firstname_summary_sortoptions" id="firstname_summary_sortoptions" value="asc">
+  <input type="hidden" name="company_summary_sortoptions" id="company_summary_sortoptions" value="asc">
+
+  <input type="hidden" name="opening_bal_summary_sortoptions" id="opening_bal_summary_sortoptions" value="asc">
+  <input type="hidden" name="receipt_summary_sortoptions" id="receipt_summary_sortoptions" value="asc">
+  <input type="hidden" name="payment_summary_sortoptions" id="payment_summary_sortoptions" value="asc">
+  <input type="hidden" name="balance_summary_sortoptions" id="balance_summary_sortoptions" value="asc">
+
 </div>
 
 <script>
 
+$(window).change(function(e){
+
+if($(e.target).hasClass('input_balance_bank')){
+  var input_balance_bank = $(e.target).val();
+  var input_total_outstanding = $(".refresh_input_outstanding").val();
+  var input_bala_transaction = $(".balance_tran_class").val();
+
+  $.ajax({
+      url:"<?php echo URL::to('user/balance_per_bank'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{input_balance_bank:input_balance_bank, input_total_outstanding:input_total_outstanding, input_bala_transaction:input_bala_transaction},
+      success:function(result){
+
+        $(".input_close_balance").val(result['close_balance']);
+        $(".class_close_balance").html(result['close_balance_span']);
+
+        $(".input_difference").val(result['diffence']);
+        $(".class_difference").html(result['diffence_span']);
+        
+        
+      }
+    }); 
+
+  
+
+}
+
+
+})
+
+
+
+
+
+$(window).dblclick(function(e){
+
+if($(e.target).hasClass('single_accept')){
+  var type = $(e.target).attr("type");
+  var id = $(e.target).attr("data-element");
+  var receipt_id = $(".receipt_id").val();
+  var payment_id = $(".payment_id").val();
+
+  $.ajax({
+      url:"<?php echo URL::to('user/finance_bank_single_accept'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{id:id, type:type, receipt_id:receipt_id, payment_id:payment_id},
+      success:function(result){
+        if(type == 1){
+          $("#receipt_out_"+id).html(result['outstanding']);
+          $("#receipt_out_"+id).css({"color":"blue"});
+
+          $("#receipt_clear_"+id).html(result['clearance_date']);
+          $("#receipt_clear_"+id).css({"color":"orange", "font-weight":"bold"});
+          $("#receipt_clear_"+id).addClass('process_journal');
+        }
+        else{
+          $("#payment_out_"+id).html(result['outstanding']);
+          $("#payment_out_"+id).css({"color":"blue"});
+
+          $("#payment_clear_"+id).html(result['clearance_date']);
+          $("#payment_clear_"+id).css({"color":"orange", "font-weight":"bold"});
+          $("#payment_clear_"+id).addClass('process_journal');
+        }
+        $(".class_total_outstanding").css({"color":"orange", "font-weight":"bold"});
+        $(".class_total_outstanding_refresh").addClass('orange_value_refresh');
+
+        $(".class_total_outstanding").html(result['total_outstanding_html']);
+        $(".input_total_outstanding").val(result['total_outstanding']);
+      }
+  })
+}
+
+
+
+
+
+
+})
+function accept_reconciliation(count)
+{
+  var id = $(".process_journal").eq(0).attr("data-element");
+  var bank_id = $(".select_reconcile_bank").val();
+  if($(".process_journal").eq(0).hasClass('receipt_clear'))
+  {
+    var type = '1';
+  }
+  else{
+    var type = '2';
+  }
+  $.ajax({
+    url:"<?php echo URL::to('user/create_journal_reconciliation'); ?>",
+    type:"post",
+    data:{id:id,type:type,bank_id:bank_id},
+    success:function(result){
+        
+        if(type == '1')
+        {
+          $("#receipt_clear_"+id).removeClass('process_journal');
+          $("#receipt_clear_"+id).parents("tr").find(".journal_td").html('<a href="javascript:" class="journal_id_viewer" data-element="'+result+'">'+result+'</a>');
+        }
+        else{
+          $("#payment_clear_"+id).removeClass('process_journal');
+          $("#payment_clear_"+id).parents("tr").find(".journal_td").html('<a href="javascript:" class="journal_id_viewer" data-element="'+result+'">'+result+'</a>')
+        }
+        var countval = count + 1;
+        if($(".process_journal").eq(0).length > 0)
+        {
+          accept_reconciliation(countval);
+          $("#apply_first").html(countval);
+        }
+        else{
+          $("body").removeClass('loading_apply')
+          $("#apply_first").html('0');
+        }
+    }
+  })
+}
+
+$(window).click(function(e){
+
+
+if($(e.target).hasClass('report_type_class')){
+  var value = $(e.target).val();  
+  $(".analysis_report_type_input").val(value);
+  $(".error_report_type").hide();
+}
+
+if($(e.target).hasClass('report_format_class')){
+  var value = $(e.target).val();  
+  $(".analysis_report_format_input").val(value);
+  $(".error_report_format").hide();
+}
+
+if($(e.target).hasClass('analysis_report_button')){
+
+  var type = $(".analysis_report_type_input").val();
+  var format = $(".analysis_report_format_input").val();
+
+  if(type == ''){
+    $(".error_report_type").html('Please select Report type');
+    $(".error_report_type").show();
+  }
+  else if(format == ''){
+    $(".error_report_type").hide();
+    $(".error_report_format").html('Please select export format');
+  }
+  else{
+    if(format == "3"){
+      $("body").addClass("loading_delay");
+    }
+    else{
+      $("body").addClass("loading");
+    }
+    $(".error_report_type").hide();
+    $(".error_report_format").hide();
+    setTimeout(function() {
+      $.ajax({
+          url:"<?php echo URL::to('user/finance_analysis_report'); ?>",
+          type:"post",          
+          data:{type:type, format:format },
+          success:function(result){
+            SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+            $("body").removeClass("loading_delay");
+             $("body").removeClass("loading");
+          }
+      })
+    },500);
+
+  }
+
+
+
+}
+
+
+
+if($(e.target).hasClass('load_details_analysis')){
+
+$("body").addClass("loading_balance");
+setTimeout(function() {
+  $.ajax({
+      url:"<?php echo URL::to('user/finance_load_details_analysis'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{},
+      success:function(result){
+        $(".div_details_analysis").html(result['output']);
+        $("body").removeClass("loading_balance");
+        
+      }
+  })
+},1000);
+}
+
+
+if(e.target.id == "analysis-tab")
+{
+  $(".export_csv_summary").show();
+  $(".export_csv_client_opening").hide();
+  $(".export_detail_analysis").hide();
+}
+if(e.target.id == "opening-balance-tab")
+{
+  $(".export_csv_summary").hide();
+  $(".export_csv_client_opening").show();
+  $(".export_detail_analysis").hide();
+}
+
+if(e.target.id == "detail-analysis-tab")
+{
+  $(".export_csv_summary").hide();
+  $(".export_csv_client_opening").hide();
+  $(".export_detail_analysis").show();
+}
+
+if($(e.target).hasClass('export_detail_analysis')){
+  $(".detail_analysis_modal").modal('show');
+}
+
+
+
+if($(e.target).hasClass('accept_all_button')){
+  var pop = confirm('You are about to set the Clearance Date of All Transactions (Payments/receipts and General Journals) to the Transaction Date.  This will lock the Bank Account and Value on the Payments and Receipts systems for these transactions and you will not be able to change them.  Do you Want to Continue? ');
+  if(pop){
+    var receipt_id = $(".receipt_id").val();
+    var payment_id = $(".payment_id").val();
+    var select_bank = $(".select_reconcile_bank").val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/finance_bank_all_accept'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{receipt_id:receipt_id, payment_id:payment_id, select_bank:select_bank},
+      success:function(result){
+        $(".tbody_transaction").html(result['transactions']);
+        $(".class_total_outstanding").html(result['total_outstanding']);
+        $(".input_total_outstanding").val(result['total_outstanding']);
+        $(".class_total_outstanding").css({"color":"orange", "font-weight":"bold"});
+        
+      }
+  })
+
+  }
+  else{
+    console.log('false');
+  }
+}
+if($(e.target).hasClass('reconcile_load')){
+  var value = $(".select_reconcile_bank").val();
+  $("body").addClass("loading");
+  setTimeout(function() {
+
+    $("#transaction_table").dataTable().fnDestroy();
+    $.ajax({
+      url:"<?php echo URL::to('user/finance_reconcile_load'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{id:value},
+      success:function(result){
+        $(".receipt_id").val(result['receipt_ids']);
+        $(".payment_id").val(result['payment_ids']);
+        $(".balance_tran_class").val(result['balance_transaction']);
+        $(".input_total_outstanding").val(result['outstanding']);
+
+        $(".class_total_outstanding").html(result['outstanding_html']);
+        $(".class_total_outstanding_html").html(result['outstanding_html']);
+
+
+        $(".tbody_transaction").html(result['transactions']);
+        $(".tbody_reconcilation").html(result['reconcilation']);
+
+        $(".transactions_section").show();
+        $(".reconcilation_section").show();
+
+        $(".date_balance_bank").datetimepicker({
+           defaultDate: "",
+           format: 'L',
+           format: 'DD/MM/YYYY',
+        });
+
+        $('#transaction_table').DataTable({        
+            // autoWidth: true,
+            scrollX: false,
+            fixedColumns: false,
+            searching: false,
+            paging: false,
+            info: false,
+            order: [[ 1, "asc" ]]
+        });
+
+        $("body").removeClass("loading");
+
+        
+      }
+    });  
+  },500);  
+}
+if($(e.target).hasClass('refresh_button')){
+  var input_total_outstanding = $(".input_total_outstanding").val();
+  var input_balance_bank = $(".input_balance_bank").val();
+  var input_bala_transaction = $(".balance_tran_class").val();
+
+  $.ajax({
+      url:"<?php echo URL::to('user/finance_bank_refresh'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{input_total_outstanding:input_total_outstanding, input_balance_bank:input_balance_bank,input_bala_transaction:input_bala_transaction},
+      success:function(result){
+
+        $(".input_close_balance").val(result['close_balance']);
+        $(".class_close_balance").html(result['close_balance_span']);
+
+        $(".input_difference").val(result['diffence']);
+        $(".class_difference").html(result['diffence_span']);
+
+        $(".refresh_input_outstanding").val(result['outstanding']);
+        $(".class_total_outstanding_refresh").html(result['outstanding_span']);
+        $(".class_total_outstanding_refresh").removeClass('orange_value_refresh');
+
+      }
+        
+  })
+}
+if($(e.target).hasClass('accept_reconciliation')){
+  if($(".class_total_outstanding_refresh").hasClass('orange_value_refresh'))
+  {
+    alert("You can not accept the Reconciliation while there are Differences Due to updated Cleared Items and the Bank Statement Balance is Selected");
+    return false;
+  }
+  if(($(".input_balance_bank").val() == '') || ($(".input_balance_bank").val() == '0') || ($(".input_balance_bank").val() == '0.00')){
+    alert("You can not accept the Reconciliation while there are Differences Due to updated Cleared Items and the Bank Statement Balance is Selected");
+    return false;
+  }
+
+  var countval = $(".process_journal").length;
+  if(countval > 0)
+  {
+    $("body").addClass('loading_apply')
+    $("#apply_last").html(countval);
+    accept_reconciliation(0);
+  }
+}
+if($(e.target).hasClass('reconciliation_pdf'))
+{
+  
+  var bank_id = atob($(".select_reconcile_bank").val());
+  var input = $(".input_balance_bank").val();
+  var date = $(".date_balance_bank").val();
+
+  var tor = $(".refresh_input_outstanding").val();
+  var cb = $(".class_close_balance").html();
+  var cd = $(".class_difference").html();
+
+  if(cb == ""){
+    alert("The Closing Balance is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+  if(cd == ""){
+    alert("The Difference is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+
+  var receipt_id = $(".receipt_id").val();
+  var payment_id = $(".payment_id").val();
+
+  $("body").addClass("loading");
+  $.ajax({
+    url:"<?php echo URL::to('user/generate_reconcile_pdf'); ?>",
+    type:"post",
+    data:{bank_id:bank_id,input:input,date:date,tor:tor,cb:cb,cd:cd,receipt_id:receipt_id,payment_id:payment_id},
+    success:function(result){
+      SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+    }
+  })
+}
+if($(e.target).hasClass('reconciliation_csv'))
+{
+  
+  var bank_id = atob($(".select_reconcile_bank").val());
+  var input = $(".input_balance_bank").val();
+  var date = $(".date_balance_bank").val();
+
+  var tor = $(".refresh_input_outstanding").val();
+  var cb = $(".class_close_balance ").html();
+  var cd = $(".class_difference").html();
+
+  if(cb == ""){
+    alert("The Closing Balance is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+  if(cd == ""){
+    alert("The Difference is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+  
+  var receipt_id = $(".receipt_id").val();
+  var payment_id = $(".payment_id").val();
+
+  $("body").addClass("loading");
+  $.ajax({
+    url:"<?php echo URL::to('user/generate_reconcile_csv'); ?>",
+    type:"post",
+    data:{bank_id:bank_id,input:input,date:date,tor:tor,cb:cb,cd:cd,receipt_id:receipt_id,payment_id:payment_id},
+    success:function(result){
+      SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+    }
+  })
+}
+})
+
 $(document).ready(function() {
+$('#detail_analysis').DataTable({
+    fixedHeader: {
+      header: true,
+      headerOffset: 500,
+    },
+    autoWidth: false,
+    scrollX: false,
+    searching: false,
+    paging: false,
+    info: false,
+    ordering: false,
+});
+
 //   $('#client_financial').DataTable({
 //     fixedHeader: {
 //       header: true,
@@ -703,13 +1734,30 @@ $(document).ready(function() {
 
   $(".from_custom_date").datetimepicker({
      format: 'L',
-     format: 'DD-MMM-YYYY',
+     format: 'DD/MM/YYYY',
   });
 
   $(".to_custom_date").datetimepicker({
      format: 'L',
-     format: 'DD-MMM-YYYY',
+     format: 'DD/MM/YYYY',
   });
+  $(".from_custom_date_trial").datetimepicker({
+     format: 'L',
+     format: 'DD/MM/YYYY',
+  });
+
+  $(".to_custom_date_trial").datetimepicker({
+     format: 'L',
+     format: 'DD/MM/YYYY',
+  });
+
+  $(".date_balance_bank").datetimepicker({
+     defaultDate: "",
+     format: 'L',
+     format: 'DD/MM/YYYY',
+  });
+  
+
 
   // $(".opening_financial_date").on("dp.hide", function (e) {
   //     var opening_balance_date = $(".opening_financial_date").val();
@@ -754,7 +1802,144 @@ $(document).ready(function() {
        format: 'YYYY-MM-DD',
     });
 });
+
+
 $(window).change(function(e){
+
+// if($(e.target).hasClass('general_debit')){
+//   var value = $(e.target).val();
+//   if((value == '') || (value == 0)){
+//     $(e.target).val('0.00');
+//     $(e.target).parents("tr").find(".general_credit").attr("disabled", false);
+//   }  
+//   else{
+//     $(e.target).parents("tr").find(".general_credit").attr("disabled", true);
+//   }
+//   var total_debit = 0.00;
+//   var total_credit = 0.00;
+
+//   console.log($('.general_debit').length);
+//   $('.general_debit').each(function() {
+//     var debit_val = $(this).val();
+//     console.log(debit_val);
+//     var floatdebit = parseFloat(debit_val).toFixed(2);
+//     total_debit = parseFloat(total_debit + floatdebit).toFixed(2);
+//   });
+
+//   $('.general_credit').each(function() {
+//     var credit_val = $(this).val();
+//     var floatcredit = parseFloat(credit_val).toFixed(2);
+//     total_credit = parseFloat(total_credit + floatcredit).toFixed(2);
+//   });
+
+//   $(".general_debit_total").val(total_debit);
+//   $(".general_credit_total").val(total_credit);
+// }
+
+// if($(e.target).hasClass('general_credit')){
+//   var value = $(e.target).val();
+//   if((value == '') || (value == 0)){
+//     $(e.target).val('0.00');
+//     $(e.target).parents("tr").find(".general_debit").attr("disabled", false);
+//   }  
+//   else{
+//     $(e.target).parents("tr").find(".general_debit").attr("disabled", true);
+//   }
+
+//   var total_debit = 0.00;
+//   var total_credit = 0.00;
+
+//   $('.general_debit').each(function() {
+//     var debit_val = $(this).val();
+//     var floatdebit = parseFloat(debit_val).toFixed(2);
+//     total_debit = parseFloat(total_debit + floatdebit).toFixed(2);
+//   });
+
+//   $('.general_credit').each(function() {
+//     var credit_val = $(this).val();
+//     var floatcredit = parseFloat(credit_val).toFixed(2);
+//     total_credit = parseFloat(total_credit + floatcredit).toFixed(2);
+//   });
+
+//   $(".general_debit_total").val(total_debit);
+//   $(".general_credit_total").val(total_credit);
+// }
+
+/*if($(e.target).hasClass('general_nominal')){
+  var code = $(e.target).val();
+
+  
+
+  if(code == '712'){
+    $(e.target).parents("tr").find(".error-general-nominal").show();
+    $(e.target).parents("tr").find(".error-general-nominal").html('Can Not Journal Direct into the Debtors Control Account.');
+    $(".save_general_journal_button").hide();
+
+    $(".general_nominal").attr("disabled", true);
+    $(e.target).not().attr("disabled", false);
+  }
+  else if(code == '813'){
+    $(e.target).parents("tr").find(".error-general-nominal").show();
+    $(e.target).parents("tr").find(".error-general-nominal").html('Can Not Journal Direct into the Creditors Control Account.');
+    $(".save_general_journal_button").hide();
+
+    $(".general_nominal").attr("disabled", true);
+    $(e.target).not().attr("disabled", false);
+  }
+  else if(code == '813A'){
+    $(e.target).parents("tr").find(".error-general-nominal").show();
+    $(e.target).parents("tr").find(".error-general-nominal").html('Can Not Journal Direct into the Client holding account Account.');
+    $(".save_general_journal_button").hide();
+
+    $(".general_nominal").attr("disabled", true);
+    $(e.target).not().attr("disabled", false);
+  }
+  else if((code >= '771') && (code < '772')){
+    $(e.target).parents("tr").find(".error-general-nominal").show();
+    $(e.target).parents("tr").find(".error-general-nominal").html('Can Not Journal Direct into the Bank Nominal accounts Account.');
+    $(".save_general_journal_button").hide();
+
+    $(".general_nominal").attr("disabled", true);
+    $(e.target).not().attr("disabled", false);
+  }
+  else{
+    $(e.target).parents("tr").find(".error-general-nominal").hide();
+    $(".general_nominal").attr("disabled", false);
+    $(".save_general_journal_button").show();
+  }
+
+}*/
+  if($(e.target).hasClass('select_reconcile_bank')){
+    var value = $(e.target).val();
+
+    if(value == ''){
+      $(".error_select_bank").show();
+      $(".table_bank_details").hide();
+    }
+    else{
+      $(".error_select_bank").hide();
+      $.ajax({
+        url:"<?php echo URL::to('user/finance_get_bank_details'); ?>",
+        type:"post",
+        dataType:"json",
+        data:{id:value},
+        success:function(result){
+          $(".td_bank_name").html(result['bank_name']);
+          $(".tb_ac_name").html(result['account_name']);
+          $(".td_ac_number").html(result['account_number']);
+          $(".td_ac_description").html(result['description']);
+          $(".td_nominal_code").html(result['nominal_code']);
+          $(".table_bank_details").show();
+          
+          
+        }
+      });
+    }
+
+  }
+
+
+
   if($(e.target).hasClass('primary_grp_add'))
   {
     var value = $(e.target).val();
@@ -811,7 +1996,7 @@ var convertToNumber = function(value){
        return value.toLowerCase();
 }
 var parseconvertToNumber = function(value){
-       return parseInt(value);
+       return parseFloat(value);
 }
 $(window).keyup(function(e) {
   if($(e.target).hasClass('debit_balance_add'))
@@ -839,8 +2024,570 @@ $(window).keyup(function(e) {
     }
   }
 });
+function load_opening_balance()
+{
+  $("body").addClass("loading_balance");
+  $.ajax({
+    url:"<?php echo URL::to('user/summary_load_opening_balance'); ?>",
+    type:"post",
+    dataType:"json",
+    success:function(result)
+    {
+      var i = 0;
+      $('#summary_tbody').find('tr').each(function(){
+        $(this).find('td').eq(4).html(result['output'][i]);
+        i++;
+      });
+      $(".total_opening_balance_summary").html(result['total']);
+      setTimeout(function() {
+          $("body").removeClass("loading_balance");
+          load_receipts();
+      },1000);
+      
+    }
+  });
+}
+function load_receipts()
+{
+  $("body").addClass("loading_receipts");
+  $.ajax({
+    url:"<?php echo URL::to('user/summary_load_receipts'); ?>",
+    type:"post",
+    dataType:"json",
+    success:function(result)
+    {
+      var i = 0;
+      $('#summary_tbody').find('tr').each(function(){
+        $(this).find('td').eq(5).html(result['output'][i]);
+        i++;
+      });
+      $(".total_receipt_summary").html(result['total']);
+      setTimeout(function() {
+          $("body").removeClass("loading_receipts");
+          load_payments();
+      },1000);
+      
+    }
+  });
+}
+function load_payments()
+{
+  $("body").addClass("loading_payments");
+  $.ajax({
+    url:"<?php echo URL::to('user/summary_load_payments'); ?>",
+    type:"post",
+    dataType:"json",
+    success:function(result)
+    {
+      var i = 0;
+      $('#summary_tbody').find('tr').each(function(){
+        $(this).find('td').eq(6).html(result['output'][i]);
+        i++;
+      });
+      $(".total_payment_summary").html(result['total']);
+      setTimeout(function() {
+         $("body").removeClass("loading_payments");
+          calculate_payments();
+      },1000);
+      
+    }
+  });
+}
+function calculate_payments()
+{
+  $("body").addClass("loading_calculations");
+  $.ajax({
+    url:"<?php echo URL::to('user/summary_calculations'); ?>",
+    type:"post",
+    dataType:"json",
+    success:function(result)
+    {
+      var i = 0;
+      $('#summary_tbody').find('tr').each(function(){
+        $(this).find('td').eq(7).html(result['output'][i]);
+        i++;
+      });
+      $(".total_balance_summary").html(result['total']);
+      setTimeout(function() {
+         $("body").removeClass("loading_calculations");
+      },1000);
+    }
+  });
+}
 $(window).click(function(e) { 
+
+if($(e.target).hasClass('redact_name')){  
+  if($(e.target).is(":checked")){
+    $(".practice_client_name").hide();
+  }
+  else{
+    $(".practice_client_name").show();
+  }
+}
+
+if($(e.target).hasClass('export_turnover')){
+  $("body").addClass("loading");
+  setTimeout(function(){ 
+    $.ajax({
+      url: "<?php echo URL::to('user/practice_review_export') ?>",
+      data:{type:1},
+      type:"post",
+      success:function(result){
+        SaveToDisk("<?php echo URL::to('public'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    });
+  }, 500);
+}
+
+
+
+if($(e.target).hasClass('export_client_review')){
+  $("body").addClass("loading");
+  setTimeout(function(){ 
+    $.ajax({
+      url: "<?php echo URL::to('user/practice_review_export') ?>",
+      data:{type:2},
+      type:"post",
+      success:function(result){
+        SaveToDisk("<?php echo URL::to('public'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    });
+  }, 500);
+}
+
+if($(e.target).hasClass('export_staff_review')){
+  $("body").addClass("loading");
+  setTimeout(function(){ 
+    $.ajax({
+      url: "<?php echo URL::to('user/practice_review_export') ?>",
+      data:{type:3},
+      type:"post",
+      success:function(result){
+        SaveToDisk("<?php echo URL::to('public'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    });
+  }, 500);
+}
+
+
+
+
+if($(e.target).hasClass('load_turnover_review')){
+  var first_year = $(".practice_first_year").val();
+  $("body").addClass('loading_pratice');
+  $("#practice_turnover_table").dataTable().fnDestroy();
+  $(".tbody_turnover_load").html("");
+  $(".modal_pratice_span1").html("Loading Turnover Data for ");
+  
+  $.ajax({
+    url:"<?php echo URL::to('user/practice_load_review'); ?>",
+    type:"post",
+    dataType:"json",
+    data:{year:first_year},
+    success:function(result)
+    {
+      setTimeout( function() {
+        $(".modal_pratice_span2").html(first_year);
+        $("#practice_turnover_table").show();
+        $(".tbody_turnover_load").append(result['output']);
+
+
+        practice_next_year(first_year);
+        
+      },200);
+    }
+  });
+}
+
+if($(e.target).hasClass('load_client_review')){
+  var client_count = $(".client_review_total").val();
+  
+  if($(".redact_name").is(":checked")){
+    var redact = 1;
+  }
+  else{
+    var redact = 0;
+  }
+
+  $("body").addClass('loading_pratice');
+  $("#practice_client_table").dataTable().fnDestroy();
+  $(".tbody_client_load").html("");
+  $(".modal_pratice_span1").html("Loading Client Review Data for ");
+  var count = '1';
+  $.ajax({
+    url:"<?php echo URL::to('user/practice_load_client_review'); ?>",
+    type:"post",
+    dataType:"json",
+    data:{count:count,redact:redact},
+    success:function(result)
+    {
+      setTimeout( function() {
+        $(".modal_pratice_span2").html(result['client_id']);
+        $("#practice_turnover_table").show();
+        $(".tbody_client_load").append(result['output']);        
+
+        practice_next_client(count);
+        
+      },200);
+    }
+  });
+}
+
+
+if($(e.target).hasClass('load_staff_review')){  
+  $("body").addClass('loading_pratice');
+  $("#practice_staff_table").dataTable().fnDestroy();
+  $(".tbody_staff_load").html("");
+  $(".modal_pratice_span1").html("Loading Staff Review Data");
+  $(".modal_pratice_span2").html("");
+  var count = '1';
+  $.ajax({
+    url:"<?php echo URL::to('user/practice_load_staff_review'); ?>",
+    type:"post",
+    dataType:"json",
+    data:{count:count},
+    success:function(result)
+    {
+      setTimeout( function() {
+
+        $(".tbody_staff_load").append(result['output']);    
+        $("body").removeClass("loading_pratice");
+        $('#practice_staff_table').DataTable({        
+            autoWidth: true,
+            scrollX: false,
+            fixedColumns: false,
+            searching: false,
+            paging: false,
+            info: false
+        });
+        
+        
+      },200);
+    }
+  });
+}
+
+
+
   var ascending = false;
+  if($(e.target).hasClass('journal_id_sort'))
+  {
+    var sort = $("#journal_id_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#journal_id_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.journal_id_sortval').html()) <
+        parseconvertToNumber($(b).find('.journal_id_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#journal_id_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.journal_id_sortval').html()) <
+        parseconvertToNumber($(b).find('.journal_id_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('journal_date_sort'))
+  {
+    var sort = $("#journal_date_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#journal_date_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.journal_date_sortval').html()) <
+        parseconvertToNumber($(b).find('.journal_date_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#journal_date_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.journal_date_sortval').html()) <
+        parseconvertToNumber($(b).find('.journal_date_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('journal_des_sort'))
+  {
+    var sort = $("#journal_des_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#journal_des_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.journal_des_sortval').html()) <
+        convertToNumber($(b).find('.journal_des_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#journal_des_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.journal_des_sortval').html()) <
+        convertToNumber($(b).find('.journal_des_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('nominal_code_sort'))
+  {
+    var sort = $("#nominal_code_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#nominal_code_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.nominal_code_sortval').html()) <
+        parseconvertToNumber($(b).find('.nominal_code_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#nominal_code_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.nominal_code_sortval').html()) <
+        parseconvertToNumber($(b).find('.nominal_code_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('nominal_des_sort'))
+  {
+    var sort = $("#nominal_des_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#nominal_des_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.nominal_des_sortval').html()) <
+        convertToNumber($(b).find('.nominal_des_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#nominal_des_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.nominal_des_sortval').html()) <
+        convertToNumber($(b).find('.nominal_des_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('source_sort'))
+  {
+    var sort = $("#source_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#source_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.source_sortval').html()) <
+        convertToNumber($(b).find('.source_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#source_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.source_sortval').html()) <
+        convertToNumber($(b).find('.source_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('debit_journal_sort'))
+  {
+    var sort = $("#debit_journal_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#debit_journal_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.debit_journal_sortval').html()) <
+        parseconvertToNumber($(b).find('.debit_journal_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#debit_journal_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.debit_journal_sortval').html()) <
+        parseconvertToNumber($(b).find('.debit_journal_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('credit_journal_sort'))
+  {
+    var sort = $("#credit_journal_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#credit_journal_sortoptions").val('desc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.credit_journal_sortval').html()) <
+        parseconvertToNumber($(b).find('.credit_journal_sortval').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#credit_journal_sortoptions").val('asc');
+      var sorted = $('#load_journals_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.credit_journal_sortval').html()) <
+        parseconvertToNumber($(b).find('.credit_journal_sortval').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#load_journals_tbody').html(sorted);
+  }
+
+
+  if($(e.target).hasClass('trial_code_sort'))
+  {
+    var sort = $("#trial_code_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#trial_code_sortoptions").val('desc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.code_trial_sort_val').html()) <
+        parseconvertToNumber($(b).find('.code_trial_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#trial_code_sortoptions").val('asc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.code_trial_sort_val').html()) <
+        parseconvertToNumber($(b).find('.code_trial_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#trial_balance_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('trial_des_sort'))
+  {
+    var sort = $("#trial_des_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#trial_des_sortoptions").val('desc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.des_trial_sort_val').html()) <
+        convertToNumber($(b).find('.des_trial_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#trial_des_sortoptions").val('asc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.des_trial_sort_val').html()) <
+        convertToNumber($(b).find('.des_trial_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#trial_balance_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('trial_primary_sort'))
+  {
+    var sort = $("#trial_primary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#trial_primary_sortoptions").val('desc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.primary_trial_sort_val').html()) <
+        convertToNumber($(b).find('.primary_trial_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#trial_primary_sortoptions").val('asc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.primary_trial_sort_val').html()) <
+        convertToNumber($(b).find('.primary_trial_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#trial_balance_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('trial_debit_sort'))
+  {
+    var sort = $("#trial_debit_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#trial_debit_sortoptions").val('desc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.debit_trial_sort_val').html()) <
+        parseconvertToNumber($(b).find('.debit_trial_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#trial_debit_sortoptions").val('asc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.debit_trial_sort_val').html()) <
+        parseconvertToNumber($(b).find('.debit_trial_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#trial_balance_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('trial_credit_sort'))
+  {
+    var sort = $("#trial_credit_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#trial_credit_sortoptions").val('desc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.credit_trial_sort_val').html()) <
+        parseconvertToNumber($(b).find('.credit_trial_sort_val').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#trial_credit_sortoptions").val('asc');
+      var sorted = $('#trial_balance_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (parseconvertToNumber($(a).find('.credit_trial_sort_val').html()) <
+        parseconvertToNumber($(b).find('.credit_trial_sort_val').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#trial_balance_tbody').html(sorted);
+  }
+
+
+
   if($(e.target).hasClass('code_sort'))
   {
     var sort = $("#code_sortoptions").val();
@@ -1053,6 +2800,102 @@ $(window).click(function(e) {
     $('#client_tbody').html(sorted);
   }
 
+  if($(e.target).hasClass('client_summary_sort'))
+  {
+    var sort = $("#client_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#client_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.client_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.client_summary_sort_val').find('a').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#client_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.client_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.client_summary_sort_val').find('a').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('surname_summary_sort'))
+  {
+    var sort = $("#surname_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#surname_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.surname_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.surname_summary_sort_val').find('a').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#surname_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.surname_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.surname_summary_sort_val').find('a').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('firstname_summary_sort'))
+  {
+    var sort = $("#firstname_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#firstname_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.firstname_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.firstname_summary_sort_val').find('a').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#firstname_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.firstname_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.firstname_summary_sort_val').find('a').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+
+  if($(e.target).hasClass('company_summary_sort'))
+  {
+    var sort = $("#company_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#company_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.company_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.company_summary_sort_val').find('a').html()))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#company_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        return (ascending ==
+             (convertToNumber($(a).find('.company_summary_sort_val').find('a').html()) <
+        convertToNumber($(b).find('.company_summary_sort_val').find('a').html()))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+
   if($(e.target).hasClass('debit_fin_sort'))
   {
     var sort = $("#debit_fin_sortoptions").val();
@@ -1060,17 +2903,43 @@ $(window).click(function(e) {
     {
       $("#debit_fin_sortoptions").val('desc');
       var sorted = $('#client_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.debit_fin_sort_val').val();
+        var bval = $(b).find('.debit_fin_sort_val').val();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
         return (ascending ==
-             (convertToNumber($(a).find('.debit_fin_sort_val').val()) <
-        convertToNumber($(b).find('.debit_fin_sort_val').val()))) ? 1 : -1;
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? 1 : -1;
       });
     }
     else{
       $("#debit_fin_sortoptions").val('asc');
       var sorted = $('#client_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.debit_fin_sort_val').val();
+        var bval = $(b).find('.debit_fin_sort_val').val();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
         return (ascending ==
-             (convertToNumber($(a).find('.debit_fin_sort_val').val()) <
-        convertToNumber($(b).find('.debit_fin_sort_val').val()))) ? -1 : 1;
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? -1 : 1;
       });
     }
     ascending = ascending ? false : true;
@@ -1084,17 +2953,43 @@ $(window).click(function(e) {
     {
       $("#credit_fin_sortoptions").val('desc');
       var sorted = $('#client_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.credit_fin_sort_val').val();
+        var bval = $(b).find('.credit_fin_sort_val').val();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
         return (ascending ==
-             (convertToNumber($(a).find('.credit_fin_sort_val').val()) <
-        convertToNumber($(b).find('.credit_fin_sort_val').val()))) ? 1 : -1;
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? 1 : -1;
       });
     }
     else{
       $("#credit_fin_sortoptions").val('asc');
       var sorted = $('#client_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.credit_fin_sort_val').val();
+        var bval = $(b).find('.credit_fin_sort_val').val();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
         return (ascending ==
-             (convertToNumber($(a).find('.credit_fin_sort_val').val()) <
-        convertToNumber($(b).find('.credit_fin_sort_val').val()))) ? -1 : 1;
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? -1 : 1;
       });
     }
     ascending = ascending ? false : true;
@@ -1108,22 +3003,270 @@ $(window).click(function(e) {
     {
       $("#balance_fin_sortoptions").val('desc');
       var sorted = $('#client_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.balance_fin_sort_val').val();
+        var bval = $(b).find('.balance_fin_sort_val').val();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
         return (ascending ==
-             (convertToNumber($(a).find('.balance_fin_sort_val').val()) <
-        convertToNumber($(b).find('.balance_fin_sort_val').val()))) ? 1 : -1;
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? 1 : -1;
       });
     }
     else{
       $("#balance_fin_sortoptions").val('asc');
       var sorted = $('#client_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.balance_fin_sort_val').val();
+        var bval = $(b).find('.balance_fin_sort_val').val();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
         return (ascending ==
-             (convertToNumber($(a).find('.balance_fin_sort_val').val()) <
-        convertToNumber($(b).find('.balance_fin_sort_val').val()))) ? -1 : 1;
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? -1 : 1;
       });
     }
     ascending = ascending ? false : true;
     $('#client_tbody').html(sorted);
   }
+
+  if($(e.target).hasClass('opening_bal_summary_sort'))
+  {
+    var sort = $("#opening_bal_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#opening_bal_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.opening_bal_summary_sort_val').html();
+        var bval = $(b).find('.opening_bal_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#opening_bal_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.opening_bal_summary_sort_val').html();
+        var bval = $(b).find('.opening_bal_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('receipt_summary_sort'))
+  {
+    var sort = $("#receipt_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#receipt_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.receipt_summary_sort_val').html();
+        var bval = $(b).find('.receipt_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#receipt_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.receipt_summary_sort_val').html();
+        var bval = $(b).find('.receipt_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('payment_summary_sort'))
+  {
+    var sort = $("#payment_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#payment_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.payment_summary_sort_val').html();
+        var bval = $(b).find('.payment_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#payment_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.payment_summary_sort_val').html();
+        var bval = $(b).find('.payment_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('balance_summary_sort'))
+  {
+    var sort = $("#balance_summary_sortoptions").val();
+    if(sort == 'asc')
+    {
+      $("#balance_summary_sortoptions").val('desc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.balance_summary_sort_val').html();
+        var bval = $(b).find('.balance_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? 1 : -1;
+      });
+    }
+    else{
+      $("#balance_summary_sortoptions").val('asc');
+      var sorted = $('#summary_tbody').find('tr').sort(function(a,b){
+        var aval = $(a).find('.balance_summary_sort_val').html();
+        var bval = $(b).find('.balance_summary_sort_val').html();
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+        aval = aval.replace(',','');
+
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        bval = bval.replace(',','');
+        return (ascending ==
+             (parseconvertToNumber(aval) <
+        parseconvertToNumber(bval))) ? -1 : 1;
+      });
+    }
+    ascending = ascending ? false : true;
+    $('#summary_tbody').html(sorted);
+  }
+  if($(e.target).hasClass('open_client_review'))
+  {
+    var client_id = $(e.target).attr("data-element");
+    var src = "<?php echo URL::to('user/client_account_review_summary'); ?>?client_id="+client_id;
+    $("#client_revew_iframe").attr("src", src);
+    $(".open_client_review_modal").modal("show");
+  }
+  if($(e.target).hasClass('load_summary_clients'))
+  {
+    $("body").addClass("loading");
+    $.ajax({
+      url:"<?php echo URL::to('user/summary_clients_list'); ?>",
+      type:"post",
+      success:function(result)
+      {
+        $("#summary_tbody").html(result);
+        $("#summary_financial").show();
+        setTimeout(function() {
+          $("body").removeClass("loading");
+          load_opening_balance();
+        },1000);
+      }
+    });
+  }
+  
   if($(e.target).hasClass('commit_btn'))
   {
     var client_id = $(e.target).attr("data-element");
@@ -1141,11 +3284,46 @@ $(window).click(function(e) {
   {
     $(".journal_source_viewer_modal").modal("show");
   }
+  if($(e.target).hasClass('practice_overview'))
+  {
+    $(".practice_overview_modal").modal("show");
+    $("#client_review_div").hide();
+    $("#staff_review_div").hide();
+    $(".tbody_staff_load").html("");
+    $(".tbody_client_load").html("");
+    $(".tbody_turnover_load").html("");
+  }
+  if($(e.target).hasClass('practice_load_icon'))
+  {
+    //$(".practice_icon").toggle();
+
+    $("#client_review_div").show();
+    $("#staff_review_div").show();
+    $(".tbody_staff_load").html("");
+    $(".tbody_client_load").html("");
+  }
+  if($(e.target).hasClass('question_mark_btn'))
+  {
+    $(".question_mark_modal").modal("show");
+  }
   if($(e.target).hasClass('export_csv_client_opening'))
   {
     $("body").addClass("loading");
     $.ajax({
       url:"<?php echo URL::to('user/export_csv_client_opening'); ?>",
+      type:"post",
+      success:function(result)
+      {
+        SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+      }
+    })
+  }
+  if($(e.target).hasClass('export_csv_summary'))
+  {
+    $("body").addClass("loading");
+    $.ajax({
+      url:"<?php echo URL::to('user/summary_export_csv'); ?>",
       type:"post",
       success:function(result)
       {
@@ -1178,6 +3356,63 @@ $(window).click(function(e) {
       }
     })
   }
+  if($(e.target).hasClass('load_balance'))
+  {
+    $("body").addClass("loading_trial");
+    var selection = $(".date_selection_trial:checked").val();
+    var from = $(".from_custom_date_trial").val();
+    var to = $(".to_custom_date_trial").val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/load_trial_balance_nominals'); ?>",
+      type:"post",
+      data:{selection:selection,from:from,to:to},
+      dataType:"json",
+      success:function(result)
+      {
+        $("#trial_balance_tbody").html(result['output']);
+        $(".total_nominal_debit").html(result['total_nominal_debit']);
+        $(".total_nominal_credit").html(result['total_nominal_credit']);
+        $(".total_debit_credit_tr").show();
+        $(".remove_nil_balances").show();
+        $("body").removeClass("loading_trial");
+      }
+    })
+  }
+  if($(e.target).hasClass('remove_nil_balances'))
+  {
+    $("#trial_balance_tbody").find(".nil_balance_tr").detach();
+  }
+  if($(e.target).hasClass('get_nominal_code_journals'))
+  {
+    var code = $(e.target).attr("data-element");
+    var debit = $(e.target).parents("tr").find(".debit_trial_sort_val").html();
+    var credit = $(e.target).parents("tr").find(".credit_trial_sort_val").html();
+    var opening = $(e.target).attr("data-opening");
+
+    var selection = $(".date_selection_trial:checked").val();
+    var from = $(".from_custom_date_trial").val();
+    var to = $(".to_custom_date_trial").val();
+    $("body").addClass('loading');
+    if((debit == "0.00" || debit == "0" || debit == "")&& (credit == "0.00" || credit == "0" || credit == ""))
+    {
+      alert("There is no journals created for this Nominal Code");
+      $("body").removeClass('loading');
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/load_trial_balance_journals_for_nominal'); ?>",
+        type:"post",
+        data:{selection:selection,from:from,to:to,code:code,opening:opening},
+        success:function(result)
+        {
+          $(".trial_balance_journal_modal").modal("show");
+          $("#trial_balance_journal_tbody").html(result);
+          $("body").removeClass("loading");
+        }
+      })
+    }
+  }
   if($(e.target).hasClass('edit_opening_balance_btn'))
   {
     $(".opening_date_spam").hide();
@@ -1206,6 +3441,35 @@ $(window).click(function(e) {
   if($(e.target).hasClass('bank_account_manager'))
   {
     $(".bank_account_manager_modal").modal("show");
+  }
+  if($(e.target).hasClass('reconcile_icon'))
+  {
+    var value = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/finance_get_bank_details'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{id:value},
+      success:function(result){
+
+        $(".select_reconcile_bank").val(value);
+
+        $(".td_bank_name").html(result['bank_name']);
+        $(".tb_ac_name").html(result['account_name']);
+        $(".td_ac_number").html(result['account_number']);
+        $(".td_ac_description").html(result['description']);
+        $(".td_nominal_code").html(result['nominal_code']);
+
+        $(".table_bank_details").show();
+        $(".reconcilation_section").hide();
+        $(".transactions_section").hide();
+        $(".reconcile_modal").modal("show");
+        
+        
+      }
+    });
+
+    
   }
   if($(e.target).hasClass('add_nominal'))
   {
@@ -1504,13 +3768,19 @@ $(window).click(function(e) {
     {
       $(".from_custom_date").prop("disabled",false);
       $(".to_custom_date").prop("disabled",false);
+
+      $(".from_custom_date").val("");
+      $(".to_custom_date").val("");
     }
     else{
       $(".from_custom_date").prop("disabled",true);
       $(".to_custom_date").prop("disabled",true);
 
-      $(".from_custom_date").val("");
-      $(".to_custom_date").val("");
+      var from = $(".date_selection:checked").attr("data-from");
+      var to = $(".date_selection:checked").attr("data-to");
+
+      $(".from_custom_date").val(from);
+      $(".to_custom_date").val(to);
     }
   }
   if($(e.target).hasClass('date_selection_trial'))
@@ -1520,13 +3790,19 @@ $(window).click(function(e) {
     {
       $(".from_custom_date_trial").prop("disabled",false);
       $(".to_custom_date_trial").prop("disabled",false);
+
+      $(".from_custom_date_trial").val("");
+      $(".to_custom_date_trial").val("");
     }
     else{
       $(".from_custom_date_trial").prop("disabled",true);
       $(".to_custom_date_trial").prop("disabled",true);
 
-      $(".from_custom_date_trial").val("");
-      $(".to_custom_date_trial").val("");
+      var from = $(".date_selection_trial:checked").attr("data-from");
+      var to = $(".date_selection_trial:checked").attr("data-to");
+
+      $(".from_custom_date_trial").val(from);
+      $(".to_custom_date_trial").val(to);
     }
   }
 });
@@ -1738,6 +4014,142 @@ function doneTyping_debit (debit,credit,client_id) {
     }
   })
 }
+
+$(window).keydown(function(e) {
+
+if($(e.target).hasClass('general_credit_last')){
+  var keyCode = e.keyCode || e.which; 
+
+  if (keyCode == 9) { 
+    e.preventDefault(); 
+    var general_nominal = $(".general_nominal_hidden_for_add_ajax").html();
+
+    $("#general_journal_tboday").append('<tr><td><select class="general_nominal" name="general_nominal[]">'+general_nominal+'</select><label class="error error-general-nominal" ></label></td><td><input type="type" class="general_journal_desription" required placeholder="Enter Journal Desription" name="general_journal_desription[]"><label class="error error-general_journal_desription" ></label></td><td><input type="text" style="text-align: right;" class="general_debit" value="0.00" required placeholder="Enter Debit Value" name="general_debit[]" oninput="keypressonlynumber(this)"><label class="error error-general_debit" ></label></td><td><input type="text" style="text-align: right;" class="general_credit general_credit_last" value="0.00" required placeholder="Enter Credit Value" name="general_credit[]" oninput="keypressonlynumber(this)"><label class="error error-general_credit" ></label></td><td style="text-align: center;"><a href="javascript:" class="fa fa-plus add_general" style="margin-top: 10px;display:none"></a><a href="javascript:" class="fa fa-trash delete_general" style="margin-top: 10px; " title="Delete"></a></td></tr>');
+
+      blurfunction_gj();
+
+
+  }
+  $(e.target).removeClass("general_credit_last");
+  
+}
+
+})
+
+function practice_next_year(year)
+{
+  var year = parseInt(year)+1;
+  var last_year = $(".practice_last_year").val();
+
+  if(year > last_year){
+    $("body").removeClass("loading_pratice");
+    $('#practice_turnover_table').DataTable({        
+        autoWidth: true,
+        scrollX: false,
+        fixedColumns: false,
+        searching: false,
+        paging: false,
+        info: false
+    });
+  }
+  else{
+    $.ajax({
+      url:"<?php echo URL::to('user/practice_load_review'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{year:year},
+      success:function(result)
+      {
+        setTimeout( function() {
+          $(".tbody_turnover_load").append(result['output']);
+          $(".modal_pratice_span2").html(year);
+          
+          practice_next_year(year);
+          
+        },200);
+      }
+    });
+  }
+}
+
+
+function practice_next_client(count)
+{
+  var count = parseInt(count)+1;
+  var total_client = $(".client_review_total").val();
+
+  if(count > total_client){
+    $("body").removeClass("loading_pratice");
+    $('#practice_client_table').DataTable({        
+        autoWidth: true,
+        scrollX: false,
+        fixedColumns: false,
+        searching: false,
+        paging: false,
+        info: false
+    });
+  }
+  else{
+    if($(".redact_name").is(":checked")){
+      var redact = 1;
+    }
+    else{
+      var redact = 0;
+    }
+    $.ajax({
+      url:"<?php echo URL::to('user/practice_load_client_review'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{count:count,redact:redact},
+      success:function(result)
+      {
+        setTimeout( function() {
+          $(".tbody_client_load").append(result['output']);
+          $(".modal_pratice_span2").html(result['client_id']);
+          
+          practice_next_client(count);
+          
+        },200);
+      }
+    });
+  }
+}
+
+
+$('#practice_turnover_table').DataTable({        
+    autoWidth: true,
+    scrollX: false,
+    fixedColumns: false,
+    searching: false,
+    paging: false,
+    info: false
+});
+
+$('#practice_client_table').DataTable({        
+    autoWidth: true,
+    scrollX: false,
+    fixedColumns: false,
+    searching: false,
+    paging: false,
+    info: false
+});
+
+$('#practice_staff_table').DataTable({        
+    autoWidth: true,
+    scrollX: false,
+    fixedColumns: false,
+    searching: false,
+    paging: false,
+    info: false
+});
+
+
+
+
+
+/*$(document).ready(function() {
+    $(".practice_overview_modal").modal('show');
+});*/
 </script>
 
 

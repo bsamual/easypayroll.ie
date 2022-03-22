@@ -2,7 +2,7 @@
     <div style="width:100%; margin-bottom:10px;">
         <?php echo $salutation; ?>, <br/>
         <p> We have processed <u><em>your PAYE return</em></u> for the month of <?php echo $period; ?></p>
-        <p> Your employee/directors PAYE liability for <?php echo $period; ?> is €<?php echo $ros_liability; ?> </p>
+        <p> Your employee/directors PAYE liability for <?php echo $period; ?> is &euro;<?php echo $ros_liability; ?> </p>
         <?php 
         if($task_level_id == "7") {
             echo '<p> Your Monthly Direct Debit Will be Called as Normal with any under or over payment being reconciled at a later date.</p>';
@@ -23,7 +23,7 @@
     
     <div style="width:100%; height:auto; float:left;">
     <b>Regards,</b><br>
-    EasyPayroll Team<br/><br/>
+    Easypayroll Team<br/><br/>
     <b>This Email has been sent to : </b> <?php echo $sentmails; ?>
     </div>  
 </div>  

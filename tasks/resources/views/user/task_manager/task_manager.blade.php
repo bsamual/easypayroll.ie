@@ -67,6 +67,12 @@ if(Session::has('taskmanager_user'))
 <script src="<?php echo URL::to('assets/ckeditor/src/js/main1.js'); ?>"></script>
 <script src='<?php echo URL::to('assets/js/table-fixed-header_cm.js'); ?>'></script>
 <style>
+.margintop20{
+  margin-top:20px !important;
+  margin-bottom: 0px !important;
+}
+  .content_section { margin-top:50px; }
+.last_td_display .common_black_button { padding:8px 4px !important; }
 .table_layout { border:0px; }
 .tasks_drop {text-align: left !important; }
 .existing_comments > p { margin-bottom: 0px !important; }
@@ -350,6 +356,7 @@ input:checked + .slider:before {
 	cursor:pointer;
 }
 #colorbox, #cboxWrapper { z-index:99999999999; }
+.start_group{clear:both;}
 </style>
 <script src="<?php echo URL::to('ckeditor/ckeditor.js'); ?>"></script>
 <script src="<?php echo URL::to('ckeditor/samples/js/sample.js'); ?>"></script>
@@ -584,14 +591,17 @@ input:checked + .slider:before {
   <div class="modal-dialog modal-sm" role="document" style="width:40%;">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" style="font-weight:700;font-size:20px">Task Specifics</h4>
+            <button type="button" class="close close_task_specifics" data-dismiss="modal" aria-label="Close"><span class="close_task_specifics" aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-weight:700;font-size:20px">Task Specifics: <spam class="task_title_spec"></spam></h4>
             <h5 class="title_task_details" style="font-size:18px;font-weight:600"></h5>
+            <div class="user_ratings_div"></div>
           </div>
           <div class="modal-body" style="min-height: 193px;padding: 5px;">
             <label class="col-md-12" style="padding: 0px;">
               <label style="margin-top:10px">Existing Task Specific Comments:</label>
+
               <a href="javascript:" class="common_black_button download_pdf_spec" style="float: right;">Download as PDF</a> 
+              <img src="<?php echo URL::to('assets/2bill.png'); ?>" class="2bill_image 2bill_image_comments" style="width:32px;margin-left:10px;float:right;margin-top: 4px;display:none" title="this is a 2Bill Task">
             </label>
             <div class="col-md-12" style="padding: 0px;">
               <div class="existing_comments" id="existing_comments" style="width:100%;background: #c7c7c7;padding:10px;min-height:300px;height:300px;overflow-y: scroll;font-size: 16px"></div>
@@ -698,11 +708,11 @@ input:checked + .slider:before {
             <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">New Task Creator</h4>
           </div>
           <div class="modal-body">            
-            <div class="row"> 
-                <div class="col-md-3">
+            <div class="row margintop20"> 
+                <div class="col-md-2">
                 	<label style="margin-top:5px">Author:</label>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-3">
                 	<select name="select_user" class="form-control select_user_author" required>
 	                  <option value="">Select User</option>        
 	                    <?php
@@ -722,43 +732,45 @@ input:checked + .slider:before {
 	                    ?>
 	                </select>
                 </div>
-            </div>
-            <div class="row" style="margin-top:10px">
-            	<div class="col-md-3">
-                	<label style="margin-top:5px">Creation Date:</label>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Author Email:</label>
                 </div>
-                <div class="col-md-9">
-                	<label class="input-group datepicker-only-init_date_received">
-	                    <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
-	                    <span class="input-group-addon">
-	                        <i class="glyphicon glyphicon-calendar"></i>
-	                    </span>
-	                </label>
+                <div class="col-md-4">
+                  <input  type="email" class="form-control author_email" name="author_email" placeholder="Enter Author's Email" required>
                 </div>
             </div>
-            <div class="row" style="margin-top:7px">
-            	<div class="col-md-3">
-                	<label style="margin-top:5px">Allocate To:</label>
+            
+            <div class="row margintop20" style="margin-top:7px">
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To:</label>
                 </div>
-                <div class="col-md-7">
-                	<select name="allocate_user" class="form-control allocate_user_add">
-	                  <option value="">Select User</option>        
-	                    <?php
-	                    $selected = '';
-	                    if(count($userlist)){
-	                      foreach ($userlist as $user) {
-	                        if(Session::has('task_manager_user'))
-	                        {
-	                          if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
-	                          else{ $selected = ''; }
-	                        }
-	                    ?>
-	                      <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
-	                    <?php
-	                      }
-	                    }
-	                    ?>
-	                </select>
+                <div class="col-md-3">
+                  <select name="allocate_user" class="form-control allocate_user_add">
+                    <option value="">Select User</option>        
+                      <?php
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                          if(Session::has('task_manager_user'))
+                          {
+                            if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }
+                      ?>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To Email:</label>
+                </div>
+                <div class="col-md-3">
+                  <input  type="email" class="form-control allocate_email" name="allocate_email" placeholder="Enter Allocate's Email" required>
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
@@ -767,19 +779,19 @@ input:checked + .slider:before {
                   </div>
                 </div>
             </div>
-            <div class="row" style="margin-top:14px">
-            	<div class="col-md-3 client_group">
+            <div class="row margintop20" style="margin-top:14px">
+            	<div class="col-md-2 client_group">
                 	<label style="margin-top:5px">Client:</label>
                 </div>
-                <div class="col-md-7 client_group">
+                <div class="col-md-8 client_group">
                 	<input  type="text" class="form-control client_search_class" name="client_name" placeholder="Enter Client Name / Client ID" required>
                 	<input type="hidden" id="client_search" name="clientid" />
                 </div>
 
-                <div class="col-md-3 internal_tasks_group" style="display: none;">
+                <div class="col-md-2 internal_tasks_group" style="display: none;">
                 	<label style="margin-top:5px">Select Task:</label>
                 </div>
-                <div class="col-md-7 internal_tasks_group" style="display: none;">
+                <div class="col-md-8 internal_tasks_group" style="display: none;">
                 	<div class="dropdown" style="width: 100%">
 		                <a class="btn btn-default dropdown-toggle tasks_drop" data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="width: 100%">
 		                  <span class="task-choose_internal">Select Task</span>  <span class="caret"></span>                          
@@ -799,7 +811,7 @@ input:checked + .slider:before {
 		                          $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
 		                        }
 		                    ?>
-		                      <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>"><?php echo $icon.$single_task->task_name?></a></li>
+		                      <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>" data-project="<?php echo $single_task->project_id; ?>"><?php echo $icon.$single_task->task_name?></a></li>
 		                    <?php
 		                      }
 		                    }
@@ -815,25 +827,85 @@ input:checked + .slider:before {
                   </div>
                 </div>
             </div>
-            <div class="form-group start_group" style="margin-top:10px">
-                <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
-                <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+            <div class="form-group start_group margintop20" style="margin-top:20px">
+
+              <div class="row">
+                <div class="col-lg-5">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <div class="form-title"><label style="margin-top:5px">Priority:</label></div>
+                    </div>
+                    <div class="col-md-7" style="padding-top: 5px;">
+                      <?php echo user_rating(); ?>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7">
+                  <div class="row" >
+                    <div class="col-md-3">
+                        <label style="margin-top:5px">Creation Date:</label>
+                      </div>
+                      <div class="col-md-9">
+                        <label class="input-group datepicker-only-init_date_received">
+                            <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+
+              
             </div>
-            <div class="form-group start_group task_specifics_add">
-                <div class="form-title"><label style="margin-top:5px">Task Specifics:</label></div>
-                <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+            <div class="form-group start_group margintop20" style="margin-top:15px !important">
+                <div class="row">
+                  <div class="col-lg-2">
+                    <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                  </div>
+                  <div class="col-lg-10">
+                    <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+                  </div>
+                </div>
+                
+                
             </div>
-            <div class="form-group start_group task_specifics_copy">
+            <div class="form-group start_group task_specifics_add margintop20">
+                <div class="row">
+                  <div class="col-lg-7">
+                    <div class="form-title"><label style="margin-top:5px">Task Specifics:</label></div>
+                  </div>
+                  <div class="col-lg-5">
+                    <div class="form-group date_group" style="float: right;">
+                      <div class="form-title" style="font-weight:600;margin-left:-10px">
+                        <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                        <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
+                        <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                      </div>
+                  </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+                  </div>
+                </div>
+                
+
+                
+                
+            </div>
+            <div class="form-group start_group task_specifics_copy margintop20">
                 <div class="form-title"><label style="margin-top:5px">Task Specifics:</label></div>
                 <div class="task_specifics_copy_val" style="width:100%;height:400px;background: #e2e2e2;min-height: 400px;overflow-y: scroll;padding: 7px;"></div>
                 
                 <input type="hidden" name="hidden_task_specifics" id="hidden_task_specifics" value="">
             </div>
-            <div class="form-group date_group">
-                <div class="col-md-2" style="padding:0px">
+            <div class="form-group date_group margintop20">
+                <div class="col-md-1" style="padding:0px">
                 	<label style="margin-top:5px">DueDate:</label>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-3">
                 	<label class="input-group datepicker-only-init_date_received">
 	                    <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
 	                    <span class="input-group-addon">
@@ -841,74 +913,128 @@ input:checked + .slider:before {
 	                    </span>
 	                </label>
                 </div>
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">Project:</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="select_project" class="form-control select_project">
+                      <option value="">Select Project</option>
+                      <?php
+                          $projects = DB::table('projects')->get();
+                          if(count($projects)){
+                            foreach($projects as $project){
+                              ?>
+                              <option value="<?php echo $project->project_id; ?>"><?php echo $project->project_name; ?></option>
+                              <?php
+                            }
+                          }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <label style="margin-top:5px">Project Time:</label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_hours" class="form-control project_hours">
+                      <option value="">HH</option>
+                      <?php
+                      for($i = 0; $i <= 23; $i++)
+                      {
+                        if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_mins" class="form-control project_mins">
+                      <option value="">MM</option>
+                      <?php
+                      for($i = 0; $i <= 59; $i++)
+                      {
+                         if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
             </div>
-            <div class="form-group start_group retreived_files_div">
+            <div class="form-group start_group retreived_files_div margintop20">
 
             </div>
-            <div class="form-group start_group">
-              <label>Task Files: </label>
-              <a href="javascript:" class="fa fa-plus fa-plus-add" style="margin-top:10px;" aria-hidden="true" title="Add Attachment"></a> 
-              <a href="javascript:" class="fa fa-pencil-square fanotepadadd" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
-              <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
-              <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
-              <div class="img_div img_div_add" style="z-index:9999999; min-height: 275px">
-                <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
-                </form>
-                <div class="image_div_attachments">
-                  <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
-                  <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload1" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
-                      <input name="_token" type="hidden" value="">
-                  </form>              
+
+            <div class="row margintop20" style="clear: both; padding-top: 10px;">
+              <div class="col-lg-8">
+                <div class="form-group start_group">
+                <label>Task Files: </label>
+                <a href="javascript:" class="fa fa-plus fa-plus-add" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+                <a href="javascript:" class="fa fa-pencil-square fanotepadadd" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+                <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+                <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+                <div class="img_div img_div_add" style="z-index:9999999; min-height: 275px">
+                  <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                  </form>
+                  <div class="image_div_attachments">
+                    <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                    <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload1" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                        <input name="_token" type="hidden" value="">
+                    </form>              
+                  </div>
+                 </div>
+                 <div class="notepad_div_notes_add" style="z-index:9999; position:absolute;display:none">
+                    <textarea name="notepad_contents_add" class="form-control notepad_contents_add" placeholder="Enter Contents"></textarea>
+                    <input type="button" name="notepad_submit_add" class="btn btn-sm btn-primary notepad_submit_add" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                    <spam class="error_files_notepad_add"></spam>
                 </div>
-               </div>
-               <div class="notepad_div_notes_add" style="z-index:9999; position:absolute;display:none">
-                  <textarea name="notepad_contents_add" class="form-control notepad_contents_add" placeholder="Enter Contents"></textarea>
-                  <input type="button" name="notepad_submit_add" class="btn btn-sm btn-primary notepad_submit_add" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-                  <spam class="error_files_notepad_add"></spam>
+              </div>
+              
+              <p id="attachments_text" style="display:none; font-weight: bold;">Files Attached:</p>
+              <div id="add_attachments_div">
+              </div>
+              <div id="add_notepad_attachments_div">
+              </div>
+              <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+              <div id="add_infiles_attachments_div">
+              </div>
+              </div>
+              <div class="col-lg-4">
+                  <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+                </div>
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                    <div class="accept_recurring_div">
+                      <p>This Task is repeated:</p>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                        <label for="recurring_checkbox1">Monthly</label>
+                      </div>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                        <label for="recurring_checkbox2">Weekly</label>
+                      </div>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                        <label for="recurring_checkbox3">Daily</label>
+                      </div>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                        <label for="recurring_checkbox4">Specific Number of Days</label>
+                        <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                      </div>
+                    </div>
+                </div>
               </div>
             </div>
+
+
             
-            <p id="attachments_text" style="display:none; font-weight: bold;">Files Attached:</p>
-            <div id="add_attachments_div">
-            </div>
-            <div id="add_notepad_attachments_div">
-            </div>
-            <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
-            <div id="add_infiles_attachments_div">
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
-                <div class="accept_recurring_div">
-                  <p>This Task is repeated:</p>
-                  <div class="form-title">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
-                    <label for="recurring_checkbox1">Monthly</label>
-                  </div>
-                  <div class="form-title">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
-                    <label for="recurring_checkbox2">Weekly</label>
-                  </div>
-                  <div class="form-title">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
-                    <label for="recurring_checkbox3">Daily</label>
-                  </div>
-                  <div class="form-title">
-                    <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
-                    <label for="recurring_checkbox4">Specific Number of Days</label>
-                    <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
-                  </div>
-                </div>
-            </div>
-            <div class="form-group date_group">
-                <div class="form-title" style="font-weight:600;margin-left:-10px">
-                  <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
-                  <label for="2_bill_task0" style="color:green">This task is a 2Bill Task!</label>
-                  <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
-                </div>
-            </div>
+            
+            
           </div>
           <div class="modal-footer">     
             <input type="hidden" name="action_type" id="action_type" value="">
@@ -930,12 +1056,59 @@ input:checked + .slider:before {
             <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">Add Progress Files Attachments</h4>
           </div>
           <div class="modal-body" style="min-height:280px">  
-              <div class="img_div_progress">
-                 <div class="image_div_attachments_progress">
-                    <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_progress'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload" style="clear:both;min-height:250px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
-                        <input name="hidden_task_id_progress" id="hidden_task_id_progress" type="hidden" value="">
-                    </form>
-                 </div>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label>Select User</label>
+                    <select class="form-control files_user_drop" required>
+                      <option value="">Select User</option>
+                      <?php
+                      $selected = '';                      
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                          if(Session::has('taskmanager_user'))
+                          {
+                            if($user->user_id == Session::get('taskmanager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }
+
+                      ?>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                    </select>
+                    <spam class="error_files_user_drop"></spam>
+                  </div>
+                  
+                </div>
+                <div class="col-lg-12">
+                  <div class="img_div_progress" style="display: block;">
+                     <div class="image_div_attachments_progress">
+
+                      <?php
+                      if(Session::has('taskmanager_user'))
+                          {
+                            $session_user_id = Session::get('taskmanager_user');
+                          }
+                          else{
+                            $session_user_id = '';
+                          }
+                      ?>
+                      
+                        <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_progress'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload" style="clear:both;min-height:250px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">                            
+                            <input name="hidden_task_id_progress" id="hidden_task_id_progress" type="hidden" value="">
+                            <input type="hidden" value="<?php echo $session_user_id?>" id="files_user_hidden" name="user_id">
+                        </form>
+
+                        <div class="add_progress_attachments" style="display:none">
+
+                        </div>
+                     </div>
+                  </div>
+                  
+                </div>
               </div>
           </div>
           <div class="modal-footer">  
@@ -967,6 +1140,147 @@ input:checked + .slider:before {
         </div>
   </div>
 </div>
+
+<div class="modal fade integrity_check_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:30%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-weight:700;font-size:20px">Integrity Check</h4>
+          </div>
+          <div class="modal-body" id="integrity_check_tbody" style="clear:both;">  
+              
+          </div>
+          <div class="modal-footer" style="clear:both;">  
+            
+          </div>
+        </div>
+  </div>
+</div>
+
+<div class="modal fade project_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" >
+  <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" style="font-weight:700;font-size:20px">Projects</h4>
+          </div>
+          <div class="modal-body" style="min-height:280px">  
+              <div class="row">
+                <div class="col-lg-12">
+                  <a href="javascript:" class="common_black_button add_new_project" style="float:right;">Add Project</a>
+                </div>
+                <div class="col-lg-12 modal_max_height">
+                  <div class="table-responsive">
+                    <table class="table own_table_white" >
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Project Name</th>
+                          <th>Author</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="project_tbody">
+            <?php 
+            $projectlist = DB::table('projects')->get();
+            $output_project='';
+            $i=1;
+            if(count($projectlist)){
+              foreach ($projectlist as $project){
+                $user_details = DB::table('user')->where('user_id', $project->author)->first();
+                $output_project.='
+                <tr>
+                  <td>'.$i.'</td>
+                  <td style="background: #fff;">'.$project->project_name.'</td>
+                  <td style="background: #fff;">'.$user_details->lastname.' '.$user_details->firstname.'</td>
+                  <td style="width:50px; text-align:center; background: #fff;">
+                  <a href="javascript:">
+                    <i class="fa fa-pencil-square edit_project" data-element="'.base64_encode($project->project_id).'"></i>
+                  </a>
+                  </td>
+                </tr>';
+                $i++;
+              }
+            }
+            else{
+              $output_project='
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td>No Data found</td>
+                  <td></td>
+                </tr>
+              ';
+            }
+
+            echo $output_project;
+            ?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="modal-footer">  
+            
+          </div>
+        </div>
+  </div>
+</div>
+
+<div class="modal fade add_edit_project_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="z-index:99999999999999; background: rgba(0, 0, 0, 0.3) !important;">
+  <div class="modal-dialog modal-sm" role="document" >
+    <!-- <form method="post" action="<?php //echo URL::to('user/add_edit_project')?>" id="project_form"> -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title project_title" style="font-weight:700;font-size:20px"></h4>
+          </div>
+          <div class="modal-body">  
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label>Enter Project Name</label>
+                    <input type="text" class="form-control project_name" placeholder="Enter Project Name" name="project_name" required>
+                    <label id="project_name-error" style="display: none;" class="error" for="project_name">Please enter Project Name</label>
+                  </div>
+                  <div class="form-group">
+                    <label>Select Author</label>
+                    <select name="select_author" class="form-control select_author" required>
+                    <option value="">Select Author</option>        
+                      <?php
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                          /*if(Session::has('taskmanager_user'))
+                          {
+                            if($user->user_id == Session::get('taskmanager_user')) { $selected = 'selected'; }
+                            else{ $selected = ''; }
+                          }*/
+                      ?>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                  <label id="select_author-error" style="display: none;" class="error" for="select_author">Please select Author</label>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="modal-footer">  
+            <input type="hidden" class="project_id" readonly value="0" name="project_id">
+            <input type="submit" class="common_black_button project_add_button" value="" name="">
+          </div>
+        </div>
+    <!-- </form> -->
+  </div>
+</div>
+
+
+
 <div class="content_section">
 	<div id="fixed-header" style="width:100%;position: fixed; background: #f5f5f5; z-index: 9">
 	  <div class="page_title">
@@ -975,29 +1289,85 @@ input:checked + .slider:before {
       
 	  	<div class="row">
         
-		    <div class="col-lg-2 padding_00">
-		      <label class="col-lg-2" style="text-align: right; line-height: 35px;">User:</label>
-		      <div class="col-lg-8">
+		    <div class="col-lg-4 padding_00">
+		      <label class="col-lg-1" style="text-align: right; line-height: 35px;">User:</label>
+		      <div class="col-lg-5">
 		        <select name="select_user" class="form-control select_user_home">
 		          <option value="">Select User</option>        
 		            <?php
 		            $selected = '';
-		            if(count($userlist)){
-		              foreach ($userlist as $user) {
+                $all_user_list = DB::table('user')->orderBy('lastname','asc')->where('user_status', 0)->get();
+		            if(count($all_user_list)){
+		              foreach ($all_user_list as $user) {
 		                if(Session::has('taskmanager_user'))
 		                {
 		                  if($user->user_id == Session::get('taskmanager_user')) { $selected = 'selected'; }
 		                  else{ $selected = ''; }
 		                }
+
+                    if($user->disabled == 1){
+                      $active_user = 'none';
+                      $active_class = 'inactive_user';
+                    }
+                    else{
+                      $active_user = 'block';
+                      $active_class = '';
+                    }
+
 		            ?>
-		              <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+		              <option class="<?php echo $active_class?>" style="display: <?php echo $active_user ?>" value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
 		            <?php
 		              }
 		            }
+                //where('user_status', 0)->where('disabled',0)->
+
+                /*$all_user_list = DB::table('user')->orderBy('lastname','asc')->where('user_status', 0)->get();
+
+                $output_alluser='';
+                if(count($all_user_list)){
+                  foreach ($all_user_list as $user) {
+                    
+
+                    if($user->disabled == 1){
+                      $active_user = 'none';
+                      $class_user = 'inactive_user';
+                    }
+                    elseif($user->user_id == Session::get('task_manager_user')){
+                      $active_user = 'block';
+                      $class_user = '';                      
+                    }
+                    else{
+                      $active_user = 'block';
+                      $class_user = '';
+                    }
+
+                    if(Session::has('task_manager_user'))
+                    {
+                      if($user->user_id == Session::get('task_manager_user')){ 
+                        $selected = 'selected';
+                      }
+                      else{
+                        $selected = '';
+                      }
+                    }
+
+                    $output_alluser.='
+                    <option class="'.$class_user.'" style="display:'.$active_user.'" value="'.$user->user_id.'" '.$selected.'>'.$user->lastname.'&nbsp;'.$user->firstname.'</option>
+                    ';
+                  }
+                }
+
+                echo $output_alluser;*/
 		            ?>
 		        </select>
 		      </div>
 		      <label class="col-md-1"><a href="javascript:" class="fa fa-refresh refresh_task" title="Refresh Tasks for this user" style="padding:10px;background: #dfdfdf"></a></label>
+
+          <div class="col-lg-4" style="display: block;">
+            <div style="float: left;margin-top:5px">
+              <input type="checkbox" name="hide_inactive_users" class="hide_inactive_users" id="hide_inactive_users" value="1"><label for="hide_inactive_users" title="Show Inactive Users">Show Inactive users</label>
+            </div>
+          </div>
 		    </div>
 
         <div class="col-lg-2 padding_00">
@@ -1015,7 +1385,9 @@ input:checked + .slider:before {
           </div> -->
         </div>
 		    
-		    <div class="col-lg-7">
+		    <div class="col-lg-5">
+          <a href="javascript:" class="common_black_button project_button" style="float:right;">Projects</a>
+          <input type="button" name="export_csv" class="export_csv common_black_button" value="Export Task List" style="float:right;">
           <a href="javascript:" class="common_black_button" id="create_new_task" style="float:right;">New task</a>
 		    	<div class="compressed_layout_div" style="float:right;width:33%;margin-right: 0px;">
 			      
@@ -1050,6 +1422,9 @@ input:checked + .slider:before {
         <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
           <a href="<?php echo URL::to('user/task_administration'); ?>" class="nav-link" id="profile-tab">Task Administration</a>
         </li>
+        <li class="nav-item waves-effect waves-light" style="width:20%;text-align: center">
+          <a href="<?php echo URL::to('user/task_overview'); ?>" class="nav-link" id="profile-tab">Task Overview</a>
+        </li>
       </ul>
     </div>
       <div class="table-responsive" style="width: 100%; float: left;margin-top:250px;">
@@ -1069,7 +1444,7 @@ input:checked + .slider:before {
 <style type="text/css">
 .open_layout_div{width:99%;margin: 0px auto; top:274px}
 .open_layout_div_change{z-index: 999}
-.open_layout_div_change::before{width: 100%; height: 30px; content: ""; position: fixed; background: #fff; margin-top: 300px; z-index: 99}
+.open_layout_div_change::before{width: 100%; height: 0px; content: ""; position: fixed; background: #fff; margin-top: 300px; z-index: 99}
 </style>
 		    <div class="open_layout_div" >
 	          <table class="table_bg table-fixed-header open_layout" style="width:100%;margin: 0px auto;">
@@ -1090,7 +1465,7 @@ input:checked + .slider:before {
                     $two_bill_icon = '';
                     if($task->two_bill == "1")
                     {
-                      $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
+                      $two_bill_icon = '<img src="'.URL::to('assets/2bill.png').'" class="2bill_image" style="width:32px;margin-left:10px" title="this is a 2Bill Task">';
                     }
 	                  if($task->client_id == "")
 	                  {
@@ -1187,7 +1562,7 @@ input:checked + .slider:before {
 	                          if($task->recurring_task > 0)
 	                          {
 	                            ?>
-	                            <img src="<?php echo URL::to('assets/images/recurring.png'); ?>" style="width:30px;" title="This is a Recurring Task">
+	                            <img src="<?php echo URL::to('assets/images/recurring.png'); ?>" class="recure_image" style="width:30px;" title="This is a Recurring Task">
 	                            <?php
 	                          }
 	                          ?>
@@ -1357,12 +1732,47 @@ input:checked + .slider:before {
 	                            <input type="hidden" name="hidden_progress_client_id" id="hidden_progress_client_id_<?php echo $task->id; ?>" value="<?php echo $task->client_id; ?>">
 	                            <input type="hidden" name="hidden_infiles_progress_id" id="hidden_infiles_progress_id_<?php echo $task->id; ?>" value="">
 	                            
-	                            <div class="notepad_div_progress_notes" style="z-index:9999; position:absolute">
-	                              <textarea name="notepad_contents_progress" class="form-control notepad_contents_progress" placeholder="Enter Contents"></textarea>
-	                              <input type="hidden" name="hidden_task_id_progress_notepad" id="hidden_task_id_progress_notepad" value="<?php echo $task->id; ?>">
-	                              <input type="button" name="notepad_progress_submit" class="btn btn-sm btn-primary notepad_progress_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
-	                              <spam class="error_files_notepad"></spam>
-	                            </div>
+	                            <div class="notepad_div_progress_notes" style="z-index:99999999999999 !important; min-height: 250px; height: auto; position:absolute; padding: 10px;">
+
+                                <div class="row">
+                                  <div class="col-lg-12">
+                                    <div class="form-group" style="margin-bottom: 5px;">
+                                      <label style="font-weight: normal;">Select User</label>
+                                      <select class="form-control notepad_user">
+                                        <option value="">Select User</option>
+                                        <?php
+                                        $selected = '';                      
+                                        if(count($userlist)){
+                                          foreach ($userlist as $user) {
+                                            if(Session::has('taskmanager_user'))
+                                            {
+                                              if($user->user_id == Session::get('taskmanager_user')) { $selected = 'selected'; }
+                                              else{ $selected = ''; }
+                                            }
+
+                                        ?>
+                                          <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                                        <?php
+                                          }
+                                        }
+                                        ?>
+                                      </select>
+                                      <spam class="error_notepad_user" style="color:#f00;"></spam>
+                                    </div>
+                                    
+                                  </div>
+                                  <div class="col-lg-12">
+                                    <textarea name="notepad_contents_progress" class="form-control notepad_contents_progress" placeholder="Enter Contents" style="height: 110px !important"></textarea>
+                                    <spam class="error_files_notepad" style="color:#f00;"></spam>
+                                    <input type="hidden" name="hidden_task_id_progress_notepad" id="hidden_task_id_progress_notepad" value="<?php echo $task->id; ?>">
+                                    <input type="button" name="notepad_progress_submit" class="btn btn-sm btn-primary notepad_progress_submit" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                                    
+                                  </div>
+                                </div>
+
+
+                                
+                              </div>
 	                          </td>
 	                          <td></td>
 	                        </tr>
@@ -1454,7 +1864,7 @@ input:checked + .slider:before {
                             </td>
 	                        </tr>
 	                        <tr>
-	                          <td style="background:#2fd9ff">
+	                          <td class="last_td_display" style="background:#2fd9ff">
 	                            <?php
                               if($task->status == 1)
                               {
@@ -1502,10 +1912,11 @@ input:checked + .slider:before {
                                 ?>
                                 <a href="javascript:" class="common_black_button <?php echo $complete_button; ?> <?php echo $close_task; ?>" data-element="<?php echo $task->id; ?>" style="font-size:12px">Mark Complete</a>
                                 <a href="javascript:" class="common_black_button park_task_button" data-element="<?php echo $task->id; ?>" style="font-size:12px">Park Task</a>
+                                
                                 <?php
                               }
                               ?>
-	                            
+	                            <a href="javascript:" class="fa fa-files-o integrity_check_for_task common_black_button" data-element="<?php echo $task->id; ?>" title="Integrity Check"></a>
 	                            
 	                          </td>
 	                        </tr>
@@ -1692,7 +2103,11 @@ input:checked + .slider:before {
 		                    		<spam class="hidden_redlight_value" style="display:none">'.$redlight_value.'</spam>
 		                    		'.$redlight_indication_layout.'
 		                    		</td>
-		                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800;" class="taskname_sort_val">'.$title.'</td>
+		                    		<td style="width:45%;padding:10px; font-size:14px; font-weight:800;" class="taskname_sort_val">'.$title.'';
+                              if($task->recurring_task > 0) {
+                                  $layout.= '<img src="'.URL::to('assets/images/recurring.png').'" style="width:30px;" title="This is a Recurring Task">';
+                                }
+                            $layout.= '</td>
                             <td style="width:5%;padding:10px; font-size:14px; font-weight:800;" class="2bill_sort_val">
                             '.$two_bill_icon.'
                             </td>
@@ -1703,8 +2118,8 @@ input:checked + .slider:before {
 	                    <td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 	                    	<table style="width:100%">
 		                    	<tr>
-		                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800;" class="author_sort_val">'.$author->lastname.' '.$author->firstname.'</td>
-		                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800" class="allocated_sort_val">'.$allocated_to.'</td>
+		                    		<td style="width:60%;padding:10px; font-size:14px; font-weight:800;" class="author_sort_val">'.$author->lastname.' '.$author->firstname.' / <spam class="allocated_sort_val">'.$allocated_to.'</spam></td>
+		                    		<td style="width:40%;padding:10px; font-size:14px; font-weight:800">'.user_rating($task->id).'</td>
 		                    	</tr>
 	                    	</table>
 	                    </td>
@@ -1725,8 +2140,13 @@ input:checked + .slider:before {
 	                    <td style="background: #fff;padding:0px; border-bottom:1px solid #ddd">
 	                    	<table style="width:100%">
 		                    	<tr>
-		                    		<td style="width:40%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>
-		                    		<td class="layout_progress_'.$task->id.'" style="width:40%;padding:10px; font-size:14px; font-weight:800;"><spam class="progress_sort_val" style="display:none">'.$task->progress.'</spam>'.$task->progress.'%</td>
+		                    		<td style="width:25%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>';
+                            $project_time = '-';
+                            if($task->project_hours != ''){
+                              $project_time = $task->project_hours.':'.$task->project_mins;
+                            }
+                            $layout.='<td style="width:25%;padding:10px; font-size:14px; font-weight:800;">'.$project_time.'</td>
+		                    		<td class="layout_progress_'.$task->id.'" style="width:30%;padding:10px; font-size:14px; font-weight:800;"><spam class="progress_sort_val" style="display:none">'.$task->progress.'</spam>'.$task->progress.'%</td>
 		                    		<td style="width:20%;padding:10px; font-size:14px; font-weight:800">
 		                    			<a href="javascript:" class="fa fa-file-pdf-o download_pdf_task" data-element="'.$task->id.'" title="Download PDF" style="padding:5px;font-size:20px;font-weight: 800">
 	                              		</a> 
@@ -1754,7 +2174,7 @@ input:checked + .slider:before {
           	<thead>
               <tr>
                 <td colspan="4" style="background: #fff;border: 0px">
-                  <input type="button" name="export_csv" class="export_csv common_black_button" value="Export CSV" style="float:right;">
+                  
                 </td>
               </tr>
           		<tr class="hidden_tasks_th" id="menulist">
@@ -1771,8 +2191,8 @@ input:checked + .slider:before {
                     <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
                     	<table style="width:100%">
 	                    	<tr>
-	                    		<td style="color:#000;width:50%;padding:10px; font-size:15px; font-weight:600;">Author Name<i class="fa fa-sort author_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#000;width:50%;padding:10px; font-size:15px; font-weight:600">Allocated Name<i class="fa fa-sort allocated_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:60%;padding:10px; font-size:15px; font-weight:600;">Author / Allocation<i class="fa fa-sort author_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:40%;padding:10px; font-size:15px; font-weight:600">Priority<i class="fa fa-sort allocated_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    	</tr>
                     	</table>
                     </td>
@@ -1787,8 +2207,9 @@ input:checked + .slider:before {
                     <td style="background: #fff;padding:0px;border-bottom:3px solid #000;border-right: 0px solid">
                     	<table style="width:100%">
 	                    	<tr>
-	                    		<td style="color:#000;width:40%;padding:10px; font-size:15px; font-weight:600;">Task ID<i class="fa fa-sort taskid_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
-	                    		<td style="color:#000;width:40%;padding:10px; font-size:15px; font-weight:600;">Progress<i class="fa fa-sort progress_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+	                    		<td style="color:#000;width:25%;padding:10px; font-size:15px; font-weight:600;">Task ID<i class="fa fa-sort taskid_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
+                          <td style="color:#000;width:25%;padding:10px; font-size:15px; font-weight:600;" title="Project Time">P.T </td>
+	                    		<td style="color:#000;width:30%;padding:10px; font-size:15px; font-weight:600;">Progress<i class="fa fa-sort progress_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></td>
 	                    		<td style="color:#000;width:20%;padding:10px; font-size:15px; font-weight:600">
 	                    			Action
 	                    		</td>
@@ -1965,7 +2386,7 @@ $(function(){
     		$(".table_layout").css("margin-top","20px");
     	}
         else{
-        	$(".table_layout").css("margin-top","250px");
+        	$(".table_layout").css("margin-top","233px");
         }
     }
     else{
@@ -1975,7 +2396,7 @@ $(function(){
     	$(".open_layout_div").css("overflow-y","unset");
         $(".table_layout").css("margin-top","0px");
     }
-    $(".taskname_sort_val").find("img").detach();
+    $(".taskname_sort_val").find(".2bill_image").detach();
 });
  $(".client_search_class").autocomplete({
       source: function(request, response) {
@@ -2061,6 +2482,94 @@ function event_load()
 $(window).click(function(e) {
 	var ascending = false;
   event_load();
+
+  if($(e.target).hasClass('hide_inactive_users'))
+  {    
+    if($(e.target).is(":checked"))
+    {
+      $(".inactive_user").show();
+    }
+    else{
+      $(".inactive_user").hide();
+    }
+
+  }
+
+  if($(e.target).hasClass('project_add_button'))
+  {
+    var project_name = $(".project_name").val();
+    var select_author = $(".select_author").val();
+    var project_id = $(".project_id").val();
+
+    if(project_name == ''){
+      $("#project_name-error").show();
+    }
+    else if(select_author == ''){
+      $("#project_name-error").hide();
+      $("#select_author-error").show();
+    }
+    else{
+      $("#project_name-error").hide();
+      $("#select_author-error").hide();
+      setTimeout(function() {        
+        $.ajax({
+            url:"<?php echo URL::to('user/add_edit_project')?>",
+            dataType:'json',
+            data:{project_name:project_name, select_author:select_author, project_id:project_id},
+            type:"post",
+            success: function(result)
+            {
+              $("#project_tbody").html(result['projects']);
+              $(".add_edit_project_modal").modal('hide');
+              alert(result['message']);
+            }
+          })
+      },500);
+    }
+
+  }
+
+  if($(e.target).hasClass('edit_project'))
+  {
+    var id = $(e.target).attr("data-element");
+    setTimeout(function() {        
+      $.ajax({
+          url:"<?php echo URL::to('user/project_details')?>",
+          dataType:'json',
+          data:{id:id},
+          type:"post",
+          success: function(result)
+          {
+            $(".project_title").html('Edit Project');
+            $(".project_add_button").val('Update Project');
+
+            $(".project_name").val(result['name']);
+            $(".select_author").val(result['author']);
+            $(".project_id").val(result['id']);
+            $(".add_edit_project_modal").modal('show');
+            
+          }
+        })
+    },500);
+  }
+
+  if($(e.target).hasClass('project_button'))
+  {
+    $(".project_modal").modal('show');
+  }
+  if($(e.target).hasClass('add_new_project'))
+  {
+    $(".project_title").html('Add Project');
+    $(".project_add_button").val('Add Project');
+
+    $(".project_name").val('');
+    $(".select_author").val('');
+    $(".project_id").val('0');
+
+    $(".add_edit_project_modal").modal('show');
+  }
+
+
 	if($(e.target).hasClass('taskname_sort'))
 	{
 		var sort = $("#taskname_sortoptions").val();
@@ -2161,16 +2670,16 @@ $(window).click(function(e) {
 		  $("#allocated_sortoptions").val('desc');
 		  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
 		    return (ascending ==
-		         (convertToNumber($(a).find('.allocated_sort_val').text()) <
-		    convertToNumber($(b).find('.allocated_sort_val').text()))) ? 1 : -1;
+		         (convertToNumber($(a).find('.hidden_star_rating_taskmanager').val()) <
+		    convertToNumber($(b).find('.hidden_star_rating_taskmanager').val()))) ? 1 : -1;
 		  });
 		}
 		else{
 		  $("#allocated_sortoptions").val('asc');
 		  var sorted = $('#task_body_layout').find('.hidden_tasks_tr:visible').sort(function(a,b){
 		    return (ascending ==
-		         (convertToNumber($(a).find('.allocated_sort_val').text()) <
-		    convertToNumber($(b).find('.allocated_sort_val').text()))) ? -1 : 1;
+		         (convertToNumber($(a).find('.hidden_star_rating_taskmanager').val()) <
+		    convertToNumber($(b).find('.hidden_star_rating_taskmanager').val()))) ? -1 : 1;
 		  });
 		}
 		ascending = ascending ? false : true;
@@ -2268,6 +2777,20 @@ $(window).click(function(e) {
 		ascending = ascending ? false : true;
 		$('#task_body_layout').html(sorted);
 	}
+  if($(e.target).hasClass('integrity_check_for_task'))
+  {
+    var task_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/check_integrity_for_task'); ?>",
+      type:"post",
+      data:{task_id:task_id},
+      success:function(result)
+      {
+        $("#integrity_check_tbody").html(result);
+        $(".integrity_check_modal").modal("show");
+      }
+    })
+  }
   if($(e.target).hasClass('faprogress_download_all')){
       var lenval = $(e.target).parents("tbody:first").find(".file_attachments").length;
       if(lenval > 0)
@@ -2478,7 +3001,7 @@ $(window).click(function(e) {
           $(".table_layout").css("margin-top","20px");
         }
           else{
-            $(".table_layout").css("margin-top","250px");
+            $(".table_layout").css("margin-top","233px");
           }
       }
       else{
@@ -2645,7 +3168,7 @@ $(window).click(function(e) {
         $(".table_layout").css("margin-top","20px");
       }
         else{
-          $(".table_layout").css("margin-top","250px");
+          $(".table_layout").css("margin-top","233px");
         }
     }
     else{
@@ -2677,10 +3200,12 @@ $(window).click(function(e) {
     {
       $(".allocate_user_add").val("");
       $(".allocate_user_add").addClass("disable_user");
+      $(".allocate_email").addClass("disable_user");
     }
     else{
       $(".allocate_user_add").val("");
       $(".allocate_user_add").removeClass("disable_user");
+      $(".allocate_email").removeClass("disable_user");
     }
   }
   if($(e.target).hasClass('mark_as_complete'))
@@ -2751,7 +3276,7 @@ $(window).click(function(e) {
                   
                   $("#task_body_open").html(result['open_tasks']);
                   $("#task_body_layout").html(result['layout']);
-                  $(".taskname_sort_val").find("img").detach();
+                  $(".taskname_sort_val").find(".2bill_image").detach();
                   var layout = $("#hidden_compressed_layout").val();
                   $(".tasks_tr").hide();
                   $(".tasks_tr").next().hide();
@@ -2891,7 +3416,7 @@ $(window).click(function(e) {
                       $(".table_layout").css("margin-top","20px");
                     }
                       else{
-                        $(".table_layout").css("margin-top","250px");
+                        $(".table_layout").css("margin-top","233px");
                       }
                   }
                   else{
@@ -2974,7 +3499,7 @@ $(window).click(function(e) {
                 
                 $("#task_body_open").html(result['open_tasks']);
                 $("#task_body_layout").html(result['layout']);
-                $(".taskname_sort_val").find("img").detach();
+                $(".taskname_sort_val").find(".2bill_image").detach();
                 var layout = $("#hidden_compressed_layout").val();
                 $(".tasks_tr").hide();
                 $(".tasks_tr").next().hide();
@@ -3114,7 +3639,7 @@ $(window).click(function(e) {
                     $(".table_layout").css("margin-top","20px");
                   }
                     else{
-                      $(".table_layout").css("margin-top","250px");
+                      $(".table_layout").css("margin-top","233px");
                     }
                 }
                 else{
@@ -3197,7 +3722,7 @@ $(window).click(function(e) {
                 
                 $("#task_body_open").html(result['open_tasks']);
                 $("#task_body_layout").html(result['layout']);
-                $(".taskname_sort_val").find("img").detach();
+                $(".taskname_sort_val").find(".2bill_image").detach();
                 var layout = $("#hidden_compressed_layout").val();
                 $(".tasks_tr").hide();
                 $(".tasks_tr").next().hide();
@@ -3337,7 +3862,7 @@ $(window).click(function(e) {
                     $(".table_layout").css("margin-top","20px");
                   }
                     else{
-                      $(".table_layout").css("margin-top","250px");
+                      $(".table_layout").css("margin-top","233px");
                     }
                 }
                 else{
@@ -3430,7 +3955,7 @@ $(window).click(function(e) {
                     
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-                    $(".taskname_sort_val").find("img").detach();
+                    $(".taskname_sort_val").find(".2bill_image").detach();
                     var layout = $("#hidden_compressed_layout").val();
                     $(".tasks_tr").hide();
                     $(".tasks_tr").next().hide();
@@ -3582,7 +4107,7 @@ $(window).click(function(e) {
                         $(".table_layout").css("margin-top","20px");
                       }
                         else{
-                          $(".table_layout").css("margin-top","250px");
+                          $(".table_layout").css("margin-top","233px");
                         }
                     }
                     else{
@@ -3668,7 +4193,7 @@ $(window).click(function(e) {
                   
                   $("#task_body_open").html(result['open_tasks']);
                   $("#task_body_layout").html(result['layout']);
-                  $(".taskname_sort_val").find("img").detach();
+                  $(".taskname_sort_val").find(".2bill_image").detach();
                   var layout = $("#hidden_compressed_layout").val();
   			          $(".tasks_tr").hide();
           				$(".tasks_tr").next().hide();
@@ -3809,7 +4334,7 @@ $(window).click(function(e) {
                       $(".table_layout").css("margin-top","20px");
                     }
                       else{
-                        $(".table_layout").css("margin-top","250px");
+                        $(".table_layout").css("margin-top","233px");
                       }
                   }
                   else{
@@ -3874,7 +4399,7 @@ $(window).click(function(e) {
             
             $("#task_body_open").html(result['open_tasks']);
             $("#task_body_layout").html(result['layout']);
-            $(".taskname_sort_val").find("img").detach();
+            $(".taskname_sort_val").find(".2bill_image").detach();
             var layout = $("#hidden_compressed_layout").val();
 			    $(".tasks_tr").hide();
 				$(".tasks_tr").next().hide();
@@ -3989,7 +4514,7 @@ $(window).click(function(e) {
               $(".table_layout").css("margin-top","20px");
             }
               else{
-                $(".table_layout").css("margin-top","250px");
+                $(".table_layout").css("margin-top","233px");
               }
           }
           else{
@@ -4155,6 +4680,7 @@ $(window).click(function(e) {
 
         $("#open_task").prop("checked",false);
         $(".allocate_user_add").removeClass("disable_user");
+        $(".allocate_email").removeClass("disable_user");
 
         $.ajax({
           url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
@@ -4216,6 +4742,36 @@ $(window).click(function(e) {
       }
     })
   }
+  if($(e.target).hasClass('close_task_specifics')){
+    if($(".add_progress_attachments").find("p").length > 0){
+      var obj = {};
+      obj.message = []; 
+      obj.task_id = []; 
+      obj.user_id = []; 
+      $(".add_progress_attachments").find('p').each(function(index,value) {
+        var message = $(this).html();
+        var task_id = $(this).attr("data-element");
+        var user_id = $(this).attr("data-user");
+
+        obj.message.push([message]);
+        obj.task_id.push([task_id]);
+        obj.user_id.push([user_id]);
+      });
+
+      var messages = JSON.stringify(obj);
+
+      $.ajax({
+        url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+        type:"post",
+        data:{messages:messages},
+        success:function(result){
+          $(".add_progress_attachments").html("");
+          $("#existing_comments").append(result);
+          $("body").removeClass("loading");
+        }
+      });
+    }
+  }
   if($(e.target).hasClass('add_task_specifics'))
   {
     var comments = CKEDITOR.instances['editor_1'].getData();
@@ -4233,6 +4789,35 @@ $(window).click(function(e) {
         {
           $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
           $("#editor_1").val("");
+
+          if($(".add_progress_attachments").find("p").length > 0){
+            var obj = {};
+            obj.message = []; 
+            obj.task_id = []; 
+            obj.user_id = []; 
+            $(".add_progress_attachments").find('p').each(function(index,value) {
+              var message = $(this).html();
+              var task_id = $(this).attr("data-element");
+              var user_id = $(this).attr("data-user");
+
+              obj.message.push([message]);
+              obj.task_id.push([task_id]);
+              obj.user_id.push([user_id]);
+            });
+
+            var messages = JSON.stringify(obj);
+
+            $.ajax({
+              url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+              type:"post",
+              data:{messages:messages},
+              success:function(result){
+                $(".add_progress_attachments").html("");
+                $("#existing_comments").append(result);
+                $("body").removeClass("loading");
+              }
+            });
+          }
           CKEDITOR.instances['editor_1'].setData("");
         }
       })
@@ -4298,12 +4883,70 @@ $(window).click(function(e) {
                   $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
                   $("#editor_1").val("");
                   CKEDITOR.instances['editor_1'].setData("");
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
                   $("body").removeClass("loading");
                 }
                 else{
                   $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
                   $("#editor_1").val("");
                   CKEDITOR.instances['editor_1'].setData("");
+
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
+
                   $(".task_specifics_modal").modal("hide");
                   $.ajax({
                     url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
@@ -4373,7 +5016,7 @@ $(window).click(function(e) {
                             
                             $("#task_body_open").html(result['open_tasks']);
                             $("#task_body_layout").html(result['layout']);
-                            $(".taskname_sort_val").find("img").detach();
+                            $(".taskname_sort_val").find(".2bill_image").detach();
                             var layout = $("#hidden_compressed_layout").val();
                             var view = $(".select_view").val();
                             $(".tasks_tr").hide();
@@ -4514,7 +5157,7 @@ $(window).click(function(e) {
                                 $(".table_layout").css("margin-top","20px");
                               }
                                 else{
-                                  $(".table_layout").css("margin-top","250px");
+                                  $(".table_layout").css("margin-top","233px");
                                 }
                             }
                             else{
@@ -4529,7 +5172,7 @@ $(window).click(function(e) {
                         })
                       }
                     }
-                  })
+                  });
                 }
               }
             })
@@ -4556,12 +5199,69 @@ $(window).click(function(e) {
               $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
               $("#editor_1").val("");
               CKEDITOR.instances['editor_1'].setData("");
+
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
               $("body").removeClass("loading");
             }
             else{
               $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
               $("#editor_1").val("");
               CKEDITOR.instances['editor_1'].setData("");
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
               $(".task_specifics_modal").modal("hide");
               $.ajax({
                 url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
@@ -4631,7 +5331,7 @@ $(window).click(function(e) {
                         
                         $("#task_body_open").html(result['open_tasks']);
                         $("#task_body_layout").html(result['layout']);
-                        $(".taskname_sort_val").find("img").detach();
+                        $(".taskname_sort_val").find(".2bill_image").detach();
                         var layout = $("#hidden_compressed_layout").val();
                         var view = $(".select_view").val();
                         $(".tasks_tr").hide();
@@ -4772,7 +5472,7 @@ $(window).click(function(e) {
                             $(".table_layout").css("margin-top","20px");
                           }
                             else{
-                              $(".table_layout").css("margin-top","250px");
+                              $(".table_layout").css("margin-top","233px");
                             }
                         }
                         else{
@@ -4789,7 +5489,7 @@ $(window).click(function(e) {
 
                   $.colorbox.close();
                 }
-              })
+              });
             }
           }
         })
@@ -4814,12 +5514,69 @@ $(window).click(function(e) {
               $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
               $("#editor_1").val("");
               CKEDITOR.instances['editor_1'].setData("");
+
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
               $("body").removeClass("loading");
             }
             else{
               $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
               $("#editor_1").val("");
               CKEDITOR.instances['editor_1'].setData("");
+              if($(".add_progress_attachments").find("p").length > 0){
+                var obj = {};
+                obj.message = []; 
+                obj.task_id = []; 
+                obj.user_id = []; 
+                $(".add_progress_attachments").find('p').each(function(index,value) {
+                  var message = $(this).html();
+                  var task_id = $(this).attr("data-element");
+                  var user_id = $(this).attr("data-user");
+
+                  obj.message.push([message]);
+                  obj.task_id.push([task_id]);
+                  obj.user_id.push([user_id]);
+                });
+
+                var messages = JSON.stringify(obj);
+
+                $.ajax({
+                  url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                  type:"post",
+                  data:{messages:messages},
+                  success:function(result){
+                    $(".add_progress_attachments").html("");
+                    $("#existing_comments").append(result);
+                    $("body").removeClass("loading");
+                  }
+                });
+              }
               $(".task_specifics_modal").modal("hide");
               $.ajax({
                 url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
@@ -4889,7 +5646,7 @@ $(window).click(function(e) {
                         
                         $("#task_body_open").html(result['open_tasks']);
                         $("#task_body_layout").html(result['layout']);
-                        $(".taskname_sort_val").find("img").detach();
+                        $(".taskname_sort_val").find(".2bill_image").detach();
                         var layout = $("#hidden_compressed_layout").val();
                         var view = $(".select_view").val();
                         $(".tasks_tr").hide();
@@ -5030,7 +5787,7 @@ $(window).click(function(e) {
                             $(".table_layout").css("margin-top","20px");
                           }
                             else{
-                              $(".table_layout").css("margin-top","250px");
+                              $(".table_layout").css("margin-top","233px");
                             }
                         }
                         else{
@@ -5046,7 +5803,7 @@ $(window).click(function(e) {
                   }
                   $.colorbox.close();
                 }
-              })
+              });
             }
           }
         })
@@ -5080,12 +5837,67 @@ $(window).click(function(e) {
                   $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
                   $("#editor_1").val("");
                   CKEDITOR.instances['editor_1'].setData("");
-                  $("body").removeClass("loading");
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
                 }
                 else{
                   $("#existing_comments").append('<strong style="width:100%;float:left;text-align:justify;font-weight:400">'+result+'</strong>');
                   $("#editor_1").val("");
                   CKEDITOR.instances['editor_1'].setData("");
+                  if($(".add_progress_attachments").find("p").length > 0){
+                    var obj = {};
+                    obj.message = []; 
+                    obj.task_id = []; 
+                    obj.user_id = []; 
+                    $(".add_progress_attachments").find('p').each(function(index,value) {
+                      var message = $(this).html();
+                      var task_id = $(this).attr("data-element");
+                      var user_id = $(this).attr("data-user");
+
+                      obj.message.push([message]);
+                      obj.task_id.push([task_id]);
+                      obj.user_id.push([user_id]);
+                    });
+
+                    var messages = JSON.stringify(obj);
+
+                    $.ajax({
+                      url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                      type:"post",
+                      data:{messages:messages},
+                      success:function(result){
+                        $(".add_progress_attachments").html("");
+                        $("#existing_comments").append(result);
+                        $("body").removeClass("loading");
+                      }
+                    });
+                  }
                   $(".task_specifics_modal").modal("hide");
                   $.ajax({
                     url:"<?php echo URL::to('user/taskmanager_change_allocations'); ?>",
@@ -5152,10 +5964,9 @@ $(window).click(function(e) {
                               dataType:"json",
                           success: function(result)
                           {
-                            
                             $("#task_body_open").html(result['open_tasks']);
                             $("#task_body_layout").html(result['layout']);
-                            $(".taskname_sort_val").find("img").detach();
+                            $(".taskname_sort_val").find(".2bill_image").detach();
                             var layout = $("#hidden_compressed_layout").val();
                             var view = $(".select_view").val();
                             $(".tasks_tr").hide();
@@ -5296,7 +6107,7 @@ $(window).click(function(e) {
                                 $(".table_layout").css("margin-top","20px");
                               }
                                 else{
-                                  $(".table_layout").css("margin-top","250px");
+                                  $(".table_layout").css("margin-top","233px");
                                 }
                             }
                             else{
@@ -5311,7 +6122,7 @@ $(window).click(function(e) {
                         })
                       }
                     }
-                  })
+                  });
                 }
               }
             })
@@ -5346,7 +6157,15 @@ $(window).click(function(e) {
           $(".progress_spam").html("");
           $("#existing_comments").html(result['output']);
           $(".title_task_details").html(result['title']);
+          $(".user_ratings_div").html(result['user_ratings']);
           $(".task_specifics_modal").modal("show");
+          if(result['two_bill'] == "1"){
+            $(".2bill_image_comments").show();
+          }
+          else{
+            $(".2bill_image_comments").hide();
+          }
+          $(".task_title_spec").html(result['task_specifics_name']);
           $(".redlight_indication_"+task_id).hide();
           $(".redlight_indication_layout_"+task_id).hide();
           $(".redlight_indication_layout_"+task_id).removeClass('redline_indication_layout');
@@ -5560,7 +6379,7 @@ $(window).click(function(e) {
                     
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-                    $(".taskname_sort_val").find("img").detach();
+                    $(".taskname_sort_val").find(".2bill_image").detach();
                       var layout = $("#hidden_compressed_layout").val();
                       var view = $(".select_view").val();
                   $(".tasks_tr").hide();
@@ -5702,7 +6521,7 @@ $(window).click(function(e) {
                           $(".table_layout").css("margin-top","20px");
                         }
                           else{
-                            $(".table_layout").css("margin-top","250px");
+                            $(".table_layout").css("margin-top","233px");
                           }
                       }
                       else{
@@ -5815,7 +6634,7 @@ $(window).click(function(e) {
                     
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-                    $(".taskname_sort_val").find("img").detach();
+                    $(".taskname_sort_val").find(".2bill_image").detach();
                       var layout = $("#hidden_compressed_layout").val();
                       var view = $(".select_view").val();
                   $(".tasks_tr").hide();
@@ -5957,7 +6776,7 @@ $(window).click(function(e) {
                           $(".table_layout").css("margin-top","20px");
                         }
                           else{
-                            $(".table_layout").css("margin-top","250px");
+                            $(".table_layout").css("margin-top","233px");
                           }
                       }
                       else{
@@ -6071,7 +6890,7 @@ $(window).click(function(e) {
 
                     $("#task_body_open").html(result['open_tasks']);
                     $("#task_body_layout").html(result['layout']);
-                    $(".taskname_sort_val").find("img").detach();
+                    $(".taskname_sort_val").find(".2bill_image").detach();
                       var layout = $("#hidden_compressed_layout").val();
                       var view = $(".select_view").val();
                   $(".tasks_tr").hide();
@@ -6213,7 +7032,7 @@ $(window).click(function(e) {
                           $(".table_layout").css("margin-top","20px");
                         }
                           else{
-                            $(".table_layout").css("margin-top","250px");
+                            $(".table_layout").css("margin-top","233px");
                           }
                       }
                       else{
@@ -6575,7 +7394,7 @@ $(window).click(function(e) {
     $(".create_new_model").find(".job_title").html("New Task Creator");
     var fullDate = new Date().toLocaleString("en-US", {timeZone: "Europe/Dublin"});
     var user_id = $(".select_user_home").val();
-    $(".select_user_author").val(user_id);
+    $(".select_user_author").val("");
     $(".create_new_model").modal("show");
     if (CKEDITOR.instances.editor_2) CKEDITOR.instances.editor_2.destroy();
     $(".created_date").datetimepicker({
@@ -6655,6 +7474,7 @@ $(window).click(function(e) {
 
     $("#open_task").prop("checked",false);
     $(".allocate_user_add").removeClass("disable_user");
+    $(".allocate_email").removeClass("disable_user");
     $.ajax({
       url:"<?php echo URL::to('user/clear_session_task_attachments'); ?>",
       type:"post",
@@ -6707,6 +7527,13 @@ $(window).click(function(e) {
     $("#idtask").val(taskid);
     $("#edit_idtask").val(taskid);
     $(".task-choose_internal:first-child").text($(e.target).text());
+    var project_id = $(e.target).attr("data-project");
+    if(project_id == "0"){
+      $(".select_project").val("");
+    }
+    else{
+      $(".select_project").val(project_id);
+    }
   }
   if($(e.target).hasClass('tasks_li_internal_change'))
   {
@@ -6916,6 +7743,10 @@ $(window).click(function(e) {
   {
     $(e.target).parents('.notepad_div_progress_notes').toggle();
   }
+  if($(e.target).hasClass('notepad_user'))
+  {
+    $(e.target).parents('.notepad_div_progress_notes').show();
+  }
   if($(e.target).hasClass('notepad_contents_completion'))
   {
     $(e.target).parents('.notepad_div_completion_notes').toggle();
@@ -6940,10 +7771,11 @@ $(window).click(function(e) {
   {
     var contents = $(e.target).parents(".notepad_div_progress_notes").find(".notepad_contents_progress").val();
     var task_id = $(e.target).parents(".notepad_div_progress_notes").find("#hidden_task_id_progress_notepad").val();
+    var user_id = $(e.target).parents(".notepad_div_progress_notes").find(".notepad_user").val();
     $.ajax({
       url:"<?php echo URL::to('user/taskmanager_notepad_contents_progress'); ?>",
       type:"post",
-      data:{contents:contents,task_id:task_id},
+      data:{contents:contents,task_id:task_id,user_id:user_id},
       dataType:"json",
       success: function(result)
       {
@@ -8028,7 +8860,45 @@ $(window).click(function(e) {
 
   }
 })
-
+$(window).change(function(e) {
+  if($(e.target).hasClass('select_user_author'))
+  {
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".author_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".author_email").val(result);
+        }
+      })
+    }
+  }
+  if($(e.target).hasClass('allocate_user_add')){
+    var value = $(e.target).val();
+    if(value == "")
+    {
+      $(".allocate_email").val("");
+    }
+    else{
+      $.ajax({
+        url:"<?php echo URL::to('user/get_author_email_for_taskmanager'); ?>",
+        type:"post",
+        data:{value:value},
+        success:function(result)
+        {
+          $(".allocate_email").val(result);
+        }
+      })
+    }
+  }
+});
 $(window).click(function(e) {
   $.ajax({ 
       url:"<?php echo URL::to('user/get_task_redline_notification'); ?>",
@@ -8173,7 +9043,7 @@ $(window).change(function(e) {
         $(".table_layout").css("margin-top","20px");
       }
         else{
-          $(".table_layout").css("margin-top","250px");
+          $(".table_layout").css("margin-top","233px");
         }
     }
     else{
@@ -8293,6 +9163,8 @@ Dropzone.options.imageUpload = {
             $("#add_files_attachments_progress_div_"+obj.task_id).append("<p><a href='"+obj.download_url+"' class='file_attachments' download>"+obj.filename+"</a> <a href='"+obj.delete_url+"' class='fa fa-trash delete_attachments'></a></p>");
             $(".dropzone_progress_modal").modal("hide");
             $(".dropzone_completion_modal").modal("hide");
+
+            $(".add_progress_attachments").append('<p class="pending_attachment" data-element="'+obj.task_id+'" data-user="'+obj.from_user+'">'+obj.message+'</p>')
         });
         this.on("complete", function (file) {
           if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
@@ -8305,17 +9177,49 @@ Dropzone.options.imageUpload = {
             Dropzone.forElement("#imageUpload").removeAllFiles(true);
             Dropzone.forElement("#imageUpload2").removeAllFiles(true);
             $(".dz-message").find("span").html("Click here to BROWSE the files <br/>OR just drop files here to upload");
+
+            if($(".task_specifics_modal").hasClass('in')){
+
+            }
+            else{
+              var obj = {};
+              obj.message = []; 
+              obj.task_id = []; 
+              obj.user_id = []; 
+              $(".add_progress_attachments").find('p').each(function(index,value) {
+                var message = $(this).html();
+                var task_id = $(this).attr("data-element");
+                var user_id = $(this).attr("data-user");
+
+                obj.message.push([message]);
+                obj.task_id.push([task_id]);
+                obj.user_id.push([user_id]);
+              });
+
+              var messages = JSON.stringify(obj);
+
+              $.ajax({
+                url:"<?php echo URL::to('user/save_attachments_messages'); ?>",
+                type:"post",
+                data:{messages:messages},
+                success:function(result){
+                  $(".add_progress_attachments").html("");
+                }
+              });
+            }
           }
         });
         this.on("error", function (file) {
-            $("body").removeClass("loading");
+          //$(".add_progress_attachments").html("");
+          $("body").removeClass("loading");
         });
         this.on("canceled", function (file) {
+          //$(".add_progress_attachments").html("");
             $("body").removeClass("loading");
         });
         this.on("removedfile", function(file) {
             if (!file.serverId) { return; }
-            $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+            //$.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
         });
     },
 };
@@ -8451,5 +9355,27 @@ $( "#create_job_form" ).validate({
         },
     },
 });
+</script>
+
+<script type="text/javascript">
+
+
+/*$.ajaxSetup({async:false});
+$('#project_form').validate({
+    rules: {
+        project_name : {required: true},   
+        select_author : {required: true},        
+    },
+    messages: {
+        project_name : {required : "Please enter Project Name"},
+        select_author : {required : "Please select Author"},        
+    },
+});*/
+
+/*$(".project_add_button").submit(function(){
+  alert("Submitted");
+});*/
+
+
 </script>
 @stop

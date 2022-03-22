@@ -1015,7 +1015,7 @@ a:hover{text-decoration: underline;}
             <th style="text-align: left">Net</th>
             <th style="text-align: left">Count</th>
             <th style="text-align: left">Action</th>
-            <th style="text-align: left">Email</th>
+            <!-- <th style="text-align: left">Email</th> -->
             
           </tr>
         </thead>
@@ -1138,9 +1138,6 @@ a:hover{text-decoration: underline;}
                     <td style="text-align:left">'.$icount.'</td>
                     <td style="text-align:left">
                       '.$actions.'
-                    </td>
-                    <td style="text-align:left">
-                    '.$emails_sent.'
                     </td>
                   </tr>';
                   

@@ -475,7 +475,7 @@ class TaController extends Controller {
               $result_time_job.='               
                       <tr class="'.$allocated_class.'">
                         <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
-                        <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                        <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                         <td>'.$time_task->task_name.'</td>
                         <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                         <td>'.$jobs->job_time.' '.$comments.'</td>
@@ -509,7 +509,7 @@ class TaController extends Controller {
               <tr>
                 <td><input type="radio" name="invoice_item" class="invoice_item_class" data-element="'.$invoice->invoice_number.'" name=""><label>&nbsp;</label></td>
                 <td><a href="javascript:" class="invoice_class" data-element="'.$invoice->invoice_number.'">'.$invoice->invoice_number.'</td>
-                <td>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+                <td><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
                 <td>'.number_format_invoice_without_decimal($invoice->inv_net).'</td>
                 <td>'.number_format_invoice_without_decimal($invoice->vat_value).'</td>
                 <td>'.number_format_invoice_without_decimal($invoice->gross).'</td>                  
@@ -561,7 +561,7 @@ class TaController extends Controller {
       if(count($invoice_details)){
         $output_invoice='<tr>                  
                 <<td><a href="javascript:" class="invoice_class" data-element="'.$invoice_details->invoice_number.'">'.$invoice_details->invoice_number.'</td>
-              <td>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
+              <td><spam style="display:none">'.strtotime($invoice_details->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
               <td style="text-align:right">'.number_format_invoice_without_decimal($invoice_details->vat_value).'</td>
               <td style="text-align:right">'.number_format_invoice_without_decimal($invoice_details->inv_net).'</td>
               <td style="text-align:right">'.number_format_invoice_without_decimal($invoice_details->gross).'</td>                   
@@ -673,7 +673,7 @@ class TaController extends Controller {
                 $result_invoice_task.= '
                 <tr>
                   <td><input type="checkbox" name="tasks_job" class="select_task_unallocate" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
-                  <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                  <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                   <td>'.$time_task->task_name.'</td>
                   <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                   <td  style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
@@ -1070,7 +1070,7 @@ class TaController extends Controller {
           $result_invoice_task.= '
           <tr>
             <td><input type="checkbox" name="tasks_job" class="select_task_unallocate" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
-            <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+            <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
             <td>'.$time_task->task_name.'</td>
             <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
             <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
@@ -1343,7 +1343,7 @@ class TaController extends Controller {
           $result_time_job.='               
                   <tr class="'.$allocated_class.'">
                     <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
-                    <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                     <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
@@ -1499,7 +1499,7 @@ class TaController extends Controller {
               $result_invoice_task.= '
               <tr>
                 <td><input type="checkbox" name="tasks_job" class="select_task_unallocate" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
-                <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                 <td>'.$time_task->task_name.'</td>
                 <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                 <td style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
@@ -1844,7 +1844,7 @@ class TaController extends Controller {
           $result_time_job.='               
                   <tr class="'.$allocated_class.'">
                     <td><input type="checkbox" name="tasks_job" '.$disable.' class="'.$class.'" data-element="'.$jobs->id.'" value="'.$jobs->id.'"><label>&nbsp;</label></td>
-                    <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                     <td style="text-align:right">'.$jobs->job_time.' '.$comments.'</td>
@@ -2023,7 +2023,7 @@ class TaController extends Controller {
 
           $result_unallocated_time_job.='               
                   <tr>                    
-                    <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                     <td>'.$jobs->job_time.' '.$comments.'</td>
@@ -2072,7 +2072,7 @@ class TaController extends Controller {
 
           $result_unallocated_time_job.='               
                   <tr>                    
-                    <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                     <td>'.$jobs->job_time.' '.$comments.'</td>
@@ -2230,7 +2230,7 @@ class TaController extends Controller {
 
             $result_invoice.='<tr>
               <td style="'.$color.'"><a href="javascript:" data-element="'.$invoice->invoice_number.'" class="invoice_class">'.$invoice->invoice_number.'</a></td>
-              <td style="'.$color.'">'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+              <td style="'.$color.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
               <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->gross).'</td>
               <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->vat_value).'</td>
               <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->inv_net).'</td>        
@@ -2352,7 +2352,7 @@ class TaController extends Controller {
                   $result_excluded.='
                   <tr>
                     <td><a href="javascript:" class="invoice_class" data-element="'.$invoice_details->invoice_number.'">'.$invoice_details->invoice_number.'</a></td>
-                    <td>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($invoice_details->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->gross).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->vat_value).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->inv_net).'</td>              
@@ -2484,7 +2484,7 @@ class TaController extends Controller {
       $result_invoice_single='
           <tr>
             <td>'.$invoice.'</td>
-            <td>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
+            <td><spam style="display:none">'.strtotime($invoice_details->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
             <td>'.number_format_invoice_without_decimal($invoice_details->gross).'</td>            
             <td>'.number_format_invoice_without_decimal($invoice_details->vat_value).'</td>
             <td>'.number_format_invoice_without_decimal($invoice_details->inv_net).'</td>
@@ -2630,7 +2630,7 @@ class TaController extends Controller {
           $result_cost_analysis.= '
           <tr>
             
-            <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+            <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
             <td>'.$user_details->lastname.' '.$user_details->firstname.'</td>
             <td>'.$rate_result.'</td>
             <td>'.$time_task->task_name.'</td>            
@@ -2975,7 +2975,7 @@ class TaController extends Controller {
           <tr>
             <td style="width:50px;"><input type="radio" name="invoice_item" class="select_invoice" data-element="'.$invoice->invoice_number.'" /><label>&nbsp;</label></td>
             <td><a href="javascript:" data-element="'.$invoice->invoice_number.'" class="invoice_class">'.$invoice->invoice_number.'</a></td>
-            <td>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+            <td><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
             <td>'.number_format_invoice_without_decimal($invoice->inv_net).'</td>
             <td>'.number_format_invoice_without_decimal($invoice->vat_value).'</td>            
             <td>'.number_format_invoice_without_decimal($invoice->gross).'</td>            
@@ -3011,7 +3011,7 @@ class TaController extends Controller {
       $result_invoice_single ='
       <tr>
         <td><a href="javascript:" data-element="'.$invoice_details->invoice_number.'" class="invoice_class">'.$invoice_details->invoice_number.'</a></td>
-        <td>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
+        <td><spam style="display:none">'.strtotime($invoice_details->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
         <td>'.number_format_invoice_without_decimal($invoice_details->inv_net).'</td>
         <td>'.number_format_invoice_without_decimal($invoice_details->vat_value).'</td>            
         <td>'.number_format_invoice_without_decimal($invoice_details->gross).'</td>  
@@ -4067,7 +4067,7 @@ class TaController extends Controller {
                 $sub_minutes_calculate_unallocated = $sub_minutes_calculate_unallocated;
               }
               $result_unallocated_time_job.='<tr>                    
-                    <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                     <td>'.$jobs->job_time.'</td>
@@ -4103,7 +4103,7 @@ class TaController extends Controller {
      data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
           }
             $result_unallocated_time_job.='<tr>                    
-              <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+              <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
               <td>'.$time_task->task_name.'</td>
               <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
               <td>'.$jobs->job_time.' '.$comments.'</td>
@@ -4243,7 +4243,7 @@ class TaController extends Controller {
 
           $result_invoice.='<tr>
             <td style="'.$color.'"><a href="javascript:" data-element="'.$invoice->invoice_number.'" class="invoice_class">'.$invoice->invoice_number.'</a></td>
-            <td style="'.$color.'">'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+            <td style="'.$color.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
             <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->gross).'</td>
             <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->vat_value).'</td>
             <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->inv_net).'</td>        
@@ -4377,7 +4377,7 @@ class TaController extends Controller {
                   $result_excluded.='
                   <tr>
                     <td><a href="javascript:" class="invoice_class" data-element="'.$invoice_details->invoice_number.'">'.$invoice_details->invoice_number.'</a></td>
-                    <td>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($invoice_details->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->gross).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->vat_value).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->inv_net).'</td>              
@@ -4462,7 +4462,7 @@ class TaController extends Controller {
             $result_excluded.='
             <tr>
               <td><a href="javascript:" class="invoice_class" data-element="'.$invoice_details->invoice_number.'">'.$invoice_details->invoice_number.'</a></td>
-              <td>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
+              <td><spam style="display:none">'.strtotime($invoice_details->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
               <td>'.number_format_invoice_without_decimal($invoice_details->gross).'</td>            
               <td>'.number_format_invoice_without_decimal($invoice_details->vat_value).'</td>
               <td>'.number_format_invoice_without_decimal($invoice_details->inv_net).'</td>
@@ -4616,7 +4616,7 @@ class TaController extends Controller {
 
           $result_unallocated_time_job.='               
                   <tr>                    
-                    <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                     <td>'.$time_task->task_name.'</td>
                     <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                     <td>'.$jobs->job_time.' '.$comments.'</td>
@@ -4767,7 +4767,7 @@ class TaController extends Controller {
 
             $result_invoice.='<tr>
               <td style="'.$color.'"><a href="javascript:" data-element="'.$invoice->invoice_number.'" class="invoice_class">'.$invoice->invoice_number.'</a></td>
-              <td style="'.$color.'">'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+              <td style="'.$color.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
               <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->gross).'</td>
               <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->vat_value).'</td>
               <td style="'.$color.'">'.number_format_invoice_without_decimal($invoice->inv_net).'</td>        
@@ -5233,6 +5233,97 @@ class TaController extends Controller {
     }
 
     echo 'Time Allocated to Invoice Number '.$invoice.'.csv';
+  }
+
+  public function load_all_clients_ta_system(){
+    $clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();    
+
+    $i=1;
+    $output_client='';
+    if(count($clientlist)){              
+      foreach($clientlist as $client){
+
+        if($client->company == ""){$client_company = $client->firstname.' & '.$client->surname;}else{$client_company = $client->company;}
+
+        if($client->active == 2) { $inactive_cls = 'inactive_cls'; } else { $inactive_cls = 'active_cls'; }
+
+        
+
+        $output_client.='
+
+        <tr class="edit_task edit_task_'.$client->client_id.' '.$inactive_cls.'" style="font-size:13px !important;">
+          <td align="left"><a href="javascript:" class="load_unallocated fa fa-cog" data-element="'.$client->client_id.'" title="Apply time allocations to this Client"></a></td>
+          <td>'.$i.'</td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->client_id.'</a></td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client_company.'</a></td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->firstname.'</a></td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->surname.'</a></td>
+          <td align="left" class="allocated_time_client allocated_time_client_'.$client->client_id.'"></td>
+          <td align="left" class="unallocated_time_client unallocated_time_client_'.$client->client_id.'"></td>
+        </tr>';
+        $i++;
+      }
+    }
+    else{
+      $output_client='
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align:center; font-weight: normal !important;">No Data found</td>
+        <td></td>
+        <td></td>
+        <td></td>       
+      </tr>
+      ';
+    }
+
+    echo $output_client;
+
+  }
+
+  public function load_single_client_ta_system(){
+
+    $client_id = Input::get('client_id');
+    $client = DB::table('cm_clients')->where('client_id',$client_id)->first();
+
+    $i=1;
+    if(count($client)){      
+
+        if($client->company == ""){$client_company = $client->firstname.' & '.$client->surname;}else{$client_company = $client->company;}       
+
+        $output_client ='
+
+        <tr class="edit_task edit_task_'.$client->client_id.'" style="font-size:13px !important;">
+          <td align="left"><a href="javascript:" class="load_unallocated fa fa-cog" data-element="'.$client->client_id.'" title="Apply time allocations to this Client"></a></td>
+          <td>'.$i.'</td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->client_id.'</a></td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client_company.'</a></td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->firstname.'</a></td>
+          <td align="left"><a href="'.URL::to('user/ta_allocation?client_id='.$client->client_id).'">'.$client->surname.'</a></td>
+          <td align="left" class="allocated_time_client allocated_time_client_'.$client->client_id.'"></td>
+          <td align="left" class="unallocated_time_client unallocated_time_client_'.$client->client_id.'"></td>
+        </tr>';
+        $i++;
+      
+    }
+    else{
+      $output_client='
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align:center; font-weight: normal !important;">No Data found</td>
+        <td></td>
+        <td></td>
+        <td></td>       
+      </tr>
+      ';
+    }
+
+    echo $output_client;
 
   }
 }

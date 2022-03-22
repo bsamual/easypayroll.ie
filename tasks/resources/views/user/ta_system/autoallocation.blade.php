@@ -350,7 +350,7 @@ if(isset($_GET['client_id']))
       <tr>
         <td style="width:50px;"><input type="radio" name="invoice_item" class="select_invoice" data-element="'.$invoice->invoice_number.'" /><label>&nbsp;</label></td>
         <td><a href="javascript:" data-element="'.$invoice->invoice_number.'" class="invoice_class">'.$invoice->invoice_number.'</a></td>
-        <td>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+        <td><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
         <td style="text-align:right">'.number_format_invoice_without_decimal($invoice->inv_net).'</td>
         <td style="text-align:right">'.number_format_invoice_without_decimal($invoice->vat_value).'</td>            
         <td style="text-align:right">'.number_format_invoice_without_decimal($invoice->gross).'</td>            

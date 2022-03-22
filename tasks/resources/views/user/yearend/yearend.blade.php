@@ -130,8 +130,6 @@ function popitup(url) {
 .error{color: #f00; font-size: 12px;}
 a:hover{text-decoration: underline;}
 </style>
-
-
 <div class="modal fade setting_crypt_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog modal-sm" role="document" style="width:35%;margin-top:15%">
       <div class="modal-content">
@@ -141,22 +139,11 @@ a:hover{text-decoration: underline;}
               <h4 class="modal-title">Settings</h4>
           </div>
           <div class="modal-body">
-            <div class="crypt_groyp">
-              <div class="form-group" style="width:80%">
-                  <div class="form-title">Enter CRYPT PIN</div>
-                  <input type="password" class="form-control crypt_pin_setting" value="" placeholder="Enter CRYPT Pin" name="crypt_pin" required>
-                  <label class="error crypt_error" style="display:none">Hi</label>
-              </div>
-            </div>            
-                         
               <div class="form-group" style="width:80%">
                 <div class="setting_drop"></div>
-              </div>
-            
-            
+              </div>           
           </div>
           <div class="modal-footer">
-              <input type="button" class="common_black_button crypt_button_setting" value="Submit">
               <div class="setting_submit"></div>
           </div>
       </div>
@@ -216,15 +203,7 @@ body{background:url('<?php echo URL::to('assets/images/year_end_bg.jpg')?>') no-
           else{
             $output.='
             <div style="width:300px; height:auto; margin:0px auto;" class="add_modal">
-            <form action="'.URL::to("user/year_first_create").'" method="post" class="add_new_form" id="form-validation">           
-              <div class="crypt_groyp">
-                <div class="form-group">
-                    <div class="form-title" style="color:#fff">“No Initial Year Has been Setup.  Enter your crypt key to setup the first year.<br/><br/></div>
-                    <input type="password" class="form-control crypt_pin" value="" placeholder="Enter CRYPT Pin" name="crypt_pin" required>
-                    <label class="error crypt_error_first" style="display:none">Hi</label>
-
-                </div>
-              </div>            
+            <form action="'.URL::to("user/year_first_create").'" method="post" class="add_new_form" id="form-validation">
               <div class="year_input_group">              
                 <div class="form-group">
                   <div class="year_drop"></div>
@@ -289,100 +268,49 @@ if($(e.target).hasClass('add_new')){
     $(".add_modal").modal("show");
     $(".year_input_group").hide();
     $(".year_drop").prop('required', false);
-    $(".crypt_pin").prop('required', true);
-    $(".crypt_pin").prop('disabled', false);
-    $(".crypt_pin").val('');
-    $(".crypt_error").hide();
 }
 if($(e.target).hasClass('crypt_button')){
-  var crypt = $(".crypt_pin").val();
-  if(crypt == "" || typeof crypt === "undefined")
-  {
-    alert("Please Enter CRYPT PIN");
-    return false;
-  }
-  else{
-    $.ajax({
-      url:"<?php echo URL::to('user/yearend_crypt_validdation')?>",
-      type:"post",
-      dataType:"json",
-      data:{crypt:crypt,type:0},
-      success:function(result){
-        if(result['security'] == true){
-          $(".crypt_error_first").css({"display":"block","color":"green"});
-          $(".crypt_error_first").html('CRYPT Pin validation success');
-          $(".crypt_groyp").show();
-          $(".year_input_group").show();
-          $(".year_drop").html(result['drop']);
-          $(".crypt_button").hide();
-          $(".year_button").show();
-          $(".year_class").prop('required', true);
-          $(".crypt_pin").prop('required', false);
-          $(".crypt_pin").prop('disabled', true);
-          $(".button_submit").html(result['create_button']);
-        }
-        else{
-          $(".crypt_error_first").css({"display":"block","color":"red"});
-          $(".crypt_error_first").html('CRYPT Pin is incorrect');
-          $(".crypt_groyp").show();
-          $(".year_input_group").hide();
-          $(".crypt_button").show();
-          $(".year_button").hide();
-        }
-
+  $.ajax({
+    url:"<?php echo URL::to('user/yearend_crypt_validdation')?>",
+    type:"post",
+    dataType:"json",
+    data:{type:0},
+    success:function(result){
+      if(result['security'] == true){
+        $(".year_input_group").show();
+        $(".year_drop").html(result['drop']);
+        $(".year_button").show();
+        $(".year_class").prop('required', true);
+        $(".button_submit").html(result['create_button']);
       }
-    })
-  } 
-}
-
-if($(e.target).hasClass('crypt_button_setting')){
-  var crypt = $(".crypt_pin_setting").val();
-  if(crypt == "" || typeof crypt === "undefined")
-  {
-    alert("Please Enter CRYPT PIN");
-    return false;
-  }
-  else{
-    $.ajax({
-      url:"<?php echo URL::to('user/yearend_crypt_validdation')?>",
-      type:"post",
-      dataType:"json",
-      data:{crypt:crypt,type:1},
-      success:function(result){
-        if(result['security'] == true){
-          $(".crypt_error").css({"display":"block","color":"green"});
-          $(".crypt_error").html('CRYPT Pin validation success');          
-          $(".setting_drop").show();
-          $(".setting_drop").html(result['drop']);          
-          $(".crypt_pin_setting").prop('required', false);
-          $(".crypt_pin_setting").prop('disabled', true);
-          $(".setting_submit").html(result['create_button']);
-          $(".crypt_button_setting").hide();
-        }
-        else{
-          $(".crypt_error").css({"display":"block","color":"red"});
-          $(".crypt_error").html('CRYPT Pin is incorrect');
-          
-          $(".year_input_group").hide();
-          $(".crypt_button").show();
-          $(".year_button").hide();
-        }
-
+      else{
+        $(".year_input_group").hide();
+        $(".year_button").hide();
       }
-    })
-  } 
-}
 
+    }
+  })
+}
 if($(e.target).hasClass('setting_class')){
-    $(".setting_crypt_modal").modal("show");
-    $(".crypt_pin_setting").prop('required', true);
-    $(".crypt_pin_setting").prop('disabled', false);
-    $(".crypt_pin_setting").val('');
-    $(".crypt_error").hide();   
-    $(".setting_drop").hide();
-    $(".setting_button").hide();
-    $(".crypt_button_setting").show();
+    $.ajax({
+      url:"<?php echo URL::to('user/yearend_crypt_validdation')?>",
+      type:"post",
+      dataType:"json",
+      data:{type:1},
+      success:function(result){
+        if(result['security'] == true){       
+          $('.setting_crypt_modal').modal("show");
+          $(".setting_drop").show();
+          $(".setting_drop").html(result['drop']);
+          $(".setting_submit").html(result['create_button']);
+        }
+        else{
+          $(".year_input_group").hide();
+          $(".year_button").hide();
+        }
 
+      }
+    })
 }
 
 
@@ -436,25 +364,5 @@ $(".add_modal").keypress(function(e) {
     return false;
   }
 });
-
-$(".setting_crypt_modal").keypress(function(e) {
-  if (e.which == 13 && !$(e.target).is("textarea")) {
-    return false;
-  }
-});
-
-
-
-
-
-
-
 </script>
-
-
-
-
-
-
-
 @stop

@@ -7,13 +7,21 @@
 body{
   background: #f5f5f5 !important;
 }
+.popover{
+        max-width:400px;
+        width:400px;
+    }
 .fa-sort{
   cursor:pointer;
   margin-left: 8px;
 }
+.popover-title{color:#f00;}
+.popover-title::before {
+  content: 'X ';
+}
 .code_td{cursor:pointer;}
 .active_code_tr{background: #dfdfdf;}
-.unhold_payment { background: green !important; }
+.change_to_unhold { color:blue;font-weight:600; }
 .modal_load_apply {
     display:    none;
     position:   fixed;
@@ -31,6 +39,25 @@ body.loading_apply {
     overflow: hidden;   
 }
 body.loading_apply .modal_load_apply {
+    display: block;
+}
+.modal_load_apply1 {
+    display:    none;
+    position:   fixed;
+    z-index:    9999999999999;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url(<?php echo URL::to('assets/images/loading.gif'); ?>) 
+                50% 50% 
+                no-repeat;
+}
+body.loading_apply1 {
+    overflow: hidden;   
+}
+body.loading_apply1 .modal_load_apply1 {
     display: block;
 }
 .label_class{
@@ -150,11 +177,11 @@ if(count($get_imported_receipts))
       <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">Receipt Settings</h4>
+              <h4 class="modal-title">Payment Settings</h4>
           </div>
           <div class="modal-body">
               <h4 style="text-align: center">
-                Setup Nominals to Allow Receipts <spam style="font-weight:600;text-decoration: underline;font-style: italic;">TO</spam> under the Receipt System
+                Setup Nominals to Allow Payments <spam style="font-weight:600;text-decoration: underline;font-style: italic;">FROM</spam> under the Payment System
               </h4>
               <div class="col-md-4 col-md-offset-1">
                 <h5 style="text-align: center">Nominal List</h5>
@@ -190,7 +217,7 @@ if(count($get_imported_receipts))
                 <input type="button" name="add_to_allowable_list" class="common_black_button add_to_allowable_list" value="Add to Allowable List" style="margin-top:69%">
               </div>
               <div class="col-md-4">
-                <h5 style="text-align: center">Allowable Receipts Nominals</h5>
+                <h5 style="text-align: center">Allowable Payment Nominals</h5>
                 <div class="col-md-12" style="border:1px solid #dfdfdf;max-height: 500px;overflow-y: scroll">
                   <table class="table">
                     <thead>
@@ -226,35 +253,38 @@ if(count($get_imported_receipts))
       </div>
   </div>
 </div>
-<div class="modal fade" id="import_receipts" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top:10%">
-  <div class="modal-dialog modal-sm" role="document" style="width:60%">
+<div class="modal fade" id="import_receipts" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top:5%">
+  <div class="modal-dialog modal-sm" role="document" style="width:80%">
       <div class="modal-content">
         <form id="import_form" action="<?php echo URL::to('user/import_new_payment'); ?>" method="post" autocomplete="off" enctype="multipart/form-data">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">Import Receipts</h4>
+              <h4 class="modal-title">Import Payments</h4>
           </div>
           <div class="modal-body">
               <label style="float:left;margin-top: 9px;">Choose File : </label>
               <input type="file" name="new_file" id="new_file" class="form-control input-sm" accept=".csv" required style="width:40%;float:left;margin-left: 10px;"> 
               <input type="button" name="load_import" class="common_black_button load_import" value="LOAD FILE" style="margin-left: 10px;">
               <br/>
-              <p style="float:left;clear: both;margin-top: 30px;">Note: The CSV file format to import the receipts should be in the format below and also please make sure that the TITLES are same as same as shown below,</p>
-              <table class="table">
-                <thead>
-                  <th>Date</th>
-                  <th>Debit Nominal</th>
-                  <th>Credit Nominal</th>
-                  <th>Client Code</th>
-                  <th>Credit Nominal Description</th>
-                  <th>Comment</th>
-                  <th>Amount</th>
-                </thead>
-                <tbody id="check_tbody">
-                </tbody>
-              </table>
+              <p style="float:left;clear: both;margin-top: 30px;">Note: The CSV file format to import the Payments should be in the format below and also please make sure that the TITLES are same as same as shown below,</p>
+              <div class="col-md-12" style="max-height: 500px; overflow-y: scroll">
+                <table class="table">
+                  <thead>
+                    <th>Date</th>
+                    <th>Debit Nominal</th>
+                    <th>Credit Nominal</th>
+                    <th>Client/Supplier Code</th>
+                    <th>Debit Nominal Description</th>
+                    <th>Comment</th>
+                    <th>Amount</th>
+                    <th>Error</th>
+                  </thead>
+                  <tbody id="check_tbody">
+                  </tbody>
+                </table>
+              </div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer" style="margin-top:20px;clear: both;">
               <input type="submit" class="common_black_button" id="import_new_file" value="Import">
           </div>
         </form>
@@ -269,7 +299,7 @@ if(count($get_imported_receipts))
             <div class="col-lg-4 padding_00">
             </div>
             <div class="col-lg-8">
-              <a href="javascript:" class="fa fa-cog common_black_button settings_btn" style="float:right" title="Receipt Settings"></a>
+              <a href="javascript:" class="fa fa-cog common_black_button settings_btn" style="float:right" title="Payment Settings"></a>
               <a href="javascript:" class="common_black_button receipt_import" style="float:right">Import</a>
               <a href="javascript:" class="common_black_button add_receipts_btn" style="float:right">Add Payment</a>
             </div>
@@ -297,10 +327,10 @@ if(count($get_imported_receipts))
             <thead>
               <tr style="background: #fff;">
                   <th width="8%" style="text-align: left;">Date</th>
-                  <th width="15%" style="text-align: left;">Debit Nominal & Description</th>
-                  <th width="8.5%" style="text-align: left;">Credit Nominal</th>
-                  <th width="15%" style="text-align: left;">Client Code</th>
-                  <th width="15%" style="text-align: left;">Credit Nominal Description</th>
+                  <th width="8.5%" style="text-align: left;">Debit Nominal</th>
+                  <th width="15%" style="text-align: left;">Credit Nominal & Description</th>
+                  <th width="15%" style="text-align: left;">Client/Supplier Code</th>
+                  <th width="15%" style="text-align: left;">Debit Nominal Description</th>
                   <th width="15%" style="text-align: left;">Comment</th>
                   <th width="8%" style="text-align: left;">Amount</th>
               </tr>
@@ -310,7 +340,21 @@ if(count($get_imported_receipts))
                 <td><input type="text" name="date_add" class="form-control date_add" value=""></td>
                 <td>
                   <select name="debit_nominal" class="form-control debit_nominal">
-                    
+                    <option value="">Select Nominal</option>
+                    <?php
+                    $nominals = DB::table('nominal_codes')->get();
+                    if(count($nominals))
+                    {
+                      foreach($nominals as $code)
+                      {
+                        echo '<option value="'.$code->code.'">'.$code->code.' - '.$code->description.'</option>';
+                      }
+                    }
+                    ?>
+                  </select>
+                </td>
+                <td>
+                  <select name="credit_nominal" class="form-control credit_nominal">
                     <?php
                     $payment_nominals = DB::table('payment_nominal_codes')->get();
                     $output_drop_code='<option value="">Select Nominal</option>';
@@ -328,21 +372,6 @@ if(count($get_imported_receipts))
                     ?>
                   </select>
                 </td>
-                <td>
-                  <select name="credit_nominal" class="form-control credit_nominal">
-                    <option value="">Select Nominal</option>
-                    <?php
-                    $nominals = DB::table('nominal_codes')->get();
-                    if(count($nominals))
-                    {
-                      foreach($nominals as $code)
-                      {
-                        echo '<option value="'.$code->code.'">'.$code->code.' - '.$code->description.'</option>';
-                      }
-                    }
-                    ?>
-                  </select>
-                </td>
                 <td><input type="text" name="client_code_add" class="form-control client_code_add" placeholder="Enter Client Code" value="" disabled></td>
                 <td><input type="text" name="credit_descripion_add" class="form-control credit_descripion_add" value="" readonly></td>
                 <td><input type="text" name="comment_add" class="form-control comment_add" value=""></td>
@@ -355,12 +384,13 @@ if(count($get_imported_receipts))
         </table>
       </div>
       <div class="col-lg-12"  style="padding: 0px;">
-        <h4>Receipts List</h4>
+        <h4>Payments List</h4>
             <div class="col-lg-8 padding_00">
               <div class="col-md-4 padding_00">
                 <label style="float:left;margin-top: 6px;">Load Options:</label>
                 <select name="filter_payment" class="form-control filter_payment" style="width:70%;float:left;margin-left: 11px;">
                   <option value="">Select Filter Type</option>
+                  <option value="7">Previous Year</option>
                   <option value="1">Current Year</option>
                   <option value="2">Specific Date Range</option>
                   <option value="3">Client</option>
@@ -379,18 +409,19 @@ if(count($get_imported_receipts))
               <div class="col-md-4 client_div" style="display:none">
                 <label style="float:left;margin-top: 6px;">Client:</label>
                 <input type="text" name="client_receipt" class="form-control client_receipt" style="width:77%;float:left;margin-left:10px">
+                <input type="hidden" name="hidden_client_id" id="hidden_client_id" value="">
               </div>
               <div class="col-md-4 debit_nominal_div" style="display:none">
                 <label style="float:left;margin-top: 6px;">Debit Nominal:</label>
                 <select name="debit_nominal" class="form-control debit_nominal_receipt" style="width:60%;float:left;margin-left:10px">
                     <option value="">Select Nominal</option>
                     <?php
-                    $receipt_nominals = DB::table('receipt_nominal_codes')->get();
-                    if(count($receipt_nominals))
+                    $nominals = DB::table('nominal_codes')->get();
+                    if(count($nominals))
                     {
-                      foreach($receipt_nominals as $code)
+                      foreach($nominals as $code)
                       {
-                        echo '<option value="'.$code->code.'">'.$code->code.' - '.$code->description.'</option>';
+                        echo '<option value="'.$code->code.'">'.$code->code.'</option>';
                       }
                     }
                     ?>
@@ -401,12 +432,12 @@ if(count($get_imported_receipts))
                 <select name="credit_nominal" class="form-control credit_nominal_receipt" style="width:60%;float:left;margin-left:10px">
                     <option value="">Select Nominal</option>
                     <?php
-                    $nominals = DB::table('nominal_codes')->get();
-                    if(count($nominals))
+                    $receipt_nominals = DB::table('payment_nominal_codes')->get();
+                    if(count($receipt_nominals))
                     {
-                      foreach($nominals as $code)
+                      foreach($receipt_nominals as $code)
                       {
-                        echo '<option value="'.$code->code.'">'.$code->code.'</option>';
+                        echo '<option value="'.$code->code.'">'.$code->code.' - '.$code->description.'</option>';
                       }
                     }
                     ?>
@@ -425,10 +456,10 @@ if(count($get_imported_receipts))
             <thead>
               <tr style="background: #fff;">
                   <th width="8%" style="text-align: left;">Date <i class="fa fa-sort date_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                  <th width="15%" style="text-align: left;">Debit Nominal & Description <i class="fa fa-sort debit_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                  <th width="8.5%" style="text-align: left;">Credit Nominal <i class="fa fa-sort credit_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                  <th width="15%" style="text-align: left;">Client Code <i class="fa fa-sort client_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
-                  <th width="15%" style="text-align: left;">Credit Nominal Description <i class="fa fa-sort des_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                  <th width="8.5%" style="text-align: left;">Debit Nominal <i class="fa fa-sort debit_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                  <th width="15%" style="text-align: left;">Credit Nominal & Description <i class="fa fa-sort credit_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                  <th width="15%" style="text-align: left;">Client/Supplier Code <i class="fa fa-sort client_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
+                  <th width="15%" style="text-align: left;">Debit Nominal Description <i class="fa fa-sort des_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
                   <th width="15%" style="text-align: left;">Comment <i class="fa fa-sort comment_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
                   <th width="8%" style="text-align: right;">Amount <i class="fa fa-sort amount_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
                   <th width="8%" style="text-align: right;">Journal ID <i class="fa fa-sort journal_sort" aria-hidden="true" style="float: right;margin-top: 4px;"></i></th>
@@ -448,9 +479,13 @@ if(count($get_imported_receipts))
   <div class="main-backdrop"><!-- --></div>
   <div class="modal_load"></div>
   <div class="modal_load_apply" style="text-align: center;">
-    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Receipts are Loaded.</p>
-    <p style="font-size:18px;font-weight: 600;">Processing Receipts: <span id="apply_first"></span> of <span id="apply_last"></span></p>
+    <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until all the Payments are Loaded.</p>
+    <p style="font-size:18px;font-weight: 600;">Processing Payments: <span id="apply_first"></span> of <span id="apply_last"></span></p>
   </div>
+  <div class="modal_load_apply1" style="text-align: center;">
+  <p style="font-size:18px;font-weight: 600;margin-top: 27%;">Please wait until Reconcile Process to be Processed.</p>
+  <p style="font-size:18px;font-weight: 600;">Processing : <span id="apply_first1"></span> of <span id="apply_last1"></span></p>
+</div>
   <input type="hidden" name="hidden_client_count" id="hidden_client_count" value="">
   <input type="hidden" name="show_alert" id="show_alert" value="">
   <input type="hidden" name="pagination" id="pagination" value="1">
@@ -505,7 +540,15 @@ $(window).keydown(function(e) {
           $(e.target).parents("tr:first").find(".credit_descripion_add").css("border-color","#f00");
           i = i + 1;
         }
-        if(credit == "712" || credit == "813A")
+        if(debit == "813A")
+        {
+          if(client_code == "")
+          {
+            $(e.target).parents("tr:first").find(".client_code_add").css("border-color","#f00");
+            i = i + 1;
+          }
+        }
+        if(debit == "813")
         {
           if(client_code == "")
           {
@@ -593,7 +636,15 @@ $(window).keydown(function(e) {
           $(e.target).parents("tr:first").find(".credit_descripion_add").css("border-color","#f00");
           i = i + 1;
         }
-        if(credit == "712" || credit == "813A")
+        if(debit == "813A")
+        {
+          if(client_code == "")
+          {
+            $(e.target).parents("tr:first").find(".client_code_add").css("border-color","#f00");
+            i = i + 1;
+          }
+        }
+        if(debit == "813")
         {
           if(client_code == "")
           {
@@ -679,7 +730,14 @@ function doneTyping (that) {
     {
       i = i + 1;
     }
-    if(credit == "712" || credit == "813A")
+    if(debit == "813A")
+    {
+      if(client_code == "")
+      {
+        i = i + 1;
+      }
+    }
+    if(debit == "813")
     {
       if(client_code == "")
       {
@@ -775,16 +833,18 @@ function ajax_function()
     },
     minLength: 1,
     select: function( event, ui ) {
-
+      $("#hidden_client_id").val(ui.item.id);
     }
   });
   $(".client_code_add").autocomplete({
-    source: function(request, response) {        
+    source: function(request, response) {
+      var debit_nominal = $('.client_code_add:focus').parents("tr").find(".debit_nominal").val();
       $.ajax({
         url:"<?php echo URL::to('user/payment_common_client_search'); ?>",
         dataType: "json",
         data: {
-            term : request.term
+            term : request.term,
+            debit_nominal : debit_nominal
         },
         success: function(data) {
             response(data);
@@ -820,7 +880,14 @@ function ajax_function()
       {
         i = i + 1;
       }
-      if(credit == "712" || credit == "813A")
+      if(debit == "813A")
+      {
+        if(client_code == "")
+        {
+          i = i + 1;
+        }
+      }
+      if(debit == "813")
       {
         if(client_code == "")
         {
@@ -920,7 +987,14 @@ function ajax_function()
       {
         i = i + 1;
       }
-      if(credit == "712" || credit == "813A")
+      if(debit == "813A")
+      {
+        if(client_code == "")
+        {
+          i = i + 1;
+        }
+      }
+      if(debit == "813")
       {
         if(client_code == "")
         {
@@ -1001,7 +1075,14 @@ function ajax_function()
       {
         i = i + 1;
       }
-      if(credit == "712" || credit == "813A")
+      if(debit == "813A")
+      {
+        if(client_code == "")
+        {
+          i = i + 1;
+        }
+      }
+      if(debit == "813")
       {
         if(client_code == "")
         {
@@ -1063,25 +1144,26 @@ function ajax_function()
 $(document).ready(function() {
     ajax_function();
 });
-function check_import_function(filename,height,round,highestrow)
+function check_import_function(filename,height,round,highestrow,kval)
 {
   $.ajax({
       url: "<?php echo URL::to('user/check_import_csv_one_payment'); ?>",
       type: 'get',
       dataType:"json",
-      data: {filename:filename,height:height,round:round,highestrow:highestrow},
+      data: {filename:filename,height:height,round:round,highestrow:highestrow,kval:kval},
       success: function (data) {
+        
         if(data['import_type_new'] == "1")
         {
           $("#apply_first").html(data['height']);
           $("#apply_last").html(data['highestrow']);
           $("#check_tbody").append(data['output']);
-          check_import_function(data['filename'],data['height'],data['round'],data['highestrow']);
+          check_import_function(data['filename'],data['height'],data['round'],data['highestrow'],data['kval']);
         }
         else{
           if(data['error_code'] == "1")
           {
-            alert("Invalid file format");
+            alert("Invalid/Missing Title Headers");
             $("#new_file").prop("disabled",false);
             $(".load_import").prop("disabled",false);
             $("#import_new_file").prop("disabled",true);
@@ -1111,6 +1193,7 @@ function check_import_function(filename,height,round,highestrow)
               $("#import_new_file").prop("disabled",false);
               $("body").removeClass("loading_apply");
             }
+            $('[data-toggle="popover"]').popover();
           }
         }
       }
@@ -1404,12 +1487,12 @@ $(window).click(function(e) {
               $("#apply_first").html(data['height']);
               $("#apply_last").html(data['highestrow']);
               $("#check_tbody").html(data['output']);
-              check_import_function(data['filename'],data['height'],data['round'],data['highestrow']);
+              check_import_function(data['filename'],data['height'],data['round'],data['highestrow'],data['kval']);
             }
             else{
               if(data['error_code'] == "1")
               {
-                alert("Invalid file format");
+                alert("Invalid/Missing Title Headers");
                 $("#new_file").prop("disabled",false);
                 $(".load_import").prop("disabled",false);
                 $("#import_new_file").prop("disabled",true);
@@ -1439,6 +1522,7 @@ $(window).click(function(e) {
                   $("#import_new_file").prop("disabled",false);
                   $("body").removeClass("loading");
                 }
+                $('[data-toggle="popover"]').popover();
               }
             }
           },
@@ -1539,7 +1623,7 @@ $(window).click(function(e) {
       });
     }
     else{
-      alert("Please fill the receipt and then proceed with export option");
+      alert("Please fill the Payment and then proceed with export option");
     }
   }
   if($(e.target).hasClass('payment_list_export'))
@@ -1548,7 +1632,7 @@ $(window).click(function(e) {
     var filter = $(".filter_payment").val();
     var from = $(".from_receipt").val();
     var to = $(".to_receipt").val();
-    var client = $(".client_receipt").val();
+    var client = $("#hidden_client_id").val();
     var debit = $(".debit_nominal_receipt").val();
     var credit = $(".credit_nominal_receipt").val();
 
@@ -1615,18 +1699,57 @@ $(window).click(function(e) {
   }
   if($(e.target).hasClass('change_to_unhold'))
   {
-    var id = $(e.target).attr("data-element");
+    // var id = $(e.target).attr("data-element");
+    // $.ajax({
+    //   url:"<?php echo URL::to('user/payment_change_to_unhold'); ?>",
+    //   type:"post",
+    //   data:{id:id},
+    //   success:function(result)
+    //   {
+    //     $(e.target).addClass('unhold_payment');
+    //     $(e.target).removeClass('change_to_unhold');
+    //     $(e.target).parents("tr").find("td").css("color","#000");
+    //     $(e.target).parents("tr").find("td").css("font-weight","300");
+    //     $(e.target).html("Unhold")
+    //   }
+    // })
+    var nominal_code = $(e.target).attr("data-nominal");
     $.ajax({
-      url:"<?php echo URL::to('user/payment_change_to_unhold'); ?>",
+      url:"<?php echo URL::to('user/check_bank_nominal_code'); ?>",
       type:"post",
-      data:{id:id},
-      success:function(result)
-      {
-        $(e.target).addClass('unhold_payment');
-        $(e.target).removeClass('change_to_unhold');
-        $(e.target).parents("tr").find("td").css("color","#000");
-        $(e.target).parents("tr").find("td").css("font-weight","300");
-        $(e.target).html("Unhold")
+      data:{nominal_code:nominal_code},
+      success:function(result){
+        if(result == 0) { 
+          alert("There is no valid Bank Account created for this Debit Nominal code.");
+        }else{
+          var r = confirm("Transaction not yet cleared or Reconciled in the bank account. Reconcile now?");
+          if(r){
+            var value = btoa(result);
+            $.ajax({
+              url:"<?php echo URL::to('user/finance_get_bank_details'); ?>",
+              type:"post",
+              dataType:"json",
+              data:{id:value},
+              success:function(result){
+
+                $(".select_reconcile_bank").val(value);
+
+                $(".td_bank_name").html(result['bank_name']);
+                $(".tb_ac_name").html(result['account_name']);
+                $(".td_ac_number").html(result['account_number']);
+                $(".td_ac_description").html(result['description']);
+                $(".td_nominal_code").html(result['nominal_code']);
+
+                $(".table_bank_details").show();
+                $(".reconcilation_section").hide();
+                $(".transactions_section").hide();
+                $(".reconcile_modal").modal("show");
+                
+                
+              }
+            });
+          }
+        }
       }
     })
   }
@@ -1636,7 +1759,7 @@ $(window).click(function(e) {
     var filter = $(".filter_payment").val();
     var from = $(".from_receipt").val();
     var to = $(".to_receipt").val();
-    var client = $(".client_receipt").val();
+    var client = $("#hidden_client_id").val();
     var debit = $(".debit_nominal_receipt").val();
     var credit = $(".credit_nominal_receipt").val();
 
@@ -1644,7 +1767,7 @@ $(window).click(function(e) {
     {
       if(from == "" || to == "")
       {
-        alert("Please select the from and to date to load the receipt");
+        alert("Please select the from and to date to load the Payment");
         $("body").removeClass("loading");
         return false;
       }
@@ -1653,7 +1776,7 @@ $(window).click(function(e) {
     {
       if(client == "")
       {
-        alert("Please select the client to load the receipt");
+        alert("Please select the client to load the Payment");
         $("body").removeClass("loading");
         return false;
       }
@@ -1662,7 +1785,7 @@ $(window).click(function(e) {
     {
       if(debit == "")
       {
-        alert("Please select the debit nominal to load the receipt");
+        alert("Please select the debit nominal to load the Payment");
         $("body").removeClass("loading");
         return false;
       }
@@ -1671,7 +1794,7 @@ $(window).click(function(e) {
     {
       if(credit == "")
       {
-        alert("Please select the credit nominal to load the receipt");
+        alert("Please select the credit nominal to load the Payment");
         $("body").removeClass("loading");
         return false;
       }
@@ -1693,12 +1816,12 @@ $(window).click(function(e) {
     if($(e.target).hasClass('hide_add_receipt'))
     {
       $(".add_receipt_div").hide();
-      $(e.target).html("Add Receipts");
+      $(e.target).html("Add Payments");
       $(e.target).removeClass("hide_add_receipt");
     }
     else{
       $(".add_receipt_div").show();
-      $(e.target).html("Hide Add Receipts");
+      $(e.target).html("Hide Add Payments");
       $(e.target).addClass("hide_add_receipt");
 
       var htmlval = $("#add_tbody").find("tr:last").html();
@@ -1775,13 +1898,21 @@ $(window).change(function(e) {
       $(".credit_nominal_div").hide();
       $(".filter_btn_div").show();
     }
+    if(value == "7")
+    {
+      $(".specific_date_div").hide();
+      $(".client_div").hide();
+      $(".debit_nominal_div").hide();
+      $(".credit_nominal_div").hide();
+      $(".filter_btn_div").show();
+    }
   }
-  if($(e.target).hasClass('debit_nominal'))
+  if($(e.target).hasClass('credit_nominal'))
   {
     var code = $(e.target).val();
     if(code == "")
     {
-      alert("Please select the Debit Nominal Code");
+      alert("Please select the Credit Nominal Code");
       $(e.target).css("border-color","#f00");
     }
     else{
@@ -1812,7 +1943,14 @@ $(window).change(function(e) {
       {
         i = i + 1;
       }
-      if(credit == "712" || credit == "813A")
+      if(debit == "813A")
+      {
+        if(client_code == "")
+        {
+          i = i + 1;
+        }
+      }
+      if(debit == "813")
       {
         if(client_code == "")
         {
@@ -1867,12 +2005,12 @@ $(window).change(function(e) {
         }
       }
   }
-  if($(e.target).hasClass('credit_nominal'))
+  if($(e.target).hasClass('debit_nominal'))
   {
       var code = $(e.target).val();
       if(code == "")
       {
-        alert("Please select the Credit Nominal Code");
+        alert("Please select the Debit Nominal Code");
         $(e.target).css("border-color","#f00");
         $(e.target).parents("tr:first").find(".client_code_add").prop("disabled",true);
         $(e.target).parents("tr:first").find(".client_code_add").val("");
@@ -1902,7 +2040,14 @@ $(window).change(function(e) {
         {
           i = i + 1;
         }
-        if(credit == "712" || credit == "813A")
+        if(debit == "813A")
+        {
+          if(client_code == "")
+          {
+            i = i + 1;
+          }
+        }
+        if(debit == "813")
         {
           if(client_code == "")
           {
@@ -1958,7 +2103,7 @@ $(window).change(function(e) {
         }
       }
       else{
-        if(code == "712" || code == "813A")
+        if(code == "813A")
         {
           $(e.target).parents("tr:first").find(".client_code_add").val("");
           $(e.target).parents("tr:first").find(".client_code_add").prop("disabled",false);
@@ -1989,7 +2134,107 @@ $(window).change(function(e) {
           {
             i = i + 1;
           }
-          if(credit == "712" || credit == "813A")
+          if(debit == "813A")
+          {
+            if(client_code == "")
+            {
+              i = i + 1;
+            }
+          }
+          if(debit == "813")
+          {
+            if(client_code == "")
+            {
+              i = i + 1;
+            }
+          }
+          if(amount == "")
+          {
+            i = i + 1;
+          }
+
+
+          if(i == 0){
+            var payment_id = $(e.target).parents("tr:first").find(".hidden_payment_id").val();
+            if(payment_id == "")
+            {
+              $.ajax({
+                url:"<?php echo URL::to('user/payment_save_details'); ?>",
+                type:"post",
+                data:{date:date,debit:debit,credit:credit,des:des,client_code:client_code,comment:comment,amount:amount},
+                success:function(resultt)
+                {
+                  $(e.target).parents("tr:first").find(".hidden_payment_id").val(resultt);
+                }
+              });
+            }
+            else{
+              $.ajax({
+                url:"<?php echo URL::to('user/payment_update_details'); ?>",
+                type:"post",
+                data:{date:date,debit:debit,credit:credit,des:des,client_code:client_code,comment:comment,amount:amount,payment_id:payment_id},
+                success:function(resultt)
+                {
+
+                }
+              });
+            }
+          }
+          else{
+            var payment_id = $(e.target).parents("tr:first").find(".hidden_payment_id").val();
+            if(payment_id != "")
+            {
+              $.ajax({
+                url:"<?php echo URL::to('user/payment_update_details'); ?>",
+                type:"post",
+                data:{date:date,debit:debit,credit:credit,des:des,client_code:client_code,comment:comment,amount:amount,payment_id:payment_id},
+                success:function(result)
+                {
+
+                }
+              });
+            }
+          }
+        }
+        else if(code == "813")
+        {
+          $(e.target).parents("tr:first").find(".client_code_add").val("");
+          $(e.target).parents("tr:first").find(".client_code_add").prop("disabled",false);
+          $(e.target).parents("tr:first").find(".credit_descripion_add").val("");
+          $(e.target).css("border-color","#ccc");
+
+          var date = $(e.target).parents("tr:first").find(".date_add").val();
+          var debit = $(e.target).parents("tr:first").find(".debit_nominal").val();
+          var credit = $(e.target).parents("tr:first").find(".credit_nominal").val();
+          var client_code = $(e.target).parents("tr:first").find(".client_code_add").val();
+          var des = $(e.target).parents("tr:first").find(".credit_descripion_add").val();
+          var comment = $(e.target).parents("tr:first").find(".comment_add").val();
+          var amount = $(e.target).parents("tr:first").find(".amount_add").val();
+          var i = 0;
+          if(date == "")
+          {
+            i = i + 1;
+          }
+          if(debit == "")
+          {
+            i = i + 1;
+          }
+          if(credit == "")
+          {
+            i = i + 1;
+          }
+          if(des == "")
+          {
+            i = i + 1;
+          }
+          if(debit == "813A")
+          {
+            if(client_code == "")
+            {
+              i = i + 1;
+            }
+          }
+          if(debit == "813")
           {
             if(client_code == "")
             {
@@ -2083,10 +2328,15 @@ $(window).change(function(e) {
               {
                 i = i + 1;
               }
-              if(credit == "712" || credit == "813A")
+              if(debit == "813A")
               {
-                if(client_code == "")
-                {
+                if(client_code == ""){
+                  i = i + 1;
+                }
+              }
+              if(debit == "813")
+              {
+                if(client_code == ""){
                   i = i + 1;
                 }
               }
@@ -2142,6 +2392,287 @@ $(window).change(function(e) {
         }
       }
   }
+})
+$(window).change(function(e){
+
+if($(e.target).hasClass('input_balance_bank')){
+  var input_balance_bank = $(e.target).val();
+  var input_total_outstanding = $(".refresh_input_outstanding").val();
+  var input_bala_transaction = $(".balance_tran_class").val();
+
+  $.ajax({
+      url:"<?php echo URL::to('user/balance_per_bank'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{input_balance_bank:input_balance_bank, input_total_outstanding:input_total_outstanding, input_bala_transaction:input_bala_transaction},
+      success:function(result){
+
+        $(".input_close_balance").val(result['close_balance']);
+        $(".class_close_balance").html(result['close_balance_span']);
+
+        $(".input_difference").val(result['diffence']);
+        $(".class_difference").html(result['diffence_span']);
+        
+        
+      }
+    }); 
+
+  
+
+}
+
+
+})
+$(window).dblclick(function(e){
+if($(e.target).hasClass('single_accept')){
+  var type = $(e.target).attr("type");
+  var id = $(e.target).attr("data-element");
+  var receipt_id = $(".receipt_id").val();
+  var payment_id = $(".payment_id").val();
+
+  $.ajax({
+      url:"<?php echo URL::to('user/finance_bank_single_accept'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{id:id, type:type, receipt_id:receipt_id, payment_id:payment_id},
+      success:function(result){
+        if(type == 1){
+          $("#receipt_out_"+id).html(result['outstanding']);
+          $("#receipt_out_"+id).css({"color":"blue"});
+
+          $("#receipt_clear_"+id).html(result['clearance_date']);
+          $("#receipt_clear_"+id).css({"color":"orange", "font-weight":"bold"});
+          $("#receipt_clear_"+id).addClass('process_journal');
+        }
+        else{
+          $("#payment_out_"+id).html(result['outstanding']);
+          $("#payment_out_"+id).css({"color":"blue"});
+
+          $("#payment_clear_"+id).html(result['clearance_date']);
+          $("#payment_clear_"+id).css({"color":"orange", "font-weight":"bold"});
+          $("#payment_clear_"+id).addClass('process_journal');
+        }
+        $(".class_total_outstanding").css({"color":"orange", "font-weight":"bold"});
+        $(".class_total_outstanding_refresh").addClass('orange_value_refresh');
+
+        $(".class_total_outstanding").html(result['total_outstanding_html']);
+        $(".input_total_outstanding").val(result['total_outstanding']);
+      }
+  })
+}
+})
+function accept_reconciliation(count)
+{
+  var id = $(".process_journal").eq(0).attr("data-element");
+  var bank_id = $(".select_reconcile_bank").val();
+  if($(".process_journal").eq(0).hasClass('receipt_clear'))
+  {
+    var type = '1';
+  }
+  else{
+    var type = '2';
+  }
+  $.ajax({
+    url:"<?php echo URL::to('user/create_journal_reconciliation'); ?>",
+    type:"post",
+    data:{id:id,type:type,bank_id:bank_id},
+    success:function(result){
+        
+        if(type == '1')
+        {
+          $("#receipt_clear_"+id).removeClass('process_journal');
+          $("#receipt_clear_"+id).parents("tr").find(".journal_td").html('<a href="javascript:" class="journal_id_viewer" data-element="'+result+'">'+result+'</a>');
+        }
+        else{
+          $("#payment_clear_"+id).removeClass('process_journal');
+          $("#payment_clear_"+id).parents("tr").find(".journal_td").html('<a href="javascript:" class="journal_id_viewer" data-element="'+result+'">'+result+'</a>')
+        }
+        var countval = count + 1;
+        if($(".process_journal").eq(0).length > 0)
+        {
+          accept_reconciliation(countval);
+          $("#apply_first").html(countval);
+        }
+        else{
+          $("body").removeClass('loading_apply')
+          $("#apply_first").html('0');
+        }
+    }
+  })
+}
+$(window).click(function(e){
+if($(e.target).hasClass('accept_all_button')){
+  var pop = confirm('You are about to set the Clearance Date of All Transactions (Payments/receipts and General Journals) to the Transaction Date.  This will lock the Bank Account and Value on the Payments and Receipts systems for these transactions and you will not be able to change them.  Do you Want to Continue? ');
+  if(pop){
+    var receipt_id = $(".receipt_id").val();
+    var payment_id = $(".payment_id").val();
+    var select_bank = $(".select_reconcile_bank").val();
+
+    $.ajax({
+      url:"<?php echo URL::to('user/finance_bank_all_accept'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{receipt_id:receipt_id, payment_id:payment_id, select_bank:select_bank},
+      success:function(result){
+        $(".tbody_transaction").html(result['transactions']);
+        $(".class_total_outstanding").html(result['total_outstanding']);
+        $(".input_total_outstanding").val(result['total_outstanding']);
+        $(".class_total_outstanding").css({"color":"orange", "font-weight":"bold"});
+        
+      }
+  })
+
+  }
+  else{
+    console.log('false');
+  }
+}
+if($(e.target).hasClass('reconcile_load')){
+  var value = $(".select_reconcile_bank").val();
+  $.ajax({
+    url:"<?php echo URL::to('user/finance_reconcile_load'); ?>",
+    type:"post",
+    dataType:"json",
+    data:{id:value},
+    success:function(result){
+      $(".receipt_id").val(result['receipt_ids']);
+      $(".payment_id").val(result['payment_ids']);
+      $(".balance_tran_class").val(result['balance_transaction']);
+      $(".input_total_outstanding").val(result['outstanding']);
+
+      $(".class_total_outstanding").html(result['outstanding_html']);
+      $(".class_total_outstanding_html").html(result['outstanding_html']);
+
+
+      $(".tbody_transaction").html(result['transactions']);
+      $(".tbody_reconcilation").html(result['reconcilation']);
+
+      $(".transactions_section").show();
+      $(".reconcilation_section").show();
+
+      $(".date_balance_bank").datetimepicker({
+         defaultDate: "",
+         format: 'L',
+         format: 'DD/MM/YYYY',
+      });
+
+      
+    }
+  });    
+}
+if($(e.target).hasClass('refresh_button')){
+  var input_total_outstanding = $(".input_total_outstanding").val();
+  var input_balance_bank = $(".input_balance_bank").val();
+  var input_bala_transaction = $(".balance_tran_class").val();
+
+  $.ajax({
+      url:"<?php echo URL::to('user/finance_bank_refresh'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{input_total_outstanding:input_total_outstanding, input_balance_bank:input_balance_bank,input_bala_transaction:input_bala_transaction},
+      success:function(result){
+
+        $(".input_close_balance").val(result['close_balance']);
+        $(".class_close_balance").html(result['close_balance_span']);
+
+        $(".input_difference").val(result['diffence']);
+        $(".class_difference").html(result['diffence_span']);
+
+        $(".refresh_input_outstanding").val(result['outstanding']);
+        $(".class_total_outstanding_refresh").html(result['outstanding_span']);
+        $(".class_total_outstanding_refresh").removeClass('orange_value_refresh');
+
+      }
+        
+  })
+}
+if($(e.target).hasClass('accept_reconciliation')){
+  if($(".class_total_outstanding_refresh").hasClass('orange_value_refresh'))
+  {
+    alert("You can not accept the Reconciliation while there are Differences Due to updated Cleared Items and the Bank Statement Balance is Selected");
+    return false;
+  }
+  if(($(".input_balance_bank").val() == '') || ($(".input_balance_bank").val() == '0') || ($(".input_balance_bank").val() == '0.00')){
+    alert("You can not accept the Reconciliation while there are Differences Due to updated Cleared Items and the Bank Statement Balance is Selected");
+    return false;
+  }
+
+  var countval = $(".process_journal").length;
+  if(countval > 0)
+  {
+    $("body").addClass('loading_apply1')
+    $("#apply_last1").html(countval);
+    accept_reconciliation(0);
+  }
+}
+if($(e.target).hasClass('reconciliation_pdf'))
+{
+  
+  var bank_id = atob($(".select_reconcile_bank").val());
+  var input = $(".input_balance_bank").val();
+  var date = $(".date_balance_bank").val();
+
+  var tor = $(".refresh_input_outstanding").val();
+  var cb = $(".class_close_balance ").html();
+  var cd = $(".class_difference").html();
+
+  if(cb == ""){
+    alert("The Closing Balance is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+  if(cd == ""){
+    alert("The Difference is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+
+  var receipt_id = $(".receipt_id").val();
+  var payment_id = $(".payment_id").val();
+
+  $("body").addClass("loading");
+  $.ajax({
+    url:"<?php echo URL::to('user/generate_reconcile_pdf'); ?>",
+    type:"post",
+    data:{bank_id:bank_id,input:input,date:date,tor:tor,cb:cb,cd:cd,receipt_id:receipt_id,payment_id:payment_id},
+    success:function(result){
+      SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+    }
+  })
+}
+if($(e.target).hasClass('reconciliation_csv'))
+{
+  
+  var bank_id = atob($(".select_reconcile_bank").val());
+  var input = $(".input_balance_bank").val();
+  var date = $(".date_balance_bank").val();
+
+  var tor = $(".refresh_input_outstanding").val();
+  var cb = $(".class_close_balance ").html();
+  var cd = $(".class_difference").html();
+
+  if(cb == ""){
+    alert("The Closing Balance is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+  if(cd == ""){
+    alert("The Difference is Empty so you cant Generate the Pdf File.");
+    return false;
+  }
+  
+  var receipt_id = $(".receipt_id").val();
+  var payment_id = $(".payment_id").val();
+
+  $("body").addClass("loading");
+  $.ajax({
+    url:"<?php echo URL::to('user/generate_reconcile_csv'); ?>",
+    type:"post",
+    data:{bank_id:bank_id,input:input,date:date,tor:tor,cb:cb,cd:cd,receipt_id:receipt_id,payment_id:payment_id},
+    success:function(result){
+      SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+        $("body").removeClass("loading");
+    }
+  })
+}
 })
 </script>
 @stop

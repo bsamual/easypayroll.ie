@@ -61,6 +61,19 @@ class OpeningbalanceController extends Controller {
 		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
 		return view('user/opening_balance/opening_balance_manager', array('title' => 'Opening Balance Manager', 'clientlist' => $client, 'classlist' => $class, 'userlist' => $user));
 	}
+	public function opening_balance_invoices_issued(){
+		$user = DB::table('user_login')->first();
+        $financial_date = $user->opening_balance_date;
+        $invoice_issued = DB::table('invoice_system')->where('invoice_date','<=',$financial_date)->get();
+        return view('user/opening_balance/invoice_issued', array('title' => 'Opening Balance Manager', 'invoice_issued' => $invoice_issued));
+	}
+	public function update_outstanding_invoice(){
+		$invoice = Input::get('invoice');
+		$value = Input::get('value');
+
+		$data['outstanding_balance'] = $value;
+		DB::table('invoice_system')->where('invoice_number',$invoice)->update($data);
+	}
 	public function client_opening_balance_manager()
 	{
 		$client_id = Input::get('client_id');
@@ -355,7 +368,7 @@ class OpeningbalanceController extends Controller {
 
 				if($client_label != "code" || $balance_label != "balance" || $date_label != "date")
 				{
-					echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type,'highestRow' => $highestRow));
+					echo json_encode(array("error" => "1", "message" => 'The files you have imported is not in a Valid Format.', "upload_dir" => $filepath, "output" => "",'page' => "0", 'session_id' => $session_id, 'import_type' =>$import_type,'highestRow' => $highestRow));
 					exit;
 				}
 				else{
@@ -780,5 +793,171 @@ class OpeningbalanceController extends Controller {
 		$dataupdate['opening_date'] = $date[2].'-'.$month.'-'.$date[0];
 
 		DB::table('opening_balance')->where('locked',0)->update($dataupdate);
+	}
+	public function invoice_outstanding_upload_csv()
+	{
+		$upload_dir = 'uploads/opening_balane_invoice_issued';
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir);
+		}
+		$upload_dir = $upload_dir.'/'.time();
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir);
+		}
+
+		if (!empty($_FILES)) {
+			$fname = $_FILES['file']['name'];
+			$tmpFile = $_FILES['file']['tmp_name'];
+			$filename = $upload_dir.'/'.$fname;
+			move_uploaded_file($tmpFile,$filename);
+			
+		 	echo json_encode(array('filename' => $filename));
+		}
+	}
+	public function check_invoice_issued_csv_file(){
+		$filepath = Input::get('filename');
+		$output = '';
+		$objPHPExcel = PHPExcel_IOFactory::load($filepath);
+		foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+			$worksheetTitle     = $worksheet->getTitle();
+			$highestRow         = $worksheet->getHighestRow(); // e.g. 10
+			$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
+			$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+			$nrColumns = ord($highestColumn) - 64;
+			$height = $highestRow;
+
+			$invoice_label = $worksheet->getCellByColumnAndRow(0, 1); $invoice_label = trim($invoice_label->getValue());
+			$balance_label = $worksheet->getCellByColumnAndRow(1, 1); $balance_label = trim($balance_label->getValue());
+
+			$invoice_label = strtolower($invoice_label);
+			$balance_label = strtolower($balance_label);
+
+			$invoice_label = str_replace(" ", "", $invoice_label);
+			$invoice_label = str_replace(" ", "", $invoice_label);
+			$invoice_label = str_replace(" ", "", $invoice_label);
+
+			$balance_label = str_replace(" ", "", $balance_label);
+			$balance_label = str_replace(" ", "", $balance_label);
+			$balance_label = str_replace(" ", "", $balance_label);
+
+
+			if($invoice_label != "invoiceno" || $balance_label != "balance")
+			{
+				echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "output" => ""));
+				exit;
+			}
+			else{
+				for ($row = 2; $row <= $height; ++ $row) {
+					$invoice_no = $worksheet->getCellByColumnAndRow(0, $row); $invoice_no = trim($invoice_no->getValue());
+					$balance = $worksheet->getCellByColumnAndRow(1, $row); $balance = trim($balance->getValue());
+
+					$bal = str_replace(',',"",$balance);
+					$bal = str_replace(',',"",$bal);
+					$bal = str_replace(',',"",$bal);
+					$bal = str_replace(',',"",$bal);
+					$bal = str_replace(',',"",$bal);
+					$bal = str_replace(',',"",$bal);
+					$bal = str_replace(',',"",$bal);
+					$bal = str_replace(',',"",$bal);
+
+					$user = DB::table('user_login')->first();
+			        $financial_date = $user->opening_balance_date;
+			        $noteval = 0;
+			        $note = '';
+			        if(is_numeric($bal) != 1) { 
+			        	$note.= '<p>Balance Value Should be Numeric<p>'; 
+			        	$noteval++;
+			        } 
+					
+					$check_invoice = DB::table('invoice_system')->where('invoice_number',$invoice_no)->first();
+
+					if(!count($check_invoice)) { 
+						$note.= '<p>Invoice Number is Invalid</p>'; 
+						$noteval++;
+					}
+					else{
+						$invoice_date = strtotime($check_invoice->invoice_date);
+						$financial_date = strtotime($financial_date);
+						if($invoice_date > $financial_date){
+							$note.= '<p>Invoice Date is Greater than the Openig Balance Financial Date</p>'; 
+							$noteval++;
+						}
+					}
+					$valid_td = 'Valid';
+					$valid_cls = 'valid_tr';
+					if($noteval > 0){
+						$valid_td = 'InValid';
+						$valid_cls = 'invalid_tr';
+					}
+
+					$output.='<tr class="'.$valid_cls.'" data-element="'.$invoice_no.'" data-balance="'.$balance.'">
+					<td>'.$invoice_no.'</td>
+					<td>'.$balance.'</td>
+					<td>'.$valid_td.'</td>
+					<td>'.$note.'</td>
+					</tr>';
+				}
+			}
+		}
+		echo json_encode(array("error" => "0", "message" => '', "output" => $output));
+		exit;
+	}
+
+	public function upload_invoice_issued_csv_file(){
+		$filepath = Input::get('filename');
+		$output = '';
+		$objPHPExcel = PHPExcel_IOFactory::load($filepath);
+		foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+			$worksheetTitle     = $worksheet->getTitle();
+			$highestRow         = $worksheet->getHighestRow(); // e.g. 10
+			$highestColumn      = $worksheet->getHighestColumn(); // e.g 'F'
+			$highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+			$nrColumns = ord($highestColumn) - 64;
+			$height = $highestRow;
+
+			for ($row = 2; $row <= $height; ++ $row) {
+				$invoice_no = $worksheet->getCellByColumnAndRow(0, $row); $invoice_no = trim($invoice_no->getValue());
+				$balance = $worksheet->getCellByColumnAndRow(1, $row); $balance = trim($balance->getValue());
+
+				$bal = str_replace(',',"",$balance);
+				$bal = str_replace(',',"",$bal);
+				$bal = str_replace(',',"",$bal);
+				$bal = str_replace(',',"",$bal);
+				$bal = str_replace(',',"",$bal);
+				$bal = str_replace(',',"",$bal);
+				$bal = str_replace(',',"",$bal);
+				$bal = str_replace(',',"",$bal);
+
+				$user = DB::table('user_login')->first();
+		        $financial_date = $user->opening_balance_date;
+		        $noteval = 0;
+		        $note = '';
+
+		        if(is_numeric($bal) != 1) { 
+		        	$note.= '<p>Balance Value Should be Numeric<p>'; 
+		        	$noteval++;
+		        } 
+				
+				$check_invoice = DB::table('invoice_system')->where('invoice_number',$invoice_no)->first();
+
+				if(!count($check_invoice)) { 
+					$note.= '<p>Invoice Number is Invalid</p>'; 
+					$noteval++;
+				}
+				else{
+					$invoice_date = strtotime($check_invoice->invoice_date);
+					$financial_date = strtotime($financial_date);
+					if($invoice_date > $financial_date){
+						$note.= '<p>Invoice Date is Greater than the Opening Balance Financial Date</p>'; 
+						$noteval++;
+					}
+				}
+
+				if($noteval == 0){
+					$data['outstanding_balance'] = $balance;
+					DB::table('invoice_system')->where('invoice_number',$invoice_no)->update($data);
+				}
+			}
+		}
 	}
 }

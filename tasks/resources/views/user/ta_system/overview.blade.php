@@ -337,6 +337,15 @@ a:hover{text-decoration: underline;}
     </div>  
 </div>
 <?php
+function in_array_r($needle, $haystack, $strict = false) {
+    foreach ($haystack as $item) {
+        if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_r($needle, $item, $strict))) {
+            return true;
+        }
+    }
+
+    return false;
+}
 if(isset($_GET['client_id']))
 {
   $client_id = $_GET['client_id'];
@@ -387,8 +396,8 @@ if(isset($_GET['client_id']))
       $ta_count = DB::table('ta_client_invoice')->where('client_id', $client_id)->first();
       if(count($ta_count)){
         $unserialize = unserialize($ta_count->tasks);
-        $filter_jobs = strrpos($ta_count->tasks, '"'.$jobs->id.'"');
-        if ($filter_jobs === false) { 
+        //$filter_jobs = strrpos($ta_count->tasks, '"'.$jobs->id.'"');
+        if (!in_array_r($jobs->id, $unserialize)) { 
           $unallocated_total = $unallocated_total+$cost;
           $sub_total_minutes_unallocated = $sub_total_minutes_unallocated+$total_minutes;
           $sub_hour_calculate_unallocated = strtok(($sub_total_minutes_unallocated/60), '.');
@@ -417,7 +426,7 @@ if(isset($_GET['client_id']))
      data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
           }
           $result_unallocated_time_job.='<tr>                    
-                <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+                <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
                 <td>'.$time_task->task_name.'</td>
                 <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
                 <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
@@ -453,7 +462,7 @@ if(isset($_GET['client_id']))
  data-toggle="popover" data-placement="bottom" data-content="No Comments found"></a>';
       }
         $result_unallocated_time_job.='<tr>                    
-          <td>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
+          <td><spam style="display:none">'.strtotime($jobs->job_date).'</spam>'.date('d-M-Y', strtotime($jobs->job_date)).'</td>
           <td>'.$time_task->task_name.'</td>
           <td>'.$user_details->lastname.' '.$user_details->firstname.' ('.$rate_result.')</td>
           <td style="text-align:right;">'.$jobs->job_time.' '.$comments.'</td>
@@ -593,7 +602,7 @@ if(isset($_GET['client_id']))
 
           $result_invoice.='<tr>
             <td style="'.$color.'"><a href="javascript:" data-element="'.$invoice->invoice_number.'" class="invoice_class">'.$invoice->invoice_number.'</a></td>
-            <td style="text-align:right;'.$color.'">'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+            <td style="text-align:right;'.$color.'"><spam style="display:none">'.strtotime($invoice->invoice_date).'</spam>'.date('d-m-Y', strtotime($invoice->invoice_date)).'</td>
             <td style="text-align:right;'.$color.'">'.number_format_invoice_without_decimal($invoice->gross).'</td>
             <td style="text-align:right;'.$color.'">'.number_format_invoice_without_decimal($invoice->vat_value).'</td>
             <td style="text-align:right;'.$color.'">'.number_format_invoice_without_decimal($invoice->inv_net).'</td>        
@@ -727,7 +736,7 @@ if(isset($_GET['client_id']))
                   $result_excluded.='
                   <tr>
                     <td><a href="javascript:" class="invoice_class" data-element="'.$invoice_details->invoice_number.'">'.$invoice_details->invoice_number.'</a></td>
-                    <td>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
+                    <td><spam style="display:none">'.strtotime($invoice_details->invoice_date).'</spam>'.date('d-M-Y', strtotime($invoice_details->invoice_date)).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->gross).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->vat_value).'</td>
                     <td>'.number_format_invoice_without_decimal($invoice_details->inv_net).'</td>              

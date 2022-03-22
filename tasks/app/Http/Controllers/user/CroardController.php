@@ -62,7 +62,7 @@ class CroardController extends Controller {
 	{
 		$client = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id','tye','ard','cro')->orderBy('id','asc')->get();
 		$cro = DB::table('cro_credentials')->first();
-		return view('user/croard/croardmanager', array('title' => 'Easypayroll - CRO ARD Manager', 'cro' => $cro,'clientlist' => $client));
+		return view('user/croard/croardmanager', array('title' => 'Bubble - CRO ARD Manager', 'cro' => $cro,'clientlist' => $client));
 	}
 	public function get_company_details_cro()
 	{
@@ -304,6 +304,116 @@ class CroardController extends Controller {
 		
 		echo json_encode(array('company_name' => $companyname, 'next_ard' => $coreard, 'corard_timestamp' => $corard_timestamp, 'companystatus' => $companystatus, 'ardstatus' => $ardstatus));
 	}
+	public function refresh_blue_cro_ard()
+	{
+		$client_id = Input::get('clientid');
+		$cro = Input::get('cro');
+
+		$company_number = Input::get('cro');
+		$indicator = 'C';
+
+		$ch = curl_init();
+		$url = "https://services.cro.ie/cws/company/".$company_number."/".$indicator."";
+
+		$cro = DB::table('cro_credentials')->first();
+		$authenticate = $cro->username.':'.$cro->api_key;
+		 
+		$headers = array( "Authorization: Basic ".base64_encode($authenticate),  
+		    "Content-Type: application/json", 
+		    "charset: utf-8");
+		 
+		 
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		// curl_setopt($ch, CURLOPT_PROXY, 'http://ip of your proxy:8080');  // Proxy if applicable
+		curl_setopt($ch, CURLOPT_FAILONERROR,1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		curl_setopt($ch, CURLOPT_URL, $url );
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_POST, 0); 
+
+		$response = curl_exec($ch);
+ 
+		// Some values from the header if want to take a look... 
+		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$headerOut = curl_getinfo($ch, CURLINFO_HEADER_OUT);
+		//echo $code.'<p>'.$headerOut.'</p>';
+		 
+		 
+		// Don't forget to close handle.
+		curl_close($ch);
+		$results_array = json_decode($response);
+
+		if(count($results_array))
+		{
+			$nextard = $results_array->next_ar_date;
+			$company = $results_array->company_name;
+		}
+		else{
+			$nextard = '';
+			$company = '';
+		}
+		
+
+		$client = DB::table('cm_clients')->where('client_id',$client_id)->first();
+		$ard = explode("/",$client->ard);
+
+		if(count($ard) > 1)
+		{
+			$ard_date_month = $ard[0].'/'.$ard[1];
+		}
+		else{
+			$ard_date_month = '';
+		}
+
+		if($nextard != "")
+		{
+			$api_date_month = date('d/m',strtotime($nextard));
+			if($ard_date_month == $api_date_month)
+			{
+				$coreard = date('d/m/Y',strtotime($nextard));
+				$corard_timestamp = strtotime($nextard);
+				$ardstatus = "0";
+			}
+			else{
+				$coreard = date('d/m/Y',strtotime($nextard));
+				$corard_timestamp = strtotime($nextard);
+				$ardstatus = "1";
+			}
+		}
+		else{
+			$coreard = '';
+			$corard_timestamp = '';
+			$ardstatus = "0";
+		}
+
+		if(strtolower($company) == strtolower($client->company))
+		{
+			$companyname = $company;
+			$companystatus = "0";
+		}
+		else{
+			$companyname = $company;
+			$companystatus = "1";
+		}
+
+		$data['company_name'] = $companyname;
+		$data['cro_ard'] = $coreard;
+		
+		$detail = DB::table('croard')->where('client_id',$client_id)->first();
+		if(count($detail))
+		{
+			DB::table('croard')->where('client_id',$client_id)->update($data);
+		}
+		else{
+			$data['client_id'] = $client_id;
+			DB::table('croard')->insert($data);
+		}
+		
+		echo json_encode(array('company_name' => $companyname, 'next_ard' => $coreard, 'corard_timestamp' => $corard_timestamp, 'companystatus' => $companystatus, 'ardstatus' => $ardstatus));
+	}
 	public function update_cro_notes()
 	{
 		$value = Input::get('input_val');
@@ -316,6 +426,21 @@ class CroardController extends Controller {
 		}
 		else{
 			$data['notes'] = $value;
+			DB::table('croard')->insert($data);
+		}
+	}
+	public function update_rbo_submission()
+	{
+		$value = Input::get('input_val');
+		$clientid = Input::get('clientid');
+		$details = DB::table('croard')->where('client_id',$clientid)->first();
+		if(count($details))
+		{
+			$data['rbo_submission'] = $value;
+			DB::table('croard')->where('id',$details->id)->update($data);
+		}
+		else{
+			$data['rbo_submission'] = $value;
 			DB::table('croard')->insert($data);
 		}
 	}
@@ -472,13 +597,16 @@ class CroardController extends Controller {
 	}
 	public function edit_email_unsent_files_croard()
 	{
+		$admin_details = Db::table('admin')->first();
 		$client_id = Input::get('client_id');
 		$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
 		$result = DB::table('croard')->where('client_id',$client_id)->first();
 		$files = '';
 		$html = '<p>Hi '.$client_details->firstname.'</p>
 		<p>Please find attached the B1 for '.$result->company_name.' which needs to be signed and sent back to my office at your very earliest convenience.</p>
-		<p>I note this B1 can be scanned-in and emailed back to me, it must be signed and dated before you send it back, and the quality of the scan must be very good Quality.</p>';
+		<p>I note this B1 can be scanned-in and emailed back to me, it must be signed and dated before you send it back, and the quality of the scan must be very good Quality.</p>
+
+		'.$admin_details->croard_signature.'';
 		$files ='<p>'.$result->filename.'</p>';
 	    $subject = 'CROARD: '.$result->company_name.'';
 
@@ -654,6 +782,7 @@ class CroardController extends Controller {
 		$status_label = '';
 		$cro_ard_val = date('d/m/Y', strtotime($results_array->next_ar_date));
 		$updated = 0;
+		$ard_color = 'color:#000';
 
 		$cro_ard_details = DB::table('croard')->where('client_id',$client_id)->first();
 		if(count($cro_ard_details))
@@ -662,9 +791,22 @@ class CroardController extends Controller {
 			{
 				$dataval['cro_ard'] = $cro_ard_val;
 				$dataval['signature'] = 0;
-				//$dataval['signature_date'] = $results_array->next_ar_date;
+				$dataval['signature_date'] = '';
+
+				$dataval['filename'] = '';
+				$dataval['url'] = '';
 				DB::table('croard')->where('client_id',$client_id)->update($dataval);
 				$updated = 1;
+			}
+			else{
+				$dataval['cro_ard'] = $cro_ard_details->cro_ard;
+				$dataval['signature'] = 0;
+				$dataval['signature_date'] = '';
+
+				$dataval['filename'] = '';
+				$dataval['url'] = '';
+				DB::table('croard')->where('client_id',$client_id)->update($dataval);
+				$updated = 0;
 			}
 
 			$expandcroard = explode('/',$cro_ard_val);
@@ -681,6 +823,7 @@ class CroardController extends Controller {
 	          {
 	            $color_status = 'blue_status';
 	            $status_label = 'Current Year OK';
+	            $ard_color = 'blue';
 	          }
 	          else{
 	            $firstdate = strtotime($correctcroard);
@@ -691,22 +834,186 @@ class CroardController extends Controller {
 	            {
 	              $color_status = 'red_status';
 	              $status_label = 'Submission Late';
+	              $ard_color = 'red';
 	            }
 	            elseif($diff <= 30)
 	            {
 	              $color_status = 'orange_status';
 	              $status_label = 'Submission Pending';
+	              $ard_color = 'orange';
 	            }
 	            elseif($diff > 30)
 	            {
 	              $color_status = 'green_status';
 	              $status_label = 'Future Submission';
+	              $ard_color = 'green';
 	            }
 	          }
 	        }
 		}
 
-		echo json_encode(array("croard" => date('d/m/Y', strtotime($results_array->next_ar_date)), "color_status" => $color_status, "status_label" => $status_label,'updated' => $updated));
+		echo json_encode(array("croard" => date('d/m/Y', strtotime($results_array->next_ar_date)), "color_status" => $color_status, "status_label" => $status_label,'updated' => $updated,'ard_color' => $ard_color));
 	}
+	public function save_croard_settings()
+	{
+		$signature = Input::get('message_editor');
+		$cc = Input::get('croard_cc_input');
+		$croard_days_input = Input::get('croard_days_input');
+
+		$data['croard_signature'] = $signature;
+		$data['croard_cc_email'] = $cc;
+		$data['croard_submission_days'] = $croard_days_input;
+		DB::table('admin')->where('id',1)->update($data);
+
+		$username = Input::get('username');
+		$api_key = Input::get('api_key');
+		DB::table('cro_credentials')->where('id',1)->update(['username' =>$username, 'api_key' =>$api_key]);
+		return Redirect::back()->with('message_settings',"Croard Settings Saved successfully.");
+	}
+	public function rbo_review_list()
+	{
+		$clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id','tye','ard','cro')->orderBy('id','asc')->get();
+		$output = '<table class="table table-fixed-header1 own_table_white" style="width:100%;margin-top:0px; background: #fff">
+          <thead class="header">
+              <th style="width:3.5%;text-align: left;">S.No <i class="fa fa-sort sno_rbo_sort" aria-hidden="true" style="float: right;"></i></th>
+              <th style="width:6%;text-align: left;">Client Code <i class="fa fa-sort clientid_rbo_sort" aria-hidden="true" style="float: right;"></i></th>
+              <th style="width:25%;text-align: left;">Company Name <i class="fa fa-sort company_rbo_sort" aria-hidden="true" style="float: right;"></i></th>
+              <th style="width:10%;text-align: left;">Type <i class="fa fa-sort type_rbo_sort" aria-hidden="true" style="float: right;"></i></th>
+              <th style="width:7%;text-align: left;">CRO Number <i class="fa fa-sort cro_rbo_sort" aria-hidden="true" style="float: right;"></i></th>
+              <th style="width:10%;text-align: left;">RBO Reference <i class="fa fa-sort rbo_ref_sort" aria-hidden="true" style="float: right;"></i></th>
+          </thead>                            
+          <tbody id="clients_rbo_tbody">';
+          $i=1;
+          if(count($clientlist)){              
+            foreach($clientlist as $key => $client){
+                $disabled='';
+                $style="color:#000";
+                if($client->active != "")
+                {
+                  if($client->active == 2)
+                  {
+                    $disabled='disabled_rbo_tr';
+                    $style="color:#f00";
+                  }
+                }
+
+                $cmp = '<spam class="company_rbo_td" style="font-style:italic;"></spam>';
+                $timestampcroard = '';
+                $cro_ard_details = DB::table('croard')->where('client_id',$client->client_id)->first();
+                $notes = '';
+                $rbo_submission = '';
+                if(count($cro_ard_details))
+                {
+                  $notes = $cro_ard_details->notes;
+                  if(strtolower($client->company) == strtolower($cro_ard_details->company_name))
+                  {
+                    $cmp = '<spam class="company_td" style="color:green;font-style:italic">'.$cro_ard_details->company_name.'</spam>';
+                  }
+                  else{
+                    $cmp = '<spam class="company_td" style="color:blue;font-style:italic;font-weight:800">'.$cro_ard_details->company_name.'</spam>';
+                  }
+                  $rbo_submission = $cro_ard_details->rbo_submission;
+                }
+                if($client->tye == "") { $tye = '-'; } else { $tye = $client->tye; }
+                if($client->cro == "") { $croval = '-'; } else { $croval = $client->cro; }
+                if($client->company == "") { $cmpval = $client->firstname.' & '.$client->surname; }
+                else{ $cmpval = $client->company; }
+                $output.='<tr class="edit_rbo_task '.$disabled.'" style="'.$style.'"  id="clientidtr_rbo_'.$client->client_id.'">
+                    <td style="'.$style.'" class="sno_rbo_sort_val">'.$i.'</td>
+                    <td style="'.$style.'" class="clientid_rbo_sort_val" align="left">'.$client->client_id.'</td>
+                    <td style="'.$style.'" align="left"><spam class="company_rbo_sort_val">'.$cmpval.'</spam> <br/> '.$cmp.'</td>
+                    <td style="'.$style.'" class="type_rbo_sort_val" align="left">'.$tye.'</td>
+                    <td style="'.$style.'" class="cro_rbo_sort_val" align="left">'.$croval.'</td>
+                    <td style="'.$style.'" class="rbo_ref_sort_val" align="left">'.$rbo_submission.'</td>
+                </tr>';
+                $i++;
+              }              
+            }
+            if($i == 1)
+            {
+              $output.='<tr><td colspan="6" align="center">Empty</td></tr>';
+            } 
+          $output.='</tbody>
+        </table>';
+        echo $output;
+	}
+	public function report_csv_rbo()
+	{
+		$filename = 'rbo_submission_review.csv';
+
+		$columns = array('S.No', 'Client Code','Company Name','Type','CRO Number','RBO Reference','Activate');
+		$file = fopen('papers/rbo_submission_review.csv', 'w');
+		fputcsv($file, $columns);
+
+		$clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id','tye','ard','cro')->orderBy('id','asc')->get();
+		
+          $i=1;
+          if(count($clientlist)){              
+            foreach($clientlist as $key => $client){
+                $act_text = 'Active';
+                if($client->active != "")
+                {
+                  if($client->active == 2)
+                  {
+                    $act_text = 'Deactive';
+                  }
+                }
+
+                $cmp = '';
+                $timestampcroard = '';
+                $cro_ard_details = DB::table('croard')->where('client_id',$client->client_id)->first();
+                $notes = '';
+                $rbo_submission = '';
+                if(count($cro_ard_details))
+                {
+                  $notes = $cro_ard_details->notes;
+                  if(strtolower($client->company) == strtolower($cro_ard_details->company_name))
+                  {
+                    $cmp = $cro_ard_details->company_name;
+                  }
+                  else{
+                    $cmp = $cro_ard_details->company_name;
+                  }
+                  $rbo_submission = $cro_ard_details->rbo_submission;
+                }
+
+                if($client->tye == "") { $tye = '-'; } else { $tye = $client->tye; }
+                if($client->cro == "") { $croval = '-'; } else { $croval = $client->cro; }
+                if($client->company == "") { $cmpval = $client->firstname.' & '.$client->surname; }
+                else{ $cmpval = $client->company; }
+
+                $columns1 = array($i,$client->client_id,"$cmpval\n$cmp",$tye,$croval,$rbo_submission,$act_text);
+				fputcsv($file, $columns1);
+                $i++;
+            }              
+          }
+        fclose($file);
+		echo $filename;
+	}
+	public function remove_croard_refresh()
+	{
+		$clientid = Input::get('clientid');
+		$data['cro_ard'] = '';
+		$data['company_name'] = '';
+		
+		$detail = DB::table('croard')->where('client_id',$clientid)->first();
+		if(count($detail))
+		{
+			DB::table('croard')->where('client_id',$clientid)->update($data);
+		}
+	}
+	public function remove_blue_croard_refresh()
+	{
+		$clientid = Input::get('clientid');
+		$data['cro_ard'] = '';
+		$data['company_name'] = '';
+		
+		$detail = DB::table('croard')->where('client_id',$clientid)->first();
+		if(count($detail))
+		{
+			DB::table('croard')->where('client_id',$clientid)->update($data);
+		}
+	}
+	
 }
 

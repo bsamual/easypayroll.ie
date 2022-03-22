@@ -62,7 +62,7 @@ class TwobillController extends Controller {
 	{
 		$tasks = DB::table('taskmanager')->where('two_bill', 1)->get();
 		$user = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
-		return view('user/two_bill/two_bill_manager', array('title' => 'Easypayroll - Two Bill Manager', 'userlist' => $user, 'taskslist' => $tasks));
+		return view('user/two_bill/two_bill_manager', array('title' => 'Bubble - Two Bill Manager', 'userlist' => $user, 'taskslist' => $tasks));
 	}
 	public function get_tasks_invoices()
 	{
