@@ -1166,7 +1166,7 @@ if(!empty($_GET['import_type_existing']))
                         <td>
                               <label>Salutation : </label>
                               <div class="form-group">                
-                                  <input class="form-control salutation_edit_class" name="salutation" placeholder="Enter Salutation" type="text" disabled>
+                                  <input class="form-control salutation_edit_class" name="salutation" placeholder="Enter Salutation" type="text">
                               </div>
                         </td>
                     </tr>

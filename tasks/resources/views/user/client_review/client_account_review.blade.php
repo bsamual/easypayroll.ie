@@ -10,6 +10,9 @@
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
 <style>
+  .client_details_table > tbody > tr > td{
+    border-top: 0px solid;
+  }
 .opening_bal_h5 {
   float: left;
   width: 100%;
@@ -180,6 +183,9 @@ body.loading_apply .modal_load_apply {
 .table thead th:focus{background: #ddd !important;}
 .form-control{border-radius: 0px;}
 .disabled{cursor :auto !important;pointer-events: auto !important}
+.own_table_white tr:nth-child(2n) td:first-child {
+  background: #f5f5f5 !important;
+}
 body #coupon {
   display: none;
 }
@@ -434,7 +440,7 @@ a:hover{text-decoration: underline;}
     			<div class="col-md-1" style="padding: 0px">
     				<input type="button" name="load_client_review" class="common_black_button load_client_review" value="Load">
     			</div>
-    			<div class="col-md-12 client_details_div">
+    			<div class="col-md-12 client_details_div" style="padding:0px">
     			</div>
         </div>
         <div class="col-lg-1">
@@ -464,6 +470,7 @@ a:hover{text-decoration: underline;}
                 </tbody>
               </table>
         </div>
+        <div class="col-md-12" style="padding:0px">
         <div class="col-md-4">
         	<h3>Invoice List</h3>
         	<input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_1" value="1"><label for="invoice_date_option_1">Year</label>
@@ -583,6 +590,7 @@ a:hover{text-decoration: underline;}
               </div>
             </div>
       		</div> 
+        </div>
         </div>
 	</div>
     <!-- End  -->

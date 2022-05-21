@@ -488,7 +488,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
   $admin_details = Db::table('admin')->first();
   $admin_cc = $admin_details->task_cc_email;
 ?> 
-<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll;z-index:99999999999">
+<!-- <div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task_croard')?>" method="post" class="add_new_form" id="create_task_form">
         <div class="modal-content">
@@ -619,8 +619,6 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
-                    <!-- <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1" disabled />
-                    <label for="internal_checkbox">Internal</label> -->
                   </div>
                 </div>
             </div>
@@ -848,7 +846,7 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
         </div>
     </form>
   </div>
-</div>
+</div> -->
 <div class="modal fade dropzone_progress_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 999999;">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
         <div class="modal-content">
@@ -1048,108 +1046,8 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label { 
     </form>
   </div>
 </div>
-<div class="modal fade search_company_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
-  <div class="modal-dialog" role="document" style="width:50%">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">Search Company</h4>
-          </div>
-          <div class="modal-body modal_max_height">  
-            <div class="row">
-              <div class="col-md-3">
-                <h5>Company number:</h5>
-                <input type="text" name="company_number" class="form-control company_number" value="">
-              </div>
-              <div class="col-md-9">
-                <h5>Company / Business indicator:</h5>
-                <div class="col-md-4">
-                  <input type="radio" name="indicator" class="indicator" id="indicator_1" value="C"><label for="indicator_1" style="margin-top:3px">Limited Company</label>
-                  <!-- <div class="form-group">
-                     <label class="form_radio">Limited Company
-                      <input type="radio" value="" style="width:1px; height:1px" name="test"  required>
-                      <span class="checkmark_radio"></span>
-                    </label>
-                  </div> -->
-                </div>
-                <div class="col-md-8">
-                  <input type="radio" name="indicator" class="indicator" id="indicator_2" value="B"><label for="indicator_2" style="width: 56%;margin-top:3px">Registered Business</label>
-                  <input type="button" class="common_black_button search_company_btn" id="search_company_btn" value="Call From CRO">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-10 col-md-offset-1 table_api" style="margin-top:10px;">
-                  <table class="table">
-                    <tbody>
-                      <tr>
-                        <td>Company Number:</td>
-                        <td><input type="text" name="company_number" class="form-control company_number" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company / Business indicator:</td>
-                        <td><input type="text" name="indicator_text" class="form-control indicator_text" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company Name:</td>
-                        <td><input type="text" name="company_name" class="form-control company_name" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company Address:</td>
-                        <td><textarea name="company_address" class="form-control company_address" disabled style="height:110px"></textarea></td>
-                      </tr>
-                      <tr>
-                        <td>Company Registration Date:</td>
-                        <td><input type="text" name="company_reg_date" class="form-control company_reg_date" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company Status:</td>
-                        <td><input type="text" name="company_status_desc" class="form-control company_status_desc" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company Status Date:</td>
-                        <td><input type="text" name="company_status_date" class="form-control company_status_date" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Next ARD:</td>
-                        <td><input type="text" name="next_ar_date" class="form-control next_ar_date" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Last ARD:</td>
-                        <td><input type="text" name="last_ar_date" class="form-control last_ar_date" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Accounts Upto:</td>
-                        <td><input type="text" name="last_acc_date" class="form-control last_acc_date" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company Type:</td>
-                        <td><input type="text" name="comp_type_desc" class="form-control comp_type_desc" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company Type Code:</td>
-                        <td><input type="text" name="company_type_code" class="form-control company_type_code" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Company Status Code:</td>
-                        <td><input type="text" name="company_status_code" class="form-control company_status_code" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Place of Business:</td>
-                        <td><input type="text" name="place_of_business" class="form-control place_of_business" value="" disabled></td>
-                      </tr>
-                      <tr>
-                        <td>Eircode:</td>
-                        <td><input type="text" name="eircode" class="form-control eircode" value="" disabled></td>
-                      </tr>
-                    </tbody>
-                  </table>
-              </div>
-            </div>
-          </div>
-        </div>
-  </div>
-</div>
+
+
 <div class="content_section" style="margin-bottom:200px">
 
 <div class="page_title" style="z-index:999;">
@@ -1739,7 +1637,8 @@ function refresh_all_function(ival)
         {
           $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
           $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
-          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
           else { 
             setTimeout(function() {
               refresh_all_function(ival); 
@@ -1751,7 +1650,8 @@ function refresh_all_function(ival)
   else {
     if(type == "Ltd" || type == "ltd" || type == "Limited" || type == "Limted" || type == "limited")
     {
-      $.ajax({
+        setTimeout(function() {
+            $.ajax({
         url:"<?php echo URL::to('user/refresh_cro_ard'); ?>",
         dataType:"json",
         type:"get",
@@ -1768,17 +1668,28 @@ function refresh_all_function(ival)
             $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
           }
           $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
-          if(result['ardstatus'] == "0")
+          if(result['ardstatus'] == "1")
           {
            $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
            $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
           }
-          else{
+          else if(result['ardstatus'] == "2")
+          {
            $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
            $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
           }
+          else if(result['ardstatus'] == "3")
+          {
+           $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+           $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'orange'});
+          }
+          else{
+           $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+           $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'blue'});
+          }
 
-          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
           else { 
             setTimeout(function() {
               refresh_all_function(ival); 
@@ -1786,6 +1697,7 @@ function refresh_all_function(ival)
           }
         }
       });
+        },2000);
     }
     else{
       $.ajax({
@@ -1796,7 +1708,8 @@ function refresh_all_function(ival)
         {
           $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
           $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
-          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
           else { 
             setTimeout(function() {
               refresh_all_function(ival); 
@@ -1828,7 +1741,8 @@ function refresh_blue_function(ival)
         {
           $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
 
-          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
           else { 
             setTimeout(function() {
               refresh_blue_function(ival); 
@@ -1849,7 +1763,8 @@ function refresh_blue_function(ival)
         {
           $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html(result['company_name']);
 
-          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
           else { 
             setTimeout(function() {
               refresh_blue_function(ival); 
@@ -1866,7 +1781,8 @@ function refresh_blue_function(ival)
         success:function(result)
         {
             $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
-          if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+          var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
           else { 
             setTimeout(function() {
               refresh_blue_function(ival); 
@@ -2375,6 +2291,10 @@ $(window).click(function(e) {
       }).submit();
     }
   }
+  
+
+  
+
   if($(e.target).hasClass('global_core_call'))
   {
     $.colorbox({html:'<p style="text-align:center;margin-top:10px;font-size:18px;font-weight:600;color:#000">Do you want to update the Client Manager with the ARD Date from the Companies Office</p> <p style="text-align:center;margin-top:26px;font-size:18px;font-weight:600;"><a href="javascript:" class="common_black_button yes_proceed">Yes</a><a href="javascript:" class="common_black_button no_proceed">No</a></p>',fixed:true,width:"800px"});
@@ -2809,11 +2729,13 @@ $(window).click(function(e) {
   {
     $("body").addClass("loading_content");
     $.colorbox.close();
-    var ival = 1;
+    var ival = 0;
     var countval = $(".refresh_croard").length;
+
     var clientid = $(".refresh_croard:eq("+ival+")").attr("data-element");
     var cro = $(".refresh_croard:eq("+ival+")").attr("data-cro");
     var type = $(".refresh_croard:eq("+ival+")").attr("data-type");
+
     setTimeout(function() {
       $("#count_last").html(countval);
       $("#count_first").html(ival);
@@ -2827,12 +2749,13 @@ $(window).click(function(e) {
           {
             $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
             $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
-            if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+            var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
             else { 
               setTimeout( function() {
                 refresh_all_function(ival); 
               },500);
-            }
+            }   
           }
         });
       }
@@ -2855,17 +2778,28 @@ $(window).click(function(e) {
                 $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
               }
               $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
-              if(result['ardstatus'] == "0")
+              if(result['ardstatus'] == "1")
               {
-                $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-                $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+               $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+               $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+              }
+              else if(result['ardstatus'] == "2")
+              {
+               $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+               $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+              }
+              else if(result['ardstatus'] == "3")
+              {
+               $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+               $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'orange'});
               }
               else{
-                $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-                $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+               $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+               $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'blue'});
               }
 
-              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              var ivali = ival + 1;
+              if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
               else { 
                 setTimeout( function() {
                   refresh_all_function(ival); 
@@ -2883,7 +2817,8 @@ $(window).click(function(e) {
             {
               $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
               $("#clientidtr_"+clientid).find(".company_blue").html('').removeClass('company_blue');
-              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
               else { 
                 setTimeout( function() {
                   refresh_all_function(ival); 
@@ -2899,7 +2834,7 @@ $(window).click(function(e) {
   {
     $("body").addClass("loading_content");
     $.colorbox.close();
-    var ival = 1;
+    var ival = 0;
     var countval = $(".refresh_blue_croard").length;
     var clientid = $(".refresh_blue_croard:eq("+ival+")").attr("data-element");
     var cro = $(".refresh_blue_croard:eq("+ival+")").attr("data-cro");
@@ -2917,7 +2852,8 @@ $(window).click(function(e) {
           success:function(result)
           {
             $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
-            if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+            var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
             else { 
               setTimeout( function() {
                 refresh_blue_function(ival); 
@@ -2938,7 +2874,8 @@ $(window).click(function(e) {
               $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html(result['company_name']);
             
 
-              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
               else { 
                 setTimeout( function() {
                   refresh_blue_function(ival); 
@@ -2955,7 +2892,8 @@ $(window).click(function(e) {
             success:function(result)
             {
               $(".refresh_blue_croard:eq("+ival+")").parents("tr").find("td").eq(3).html('');
-              if(ival == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
+              var ivali = ival + 1;
+            if(ivali == countval) { $("body").removeClass("loading_content"); $.colorbox.close(); }
               else { 
                 setTimeout( function() {
                   refresh_blue_function(ival); 
@@ -2971,18 +2909,7 @@ $(window).click(function(e) {
   {
     $.colorbox.close();
   }
-  if($(e.target).hasClass('check_cro'))
-  {
-    $("body").addClass("loading");
-    var cro = $(e.target).attr("data-element");
-    $(".company_number").val(cro);
-    $(".search_company_modal").modal("show");
-    $("#indicator_1").prop("checked",true);
-    setTimeout( function() { 
-      $(".search_company_btn").trigger("click");
-      
-    },1000);
-  }
+  
   if(e.target.id == 'show_incomplete')
   {
       if($(e.target).is(':checked'))
@@ -3003,34 +2930,7 @@ $(window).click(function(e) {
         });
       }
   }
-  if($(e.target).hasClass('search_company_btn'))
-  {
-    var checked = $(".indicator:checked").length;
-    var company_number = $(".company_number").val();
-    var indicator = $(".indicator:checked").val();
-    if(checked < 1)
-    {
-      alert("Please select the Company / Business indicator to search for a Company");
-    }
-    else if(company_number == "")
-    {
-      alert("Please enter the Company Number to search for a Company");
-    }
-    else{
-      $("body").addClass("loading");
-      $.ajax({
-        url:"<?php echo URL::to('user/get_company_details_cro'); ?>",
-        type:"post",
-        data:{company_number:company_number,indicator:indicator},
-        success:function(result)
-        {
-          $(".table_api").html(result);
-          //$(".search_company_modal").modal("hide");
-          $("body").removeClass("loading");
-        }
-      });
-    }
-  }
+  
   if($(e.target).hasClass('refresh_croard'))
   {
     var clientid = $(e.target).attr("data-element");
@@ -3082,14 +2982,24 @@ $(window).click(function(e) {
           $("#clientidtr_"+clientid).find(".company_td").css({'color' : 'blue', 'font-weight' : '800'});
         }
         $("#clientidtr_"+clientid).find(".cro_ard_td").html('');
-        if(result['ardstatus'] == "0")
+        if(result['ardstatus'] == "1")
         {
-          $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-          $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+         $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+         $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'green'});
+        }
+        else if(result['ardstatus'] == "2")
+        {
+         $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+         $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+        }
+        else if(result['ardstatus'] == "3")
+        {
+         $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+         $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'orange'});
         }
         else{
-          $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
-          $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'red'});
+         $("#clientidtr_"+clientid).find(".cro_ard_td").html('<spam class="cro_ard_sort_val" style="display: none">'+result['corard_timestamp']+'</spam>'+result['next_ard']);
+         $("#clientidtr_"+clientid).find(".cro_ard_td").css({'color' : 'blue'});
         }
         $.colorbox.close();
         $("body").removeClass("loading");

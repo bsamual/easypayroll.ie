@@ -457,22 +457,7 @@ class AdminController extends Controller {
 			$total_rows = 0;
 		}
 
-		$output = '<label style="float:left;margin-top:5px">Select Page: </label>
-		<select name="select_page" class="form-control select_page" style="width:5%;margin-left:15px;float: left;">';
-			if($total_rows > 0){
-				for($i = 1; $i <= $total_rows; $i++){
-					if($i == $page) { 
-						$output.='<option value="'.$i.'" data-element="'.$table.'" selected>'.$i.'</option>';
-					}
-					else{
-						$output.='<option value="'.$i.'" data-element="'.$table.'">'.$i.'</option>';
-					}
-				}
-			}else{
-				$output.='<option value="1" data-element="'.$table.'">1</option>';
-			}
-		$output.='</select>
-		<input type="button" class="common_black_button load_table_page" value="Go to the selected page">
+		$output = '
 		<table class="table own_table_white" style="margin-top: 20px;min-width:100%;float:left">
 			<thead>';
 				if(count($fields))
@@ -501,7 +486,7 @@ class AdminController extends Controller {
 		<div class="col-md-12">
 		<input type="hidden" name="hidden_page" id="hidden_page" value="1">';
 		if($total_rows > 1){
-			$output.='<input type="button" class="common_black_button common_btn load_more_content" value="Load More Content">';
+			$output.='<input type="button" class="common_black_button common_btn load_more_content" id="load_more_content" value="Load More Content">';
 		}else{
 			$output.='<input type="button" class="common_black_button common_btn" value="Load More Content" style="display:none">';
 		}

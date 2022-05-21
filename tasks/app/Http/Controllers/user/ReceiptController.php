@@ -1070,8 +1070,8 @@ class ReceiptController extends Controller {
 
 				$output ='
 					<tr>
-						<td>Date</td>
-						<td style=""><spam class="date_sort_val" style="display:none">'.strtotime($receipt->receipt_date).'</spam>'.date('d/m/Y', strtotime($receipt->receipt_date)).'</td>
+						<td style="border:0px">Date</td>
+						<td style="border:0px"><spam class="date_sort_val" style="display:none">'.strtotime($receipt->receipt_date).'</spam>'.date('d/m/Y', strtotime($receipt->receipt_date)).'</td>
 					</tr>
 					<tr>
 						<td>Debit Nominal & Description</td>
@@ -1107,7 +1107,7 @@ class ReceiptController extends Controller {
 					</tr>';
 			}
 
-			$title = 'Delete Outstanding Receipt';
+			$title = 'Delete Receipt Detail Summary';
 			$message = 'ARE YOU SURE YOU WANT TO DELETE THIS RECEIPT?';
 		}
 		else{
@@ -1145,8 +1145,8 @@ class ReceiptController extends Controller {
 
 				$output='
 				<tr>
-					<td>Date</td>
-					<td>'.date('d/m/Y', strtotime($payment->payment_date)).'</td>
+					<td style="border:0px">Date</td>
+					<td style="border:0px">'.date('d/m/Y', strtotime($payment->payment_date)).'</td>
 				</tr>
 				<tr>
 					<td>Debit Nominal</td>
@@ -1187,7 +1187,7 @@ class ReceiptController extends Controller {
 				</tr>
 				';
 			}
-			$title = 'Delete Outstanding Payment';
+			$title = 'Delete Payment Detail Summary';
 			$message = 'ARE YOU SURE YOU WANT TO DELETE THIS PAYMENT?';
 		}
 

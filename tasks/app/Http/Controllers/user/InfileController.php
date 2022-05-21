@@ -440,7 +440,7 @@ class InfileController extends Controller {
 			if (!file_exists($upload_dir)) {
 				mkdir($upload_dir);
 			}
-			$upload_dir = $upload_dir.'/'.base64_encode($data_img->id);
+			$upload_dir = $upload_dir.'/'.time();
 			if (!file_exists($upload_dir)) {
 				mkdir($upload_dir);
 			}
@@ -480,7 +480,7 @@ class InfileController extends Controller {
 		if (!file_exists($upload_dir)) {
 			mkdir($upload_dir);
 		}
-		$upload_dir = $upload_dir.'/'.base64_encode($data_img->id);
+		$upload_dir = $upload_dir.'/'.time();
 		if (!file_exists($upload_dir)) {
 			mkdir($upload_dir);
 		}

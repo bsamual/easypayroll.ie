@@ -818,6 +818,7 @@ class OpeningbalanceController extends Controller {
 		$filepath = Input::get('filename');
 		$output = '';
 		$objPHPExcel = PHPExcel_IOFactory::load($filepath);
+		$error_invalid = 0;
 		foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
 			$worksheetTitle     = $worksheet->getTitle();
 			$highestRow         = $worksheet->getHighestRow(); // e.g. 10
@@ -840,10 +841,9 @@ class OpeningbalanceController extends Controller {
 			$balance_label = str_replace(" ", "", $balance_label);
 			$balance_label = str_replace(" ", "", $balance_label);
 
-
 			if($invoice_label != "invoiceno" || $balance_label != "balance")
 			{
-				echo json_encode(array("error" => "1", "message" => 'You have tried to upload a wrong csv file.', "output" => ""));
+				echo json_encode(array("error" => "1","error_invalid" => $error_invalid, "message" => 'You have tried to upload a wrong csv file.', "output" => ""));
 				exit;
 			}
 			else{
@@ -888,18 +888,19 @@ class OpeningbalanceController extends Controller {
 					if($noteval > 0){
 						$valid_td = 'InValid';
 						$valid_cls = 'invalid_tr';
+						$error_invalid++;
 					}
 
 					$output.='<tr class="'.$valid_cls.'" data-element="'.$invoice_no.'" data-balance="'.$balance.'">
 					<td>'.$invoice_no.'</td>
-					<td>'.$balance.'</td>
+					<td>'.number_format_invoice_empty($bal).'</td>
 					<td>'.$valid_td.'</td>
 					<td>'.$note.'</td>
 					</tr>';
 				}
 			}
 		}
-		echo json_encode(array("error" => "0", "message" => '', "output" => $output));
+		echo json_encode(array("error" => "0","error_invalid" => $error_invalid, "message" => '', "output" => $output));
 		exit;
 	}
 
@@ -954,10 +955,264 @@ class OpeningbalanceController extends Controller {
 				}
 
 				if($noteval == 0){
-					$data['outstanding_balance'] = $balance;
+					$data['outstanding_balance'] = $bal;
 					DB::table('invoice_system')->where('invoice_number',$invoice_no)->update($data);
 				}
 			}
 		}
 	}
+	public function refresh_os_invoice(){
+		$clients = DB::table('cm_clients')->orderBy('id','asc')->get();
+		$os_data = [];
+		$user = DB::table('user_login')->first();
+        $financial_date = $user->opening_balance_date;
+        $total_os = 0;
+		if(count($clients)){
+			foreach($clients as $client)
+			{
+				$os_value = DB::table('invoice_system')->where('client_id',$client->client_id)->where('invoice_date','<=',$financial_date)->sum('outstanding_balance');
+				array_push($os_data, '<a href="javascript:" class="os_td_spam" data-element="'.$client->client_id.'">'.number_format_invoice($os_value).'</a>');
+
+				$total_os = $total_os + $os_value;
+			}
+		}
+
+		$data['os_data'] = $os_data;
+		$data['os_data_total'] = number_format_invoice($total_os);
+		echo json_encode($data);
+	}
+	public function set_balance_for_opening_balance()
+	{
+		$client_id = Input::get('client_id');
+		$value = Input::get('value');
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+		$value = str_replace(",","",$value);
+
+		$check_op_client = DB::table('opening_balance')->where('client_id',$client_id)->first();
+		if(count($check_op_client))
+		{
+			if($check_op_client->locked == 0){
+				$data['opening_balance'] = $value;
+				DB::table('opening_balance')->where('client_id',$client_id)->update($data);
+
+				echo 0;
+			}
+			else{
+				echo 1;
+			}
+		}
+		else{
+			$data['client_id'] = $client_id;
+			$data['opening_balance'] = $value;
+			$data['locked'] = 0;
+			DB::table('opening_balance')->insert($data);
+
+			echo 0;
+		}
+	}
+	public function remove_balance_for_opening_balance()
+	{
+		$client_id = Input::get('client_id');
+
+		$check_op_client = DB::table('opening_balance')->where('client_id',$client_id)->first();
+		if(count($check_op_client))
+		{
+			if($check_op_client->locked == 0){
+				$data['opening_balance'] = '';
+				DB::table('opening_balance')->where('client_id',$client_id)->update($data);
+				echo 0;
+			}
+			else{
+				echo 1;
+			}
+		}
+	}
+	public function opening_balance_review(){
+		$client_id = Input::get('client_id');
+
+		$cm_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+
+		if(count($cm_details)){
+			$client_details = '
+			<div class="col-md-3" style="padding:0px;">
+				<h5 style="font-weight: 600; font-size:15px;">Client Name:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600; font-size:15px;">'.$cm_details->company.'</h5>
+			</div>
+			<div class="col-md-3" style="padding:0px">
+				<h5 style="font-weight: 600; font-size:15px;">Client Code:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600; font-size:15px;">'.$client_id.'</h5>
+			</div>
+			<div class="col-md-3" style="padding:0px">
+				<h5 style="font-weight: 600; font-size:15px;">Address:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600; font-size:15px;">';
+					if($cm_details->address1 != ''){
+			          $client_details.=$cm_details->address1.'<br/>';
+			        }
+			        if($cm_details->address2 != ''){
+			          $client_details.=$cm_details->address2.'<br/>';
+			        }
+			        if($cm_details->address3 != ''){
+			          $client_details.=$cm_details->address3.'<br/>';
+			        }
+			        if($cm_details->address4 != ''){
+			          $client_details.=$cm_details->address4.'<br/>';
+			        }
+			        if($cm_details->address5 != ''){
+			          $client_details.=$cm_details->address5.'<br/>';
+			        }
+				$client_details.='</h5>
+			</div>
+			<div class="col-md-3" style="padding:0px">
+				<h5 style="font-weight: 600; font-size:15px;">Email:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600; font-size:15px;">'.$cm_details->email.'</h5>
+			</div>';
+		}
+
+
+		$user = DB::table('user_login')->first();
+        $financial_date = $user->opening_balance_date;
+        $invoice_issued = DB::table('invoice_system')->where('client_id', $client_id)->where('invoice_date','<=',$financial_date)->get();
+
+        $output_invoice_issued='';
+        $total_gross='';
+        $total_outstanding_balance='';
+        if(count($invoice_issued))
+        {
+          foreach($invoice_issued as $invoice){
+
+          	if($total_gross == ''){
+          		$total_gross = $invoice->gross;
+          	}
+          	else{
+          		$total_gross = $total_gross+$invoice->gross;
+          	}
+
+          	if($total_outstanding_balance == ''){
+          		$total_outstanding_balance = $invoice->outstanding_balance;
+          	}
+          	else{
+          		$total_outstanding_balance = $total_outstanding_balance+$invoice->outstanding_balance;
+          	}
+            
+            
+            $output_invoice_issued.='<tr>
+              <td><a href="javascript:" class="invoice_inside_class invoice_sort_val" data-element="'.$invoice->invoice_number.'">'.$invoice->invoice_number.'</a></td>              
+              <td>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
+              <td>'.number_format_invoice($invoice->gross).'</td>
+              <td>'.number_format_invoice_empty($invoice->outstanding_balance).'</td>
+            </tr>';
+          }
+        }
+
+        if($total_outstanding_balance == ''){
+        	$total_outstanding_balance = '0.00';
+        }
+        else{
+        	$total_outstanding_balance = $total_outstanding_balance;
+        }
+
+
+
+		echo json_encode(array('client_details' => $client_details, 'output_invoice_issued' => $output_invoice_issued, 'total_gross' => number_format_invoice($total_gross), 'total_outstanding_balance' => number_format_invoice($total_outstanding_balance)));
+	}
+
+	public function opening_balance_export_all(){
+		$columns_1 = array('S.No', 'Client ID', 'Client', 'Invoices Issued at O/B Date','OS invoices at OB Date', 'Balance');
+		$filename = 'Export Client Opening Balance Manager.csv';
+		$fileopen = fopen('public/'.$filename.'', 'w');
+	    fputcsv($fileopen, $columns_1);
+
+	    $clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id')->orderBy('id','asc')->get();
+	    $i=1;
+	    $total_invoice_issued='';
+	    if(count($clientlist)){
+	    	foreach($clientlist as $key => $client){
+
+	    		$balance_check = DB::table('opening_balance')->where('client_id',$client->client_id)->first();
+	    		if(count($balance_check))
+	              {
+	                if($balance_check->opening_balance == "")
+	                {
+	                  $balance = '-';
+	                }
+	                elseif($balance_check->opening_balance == 0)
+	                {
+	                  $balance = '0.00';
+	                }
+	                elseif($balance_check->opening_balance < 0)
+	                {
+	                  $balance = number_format_invoice($balance_check->opening_balance);
+	                }
+	                else{
+	                  $balance = number_format_invoice($balance_check->opening_balance);
+	                }
+
+	                /*if($balance_check->locked == 0)
+	                {
+	                  $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="color:green;font-size:18px !important"></a>';
+	                }
+	                else{
+	                  $action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=0').'" class="fa fa-lock" style="color:#f00;font-size:18px !important"></a>';
+	                }*/
+	            }
+	            else{
+	                $balance = '-';
+	                /*$action = '<a href="'.URL::to('user/lock_client_opening_balance?client_id='.$client->client_id.'&locked=1').'" class="fa fa-unlock" style="color:green;font-size:18px !important"></a>';*/
+	            }
+
+	            if($client->company == ''){
+					$companyname = $client->surname.' '.$client->firstname;
+				}
+				else{
+					$companyname = $client->company;
+				}
+
+				$user = DB::table('user_login')->first();
+				$financial_date = $user->opening_balance_date;
+
+				$invoice_issued = DB::table('invoice_system')->where('client_id',$client->client_id)->where('invoice_date','<=',$financial_date)->sum('gross');  
+
+				if($total_invoice_issued == ''){
+	                $total_invoice_issued = $invoice_issued;
+	            }
+	            else{
+	                $total_invoice_issued = $total_invoice_issued+$invoice_issued;
+	            }
+
+	            $os_value = DB::table('invoice_system')->where('client_id',$client->client_id)->where('invoice_date','<=',$financial_date)->sum('outstanding_balance');
+
+
+
+	            $columns_2 = array($i, $client->client_id, $companyname, number_format_invoice($invoice_issued), number_format_invoice($os_value), $balance);
+
+
+
+
+	            fputcsv($fileopen, $columns_2);
+	            $i++;
+
+
+
+	    	}
+	    }
+
+
+
+	    fclose($fileopen);
+	    echo $filename;
+	}
+
+
 }

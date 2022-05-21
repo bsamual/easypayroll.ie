@@ -18,6 +18,16 @@
     text-align: left;
     width: 250px;
 }
+.invoice_ac_period_div{
+    position: absolute;
+    top: 93%;
+    left:45%;
+    padding: 15px;
+    background: #ff0;
+    z-index: 999999;
+    text-align: left;
+    width: 350px;
+}
 .invoice_custom_div{
     position: absolute;
     top: 93%;
@@ -266,16 +276,77 @@ body.loading_apply .modal_load_apply {
               <input type="hidden" class="report_type_input" name="" readonly>
               <label class="error error_report_type" style="margin-left:15px"></label>
             </div>
-            <div class="row" style="margin-top: 5px;">
-              <div class="col-lg-6">
-                <input type="text" name="from_custom_date" class="form-control report_from_date" value="" placeholder="Choose From Date">
-                <label class="error error_from_date"></label>
+            <div class="col-lg-12 padding_00">
+
+            
+            <div class="col-lg-12 padding_00">
+              <div class="row" style="margin-top: 5px;">
+                <div class="col-lg-12">
+                  <input type="radio" name="report_date_account" value="1" class="report_date_account" id="report_type_date">
+                  <label for="report_type_date">Select Date</label>
+
+                </div>
+                
+                <div class="col-lg-6">
+                  <input type="text" name="from_custom_date" class="form-control report_from_date" value="" placeholder="Choose From Date">
+                  <label class="error error_from_date"></label>
+                </div>
+                <div class="col-lg-6">
+                  <input type="text" name="from_custom_date" class="form-control report_to_date" value="" placeholder="Choose To Date">
+                  <label class="error error_to_date"></label>
+                </div>
               </div>
-              <div class="col-lg-6">
-                <input type="text" name="from_custom_date" class="form-control report_to_date" value="" placeholder="Choose To Date">
-                <label class="error error_to_date"></label>
+
+            </div>
+            <div class="col-lg-12 padding_00">
+              <div class="col-lg-6 " style="padding-top: 8px; padding-left: 0px; ">
+                <input type="radio" name="report_date_account" value="2" class="report_date_account" id="report_type_ac_period">
+                <label for="report_type_ac_period">Select Accounting Period</label>
+                <select class="form-control report_accounting_period" style="font-weight:bold:">
+                  <?php
+                  $output_account='<option value="">Select Accounting Period</option>';
+                  $accounting_period_list = DB::table('accounting_period')->orderBy('status', 'desc')->get();
+                  if(count($accounting_period_list)){
+                    foreach ($accounting_period_list as $single_account){
+
+                      if($single_account->ac_lock == 0){
+                        $lock_text = 'Locked';
+                        $color = '#E11B1C';
+                        $value = $single_account->accounting_id;
+                      }
+                      else{
+                        $lock_text = 'Unlocked';
+                        $color='#33CC66';
+                        $value = $single_account->accounting_id;
+                      }
+
+                      $start_date = date('d M Y', strtotime($single_account->ac_start_date));
+                      $end_date = date('d M Y', strtotime($single_account->ac_end_date));
+
+
+                      $output_account.='<option value="'.$value.'" style="color:'.$color.'; font-weight:bold:">'.$start_date.' - '.$end_date.' '.$lock_text.'</option>';
+                    }
+                  }
+                  else{
+                    $output_account='<option value="">No Records found</option>';
+                  }
+                  echo $output_account;
+                  ?>
+                  
+                </select>
+                <label class="error error_select_account_drop"></label>
               </div>
             </div>
+            <div class="col-lg-12 padding_00">
+              <label class="error error_report_date_period" style=" clear: both; float: left;"></label>
+            </div>
+            
+            
+            <input type="hidden" readonly class="type_report_date_account" name="">
+            </div>
+            
+
+            
             
 
           </div>
@@ -334,6 +405,47 @@ body.loading_apply .modal_load_apply {
       <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_1" value="1"><label for="invoice_date_option_1">Year</label>&nbsp;&nbsp;&nbsp;&nbsp;
       <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_2" value="2" checked><label for="invoice_date_option_2">All Invoice</label>&nbsp;&nbsp;&nbsp;&nbsp;
       <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_3" value="3"><label for="invoice_date_option_3">Custom Date</label>&nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="radio" name="invoice_date_option" class="invoice_date_option" id="invoice_date_option_4" value="4"><label for="invoice_date_option_4">Accounting Period</label>&nbsp;&nbsp;&nbsp;&nbsp;
+
+      <div class="invoice_ac_period_div" style="display: none">
+        <h5 class="col-md-12">Select Accounting Period:</h5>
+        <div class="col-md-12">
+          <select name="invoice_ac_period" class="invoice_ac_period form-control" style="font-weight: bold;">
+            <?php
+            $output_account='';
+            $accounting_period_list = DB::table('accounting_period')->orderBy('status', 'desc')->get();
+            if(count($accounting_period_list)){
+              foreach ($accounting_period_list as $single_account){
+
+                if($single_account->ac_lock == 0){
+                  $lock_text = 'Locked';
+                  $color = '#E11B1C';
+                  $value = $single_account->accounting_id;
+                }
+                else{
+                  $lock_text = 'Unlocked';
+                  $color='#33CC66';
+                  $value = $single_account->accounting_id;
+                }
+
+                $start_date = date('d M Y', strtotime($single_account->ac_start_date));
+                $end_date = date('d M Y', strtotime($single_account->ac_end_date));
+
+
+                $output_account.='<option value="'.$value.'" style="color:'.$color.'; font-weight: bold;">'.$start_date.' - '.$end_date.' '.$lock_text.'</option>';
+              }
+            }
+            else{
+              $output_account='<option value="">No Records found</option>';
+            }
+            echo $output_account;
+            ?>
+          </select>
+        </div>
+        <div class="col-md-12" style="margin-top:10px">
+          <input type="button" name="load_invoice_year" class="common_black_button load_all_cm_invoice" value="Load Invoice">
+        </div>
+      </div>
 
       <div class="invoice_year_div" style="display: none">
         <h5 class="col-md-12">Select Year:</h5>
@@ -401,6 +513,7 @@ body.loading_apply .modal_load_apply {
           <th style="max-width: 82px !important;">Supplier Code</th>
           <th>Supplier Name</th>
           <th>Date</th>
+          <th>Accounting Period</th>
           <th>Invoice No</th>
           <th>Reference</th>
           <th style="text-align: right">Net</th>
@@ -425,12 +538,28 @@ body.loading_apply .modal_load_apply {
               $supplier_name = $supplier_details->supplier_name;
               $balance = $supplier_details->opening_balance;
             }
+            $ac_period = DB::table('accounting_period')->where('accounting_id', $global->ac_period)->first();
+            $start_date = '';
+            $end_date = '';
+            $period_color='#33CC66';     
+            if(count($ac_period)){
+              $start_date = date('d M Y', strtotime($ac_period->ac_start_date));
+              $end_date = date('d M Y', strtotime($ac_period->ac_end_date));
+
+              if($ac_period->ac_lock == 0){              
+                $period_color = '#E11B1C';              
+              }
+              else{              
+                $period_color='#33CC66';              
+              }
+            }
             ?>
             <tr>
               <td><?php echo $global->id; ?></td>
               <td><?php echo $supplier_code; ?></td>
               <td><?php echo $supplier_name; ?></td>
               <td><?php echo date('d-M-Y', strtotime($global->invoice_date)); ?></td>
+              <td style="color: <?php echo $period_color?>; font-weight: bold;"><?php echo $start_date; ?> - <?php echo $end_date; ?></td>
               <td><?php echo $global->invoice_no; ?></td>
               <td><?php echo $global->reference; ?></td>
               <td style="text-align: right"><?php echo number_format_invoice($global->net); ?></td>
@@ -852,32 +981,48 @@ function next_journal_check(count)
 }
 $(window).click(function(e) {
 
+if($(e.target).hasClass('report_date_account')){
+  var type = $(e.target).val();
+  $(".type_report_date_account").val(type);
+}
+
 if($(e.target).hasClass('preview_report_invoice')){
   var type = $(".report_type_input").val();
   var from = $(".report_from_date").val();
   var to = $(".report_to_date").val();
+  var type_date_period = $(".type_report_date_account").val();
+  var select_account = $(".report_accounting_period").val();
 
   if(type == ''){
     $(".error_report_type").html('Please select type');
   }
-  else if(from == ''){
+  else if(type_date_period == ''){
     $(".error_report_type").html('');
-    $(".error_from_date").html('Please choose from date');
+    $(".error_report_date_period").html('Please select date or Accounting type');
   }
-  else if(to == ''){
-    $(".error_from_date").html('');
-    $(".error_to_date").html('Please choose to date');
-  }
-  else{
+  else if(type_date_period == 1){
+    if(from == ''){
+      $(".error_report_type").html('');
+      $(".error_report_date_period").html('');
+      $(".error_select_account_drop").html('');
+      $(".error_from_date").html('Please choose from date');
+    }
+    else if(to == ''){
+      $(".error_from_date").html('');
+      $(".error_to_date").html('Please choose to date');
+    }
+    else{
     $(".error_from_date").html('');
     $(".error_to_date").html('');
+    $(".error_select_account_drop").html('');
     $("#report_preview").dataTable().fnDestroy();
     $("#report_preview2").dataTable().fnDestroy();
     $("body").addClass("loading");
-      setTimeout(function(){ 
+      setTimeout(function(){
+        
         $.ajax({
           url: "<?php echo URL::to('user/supplier_invoice_report_preview') ?>",
-          data:{type:type,from:from,to:to},
+          data:{type:type,from:from,to:to,type_date_period:type_date_period},
           type:"post",
           dataType:"json",
           success:function(result){
@@ -902,8 +1047,62 @@ if($(e.target).hasClass('preview_report_invoice')){
             $("body").removeClass("loading");
           }
         });
+        
+        
+        
       }, 500);
     }
+  }
+  else if(type_date_period == 2){
+    console.log(select_account);
+    if(select_account == ''){
+      $(".error_from_date").html('');
+      $(".error_to_date").html('');
+      $(".error_report_date_period").html('');
+      $(".error_select_account_drop").html('Please select account type');
+    }    
+    else{
+    $(".error_from_date").html('');
+    $(".error_to_date").html('');
+    $(".error_select_account_drop").html('');
+    $("#report_preview").dataTable().fnDestroy();
+    $("#report_preview2").dataTable().fnDestroy();
+    $("body").addClass("loading");
+      setTimeout(function(){        
+          $.ajax({
+            url: "<?php echo URL::to('user/supplier_invoice_report_preview') ?>",
+            data:{type:type,type_date_period:type_date_period,select_account:select_account},
+            type:"post",
+            dataType:"json",
+            success:function(result){
+              $(".class_report_preview").html(result['output']);
+
+              $('#report_preview').DataTable({        
+                  autoWidth: true,
+                  scrollX: false,
+                  fixedColumns: false,
+                  searching: false,
+                  paging: false,
+                  info: false
+              });
+              $('#report_preview2').DataTable({        
+                  autoWidth: true,
+                  scrollX: false,
+                  fixedColumns: false,
+                  searching: false,
+                  paging: false,
+                  info: false
+              });
+              $("body").removeClass("loading");
+            }
+          });
+
+        
+        
+      }, 500);
+    }
+  }  
+  
 }
 
 
@@ -926,34 +1125,69 @@ if($(e.target).hasClass('run_report_invoice')){
   var type = $(".report_type_input").val();
   var from = $(".report_from_date").val();
   var to = $(".report_to_date").val();
+  var type_date_period = $(".type_report_date_account").val();
+  var select_account = $(".report_accounting_period").val();
 
   if(type == ''){
     $(".error_report_type").html('Please select type');
   }
-  else if(from == ''){
+  else if(type_date_period == ''){
     $(".error_report_type").html('');
-    $(".error_from_date").html('Please choose from date');
+    $(".error_report_date_period").html('Please select date or Accounting type');
   }
-  else if(to == ''){
-    $(".error_from_date").html('');
-    $(".error_to_date").html('Please choose to date');
+  else if(type_date_period == 1){
+    if(from == ''){
+      $(".error_report_type").html('');
+      $(".error_from_date").html('Please choose from date');
+    }
+    else if(to == ''){
+      $(".error_from_date").html('');
+      $(".error_to_date").html('Please choose to date');
+    }
+    else{
+      $(".error_from_date").html('');
+      $(".error_to_date").html('');
+      $("body").addClass("loading");
+        setTimeout(function(){ 
+          $.ajax({
+            url: "<?php echo URL::to('user/supplier_invoice_report_download') ?>",
+            data:{type:type,from:from,to:to,type_date_period:type_date_period},
+            type:"post",
+            success:function(result){
+              SaveToDisk("<?php echo URL::to('public'); ?>/"+result,result);
+              $("body").removeClass("loading");
+            }
+          });
+        }, 500);
+    }
   }
-  else{
+  else if(type_date_period == 2){
+    console.log(select_account);
+    if(select_account == ''){
+      $(".error_from_date").html('');
+      $(".error_to_date").html('');
+      $(".error_report_date_period").html('');
+      $(".error_select_account_drop").html('Please select account type');
+    }    
+    else{
     $(".error_from_date").html('');
     $(".error_to_date").html('');
+    $(".error_report_date_period").html('');
+    $(".error_select_account_drop").html('');
     $("body").addClass("loading");
-      setTimeout(function(){ 
-        $.ajax({
-          url: "<?php echo URL::to('user/supplier_invoice_report_download') ?>",
-          data:{type:type,from:from,to:to},
-          type:"post",
-          success:function(result){
-            SaveToDisk("<?php echo URL::to('public'); ?>/"+result,result);
-            $("body").removeClass("loading");
-          }
-        });
+      setTimeout(function(){        
+          $.ajax({
+            url: "<?php echo URL::to('user/supplier_invoice_report_download') ?>",
+            data:{type:type,type_date_period:type_date_period,select_account:select_account},
+            type:"post",
+            success:function(result){
+              SaveToDisk("<?php echo URL::to('public'); ?>/"+result,result);
+              $("body").removeClass("loading");
+            }
+          });
       }, 500);
     }
+  }
 }
 
     if($(e.target).hasClass('add_supplier_invoice')){
@@ -1278,6 +1512,7 @@ if($(e.target).hasClass('submit_module_update_invoice')){
       {
         $(".invoice_year_div").show();
         $(".invoice_custom_div").hide();
+        $(".invoice_ac_period_div").hide();
         $(".invoice_select_year").val("");
         var myVal = $('.invoice_select_year option:last').val();
         $('.invoice_select_year').val(myVal);
@@ -1286,6 +1521,7 @@ if($(e.target).hasClass('submit_module_update_invoice')){
       {
         $(".invoice_year_div").hide();
         $(".custom_date_div").hide();
+        $(".invoice_ac_period_div").hide();
         $('#client_expand').DataTable().destroy();
         $("body").addClass("loading");
           setTimeout(function(){ 
@@ -1312,9 +1548,17 @@ if($(e.target).hasClass('submit_module_update_invoice')){
       else if(value == "3")
       {
         $(".invoice_year_div").hide();
+        $(".invoice_ac_period_div").hide();
         $(".invoice_custom_div").show();
         $(".from_invoice").val("");
         $(".to_invoice").val("");
+      }
+      else if(value == "4")
+      {
+        $(".invoice_year_div").hide();
+        $(".invoice_custom_div").hide();
+        $(".invoice_ac_period_div").show();
+        
       }
     }
     else if($(e.target).parents(".invoice_custom_div").length > 0)
@@ -1327,9 +1571,14 @@ if($(e.target).hasClass('submit_module_update_invoice')){
       $(".invoice_year_div").show();
       $(".invoice_custom_div").hide();
     }
+    else if($(e.target).parents(".invoice_ac_period_div").length > 0)
+    {
+      $(".invoice_ac_period_div").show();      
+    }
     else{
         $(".invoice_year_div").hide();
         $(".invoice_custom_div").hide();
+        $(".invoice_ac_period_div").hide();
     }
 
     if($(e.target).hasClass('load_all_cm_invoice')) {
@@ -1379,6 +1628,35 @@ if($(e.target).hasClass('submit_module_update_invoice')){
                 $.ajax({
                     url: "<?php echo URL::to('user/load_all_global_invoice') ?>",
                     data:{from:from,to:to,type:"3"},
+                    type:"post",
+                    success:function(result){
+                      $("#invoice_tbody").html(result);  
+                      $('#client_expand').DataTable({
+                          autoWidth: false,
+                          scrollX: false,
+                          fixedColumns: false,
+                          searching: false,
+                          paging: false,
+                          info: false,
+                          order: []
+                      });     
+                      $(".invoice_year_div").hide();
+                      $(".invoice_custom_div").hide();
+                      $("body").removeClass("loading");
+                    }
+                });
+          }, 2000);
+        
+      }
+      else if(type == "4")
+      {
+        $('#client_expand').DataTable().destroy();
+        $("body").addClass("loading");
+          setTimeout(function(){ 
+              var invoice_ac_period = $(".invoice_ac_period").val();              
+                $.ajax({
+                    url: "<?php echo URL::to('user/load_all_global_invoice') ?>",
+                    data:{invoice_ac_period:invoice_ac_period,type:"4"},
                     type:"post",
                     success:function(result){
                       $("#invoice_tbody").html(result);  
@@ -1511,6 +1789,7 @@ if($(e.target).hasClass('submit_module_update_invoice')){
           $("#hidden_sno").val(sno);
           $(".add_purchase_invoice_modal").modal("show");
           $(".add_purchase_invoice_modal").find(".modal-title").html("Edit Purchase Invoice");
+          $(".invoice_ac_accounting_id").val(result['ac_period']);
 
           blurfunction();
         }

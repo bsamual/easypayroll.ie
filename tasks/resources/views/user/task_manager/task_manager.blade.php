@@ -165,7 +165,7 @@ table{
   text-align: left;
   font-weight:600;
   padding: 6px 10px;
-  background: #f5f5f5;
+  /*background: #f5f5f5;*/
   font-size:15px;
 }
 .ui-widget{z-index: 999999999}
@@ -699,7 +699,7 @@ input:checked + .slider:before {
         </div>
   </div>
 </div>
-<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
+<!-- <div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_job_form">
         <div class="modal-content">
@@ -1047,7 +1047,7 @@ input:checked + .slider:before {
         </div>
     </form>
   </div>
-</div>
+</div> -->
 <div class="modal fade dropzone_progress_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
         <div class="modal-content">
@@ -3298,13 +3298,6 @@ $(window).click(function(e) {
                       $(".table_layout").hide();
                       $(".table_layout").find(".hidden_author_tr").hide();
                     }
-
-                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                    var opentask = $(".hidden_allocated_tr").length;
-                    var authored = $(".hidden_author_tr").length;
-                    $("#redline_task_count_val").html(redline);
-                    $("#open_task_count_val").html(opentask);
-                    $("#authored_task_count_val").html(authored);
                   }
                   else if(view == "2"){
                     $("#open_task_count").hide();
@@ -3345,13 +3338,6 @@ $(window).click(function(e) {
                       $(".table_layout").hide();
                       $(".table_layout").find(".hidden_allocated_tr").hide();
                     }
-
-                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                    var opentask = $(".hidden_allocated_tr").length;
-                    var authored = $(".hidden_author_tr").length;
-                    $("#redline_task_count_val").html(redline);
-                    $("#open_task_count_val").html(opentask);
-                    $("#authored_task_count_val").html(authored);
                   }
                   else if(view == "1"){
                     if(layout == "1")
@@ -3368,14 +3354,15 @@ $(window).click(function(e) {
                       $(".table_layout").hide();
                       $(".table_layout").find(".hidden_allocated_tr").hide();
                     }
-
-                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                    var opentask = $(".hidden_allocated_tr").length;
-                    var authored = $(".hidden_author_tr").length;
-                    $("#redline_task_count_val").html(redline);
-                    $("#open_task_count_val").html(opentask);
-                    $("#authored_task_count_val").html(authored);
                   }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
+
                   $("[data-toggle=popover]").popover({
                       html : true,
                       content: function() {
@@ -3481,9 +3468,12 @@ $(window).click(function(e) {
           $("#task_tr_"+taskidval).next().show();
           $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
 
-          var opentask = $("#open_task_count_val").html();
-          var countopen = parseInt(opentask) - 1;
-          $("#open_task_count_val").html(countopen);
+          var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+          var opentask = $(".hidden_allocated_tr").length;
+          var authored = $(".hidden_author_tr").length;
+          $("#redline_task_count_val").html(redline);
+          $("#open_task_count_val").html(opentask);
+          $("#authored_task_count_val").html(authored);
           $("body").removeClass("loading");
         }
         else{
@@ -3521,13 +3511,6 @@ $(window).click(function(e) {
                     $(".table_layout").hide();
                     $(".table_layout").find(".hidden_author_tr").hide();
                   }
-
-                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                  var opentask = $(".hidden_allocated_tr").length;
-                  var authored = $(".hidden_author_tr").length;
-                  $("#redline_task_count_val").html(redline);
-                  $("#open_task_count_val").html(opentask);
-                  $("#authored_task_count_val").html(authored);
                 }
                 else if(view == "2"){
                   $("#open_task_count").hide();
@@ -3568,13 +3551,6 @@ $(window).click(function(e) {
                     $(".table_layout").hide();
                     $(".table_layout").find(".hidden_allocated_tr").hide();
                   }
-
-                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                  var opentask = $(".hidden_allocated_tr").length;
-                  var authored = $(".hidden_author_tr").length;
-                  $("#redline_task_count_val").html(redline);
-                  $("#open_task_count_val").html(opentask);
-                  $("#authored_task_count_val").html(authored);
                 }
                 else if(view == "1"){
                   if(layout == "1")
@@ -3591,14 +3567,15 @@ $(window).click(function(e) {
                     $(".table_layout").hide();
                     $(".table_layout").find(".hidden_allocated_tr").hide();
                   }
-
-                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                  var opentask = $(".hidden_allocated_tr").length;
-                  var authored = $(".hidden_author_tr").length;
-                  $("#redline_task_count_val").html(redline);
-                  $("#open_task_count_val").html(opentask);
-                  $("#authored_task_count_val").html(authored);
                 }
+
+                var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                var opentask = $(".hidden_allocated_tr").length;
+                var authored = $(".hidden_author_tr").length;
+                $("#redline_task_count_val").html(redline);
+                $("#open_task_count_val").html(opentask);
+                $("#authored_task_count_val").html(authored);
+
                 $("[data-toggle=popover]").popover({
                     html : true,
                     content: function() {
@@ -3704,9 +3681,12 @@ $(window).click(function(e) {
           $("#task_tr_"+taskidval).next().show();
           $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
 
-          var opentask = $("#open_task_count_val").html();
-          var countopen = parseInt(opentask) - 1;
-          $("#open_task_count_val").html(countopen);
+          var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+          var opentask = $(".hidden_allocated_tr").length;
+          var authored = $(".hidden_author_tr").length;
+          $("#redline_task_count_val").html(redline);
+          $("#open_task_count_val").html(opentask);
+          $("#authored_task_count_val").html(authored);
           $("body").removeClass("loading");
         }
         else{
@@ -3745,12 +3725,7 @@ $(window).click(function(e) {
                     $(".table_layout").find(".hidden_author_tr").hide();
                   }
 
-                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                  var opentask = $(".hidden_allocated_tr").length;
-                  var authored = $(".hidden_author_tr").length;
-                  $("#redline_task_count_val").html(redline);
-                  $("#open_task_count_val").html(opentask);
-                  $("#authored_task_count_val").html(authored);
+                  
                 }
                 else if(view == "2"){
                   $("#open_task_count").hide();
@@ -3792,12 +3767,7 @@ $(window).click(function(e) {
                     $(".table_layout").find(".hidden_allocated_tr").hide();
                   }
 
-                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                  var opentask = $(".hidden_allocated_tr").length;
-                  var authored = $(".hidden_author_tr").length;
-                  $("#redline_task_count_val").html(redline);
-                  $("#open_task_count_val").html(opentask);
-                  $("#authored_task_count_val").html(authored);
+                  
                 }
                 else if(view == "1"){
                   if(layout == "1")
@@ -3815,13 +3785,16 @@ $(window).click(function(e) {
                     $(".table_layout").find(".hidden_allocated_tr").hide();
                   }
 
-                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                  var opentask = $(".hidden_allocated_tr").length;
-                  var authored = $(".hidden_author_tr").length;
-                  $("#redline_task_count_val").html(redline);
-                  $("#open_task_count_val").html(opentask);
-                  $("#authored_task_count_val").html(authored);
+                  
                 }
+
+                var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                var opentask = $(".hidden_allocated_tr").length;
+                var authored = $(".hidden_author_tr").length;
+                $("#redline_task_count_val").html(redline);
+                $("#open_task_count_val").html(opentask);
+                $("#authored_task_count_val").html(authored);
+
                 $("[data-toggle=popover]").popover({
                     html : true,
                     content: function() {
@@ -4175,9 +4148,13 @@ $(window).click(function(e) {
             $("#task_tr_"+taskidval).next().show();
             $("#hidden_tasks_tr_"+taskidval).find("td").css("background","#2fd9ff");
 
-            var opentask = $("#authored_task_count_val").html();
-            var countopen = parseInt(opentask) - 1;
-            $("#authored_task_count_val").html(countopen);
+
+            var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+            var opentask = $(".hidden_allocated_tr").length;
+            var authored = $(".hidden_author_tr").length;
+            $("#redline_task_count_val").html(redline);
+            $("#open_task_count_val").html(opentask);
+            $("#authored_task_count_val").html(authored);
             $("body").removeClass("loading");
           }
           else{
@@ -4216,12 +4193,6 @@ $(window).click(function(e) {
         			      	$(".table_layout").find(".hidden_author_tr").hide();
         			   	  }
 
-                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                    var opentask = $(".hidden_allocated_tr").length;
-                    var authored = $(".hidden_author_tr").length;
-                    $("#redline_task_count_val").html(redline);
-                    $("#open_task_count_val").html(opentask);
-                    $("#authored_task_count_val").html(authored);
         			    }
                   else if(view == "2"){
                     $("#open_task_count").hide();
@@ -4263,12 +4234,6 @@ $(window).click(function(e) {
                       $(".table_layout").find(".hidden_allocated_tr").hide();
                     }
 
-                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                    var opentask = $(".hidden_allocated_tr").length;
-                    var authored = $(".hidden_author_tr").length;
-                    $("#redline_task_count_val").html(redline);
-                    $("#open_task_count_val").html(opentask);
-                    $("#authored_task_count_val").html(authored);
                   }
         			    else if(view == "1"){
         			      if(layout == "1")
@@ -4285,13 +4250,14 @@ $(window).click(function(e) {
         			      	$(".table_layout").hide();
         			      	$(".table_layout").find(".hidden_allocated_tr").hide();
         			   	  }
-                    var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
-                    var opentask = $(".hidden_allocated_tr").length;
-                    var authored = $(".hidden_author_tr").length;
-                    $("#redline_task_count_val").html(redline);
-                    $("#open_task_count_val").html(opentask);
-                    $("#authored_task_count_val").html(authored);
         			    }
+
+                  var redline = $(".redline_indication_layout").parents(".hidden_allocated_tr").length;
+                  var opentask = $(".hidden_allocated_tr").length;
+                  var authored = $(".hidden_author_tr").length;
+                  $("#redline_task_count_val").html(redline);
+                  $("#open_task_count_val").html(opentask);
+                  $("#authored_task_count_val").html(authored);
 
                   $("[data-toggle=popover]").popover({
                       html : true,

@@ -947,7 +947,7 @@ body.loading .modal_load {
         </div>
   </div>
 </div>
-<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
+<!-- <div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_task_form">
         <div class="modal-content">
@@ -1078,8 +1078,7 @@ body.loading .modal_load {
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
-                    <!-- <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1" disabled />
-                    <label for="internal_checkbox">Internal</label> -->
+                    
                   </div>
                 </div>
             </div>
@@ -1297,7 +1296,7 @@ body.loading .modal_load {
         </div>
     </form>
   </div>
-</div>    
+</div>    --> 
 <div class="modal fade" id="show_email_sent_popup" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog" role="document" style="z-index: 999999">
     <div class="modal-content">
@@ -3287,7 +3286,7 @@ body.loading .modal_load {
 
   
 
-<div style="width:100%;float:left; margin-top: 55px; margin-bottom: -66px;">
+<div style="width:100%;float:left; margin-top: 120px; margin-bottom: -154px;">
 
 <?php
 
@@ -3859,6 +3858,10 @@ if(Session::has('error')) { ?>
                           <?php
                           if($result->disclose_liability == 1) { $check_lia = 'checked'; } else { $check_lia = ''; } ?>
                           <input type="checkbox" name="disclose_liability" id="disclose_liability<?php echo $result->task_id; ?>" class="disclose_liability" value="1" data-element="<?php echo $result->task_id; ?>" <?php echo $check_lia.' '.$disabled; ?>><label class="disclose_label" for="disclose_liability<?php echo $result->task_id; ?>">Disclose Lability on Client Email</label>
+
+                          <?php
+                          if($result->distribute_email == 1) { $check_email = 'checked'; } else { $check_email = ''; } ?>
+                          <input type="checkbox" name="distribute_email" id="distribute_email<?php echo $result->task_id; ?>" class="distribute_email" value="1" data-element="<?php echo $result->task_id; ?>" <?php echo $check_email.' '.$disabled; ?>><label class="dist_email_label" for="distribute_email<?php echo $result->task_id; ?>">Distribute Email by Link</label>
 
                   </td>
 
@@ -4534,6 +4537,10 @@ if(Session::has('error')) { ?>
                           <?php
                           if($result->disclose_liability == 1) { $check_lia = 'checked'; } else { $check_lia = ''; } ?>
                           <input type="checkbox" name="disclose_liability" id="disclose_liability<?php echo $result->task_id; ?>" class="disclose_liability" value="1" data-element="<?php echo $result->task_id; ?>" <?php echo $check_lia.' '.$disabled; ?>><label class="disclose_label" for="disclose_liability<?php echo $result->task_id; ?>">Disclose Lability on Client Email</label>
+
+                          <?php
+                          if($result->distribute_email == 1) { $check_email = 'checked'; } else { $check_email = ''; } ?>
+                          <input type="checkbox" name="distribute_email" id="distribute_email<?php echo $result->task_id; ?>" class="distribute_email" value="1" data-element="<?php echo $result->task_id; ?>" <?php echo $check_email.' '.$disabled; ?>><label class="dist_email_label" for="distribute_email<?php echo $result->task_id; ?>">Distribute Email by Link</label>
                   </td>
 
                   <td align="center">
@@ -5183,6 +5190,10 @@ if(Session::has('error')) { ?>
                           <?php
                           if($result->disclose_liability == 1) { $check_lia = 'checked'; } else { $check_lia = ''; } ?>
                           <input type="checkbox" name="disclose_liability" id="disclose_liability<?php echo $result->task_id; ?>" class="disclose_liability" value="1" data-element="<?php echo $result->task_id; ?>" <?php echo $check_lia.' '.$disabled; ?>><label class="disclose_label" for="disclose_liability<?php echo $result->task_id; ?>">Disclose Lability on Client Email</label>
+
+                          <?php
+                          if($result->distribute_email == 1) { $check_email = 'checked'; } else { $check_email = ''; } ?>
+                          <input type="checkbox" name="distribute_email" id="distribute_email<?php echo $result->task_id; ?>" class="distribute_email" value="1" data-element="<?php echo $result->task_id; ?>" <?php echo $check_email.' '.$disabled; ?>><label class="dist_email_label" for="distribute_email<?php echo $result->task_id; ?>">Distribute Email by Link</label>
                   </td>
 
                   <td align="center">
@@ -6203,6 +6214,7 @@ $(window).click(function(e) {
 
         $("#action_type").val("1");
         $(".allocate_user_add").val(result['staff']);
+        $(".allocate_email").val(result['allocated_email']);
         $(".task-choose_internal").html("Select Task");
         $(".subject_class").val("Current Period (Monthly) Payroll to Be Created");
         $(".task_specifics_add").show();
@@ -6302,6 +6314,27 @@ $(window).click(function(e) {
     var task_id = $(e.target).attr("data-element");
     $.ajax({
       url:"<?php echo URL::to('user/save_disclose_liability'); ?>",
+      type:"post",
+      data:{task_id:task_id,status:status},
+      success: function(result)
+      {
+
+      }
+    });
+  }
+  if($(e.target).hasClass('distribute_email'))
+  {
+    if($(e.target).is(":checked"))
+    {
+      var status = 1;
+    }
+    else{
+      var status = 0;
+    }
+    var task_id = $(e.target).attr("data-element");
+    console.log(task_id);
+    $.ajax({
+      url:"<?php echo URL::to('user/save_distribute_email'); ?>",
       type:"post",
       data:{task_id:task_id,status:status},
       success: function(result)

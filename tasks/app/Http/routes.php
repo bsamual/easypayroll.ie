@@ -2146,6 +2146,8 @@ Route::get('/user/edit_email_unsent_files_croard', 'user\CroardController@edit_e
 
 Route::post('/user/email_unsent_files_croard', 'user\CroardController@email_unsent_files_croard');
 
+Route::post('/user/email_company_files_croard', 'user\CroardController@email_company_files_croard');
+
 Route::post('/user/change_yellow_status_croard', 'user\CroardController@change_yellow_status_croard');
 
 Route::post('/user/save_croard_signature_date', 'user\CroardController@save_croard_signature_date');
@@ -2576,4 +2578,46 @@ Route::post('admin/update_table_notes', 'admin\AdminController@update_table_note
 Route::post('admin/show_table_viewer', 'admin\AdminController@show_table_viewer');
 
 Route::post('/user/invoice_export_selected_csvs', 'user\ClientreviewController@invoice_export_selected_csvs');
+
+Route::post('/user/refresh_os_invoice', 'user\OpeningbalanceController@refresh_os_invoice');
+Route::post('/user/set_balance_for_opening_balance', 'user\OpeningbalanceController@set_balance_for_opening_balance');
+
+Route::get('/user/key_docs', 'user\KeydocsController@key_docs');
+Route::post('/user/load_year_end_docs', 'user\KeydocsController@load_year_end_docs');
+Route::post('/user/download_year_end_documents', 'user\KeydocsController@download_year_end_documents');
+Route::post('/user/upload_key_docs_letter', 'user\KeydocsController@upload_key_docs_letter');
+Route::post('/user/download_key_docs_letters', 'user\KeydocsController@download_key_docs_letters');
+Route::post('/user/download_key_docs_tax', 'user\KeydocsController@download_key_docs_tax');
+
+Route::post('/user/save_letter_notes', 'user\KeydocsController@save_letter_notes');
+Route::post('/user/delete_letter', 'user\KeydocsController@delete_letter');
+Route::post('/user/delete_tax', 'user\KeydocsController@delete_tax');
+Route::post('/user/delete_current_tax', 'user\KeydocsController@delete_current_tax');
+Route::get('/user/key_docs_client_select', 'user\KeydocsController@key_docs_client_select');
+
+
+/*--------------- Ram 18-04-2022 --------------*/
+Route::post('/user/opening_balance_review', 'user\OpeningbalanceController@opening_balance_review');
+Route::post('/user/opening_balance_export_all', 'user\OpeningbalanceController@opening_balance_export_all');
+
+Route::post('/user/remove_balance_for_opening_balance', 'user\OpeningbalanceController@remove_balance_for_opening_balance');
+
+Route::get('/user/get_client_from_cronumber', 'user\CroardController@get_client_from_cronumber');
+
+
+
+
+Route::post('/user/accounting_period_save', 'user\FinancialController@accounting_period_save');
+Route::post('/user/accounting_period_set_default', 'user\FinancialController@accounting_period_set_default');
+Route::post('/user/accounting_period_lock_unlock', 'user\FinancialController@accounting_period_lock_unlock');
+
+Route::get('/user/invoice_setacperiod', 'user\SupplierinvoiceController@invoice_setacperiod');
+
+Route::post('/user/save_keydocs_settings', 'user\KeydocsController@save_keydocs_settings');
+
+Route::post('/user/keydocs_email_selected_pdf', 'user\KeydocsController@keydocs_email_selected_pdf');
+
+Route::post('/user/save_distribute_email','user\UserController@save_distribute_email');
+
+Route::post('/user/vat_refresh_upload_images','user\UserController@vat_refresh_upload_images');
 

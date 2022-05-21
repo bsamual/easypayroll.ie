@@ -203,7 +203,7 @@
   </div>
   <div class="content_section">
     <h1>BubbleAccounting</h1>
-    <h3>Leading Practice Management Software, used by top Accounting to manage, Staff, Tasks, Clients and how they interact with each other.</h3>
+    <h3>Leading Practice Management Software, used by top Accounting Firms to manage, Staff, Tasks, Clients and how they interact with each other.</h3>
     <div class="more_button">
       <a href="<?php echo URL::to('bubble-accounting')?>" class="common_button">More</a>
     </div>

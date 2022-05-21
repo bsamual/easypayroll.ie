@@ -202,7 +202,7 @@ class CroardController extends Controller {
 		$company_number = Input::get('cro');
 		$indicator = 'C';
 
-		$ch = curl_init();
+		//$ch = curl_init();
 		$url = "https://services.cro.ie/cws/company/".$company_number."/".$indicator."";
 
 		$cro = DB::table('cro_credentials')->first();
@@ -212,17 +212,27 @@ class CroardController extends Controller {
 		    "Content-Type: application/json", 
 		    "charset: utf-8");
 		 
-		 
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		// curl_setopt($ch, CURLOPT_PROXY, 'http://ip of your proxy:8080');  // Proxy if applicable
-		curl_setopt($ch, CURLOPT_FAILONERROR,1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-		curl_setopt($ch, CURLOPT_URL, $url );
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		$userpwd = $cro->username.":".$cro->api_key; // new
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json' ) ); // change
+		curl_setopt($ch, CURLOPT_USERPWD, $userpwd);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET"); 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($ch, CURLOPT_POST, 0); 
+		curl_setopt($ch, CURLOPT_VERBOSE, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		
+		
+// 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+// 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+// 		// curl_setopt($ch, CURLOPT_PROXY, 'http://ip of your proxy:8080');  // Proxy if applicable
+// 		curl_setopt($ch, CURLOPT_FAILONERROR,1);
+// 		curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+// 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+// 		curl_setopt($ch, CURLOPT_URL, $url );
+// 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+// 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+// 		curl_setopt($ch, CURLOPT_POST, 0); 
 
 		$response = curl_exec($ch);
  
@@ -868,7 +878,7 @@ class CroardController extends Controller {
 		$username = Input::get('username');
 		$api_key = Input::get('api_key');
 		DB::table('cro_credentials')->where('id',1)->update(['username' =>$username, 'api_key' =>$api_key]);
-		return Redirect::back()->with('message_settings',"Croard Settings Saved successfully.");
+		return Redirect::back()->with('message_settings',"CRO ARD Settings Saved successfully.");
 	}
 	public function rbo_review_list()
 	{
@@ -1014,6 +1024,118 @@ class CroardController extends Controller {
 			DB::table('croard')->where('client_id',$clientid)->update($data);
 		}
 	}
-	
+	public function get_client_from_cronumber(){
+		$company_number = Input::get('company_number');
+		$indicator_text = Input::get('indicator_text');
+		$company_name = Input::get('company_name');
+		$company_address = Input::get('company_address');
+		$company_reg_date = Input::get('company_reg_date');
+		$company_status_desc = Input::get('company_status_desc');
+		$company_status_date = Input::get('company_status_date');
+		$next_ar_date = Input::get('next_ar_date');
+		$last_ar_date = Input::get('last_ar_date');
+		$last_acc_date = Input::get('last_acc_date');
+		$comp_type_desc = Input::get('comp_type_desc');
+		$company_type_code = Input::get('company_type_code');
+		$company_status_code = Input::get('company_status_code');
+		$place_of_business = Input::get('place_of_business');
+		$eircode = Input::get('eircode');
+
+		$client_details = DB::table('cm_clients')->where('cro',$company_number)->first();
+		if(count($client_details)){
+
+			$admin_details = Db::table('admin')->first();
+			$client_id = $client_details->client_id;
+			$result = DB::table('croard')->where('client_id',$client_id)->first();
+
+			$html = '<p>Hi '.$client_details->firstname.'</p>
+			<p>Here is your company information as per the companies office</p>
+
+			<div>
+			<b>Company Number: </b><spam>'.$company_number.'</spam><br/>
+			<b>Company / Business indicator: </b><spam>'.$indicator_text.'</spam><br/>
+			<b>Company Name: </b><spam>'.$company_name.'</spam><br/>
+			<b>Company Address: </b><spam>'.$company_address.'</spam><br/>
+			<b>Company Registration Date: </b><spam>'.$company_reg_date.'</spam><br/>
+			<b>Company Status: </b><spam>'.$company_status_desc.'</spam><br/>
+			<b>Company Status Date: </b><spam>'.$company_status_date.'</spam><br/>
+			<b>Next ARD: </b><spam>'.$next_ar_date.'</spam><br/>
+			<b>Last ARD: </b><spam>'.$last_ar_date.'</spam><br/>
+
+			<b>Accounts Upto: </b><spam>'.$last_acc_date.'</spam><br/>
+			<b>Company Type: </b><spam>'.$comp_type_desc.'</spam><br/>
+			<b>Company Type Code: </b><spam>'.$company_type_code.'</spam><br/>
+			<b>Company Status Code: </b><spam>'.$company_status_code.'</spam><br/>
+			<b>Place of Business: </b><spam>'.$place_of_business.'</spam><br/>
+			<b>Eircode: </b><spam>'.$eircode.'</spam><br/>
+			</div><br/>
+
+			<p>'.$admin_details->croard_signature.'</p>';
+			
+		    $subject = 'CROARD Company Details - '.$result->company_name.'';
+
+	    	if($client_details->email2 != '')
+			{
+				$to_email = $client_details->email.','.$client_details->email2;
+			}
+			else{
+				$to_email = $client_details->email;
+			}
+		    echo json_encode(["html" => $html,"to" => $to_email,'subject' => $subject,'client_id' => $client_id]);
+		}
+		else {
+			echo json_encode(["html" => '',"to" => '','subject' => '', 'client_id' => '']);
+		}
+	}
+	public function email_company_files_croard()
+	{
+		$from_input = Input::get('select_user_company');
+		$details = DB::table('user')->where('user_id',$from_input)->first();
+		$from = $details->email;
+		$user_name = $details->lastname.' '.$details->firstname;
+		$toemails = Input::get('to_user_company').','.Input::get('cc_company');
+		$sentmails = Input::get('to_user_company').', '.Input::get('cc_company');
+		$subject = Input::get('subject_company'); 
+		$message = Input::get('message_editor');
+		$explode = explode(',',$toemails);
+		$data['sentmails'] = $sentmails;
+		
+		if(count($explode))
+		{
+			foreach($explode as $exp)
+			{
+				$to = trim($exp);
+				$data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
+				$data['message'] = $message;
+				$contentmessage = view('user/email_share_paper_croard', $data);
+				$email = new PHPMailer();
+				$email->SetFrom($from, $user_name); //Name is optional
+				$email->Subject   = $subject;
+				$email->Body      = $contentmessage;
+				$email->IsHTML(true);
+				$email->AddAddress( $to );
+				$email->Send();
+			}
+			$date = date('Y-m-d H:i:s');
+			
+			$client_id = Input::get('hidden_client_id_search_company');
+			$client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+			if(count($client_details)){
+				$datamessage['message_id'] = time();
+				$datamessage['message_from'] = $from_input;
+				$datamessage['subject'] = $subject;
+				$datamessage['message'] = $message;
+				$datamessage['client_ids'] = $client_id;
+				$datamessage['primary_emails'] = $client_details->email;
+				$datamessage['secondary_emails'] = $client_details->email2;
+				$datamessage['date_sent'] = $date;
+				$datamessage['date_saved'] = $date;
+				$datamessage['source'] = "CROARD";
+				$datamessage['attachments'] = '';
+				$datamessage['status'] = 1;
+				DB::table('messageus')->insert($datamessage);
+			}
+		}
+	}
 }
 

@@ -611,7 +611,7 @@ input:checked + .slider:before {
         </div>
   </div>
 </div>
-<div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
+<!-- <div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_job_form">
         <div class="modal-content">
@@ -909,7 +909,7 @@ input:checked + .slider:before {
         </div>
     </form>
   </div>
-</div>
+</div> -->
 <div class="modal fade dropzone_progress_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
         <div class="modal-content">

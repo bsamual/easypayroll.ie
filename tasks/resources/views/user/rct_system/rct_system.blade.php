@@ -233,17 +233,17 @@ a:hover{text-decoration: underline;}
                 Active Month
             </div>
             <div class="col-lg-2 padding_00" style="margin-top: 20px;">
+
               <select class="form-control select_active_month_rct">
                 <?php
                   $current_month = date('Y-m');
-
-                $prevdate = date("Y-m-05", strtotime("-1 months"));
+                $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
                 $prev_date2 = date('Y-m', strtotime($prevdate));
                   $active_drop='<option value="'.$current_month.'">'.date('M-Y', strtotime($current_month)).'</option>';
                   for($i=0;$i<=22;$i++)
                   {
                     $month = $i + 1;
-                    $newdate = date("Y-m-05", strtotime("-".$month." months"));
+                    $newdate = date("Y-m-05", strtotime("first day of -".$month." months"));
                     $formatted_date = date('M-Y', strtotime($newdate));
                     $formatted_date2 = date('Y-m', strtotime($newdate));
 
@@ -510,13 +510,13 @@ a:hover{text-decoration: underline;}
                                       <?php
                                         $current_month = date('Y-m');
 
-                                        $prevdate = date("Y-m-05", strtotime("-1 months"));
+                                        $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
                                         $prev_date2 = date('Y-m', strtotime($prevdate));
                                         $active_drop='<option value="'.$current_month.'">'.date('M-Y', strtotime($current_month)).'</option>';
                                         for($i=0;$i<=22;$i++)
                                         {
                                           $month = $i + 1;
-                                          $newdate = date("Y-m-05", strtotime("-".$month." months"));
+                                          $newdate = date("Y-m-05", strtotime("first day of -".$month." months"));
                                           $formatted_date = date('M-Y', strtotime($newdate));
                                           $formatted_date2 = date('Y-m', strtotime($newdate));
 
@@ -542,7 +542,7 @@ a:hover{text-decoration: underline;}
                                       $netval = unserialize($rctsubmission->value_net);
                                       $deductionval = unserialize($rctsubmission->deduction);
 
-                                      $prevdate = date("Y-m-05", strtotime("-1 months"));
+                                      $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
                                       $prev_date2 = date('Y-m', strtotime($prevdate));
                                       $data = array();
                                       if(count($start_date))

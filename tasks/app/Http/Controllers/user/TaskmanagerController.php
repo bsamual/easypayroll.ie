@@ -4532,7 +4532,7 @@ class TaskmanagerController extends Controller {
 	          </tr>';
 
 	          $layout.= '<tr class="hidden_tasks_tr '.$hidden_author_cls.'" id="hidden_tasks_tr_'.$task->id.'" data-element="'.$task->id.'" style="display:none">
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%">
 	                    	<tr>';
 	                    	$statusi = 0;
@@ -4577,7 +4577,7 @@ class TaskmanagerController extends Controller {
 	                    	</tr>
 	                    </table>
                     </td>
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%">
 	                    	<tr>
 	                    		<td style="width:60%;padding:10px; font-size:14px; font-weight:800;" class="author_sort_val">'.$author->lastname.' '.$author->firstname.' / <spam class="allocated_sort_val">'.$allocated_to.'</spam></td>
@@ -4585,7 +4585,7 @@ class TaskmanagerController extends Controller {
 	                    	</tr>
                     	</table>
                     </td>
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%">
 	                    	<tr>
 	                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800;" class="duedate_sort_val">
@@ -4599,7 +4599,7 @@ class TaskmanagerController extends Controller {
 	                    	</tr>
 	                    </table>
                     </td>
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%">
 	                    	<tr>
 	                    		<td style="width:25%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>';
@@ -5204,7 +5204,7 @@ class TaskmanagerController extends Controller {
 	          </tr>';
 
 	          $layout.= '<tr class="hidden_tasks_tr '.$hidden_author_cls.'" id="hidden_tasks_tr_'.$task->id.'" data-element="'.$task->id.'" style="display:none">
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%">
 	                    	<tr>';
 	                    	$statusi = 0;
@@ -5249,7 +5249,7 @@ class TaskmanagerController extends Controller {
 	                    	</tr>
 	                    </table>
                     </td>
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%">
 	                    	<tr>
 	                    		<td style="width:60%;padding:10px; font-size:14px; font-weight:800;" class="author_sort_val">'.$author->lastname.' '.$author->firstname.' / <spam class="allocated_sort_val">'.$allocated_to.'</spam></td>
@@ -5257,7 +5257,7 @@ class TaskmanagerController extends Controller {
 	                    	</tr>
                     	</table>
                     </td>
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%">
 	                    	<tr>
 	                    		<td style="width:50%;padding:10px; font-size:14px; font-weight:800;" class="duedate_sort_val">
@@ -5271,7 +5271,7 @@ class TaskmanagerController extends Controller {
 	                    	</tr>
 	                    </table>
                     </td>
-                    <td style="background: #dcdcdc;padding:0px;">
+                    <td>
                     	<table style="width:100%" >
 	                    	<tr>
 	                    		<td style="width:25%;padding:10px; font-size:14px; font-weight:800;" class="taskid_sort_val">'.$task->taskid.'</td>';

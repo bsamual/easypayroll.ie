@@ -151,6 +151,7 @@ class TaskyearController extends Controller {
 						$data['default_staff'] = $tasks->default_staff;
 						$data['scheme_id'] = $tasks->scheme_id;
 						$data['disclose_liability'] = $tasks->disclose_liability;
+						$data['distribute_email'] = $tasks->distribute_email;
 
 						if($tasks->task_complete_period_type == 2){							
 							$data['task_complete_period'] = 1;
@@ -224,6 +225,7 @@ class TaskyearController extends Controller {
 						$datamonth['default_staff'] = $monthtasks->default_staff;	
 						$datamonth['scheme_id'] = $monthtasks->scheme_id;
 						$datamonth['disclose_liability'] = $monthtasks->disclose_liability;
+						$datamonth['distribute_email'] = $monthtasks->distribute_email;
 
 						if($monthtasks->task_complete_period_type == 2){							
 							$datamonth['task_complete_period'] = 1;

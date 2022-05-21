@@ -613,10 +613,10 @@ if(!empty($_GET['import_type_existing']))
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel" style="float:left">Notify All Option</h4>
+        <h4 class="modal-title" id="myModalLabel" style="float:left">Request/Manage ID Files</h4>
         <input type="button" name="clear_selection" class="btn btn-primary common_black_button" id="clear_selection" value="Clear Selection" style="float:right;margin-right:30px;">
-        <input type="radio" name="notify_radio" id="identity_received"><label for="identity_received" style="float:right;margin-right:30px;">Hide Accounts with ID</label>
-        <input type="radio" name="notify_radio" id="inactive_clients"><label for="inactive_clients" style="float:right;margin-right:60px;">Inactive Clients</label>
+        <input type="checkbox" name="notify_radio" id="identity_received"><label for="identity_received" style="float:right;margin-right:30px;">Hide Accounts with ID</label>
+        <input type="checkbox" name="notify_radio" id="inactive_clients"><label for="inactive_clients" style="float:right;margin-right:60px;">Inactive Clients</label>
       </div>
       <div class="modal-body notify_place_div modal_max_height">
       </div>
@@ -758,22 +758,18 @@ if(!empty($_GET['import_type_existing']))
     <h4 class="col-lg-12 padding_00 new_main_title">
                 AML System                  
             </h4>        
-            <div class="col-lg-2 padding_00">
+            <div class="col-lg-5 padding_00">
             
             <?php $check_incomplete = Db::table('user_login')->where('userid',1)->first(); if($check_incomplete->aml_incomplete == 1) { $inc_checked = 'checked'; } else { $inc_checked = ''; } ?>
                 <input type="checkbox" name="show_incomplete" id="show_incomplete" value="1" <?php echo $inc_checked?> ><label for="show_incomplete">Hide Deactivated Accounts</label>
+                  <div class="select_button" style=" margin-left: 10px;text-align: right;margin-top:10px;margin-bottom: 20px">
+                    <ul>
+                    <li><a class="standard_file_name_cls" href="javascript:" style="font-size: 13px; font-weight: 500;">Rename ID Attachment files</a></li>
+                    <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" data-toggle="modal" data-target=".report_modal">Report</a></li>
+                    <li><a href="javascript:" class="notify_aml" id="notify_aml" style="font-size: 13px; font-weight: 500;">Request/Manage ID Files</a></li>
+                  </ul>
+                </div>
               </div>
-            
-            
-            <div class="col-lg-3 text-right"  style="padding: 0px;text-align: right" >
-              <div class="select_button" style=" margin-left: 10px;text-align: right">
-                  <ul>
-                  <li><a class="standard_file_name_cls" href="javascript:" style="font-size: 13px; font-weight: 500;">Rename ID Attachment files</a></li>
-                  <li><a href="javascript:" style="font-size: 13px; font-weight: 500;" data-toggle="modal" data-target=".report_modal">Report</a></li>
-                  <li><a href="javascript:" class="notify_aml" id="notify_aml" style="font-size: 13px; font-weight: 500;">Notify</a></li>
-                </ul>
-              </div>
-            </div>
           
   <div class="table-responsive" style="max-width: 100%; float: left;margin-bottom:5px; margin-top:55px">
   </div>
@@ -1050,6 +1046,11 @@ if(!empty($_GET['import_type_existing']))
                                     <?php
                                   }
                                 }
+                                  else{
+                                    ?>
+                                     <a href="javascript:" class="fa fa-plus trade_details trade_details_<?php echo $client->client_id; ?>" data-element="<?php echo $client->client_id; ?>"></a>
+                                    <?php
+                                  }
                                   ?>
                                 </td>
                                 <?php
@@ -1256,6 +1257,52 @@ Dropzone.options.imageUpload1 = {
         });
     },
 };
+Dropzone.options.imageUpload2 = {
+    acceptedFiles: null,
+    maxFilesize:50000,
+    timeout: 10000000,
+    dataType: "HTML",
+    parallelUploads: 1,
+    init: function() {
+        this.on('sending', function(file) {
+            $("body").addClass("loading");
+        });
+        this.on("drop", function(event) {
+            $("body").addClass("loading");        
+        });
+        this.on("success", function(file, response) {
+            var obj = jQuery.parseJSON(response);
+            file.serverId = obj.id; // Getting the new upload ID from the server via a JSON response
+            if(obj.id != 0)
+            {
+              file.previewElement.innerHTML = "<p>"+obj.filename+" <a href='javascript:' class='remove_dropzone_attach' data-element='"+obj.id+"'>Remove</a></p>";
+            }
+            else{
+              $("#attachments_text").show();
+              $("#add_attachments_div").append("<p>"+obj.filename+" </p>");
+              $(".img_div").each(function() {
+                $(this).hide();
+              });
+            }
+        });
+        this.on("complete", function (file) {
+          if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
+            $("body").removeClass("loading");
+          }
+         });
+        this.on("error", function (file) {
+            console.log(file);
+            $("body").removeClass("loading");
+      });
+        this.on("canceled", function (file) {
+            $("body").removeClass("loading");
+      });
+        this.on("removedfile", function(file) {
+            if (!file.serverId) { return; }
+            $.get("<?php echo URL::to('user/remove_property_images'); ?>"+"/"+file.serverId);
+        });
+    },
+};
 
 <?php
 
@@ -1400,6 +1447,15 @@ $(".image_file").change(function(){
 
 });
 $(window).click(function(e) {
+  if($(e.target).hasClass('notify_all_clients')){
+    if($(e.target).is(":checked"))
+    {
+      $(".notify_option:visible").prop("checked",true);
+    }
+    else{
+      $(".notify_option:visible").prop("checked",false);
+    }
+  }
   if($(e.target).hasClass('standard_file_name_cls'))
   {
     $(".alert_modal").modal("show");
@@ -1428,17 +1484,39 @@ $(window).click(function(e) {
   }
   if(e.target.id == "inactive_clients")
   {
-    $("#clear_selection").show();
     $(".notify_place_div").find("tr").show();
-    $(".notify_place_div").find(".inactive").hide();
-    $(".notify_place_div").find(".inactive").find(".notify_option").prop("checked",false);
+
+    if($("#identity_received").is(":checked")){
+      $(".notify_place_div").find(".identity_received").hide();
+    }
+    else{
+      $(".notify_place_div").find(".identity_received").show();
+    }
+
+    if($(e.target).is(":checked")){
+      $(".notify_place_div").find(".inactive").hide();
+    }
+    else{
+      $(".notify_place_div").find(".inactive").show();
+    }
   }
   if(e.target.id == "identity_received")
   {
-    $("#clear_selection").show();
     $(".notify_place_div").find("tr").show();
-    $(".notify_place_div").find(".identity_received").hide();
-    $(".notify_place_div").find(".identity_received").find(".notify_option").prop("checked",false);
+    
+    if($("#inactive_clients").is(":checked")){
+      $(".notify_place_div").find(".inactive").hide();
+    }
+    else{
+      $(".notify_place_div").find(".inactive").show();
+    }
+    
+    if($(e.target).is(":checked")){
+      $(".notify_place_div").find(".identity_received").hide();
+    }
+    else{
+      $(".notify_place_div").find(".identity_received").show();
+    }
   }
   if(e.target.id == "clear_selection")
   {
@@ -1472,7 +1550,7 @@ $(window).click(function(e) {
   // }
   if(e.target.id == 'notify_aml')
   {
-    $("#clear_selection").hide();
+    if (Dropzone.instances.imageUpload2) Dropzone.forElement("#imageUpload2").destroy();
     if (CKEDITOR.instances.editor_1) CKEDITOR.instances.editor_1.destroy();
     $.ajax({
         url:"<?php echo URL::to('user/notify_tasks_aml'); ?>",
@@ -1485,6 +1563,8 @@ $(window).click(function(e) {
              {
               height: '150px',
              }); 
+
+             $(".dropzone").dropzone();
           },1000);
         }
     });
@@ -2173,7 +2253,11 @@ if(e.target.id == "save_as_pdf")
                       data:{htmlval:pdf_html},
                       success: function(result)
                       {
+                        //var pdffile = result.split('||');
+                        //SaveToDisk("<?php echo URL::to('papers'); ?>/"+pdffile[0]+"/"+pdffile[1],pdffile[1]);
+
                         SaveToDisk("<?php echo URL::to('papers'); ?>/"+result,result);
+                        window.location.reload();
                       }
                     });
                   }
@@ -2231,30 +2315,12 @@ if($(e.target).hasClass('fa-plus-add'))
     //$("#img_div_"+current_client).css({"position":"absolute","top":toppos,"left":leftposi, "z-index":"9999"}).toggle();
   }
   
-  if($(e.target).hasClass('image_file'))
-  {
-    $(e.target).parents('td').find('.img_div').toggle();
-    $(e.target).parents('.modal-body').find('.img_div').toggle();
-  }
+  
   if($(e.target).hasClass('image_file_add'))
   {
     $(e.target).parents('.modal-body').find('.img_div').toggle();
   }
-  if($(e.target).hasClass("dropzone"))
-  {
-    $(e.target).parents('td').find('.img_div').show();    
-    $(e.target).parents('.modal-body').find('.img_div').show();    
-  }
-  if($(e.target).hasClass("remove_dropzone_attach"))
-  {
-    $(e.target).parents('td').find('.img_div').show();   
-    $(e.target).parents('.modal-body').find('.img_div').show(); 
-  }
-  if($(e.target).parent().hasClass("dz-message"))
-  {
-    $(e.target).parents('td').find('.img_div').show();
-    $(e.target).parents('.modal-body').find('.img_div').show();    
-  }
+  
 });
 $.ajaxSetup({async:false});
 $('#form-validation').validate({

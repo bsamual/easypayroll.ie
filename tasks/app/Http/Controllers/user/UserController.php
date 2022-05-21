@@ -786,6 +786,7 @@ class UserController extends Controller {
 		$data['p30_email'] = $taskdetails->p30_email;
 		$data['default_staff'] = $taskdetails->default_staff;
 		$data['disclose_liability'] = $taskdetails->disclose_liability;
+		$data['distribute_email'] = $taskdetails->distribute_email;
 		DB::table('task')->where('task_id',$id)->insert([$data]);
 		if($week != '')
 		{
@@ -5218,6 +5219,7 @@ class UserController extends Controller {
 						$data['default_staff'] = $tasks->default_staff;
 						$data['scheme_id'] = $tasks->scheme_id;
 						$data['disclose_liability'] = $tasks->disclose_liability;
+						$data['distribute_email'] = $tasks->distribute_email;
 						if($tasks->task_complete_period_type == 2){							
 							$data['task_complete_period'] = 1;
 							$data['task_complete_period_type'] = 2;
@@ -5310,6 +5312,8 @@ class UserController extends Controller {
 						$data['p30_pay'] = $tasks->p30_pay;
 						$data['p30_email'] = $tasks->p30_email;
 						$data['disclose_liability'] = $tasks->disclose_liability;
+						$data['distribute_email'] = $tasks->distribute_email;
+
 						$data['default_staff'] = $tasks->default_staff;
 						$data['scheme_id'] = $tasks->scheme_id;
 						if($tasks->task_complete_period_type == 2){							
@@ -5714,6 +5718,15 @@ class UserController extends Controller {
 		$prev_no_sub_due = 0;
 		$curr_no_sub_due = 0;
 		$next_no_sub_due = 0;
+
+		$prev_no_sub_os = 0;
+		$curr_no_sub_os = 0;
+		$next_no_sub_os = 0;
+
+		$prev_no_sub = 0;
+		$curr_no_sub = 0;
+		$next_no_sub = 0;
+
 		if(count($clients))
 		{
 			foreach($clients as $client)
@@ -5741,6 +5754,7 @@ class UserController extends Controller {
                 $next_month = date('m-Y', strtotime('first day of next month'));
 
                 $prev_attachment_div = '';
+                $prev_refresh_file = '';
 				$prev_text_one = 'No Period';
 				$prev_text_two = '';
 				$prev_t1 = '';
@@ -5755,6 +5769,7 @@ class UserController extends Controller {
 				
 
 				$curr_attachment_div = '';
+				$curr_refresh_file = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
 				$curr_t1 = '';
@@ -5768,6 +5783,7 @@ class UserController extends Controller {
 				$curr_checked = '';
 
 				$next_attachment_div = '';
+				$next_refresh_file = '';
 				$next_text_one = 'No Period';
 				$next_text_two = '';
 				$next_t1 = '';
@@ -5812,6 +5828,8 @@ class UserController extends Controller {
 
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prev_month.'"></a></p>'; 
 
+                			$prev_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($prev->url.'/'.$prev->filename).'" data-client="'.$client->client_id.'" data-month="'.$prev_month.'"></a>';
+
                 			$prev_t1 = $prev->t1;
                 			$prev_t2 = $prev->t2;
                 		}
@@ -5823,6 +5841,7 @@ class UserController extends Controller {
                 			$prev_color_status = 'green_import'; 
                 			$prev_color_text = 'Submitted'; 
                 			$prev_check_box_color = 'submitted_td';
+                			$prev_no_sub = $prev_no_sub + 1;
                 			$i = $i + 1; 
                 			$prev_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$prev_month.'" style="float:right"></a>';
                 		}
@@ -5849,7 +5868,7 @@ class UserController extends Controller {
                 			$prev_color_status = 'red_import'; 
                 			$prev_color_text = 'Submission O/S';
                 			$prev_check_box_color = 'os_td';
-                			$prev_no_sub_due = $prev_no_sub_due + 1;
+                			$prev_no_sub_os = $prev_no_sub_os + 1;
                 		}
                 		else{
                 			$prev_color_status = 'blue_import'; 
@@ -5882,6 +5901,8 @@ class UserController extends Controller {
                 			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" title="'.$curr->filename.'" download>'.$img.'</a> 
 
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$curr_month.'"></a></p>'; 
+
+                			$curr_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" data-client="'.$client->client_id.'" data-month="'.$curr_month.'"></a>';
                 			$curr_t1 = $curr->t1;
                 			$curr_t2 = $curr->t2;
                 		}
@@ -5893,6 +5914,7 @@ class UserController extends Controller {
                 			$curr_color_status = 'green_import'; 
                 			$curr_color_text = 'Submitted'; 
                 			$curr_check_box_color = 'submitted_td';
+                			$curr_no_sub = $curr_no_sub + 1;
                 			$i = $i + 1; 
                 			$curr_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$curr_month.'" style="float:right"></a>';
                 		}
@@ -5953,6 +5975,8 @@ class UserController extends Controller {
 
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$next_month.'"></a></p>'; 
 
+                			$next_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($next->url.'/'.$next->filename).'" data-client="'.$client->client_id.'" data-month="'.$next_month.'"></a>';
+
                 			$next_t1 = $next->t1;
                 			$next_t2 = $next->t2;
                 		}
@@ -5964,6 +5988,7 @@ class UserController extends Controller {
                 			$next_color_status = 'green_import'; 
                 			$next_color_text = 'Submitted'; 
                 			$next_check_box_color = 'submitted_td';
+                			$next_no_sub = $next_no_sub + 1;
                 			$i = $i + 1; 
                 			$next_remove_two = '<a href="javascript:" class="fa fa-times delete_submitted" data-client="'.$client->client_id.'" data-element="'.$next_month.'" style="float:right"></a>';
                 		}
@@ -5999,8 +6024,8 @@ class UserController extends Controller {
                 }
 
 				$output.='<tr class="tasks_tr tasks_tr_'.$client->client_id.' '.$deactivated_client.'">
-					<td style="color:'.$fontcolor.'" class="sno_sort_val"><a href="javascript:" class="vat_client_class" data-element="'.$client->client_id.'">'.$client->cm_client_id.'</a></td>
-					<td style="color:'.$fontcolor.'" class="client_sort_val"><a href="javascript:" class="vat_client_class" data-element="'.$client->client_id.'">'.$client->name.'</a></td>
+					<td style="color:'.$fontcolor.'" class="sno_sort_val"><a href="javascript:" class="vat_client_class" data-element="'.$client->client_id.'" data-code="'.$client->cm_client_id.'" data-client="'.$client->name.'">'.$client->cm_client_id.'</a></td>
+					<td style="color:'.$fontcolor.'" class="client_sort_val"><a href="javascript:" class="vat_client_class" data-element="'.$client->client_id.'" data-code="'.$client->cm_client_id.'" data-client="'.$client->name.'">'.$client->name.'</a></td>
 					<td style="color:'.$fontcolor.'" class="tax_sort_val">'.$client->taxnumber.'</td>
 					<td id="add_files_vat_client_'.$prev_month.'">
 						<p style="text-align:center"><label class="import_icon '.$prev_color_status.'">'.$prev_color_text.'</label></p>
@@ -6008,7 +6033,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$prev_month.'" data-client="'.$client->client_id.'" '.$prev_checked.'><label for="" class="records_receive_label '.$prev_check_box_color.' '.$prev_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$prev_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$prev_text_one.'</spam></p>
 						<p>Submitted: '.$prev_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$prev_month.'" style="float:right" value="'.$prev_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam> '.$prev_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$prev_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$prev_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$prev_attachment_div.'</div></div>
 					</td>
@@ -6018,7 +6043,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$curr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$curr_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$curr_text_one.'</spam></p>
 						<p>Submitted: '.$curr_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$curr_month.'" style="float:right" value="'.$curr_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam> '.$curr_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$curr_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$curr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a><div class="attachment_div">'.$curr_attachment_div.'</div></div>
 					</td>
@@ -6028,7 +6053,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$next_month.'" data-client="'.$client->client_id.'" '.$next_checked.'><label for="" class="records_receive_label '.$next_check_box_color.' '.$next_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$next_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$next_text_one.'</spam></p>
 						<p>Submitted: '.$next_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$next_month.'" style="float:right" value="'.$next_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam> '.$next_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$next_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$next_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$next_attachment_div.'</div></div>
 					</td>
@@ -6039,7 +6064,7 @@ class UserController extends Controller {
 		$curr_month = date('M-Y');
 		$next_month = date('M-Y', strtotime('first day of next month'));
 
-		echo json_encode(array("output" => $output,"prev_no_sub_due" => $prev_no_sub_due,"curr_no_sub_due" => $curr_no_sub_due,"next_no_sub_due" => $next_no_sub_due, "prev_month" => $prev_month, "curr_month" => $curr_month, "next_month" => $next_month));
+		echo json_encode(array("output" => $output,"prev_no_sub_due" => $prev_no_sub_due,"curr_no_sub_due" => $curr_no_sub_due,"next_no_sub_due" => $next_no_sub_due,"prev_no_sub_os" => $prev_no_sub_os,"curr_no_sub_os" => $curr_no_sub_os,"next_no_sub_os" => $next_no_sub_os,"prev_no_sub" => $prev_no_sub,"curr_no_sub" => $curr_no_sub,"next_no_sub" => $next_no_sub, "prev_month" => $prev_month, "curr_month" => $curr_month, "next_month" => $next_month));
 	}
 	public function show_prev_month()
 	{
@@ -6057,9 +6082,9 @@ class UserController extends Controller {
 		$curr_str = strtotime($get_full_date);
 		$next_str = strtotime($get_full_date.' +1 month');
 
-		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$prevv_month.'">0</spam></label>';
-		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$currr_month.'">0</spam></label>';
-		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$nextt_month.'">0</spam></label>';
+		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_'.$prevv_month.'">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_'.$prevv_month.'">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_'.$prevv_month.'">0</spam></label>';
+		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_'.$currr_month.'">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_'.$currr_month.'">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_'.$currr_month.'">0</spam></label>';
+		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_'.$nextt_month.'">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_'.$nextt_month.'">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_'.$nextt_month.'">0</spam></label>';
 
 		$prev_cell = array();
 		array_push($prev_cell, $prev_month);
@@ -6077,6 +6102,7 @@ class UserController extends Controller {
 			foreach($clients as $client)
 			{
 				$prev_attachment_div = '';
+				$prev_refresh_file = '';
 				$prev_text_one = 'No Period';
 				$prev_text_two = '';
 				$prev_t1 = '';
@@ -6090,6 +6116,7 @@ class UserController extends Controller {
 				$prev_checked = '';
 
 				$curr_attachment_div = '';
+				$curr_refresh_file = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
 				$curr_t1 = '';
@@ -6103,6 +6130,7 @@ class UserController extends Controller {
 				$curr_checked = '';
 
 				$next_attachment_div = '';
+				$next_refresh_file = '';
 				$next_text_one = 'No Period';
 				$next_text_two = '';
 				$next_t1 = '';
@@ -6144,6 +6172,8 @@ class UserController extends Controller {
                 			$prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" title="'.$prev->filename.'" download>'.$img.'</a> 
 
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; 
+
+                			$prev_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($prev->url.'/'.$prev->filename).'" data-client="'.$client->client_id.'" data-month="'.$prevv_month.'"></a>';
 
                 			$prev_t1 = $prev->t1;
                 			$prev_t2 = $prev->t2;
@@ -6229,6 +6259,8 @@ class UserController extends Controller {
                 			}
                 			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" title="'.$curr->filename.'" download>'.$img.'</a> 
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; 
+
+                			$curr_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" data-client="'.$client->client_id.'" data-month="'.$currr_month.'"></a>';
                 			$curr_t1 = $curr->t1;
                 			$curr_t2 = $curr->t2;
                 		}
@@ -6314,6 +6346,8 @@ class UserController extends Controller {
                 			$next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" title="'.$next->filename.'" download>'.$img.'</a>  
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; 
 
+                			$next_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($next->url.'/'.$next->filename).'" data-client="'.$client->client_id.'" data-month="'.$nextt_month.'"></a>';
+
                 			$next_t1 = $next->t1;
                 			$next_t2 = $next->t2;
                 		}
@@ -6388,7 +6422,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'" '.$prev_checked.'><label for="" class="records_receive_label '.$prev_check_box_color.' '.$prev_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$prev_text_one.'</spam></p>
 						<p>Submitted: '.$prev_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'" style="float:right" value="'.$prev_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam> '.$prev_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$prev_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$prevv_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$prev_attachment_div.'</div></div>');
 
@@ -6397,7 +6431,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$currr_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$curr_text_one.'</spam></p>
 						<p>Submitted: '.$curr_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam> '.$curr_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$curr_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$curr_attachment_div.'</div></div>');
 
@@ -6406,7 +6440,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'" '.$next_checked.'><label for="" class="records_receive_label '.$next_check_box_color.' '.$next_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$next_text_one.'</spam></p>
 						<p>Submitted: '.$next_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'" style="float:right" value="'.$next_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam> '.$next_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$next_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$nextt_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$next_attachment_div.'</div></div>');
 			}
@@ -6429,9 +6463,9 @@ class UserController extends Controller {
 		$curr_str = strtotime($get_full_date);
 		$next_str = strtotime($get_full_date.' +1 month');
 
-		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$prevv_month.'">0</spam></label>';
-		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$currr_month.'">0</spam></label>';
-		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_'.$nextt_month.'">0</spam></label>';
+		$prev_month = '<a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="'.$prevv_month.'"></a>&nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' -1 month')).'">'.date('M-Y',strtotime($get_full_date.' -1 month')).'</a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_'.$prevv_month.'">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_'.$prevv_month.'">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_'.$prevv_month.'">0</spam></label>';
+		$curr_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date)).'">'.date('M-Y',strtotime($get_full_date)).'</a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_'.$currr_month.'">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_'.$currr_month.'">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_'.$currr_month.'">0</spam></label>';
+		$next_month = '<a href="javascript:" class="show_month_in_overlay" data-element="'.date('m-Y',strtotime($get_full_date.' +1 month')).'">'.date('M-Y',strtotime($get_full_date.' +1 month')).'</a>&nbsp;&nbsp;<a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="'.$nextt_month.'"></a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_'.$nextt_month.'">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_'.$nextt_month.'">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_'.$nextt_month.'">0</spam></label>';
 
 		$prev_cell = array();
 		array_push($prev_cell, $prev_month);
@@ -6449,6 +6483,7 @@ class UserController extends Controller {
 			foreach($clients as $client)
 			{
 				$prev_attachment_div = '';
+				$prev_refresh_file = '';
 				$prev_text_one = 'No Period';
 				$prev_text_two = '';
 				$prev_t1 = '';
@@ -6462,6 +6497,7 @@ class UserController extends Controller {
 				$prev_checked = '';
 
 				$curr_attachment_div = '';
+				$curr_refresh_file = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
 				$curr_t1 = '';
@@ -6475,6 +6511,7 @@ class UserController extends Controller {
 				$curr_checked = '';
 
 				$next_attachment_div = '';
+				$next_refresh_file = '';
 				$next_text_one = 'No Period';
 				$next_text_two = '';
 				$next_t1 = '';
@@ -6515,6 +6552,8 @@ class UserController extends Controller {
                 			}
                 			$prev_attachment_div.= '<p><a href="'.URL::to($prev->url.'/'.$prev->filename).'" class="file_attachments" title="'.$prev->filename.'" download>'.$img.'</a> 
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$prev->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'"></a></p>'; 
+
+                			$prev_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($prev->url.'/'.$prev->filename).'" data-client="'.$client->client_id.'" data-month="'.$prevv_month.'"></a>';
 
                 			$prev_t1 = $prev->t1;
                 			$prev_t2 = $prev->t2;
@@ -6600,6 +6639,8 @@ class UserController extends Controller {
                 			}
                 			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" title="'.$curr->filename.'" download>'.$img.'</a> 
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>'; 
+
+                			$curr_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" data-client="'.$client->client_id.'" data-month="'.$currr_month.'"></a>';
                 			$curr_t1 = $curr->t1;
                 			$curr_t2 = $curr->t2;
                 		}
@@ -6684,6 +6725,8 @@ class UserController extends Controller {
                 			}
                 			$next_attachment_div.= '<p><a href="'.URL::to($next->url.'/'.$next->filename).'" class="file_attachments" title="'.$next->filename.'" download>'.$img.'</a>  
                 			<a href="'.URL::to('user/delete_vat_files?file_id='.$next->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'"></a></p>'; 
+
+                			$next_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file" data-element="'.URL::to($next->url.'/'.$next->filename).'" data-client="'.$client->client_id.'" data-month="'.$nextt_month.'"></a>';
                 			$next_t1 = $next->t1;
                 			$next_t2 = $next->t2;
                 		}
@@ -6758,7 +6801,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'" '.$prev_checked.'><label for="" class="records_receive_label '.$prev_check_box_color.' '.$prev_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$prevv_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$prev_text_one.'</spam></p>
 						<p>Submitted: '.$prev_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$prevv_month.'" style="float:right" value="'.$prev_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$prev_t1.'</spam> '.$prev_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$prev_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$prevv_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$prev_attachment_div.'</div></div>');
 
@@ -6767,7 +6810,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$currr_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$curr_text_one.'</spam></p>
 						<p>Submitted: '.$curr_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$curr_t1.'</spam> '.$curr_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$curr_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$curr_attachment_div.'</div></div>');
 
@@ -6776,7 +6819,7 @@ class UserController extends Controller {
 						<p><input type="checkbox" class="check_records_received" id="check_records_received" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'" '.$next_checked.'><label for="" class="records_receive_label '.$next_check_box_color.' '.$next_checked.'">Records Received</label></p>
 						<p>Period: &nbsp;&nbsp;<a href="javascript:" class="period_change" style="float:right;font-weight:800;margin-left: 10px;" data-month="'.$nextt_month.'" data-client="'.$client->client_id.'">...</a> <spam class="period_import" style="float:right">'.$next_text_one.'</spam></p>
 						<p>Submitted: '.$next_remove_two.'<input type="text" class="submitted_import" data-client="'.$client->client_id.'" data-element="'.$nextt_month.'" style="float:right" value="'.$next_text_two.'"></p>
-						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam></p>
+						<p>T1: <spam class="t1_spam">'.$next_t1.'</spam> '.$next_refresh_file.'</p>
 						<p>T2: <spam class="t2_spam">'.$next_t2.'</spam></p>
 						<div>Submission: <a href="javascript:" class="fa fa-plus add_attachment_month_year" data-element="'.$nextt_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div">'.$next_attachment_div.'</div></div>');
 			}
@@ -6831,6 +6874,7 @@ class UserController extends Controller {
 					$cm_client_id = '';
 				}
 				$curr_attachment_div = '';
+				$curr_refresh_file = '';
 				$curr_text_one = 'No Period';
 				$curr_text_two = '';
 				$curr_t1 = '<p>T1: <spam class="t1_spam_overlay"></spam></p>';
@@ -6857,6 +6901,9 @@ class UserController extends Controller {
                 	{
                 		if($curr->type == 1){ 
                 			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>';
+
+                			$curr_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file floatnone" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" data-client="'.$client->client_id.'" data-month="'.$currr_month.'"></a>';
+
                 			$curr_t1 ='<p>T1: <spam class="t1_spam_overlay">'.$curr->t1.'</spam></p>';
 							$curr_t2 ='<p>T2: <spam class="t2_spam_overlay">'.$curr->t2.'</spam></p>'; 
 
@@ -6950,7 +6997,7 @@ class UserController extends Controller {
 						<input type="hidden" name="date_sort_val" class="date_sort_val" value="'.$curr_text_two.'">
 						
 					</td>
-					<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div_overlay">'.$curr_attachment_div.' '.$curr_t1.' '.$curr_t2.'</div></td>
+					<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a>'.$curr_refresh_file.' <div class="attachment_div_overlay">'.$curr_attachment_div.' '.$curr_t1.' '.$curr_t2.'</div></td>
 				</tr>';
 			}
 		}
@@ -7153,6 +7200,21 @@ class UserController extends Controller {
 		$download_url = URL::to($filename);
 		$delete_url = URL::to('user/delete_vat_files?file_id='.$insertedid.'');
 		echo json_encode(array('id' => $insertedid, 'download_url' => $download_url, 'delete_url' => $delete_url));
+	}
+	public function vat_refresh_upload_images() {
+		$client_id = Input::get('client_id');
+		$month_year = Input::get('month_year');
+		$t1 = Input::get('t1');
+		$t2 = Input::get('t2');
+
+		$data['t1'] = $t1;
+		$data['t2'] = $t2;
+
+		$details = DB::table('vat_reviews')->where('client_id',$client_id)->where('month_year',$month_year)->where('type',1)->first();
+
+		if(count($details)){
+			DB::table('vat_reviews')->where('client_id',$client_id)->where('month_year',$month_year)->where('type',1)->update($data);
+		}
 	}
 	public function vat_upload_csv()
 	{
@@ -8264,10 +8326,18 @@ class UserController extends Controller {
 		$data['disclose_liability'] = $status;
 		DB::table('task')->where('task_id',$task_id)->update($data);
 	}
+	public function save_distribute_email()
+	{
+		$task_id = Input::get('task_id');
+		$status = Input::get('status');
+		$data['distribute_email'] = $status;
+		DB::table('task')->where('task_id',$task_id)->update($data);
+	}
 	public function get_clientname_from_pms()
 	{
 		$taskid = Input::get('taskid');
 		$get_task = DB::table('task')->where('task_id',$taskid)->first();
+		$allocated_email = '';
 		if(count($get_task))
 		{
 			if($get_task->client_id == "")
@@ -8294,12 +8364,18 @@ class UserController extends Controller {
 					$client_id = '';
 				}
 			}
+
+			if($get_task->default_staff != "" && $get_task->default_staff != 0){
+				$user_details = DB::table('user')->where('user_id',$get_task->default_staff)->first();
+				$allocated_email = $user_details->email;
+			}
 		}
 		else{
 			$clientname = '';
 			$client_id = '';
 		}
-		echo json_encode(array("company" => $clientname,"client_id" => $client_id,"staff" => $get_task->default_staff));
+
+		echo json_encode(array("company" => $clientname,"client_id" => $client_id,"staff" => $get_task->default_staff,'allocated_email' => $allocated_email));
 	}
 	public function add_scheme()
 	{
@@ -9678,6 +9754,7 @@ class UserController extends Controller {
 			$curr_str = strtotime($get_full_date);
 
 			$curr_attachment_div = '';
+			$curr_refresh_file = '';
 			$curr_text_one = 'No Period';
 			$curr_text_two = '';
 			$curr_t1 = '<p>T1: <spam class="t1_spam_overlay"></spam></p>';
@@ -9705,6 +9782,7 @@ class UserController extends Controller {
             	{
             		if($curr->type == 1){ 
             			$curr_attachment_div.= '<p><a href="'.URL::to($curr->url.'/'.$curr->filename).'" class="file_attachments" download>'.$curr->filename.'</a> <a href="'.URL::to('user/delete_vat_files?file_id='.$curr->id.'').'" class="fa fa-trash delete_attachments" data-client="'.$client->client_id.'" data-element="'.$currr_month.'"></a></p>';
+            			$curr_refresh_file = '<a href="javascript:" class="fa fa-refresh refresh_submitted_file floatnone" data-element="'.URL::to($curr->url.'/'.$curr->filename).'" data-client="'.$client->client_id.'" data-month="'.$currr_month.'"></a>';
             			$curr_t1 ='<p>T1: <spam class="t1_spam_overlay">'.$curr->t1.'</spam></p>';
 						$curr_t2 ='<p>T2: <spam class="t2_spam_overlay">'.$curr->t2.'</spam></p>'; 
             		}
@@ -9788,7 +9866,7 @@ class UserController extends Controller {
 				<td>'.$curr_remove_two.'<input type="text" class="form-control submitted_import_overlay" data-client="'.$client->client_id.'" data-element="'.$currr_month.'" style="float:right" value="'.$curr_text_two.'">
 					<input type="hidden" name="date_sort_val" class="date_sort_val" value="'.$curr_text_two.'">
 				</td>
-				<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> <div class="attachment_div_overlay">'.$curr_attachment_div.' '.$curr_t1.' '.$curr_t2.'</div></td>
+				<td><a href="javascript:" class="fa fa-plus add_attachment_month_year_overlay" data-element="'.$currr_month.'" data-client="'.$client->client_id.'" style="margin-top:10px;" aria-hidden="true" title="Add a PDF File"></a> '.$curr_refresh_file.'<div class="attachment_div_overlay">'.$curr_attachment_div.' '.$curr_t1.' '.$curr_t2.'</div></td>
 				<td><input type="checkbox" class="check_records_received_overlay" id="check_records_received_overlay" data-month="'.$currr_month.'" data-client="'.$client->client_id.'" '.$curr_checked.'><label for="" class="records_receive_label_overlay '.$curr_check_box_color.' '.$curr_checked.'">Records Received</label>
 					<input type="hidden" name="record_sort_val" class="record_sort_val" value="'.$curr_checked.'">
 				</td>

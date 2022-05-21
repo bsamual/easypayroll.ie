@@ -1,47 +1,52 @@
 <?php
 function number_format_invoice($value)
 {
-	$expvalue = explode(".",$value);
-	if(count($expvalue) > 1)
-	{
-		$value = number_format($value,2,".","");
-		$explode = explode(".",$value);
-	}
-	else{
-		$explode = explode(".",$value);
-	}
-	if(count($explode) > 1)
-	{
-		$after_decimal = substr($explode[1], 0, 2);
-		if($after_decimal < 10)
-		{
-			$checkval = substr($after_decimal, 0, 1);
-			$checkval2 = substr($after_decimal, 1, 2);
-			if($checkval == 0 && $checkval2 < 10)
-			{
-				$after_decimal = $after_decimal;
-			}
-			else{
-				$after_decimal = $after_decimal.'0';
-			}
-		}
-	}
-	else{
-		$after_decimal = '00';
-	}
-	$first = add_commas((int)$explode[0]);
-	$check_minus = substr($explode[0],0,1);
-	if($check_minus == "-" && $first == "0")
-	{
-		if($after_decimal == '00')
-		{
-			$first = $first;
-		}
-		else{
-			$first = '-'.$first;
-		}
-	}
-	return $first.'.'.$after_decimal;
+    if(is_numeric($value)){
+        $expvalue = explode(".",$value);
+    	if(count($expvalue) > 1)
+    	{
+    		$value = number_format($value,2,".","");
+    		$explode = explode(".",$value);
+    	}
+    	else{
+    		$explode = explode(".",$value);
+    	}
+    	if(count($explode) > 1)
+    	{
+    		$after_decimal = substr($explode[1], 0, 2);
+    		if($after_decimal < 10)
+    		{
+    			$checkval = substr($after_decimal, 0, 1);
+    			$checkval2 = substr($after_decimal, 1, 2);
+    			if($checkval == 0 && $checkval2 < 10)
+    			{
+    				$after_decimal = $after_decimal;
+    			}
+    			else{
+    				$after_decimal = $after_decimal.'0';
+    			}
+    		}
+    	}
+    	else{
+    		$after_decimal = '00';
+    	}
+    	$first = add_commas((int)$explode[0]);
+    	$check_minus = substr($explode[0],0,1);
+    	if($check_minus == "-" && $first == "0")
+    	{
+    		if($after_decimal == '00')
+    		{
+    			$first = $first;
+    		}
+    		else{
+    			$first = '-'.$first;
+    		}
+    	}
+    	return $first.'.'.$after_decimal;   
+    }
+    else{
+        return '';
+    }
 }
 function number_format_invoice_empty($value)
 {
@@ -50,47 +55,52 @@ function number_format_invoice_empty($value)
 		return '';
 	}
 	else{
-		$expvalue = explode(".",$value);
-		if(count($expvalue) > 1)
-		{
-			$value = number_format($value,2,".","");
-			$explode = explode(".",$value);
-		}
-		else{
-			$explode = explode(".",$value);
-		}
-		if(count($explode) > 1)
-		{
-			$after_decimal = substr($explode[1], 0, 2);
-			if($after_decimal < 10)
-			{
-				$checkval = substr($after_decimal, 0, 1);
-				$checkval2 = substr($after_decimal, 1, 2);
-				if($checkval == 0 && $checkval2 < 10)
-				{
-					$after_decimal = $after_decimal;
-				}
-				else{
-					$after_decimal = $after_decimal.'0';
-				}
-			}
-		}
-		else{
-			$after_decimal = '00';
-		}
-		$first = add_commas((int)$explode[0]);
-		$check_minus = substr($explode[0],0,1);
-		if($check_minus == "-" && $first == "0")
-		{
-			if($after_decimal == '00')
-			{
-				$first = $first;
-			}
-			else{
-				$first = '-'.$first;
-			}
-		}
-		return $first.'.'.$after_decimal;
+	    if(is_numeric($value)){
+    		$expvalue = explode(".",$value);
+    		if(count($expvalue) > 1)
+    		{
+    			$value = number_format($value,2,".","");
+    			$explode = explode(".",$value);
+    		}
+    		else{
+    			$explode = explode(".",$value);
+    		}
+    		if(count($explode) > 1)
+    		{
+    			$after_decimal = substr($explode[1], 0, 2);
+    			if($after_decimal < 10)
+    			{
+    				$checkval = substr($after_decimal, 0, 1);
+    				$checkval2 = substr($after_decimal, 1, 2);
+    				if($checkval == 0 && $checkval2 < 10)
+    				{
+    					$after_decimal = $after_decimal;
+    				}
+    				else{
+    					$after_decimal = $after_decimal.'0';
+    				}
+    			}
+    		}
+    		else{
+    			$after_decimal = '00';
+    		}
+    		$first = add_commas((int)$explode[0]);
+    		$check_minus = substr($explode[0],0,1);
+    		if($check_minus == "-" && $first == "0")
+    		{
+    			if($after_decimal == '00')
+    			{
+    				$first = $first;
+    			}
+    			else{
+    				$first = '-'.$first;
+    			}
+    		}
+    		return $first.'.'.$after_decimal;
+	    }
+	    else{
+	        return '';
+	    }
 	}
 }
 function number_format_invoice_without_decimal($value)
@@ -322,12 +332,13 @@ function gzuncompress_crc32($data) {
 }
 function dateformat_string($array_values) {
 	$output_string = '';
-	if(count($array_values)){
+    if(!empty($array_values)){
 		foreach($array_values as $arr)
 		{
 			$output_string.=date('d M Y @ H:i', strtotime($arr)).'<br/>';
 		}
 	}
+	
 	return $output_string;
 }
 ?>

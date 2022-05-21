@@ -380,7 +380,7 @@ body.loading_apply .modal_load_apply {
 <div class="arrow_right" style="height: auto; padding: 15px; position: fixed; bottom: 10px; background:  #ff0; z-index: 9999999; right: 15px;font-size:34px;display:none">
   <a href="javascript:" class="arrow_right_scroll"><i class="fa fa-arrow-circle-o-up arrow_right_scroll" aria-hidden="true"></i></a>
 </div>
-  <div class="row" style="position:fixed;margin-top: -17px; background: #fff; z-index: 999;">
+  <div class="row" style="position:fixed;margin-top: -30px; background: #fff; z-index: 999;">
     <div class="page_title" style="z-index:999;">
       <h4 class="col-lg-12 padding_00 new_main_title">
                 PAYE M.R.S <?php echo $year->year_name?>   

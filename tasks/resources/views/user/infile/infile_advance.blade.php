@@ -555,7 +555,7 @@ else{
     </form>
   </div>
 </div>
-<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
+<!-- <div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_task_form">
         <div class="modal-content">
@@ -685,8 +685,6 @@ else{
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
-                    <!-- <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1" disabled />
-                    <label for="internal_checkbox">Internal</label> -->
                   </div>
                 </div>
             </div>
@@ -779,7 +777,7 @@ else{
         </div>
     </form>
   </div>
-</div>
+</div> -->
 <div class="modal fade create_new_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" style="margin-top: 5%;">
   <div class="modal-dialog modal-sm" role="document">
     <form action="<?php echo URL::to('user/create_new_file')?>" method="post" class="add_new_form" id="create_job_form">

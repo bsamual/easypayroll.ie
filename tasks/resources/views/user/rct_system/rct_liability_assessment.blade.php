@@ -608,7 +608,7 @@ a:hover{text-decoration: underline;}
     <div class="col-lg-2" style="line-height: 30px; margin-top: 10px; font-weight: 700; text-align: left;">
       <?php
       if(count($last_email_sent)) { 
-        echo date('F d, Y',strtotime($last_email_sent->email_sent));
+        echo date('d-M-Y',strtotime($last_email_sent->email_sent));
       }
       ?>
     </div>
@@ -800,7 +800,7 @@ a:hover{text-decoration: underline;}
                     {
                       foreach($emails_sent as $sent)
                       {
-                        $ee.='<label>'.date('F d, Y', strtotime($sent->email_sent)).'</label>';
+                        $ee.='<label>'.date('d-M-Y', strtotime($sent->email_sent)).'</label>';
                       }
                     }
                     $outputsubmission.='
@@ -927,7 +927,7 @@ a:hover{text-decoration: underline;}
                     {
                       foreach($emails_sent as $sent)
                       {
-                        $ee.='<label>'.date('F d, Y', strtotime($sent->email_sent)).'</label>';
+                        $ee.='<label>'.date('d-M-Y', strtotime($sent->email_sent)).'</label>';
                       }
                     }
                     

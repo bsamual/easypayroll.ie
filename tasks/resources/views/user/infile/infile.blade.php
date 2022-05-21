@@ -950,7 +950,7 @@ elseif(Session::has('countupdated'))
         </div>
   </div>
 </div>
-<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
+<!-- <div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task')?>" method="post" class="add_new_form" id="create_task_form">
         <div class="modal-content">
@@ -1081,8 +1081,7 @@ elseif(Session::has('countupdated'))
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
-                	  <!-- <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1" disabled />
-                  	<label for="internal_checkbox">Internal</label> -->
+                	 
                   </div>
                 </div>
             </div>
@@ -1304,7 +1303,7 @@ elseif(Session::has('countupdated'))
         </div>
     </form>
   </div>
-</div>
+</div> -->
 <div class="modal fade model_notify" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="mySmallModalLabel">
   <div class="modal-dialog" role="document" style="width:25%">
     <form action="" method="post" >
@@ -7018,7 +7017,7 @@ $(window).click(function(e) {
       $(".show_iframe").hide();
       $(".fa-circle").hide();
       $('[data-toggle="tooltip"]').tooltip("hide");
-      if(exttype == "pdf")
+      if(exttype == "pdf" || exttype == "PDF")
       {
         src = src.replace("uploads/","");
         src = src.replace("=","@");

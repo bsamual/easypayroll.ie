@@ -611,8 +611,20 @@ class AmlController extends Controller {
 		$htmlval = Input::get('htmlval');
 		$pdf = PDF::loadHTML($htmlval);
 		$pdf->setPaper('A4', 'landscape');
-		$pdf->save('papers/AML Report.pdf');
-		echo 'AML Report.pdf';
+
+		$time = time();
+		// $upload_dir = 'papers/'.$time;
+		// if(!file_exists($upload_dir))
+		// {
+		// 	mkdir($upload_dir);
+		// }
+
+		//$pdf->save($upload_dir.'/AML Report.pdf');
+
+		$pdf->save('papers/AML Report_'.$time.'.pdf');
+		//echo $time.'||AML Report.pdf';
+
+		echo 'AML Report_'.$time.'.pdf';
 	}
 	public function aml_remove_dropzone_attachment()
 	{
@@ -624,10 +636,10 @@ class AmlController extends Controller {
 	public function notify_tasks_aml()
 	{
 		$clientlist = DB::table('cm_clients')->select('client_id', 'firstname', 'surname', 'company', 'status', 'active', 'id','email','email2')->orderBy('id','asc')->get();
-		$output = '<table class="table own_table_white" style="width:100%">';
+		$output = '<p><input type="checkbox" name="notify_all_clients" class="notify_all_clients" id="notify_all_clients"><label for="notify_all_clients">Select All Clients</label></p><table class="table own_table_white" style="width:100%">';
 		if(count($clientlist))
 		{
-			$output.= '<thead><tr><th>Task Name</th><th>Notify</th><th>Primary Email</th><th>Secondary Email</th></tr></thead>';
+			$output.= '<thead><tr><th>Client ID</th><th>Client</th><th>Notify</th><th>ID Files</th><th>Primary Email</th><th>Secondary Email</th></tr></thead>';
 			foreach($clientlist as $client)
 			{
 				$disabled='';
@@ -652,12 +664,79 @@ class AmlController extends Controller {
               else{
               	$identity_received = '';
               }
+
+              $aml_attachement = DB::table('aml_attachment')->where('client_id', $client->client_id)->get();
+              if(count($aml_attachement) != '' ){
+                $image_plus_sapce='margin-top:10px;';
+              }
+              else{
+                $image_plus_sapce='margin-top:0px;';
+              }
+              $output_attached='';
+              if(count($aml_attachement)){
+                foreach ($aml_attachement as $attached) {
+                  if($attached->standard_name == "")
+                  {
+                    $output_attached.='
+                    <a href="'.URL::to('/'.$attached->url.'/'.$attached->attachment).'" download>'.$attached->attachment.'</a><i class="fa fa-trash delete_attached" style="cursor:pointer; margin-left:10px; color:#000;" data-element="'.$attached->id.'"></i><br/>';
+                  }
+                  else{
+                    $output_attached.='
+                    <a href="'.URL::to('/'.$attached->url.'/'.$attached->attachment).'" download="'.$attached->standard_name.'">'.$attached->standard_name.'</a><i class="fa fa-trash delete_attached" style="cursor:pointer; margin-left:10px; color:#000;" data-element="'.$attached->id.'"></i><br/>';
+                  }
+                }
+              }
+              else{
+                $output_attached.='';
+              }
+
+              $url = URL::to('user/aml_upload_images_add?client_id='.$client->client_id);
 				$output.='<tr class="'.$disabled.' '.$identity_received.'">
-					<td style="'.$style.'">'.$client->company.'- '.$client->client_id.'</td>
+					<td style="'.$style.'">'.$client->client_id.'</td>
+					<td style="'.$style.'">'.$client->company.'</td>
 					<td style="text-align:center">
 						<input type="checkbox" name="notify_option" class="notify_option" data-element="'.$client->client_id.'" value="1"><label >&nbsp;</label>
 					</td>
+					<td style="color:#000 !important;">
+						<div id="client_identity_'.$client->client_id.'">'.$output_attached.'</div>
+                                  
+                                    <i class="fa fa-plus fa-plus-add" style="cursor: pointer; color: #000; '.$image_plus_sapce.'" aria-hidden="true" title="Add Attachment" data-element="'.$client->client_id.'"></i> 
+
+                 <p id="attachments_text" style="display:none; font-weight: bold;">"Files Attached:</p>
+
+                    <div id="add_attachments_div">
+
+                    
+
+                    </div>
+
+                                    
+
+                <div class="img_div img_div_add" id="img_div_'.$client->client_id.'" style="z-index:9999999; margin-left: -120px; min-height: 275px">
+                <form name="image_form" style="margin-bottom: 0px !important;" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">                 
+
+                </form>                
+
+                <div class="image_div_attachments">
+                  <p>You can only upload maximum 300 files <br/>at a time. If you drop more than 300 <br/>files then the files uploading process<br/> will be crashed. </p>
+                  <form action="'.$url.'" method="post" enctype="multipart/form-data" class="dropzone" id="imageUpload2" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+
+                      <input name="_token" type="hidden" value="'.$client->client_id.'">                  
+
+                  </form>                
+
+                </div>
+                <div class="select_button" style=" margin-top: 10px;">
+                    <ul>                                    
+                    <li><a href="javascript:" class="image_submit" data-element="'.$client->client_id.'" style="font-size: 13px; font-weight: 500;">Submit</a></li>
+                  </ul>
+                </div>
+
+               </div>
+
+					</td>
 				<td style="text-align:center;color:#000 !important;"><input type="text" name="notify_primary_email" class="notify_primary_email form-control" value="'.$client->email.'" data-element="'.$client->client_id.'" readonly></td>
+
 				<td style="text-align:center;color:#000 !important;"><input type="text" name="notify_secondary_email" class="notify_secondary_email form-control" value="'.$client->email2.'" data-element="'.$client->client_id.'" readonly></td>
 				</tr>';
 			}
@@ -686,7 +765,8 @@ class AmlController extends Controller {
 		$data['sentmails'] = $to.' , '.$cc;
 		$data['logo'] = URL::to('assets/images/easy_payroll_logo.png');
 		$data['message'] = $message;
-		$contentmessage = view('user/email_notify', $data);
+		$data['signature'] = $admin_details->signature;
+		$contentmessage = view('user/email_notify', $data)->render();
 		$subject = 'GBS & Co: Fraud and Anti Money Laundering ID Required';
 		$email = new PHPMailer();
 		if($to != '')

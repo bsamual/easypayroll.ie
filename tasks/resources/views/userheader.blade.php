@@ -180,7 +180,7 @@
 
  elseif($page_segment == "manage_croard") { $title = 'Bubble - CRO ARD'; }
 
-
+ elseif($page_segment == "key_docs") { $title = 'Bubble - Key Docs'; }
 
   elseif($page_segment == "supplier_management") { $title = 'Bubble - Supplier Management'; }
 
@@ -1275,7 +1275,7 @@ $vat_rates = DB::table('supplier_vat_rates')->get();
 
 
 
-            <li class="dropdown <?php if($segment1 == "vat_clients" || $segment1 == "vat_review" || $segment1 == "rct_system" || $segment1 == "rct_liability_assessment" || $segment1 == "rct_client_manager" || $segment1 == "gbs_p30" || $segment1 == "gbs_p30month_manage" || $segment1 == "gbs_p30_select_month" || $segment1 == "year_end_manager" || $segment1 == "yearend_setting" || $segment1 == "supplementary_manager" || $segment1 == "yeadend_clients" || $segment1 == "yearend_individualclient" || $segment1 == "supplementary_note_create" || $segment1 == "gbs_paye_p30month_manage" || $segment1 == "gbs_paye_p30_select_month" || $segment1 == "yeadend_liability" || $segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_edit" || $segment1 == "client_request_view" || $segment1 == "manage_croard" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages" || $segment1 == "rct_summary") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Client Functions <i class="fa fa-caret-down" aria-hidden="true"></i>
+            <li class="dropdown <?php if($segment1 == "vat_clients" || $segment1 == "vat_review" || $segment1 == "rct_system" || $segment1 == "rct_liability_assessment" || $segment1 == "rct_client_manager" || $segment1 == "gbs_p30" || $segment1 == "gbs_p30month_manage" || $segment1 == "gbs_p30_select_month" || $segment1 == "year_end_manager" || $segment1 == "yearend_setting" || $segment1 == "supplementary_manager" || $segment1 == "yeadend_clients" || $segment1 == "yearend_individualclient" || $segment1 == "supplementary_note_create" || $segment1 == "gbs_paye_p30month_manage" || $segment1 == "gbs_paye_p30_select_month" || $segment1 == "yeadend_liability" || $segment1 == "client_request_system" || $segment1 == "client_request_manager" || $segment1 == "client_request_edit" || $segment1 == "client_request_view" || $segment1 == "manage_croard" || $segment1 == "directmessaging" || $segment1 == "directmessaging_page_two" || $segment1 == "directmessaging_page_three" || $segment1 == "messageus_groups" || $segment1 == "messageus_saved_messages" || $segment1 == "rct_summary" || $segment1 == "key_docs") { echo 'active'; } ?>"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Client Functions <i class="fa fa-caret-down" aria-hidden="true"></i>
 
 </a>
 
@@ -1294,6 +1294,9 @@ $vat_rates = DB::table('supplier_vat_rates')->get();
                     <li class="<?php if(($segment1 == "manage_croard")) { echo "active"; } else { echo ""; } ?>"><a 
 
                       href="<?php echo URL::to('user/manage_croard'); ?>">CRO ARD</a></li>
+                    <li class="<?php if(($segment1 == "key_docs")) { echo "active"; } else { echo ""; } ?>"><a 
+
+                      href="<?php echo URL::to('user/key_docs'); ?>">Key Docs</a></li>
 
                 </ul>
 
@@ -1356,7 +1359,619 @@ $vat_rates = DB::table('supplier_vat_rates')->get();
   </div>
 
 </div>
+<?php
+if($page_segment == "task_manager" || $page_segment == "park_task" || $page_segment == "taskmanager_search" || $page_segment == "select_week" || $page_segment == "select_month" || $page_segment == "vat_review" || $page_segment == "manage_croard" || $page_segment == "in_file" || $page_segment == "in_file_advance" || $page_segment == "infile_search") {
+  $clstaskname = 'create_new_task_model';
+  $taskmanager_page = 0;
+  $client_search_class = 'client_search_class_task';
+  $client_search_task = 'client_search_task';
+  $imageUpload_cls = 'imageUpload5';
+  $add_attachments_div = 'add_attachments_div_task';
+  $add_notepad_attachments_div = 'add_notepad_attachments_div_task';
+  $create_new_taskmanager_task = 'user/create_new_taskmanager_task';
+  $create_job_form = 'create_task_form';
+  $company = '';
+  $faplustask = 'fa-plus-task';
+  $fanotepadtask = 'fanotepadtask';
+  $img_div_task = 'img_div_task';
+  $notepad_div_notes_add = 'notepad_div_notes_task';
+  $notepad_contents_add = 'notepad_contents_task';
+  $notepad_submit_add = 'notepad_submit_task';
+  if($page_segment == "task_manager" || $page_segment == "park_task" || $page_segment == "taskmanager_search") 
+  { 
+    $clstaskname = 'create_new_model';
+    $taskmanager_page = 1;
+    $client_search_class = 'client_search_class';
+    $client_search_task = 'client_search';
+    $imageUpload_cls = 'imageUpload1';
+    $add_attachments_div = 'add_attachments_div';
+    $add_notepad_attachments_div = 'add_notepad_attachments_div';
+    $create_new_taskmanager_task = 'user/create_new_taskmanager_task';
+    $create_job_form = 'create_job_form';
+    $faplustask = 'fa-plus-add';
+    $fanotepadtask = 'fanotepadadd';
+    $img_div_task = 'img_div_add';
+    $notepad_div_notes_add = 'notepad_div_notes_add';
+    $notepad_submit_add = 'notepad_submit_add';
+  }
+  else if($page_segment == "select_week" || $page_segment == "select_month"){
+    $create_new_taskmanager_task = 'user/create_new_taskmanager_task';
+    $faplustask = 'fa-plus-add';
+    $fanotepadtask = 'fanotepadadd';
+    $img_div_task = 'img_div_add';
+    $notepad_div_notes_add = 'notepad_div_notes_add';
+    $notepad_contents_add = 'notepad_contents_add';
+    $notepad_submit_add = 'notepad_submit_add';
+  }
+  else if($page_segment == "vat_review"){
+    $create_new_taskmanager_task = 'user/create_new_taskmanager_task_vat';
+  }
+  else if($page_segment == "manage_croard"){
+    $create_new_taskmanager_task = 'user/create_new_taskmanager_task_croard';
+  }
+  else if($page_segment == "in_file" || $page_segment == "in_file_advance" || $page_segment == "infile_search"){
+    $create_new_taskmanager_task = 'user/create_new_taskmanager_task';
+  }
+?>
 
+<div class="modal fade <?php echo $clstaskname; ?>" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll;z-index:9999999999">
+  <div class="modal-dialog modal-sm" role="document" style="width:45%">
+    <form action="<?php echo URL::to($create_new_taskmanager_task)?>" method="post" class="add_new_form" id="<?php echo $create_job_form; ?>">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title job_title" style="font-weight:700;font-size:20px">New Task Creator</h4>
+          </div>
+          <div class="modal-body">            
+            <div class="row margintop20" style="margin-top:10px !important"> 
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Author:</label>
+                </div>
+                <div class="col-md-3">
+                  <select name="select_user" class="form-control select_user_author" required>
+                    <option value="">Select User</option>        
+                      <?php
+                      $selected = '';
+                      $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                          $selected = '';
+                          if($taskmanager_page == 1) {
+                            if(Session::has('task_manager_user'))
+                            {
+                              if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
+                            }
+                          }
+                      ?>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Author Email:</label>
+                </div>
+                <div class="col-md-5">
+                  <input  type="email" class="form-control author_email" name="author_email" placeholder="Enter Author's Email" required>
+                </div>
+            </div>
+            
+            <div class="row margintop20" style="margin-top:10px !important">
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To:</label>
+                </div>
+                <div class="col-md-3">
+                  <select name="allocate_user" class="form-control allocate_user_add">
+                    <option value="">Select User</option>        
+                      <?php
+                      $selected = '';
+                      if(count($userlist)){
+                        foreach ($userlist as $user) {
+                          $selected = '';
+                          if($taskmanager_page == 1) {
+                            if(Session::has('task_manager_user'))
+                            {
+                              if($user->user_id == Session::get('task_manager_user')) { $selected = 'selected'; }
+                            }
+                          }
+                      ?>
+                        <option value="<?php echo $user->user_id ?>" <?php echo $selected; ?>><?php echo $user->lastname.'&nbsp;'.$user->firstname; ?></option>
+                      <?php
+                        }
+                      }
+                      ?>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label style="margin-top:5px">Allocate To Email:</label>
+                </div>
+                <div class="col-md-3">
+                  <input  type="email" class="form-control allocate_email" name="allocate_email" placeholder="Enter Allocate's Email" required>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <div style="margin-top:5px">
+                    <input type='checkbox' name="open_task" id="open_task" value="1"/>
+                    <label for="open_task">OpenTask</label>
+                  </div>
+                </div>
+            </div>
+            <div class="row margintop20" style="margin-top:10px !important">
+              <div class="col-md-2 client_group">
+                  <label style="margin-top:5px">Client:</label>
+                </div>
+                <?php
+                if(isset($_GET['client_id']))
+                {
+                  $client_id = $_GET['client_id'];
+                  $client_details = DB::table('cm_clients')->where('client_id',$client_id)->first();
+                  $company = $client_details->company.'-'.$client_id;
+                  $disabled = 'disabled';
+                }
+                else{
+                  $client_id = '';
+                  $company = '';
+                  $disabled = '';
+                }
+                ?>
+                <div class="col-md-8 client_group">
+                  <input  type="text" class="form-control <?php echo $client_search_class; ?>" name="client_name" placeholder="Enter Client Name / Client ID" value="<?php echo $company; ?>" required <?php echo $disabled; ?>>
+                  <input type="hidden" id="<?php echo $client_search_task; ?>" name="clientid" value="<?php echo $client_id; ?>" />
+                </div>
+
+                <div class="col-md-2 internal_tasks_group" style="display: none;">
+                  <label style="margin-top:5px">Select Task:</label>
+                </div>
+                <div class="col-md-8 internal_tasks_group" style="display: none;">
+                  <div class="dropdown" style="width: 100%">
+                    <a class="btn btn-default dropdown-toggle tasks_drop" data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                      <span class="task-choose_internal">Select Task</span>  <span class="caret"></span>                          
+                    </a>
+                    <ul class="dropdown-menu internal_task_details" role="menu"  aria-labelledby="dropdownMenu" style="width: 100%">
+                      <li><a tabindex="-1" href="javascript:" class="tasks_li_internal">Select Task</a></li>
+                        <?php
+                        $taskslist = DB::table('time_task')->where('task_type', 0)->orderBy('task_name', 'asc')->get();
+                        if(count($taskslist)){
+                          foreach ($taskslist as $single_task) {
+                            if($single_task->task_type == 0){
+                              $icon = '<i class="fa fa-desktop" style="margin-right:10px;"></i>';
+                            }
+                            else if($single_task->task_type == 1){
+                              $icon = '<i class="fa fa-users" style="margin-right:10px;"></i>';
+                            }
+                            else{
+                              $icon = '<i class="fa fa-globe" style="margin-right:10px;"></i>';
+                            }
+                        ?>
+                          <li><a tabindex="-1" href="javascript:" class="tasks_li_internal" data-element="<?php echo $single_task->id?>" data-project="<?php echo $single_task->project_id; ?>"><?php echo $icon.$single_task->task_name?></a></li>
+                        <?php
+                          }
+                        }
+                        ?>
+                    </ul>
+                    <input type="hidden" name="idtask" id="idtask" value="">
+                  </div>
+                </div>
+                <div class="col-md-2" style="padding:0px">
+                  <div style="margin-top:5px">
+                    <?php 
+                    if($taskmanager_page == 1){ ?>
+                    <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1"/>
+                    <label for="internal_checkbox">Internal</label>
+                    <?php } ?>
+                  </div>
+                </div>
+            </div>
+            <div class="form-group start_group margintop20" style="margin-top:10px !important">
+
+              <div class="row">
+                <div class="col-lg-5">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <div class="form-title"><label style="margin-top:5px">Priority:</label></div>
+                    </div>
+                    <div class="col-md-7" style="padding-top: 5px;">
+                      <?php echo user_rating(); ?>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-7">
+                  <div class="row" >
+                    <div class="col-md-3">
+                        <label style="margin-top:5px">Creation Date:</label>
+                      </div>
+                      <div class="col-md-9">
+                        <label class="input-group datepicker-only-init_date_received">
+                            <input type="text" class="form-control created_date" placeholder="Select Creation Date" name="created_date" style="font-weight: 500;" required />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </label>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
+
+              
+            </div>
+            <div class="form-group start_group margintop20" style="margin-top:10px !important">
+                <div class="row">
+                  <div class="col-lg-2">
+                    <div class="form-title"><label style="margin-top:5px">Subject:</label></div>
+                  </div>
+                  <div class="col-lg-10">
+                    <input  type="text" class="form-control subject_class" name="subject_class" placeholder="Enter Subject">
+                  </div>
+                </div>
+                
+                
+            </div>
+            <div class="form-group start_group task_specifics_add margintop20" style="margin-top:10px !important">
+                <div class="row">
+                  <div class="col-lg-7">
+                    <div class="form-title"><label style="margin-top:5px">Task Specifics:</label></div>
+                  </div>
+                  <div class="col-lg-5">
+                    <div class="form-group date_group" style="float: right;width: 100%;text-align: right;">
+                      <div class="form-title" style="font-weight:600;margin-left:-10px">
+                        <input type='checkbox' name="2_bill_task" class="2_bill_task" id="2_bill_task0" value="1"/> 
+                        <label for="2_bill_task0" style="color:green;width: auto !important;">This task is a 2Bill Task!</label>
+                        <img src="<?php echo URL::to('assets/2bill.png')?>" style="width:40px;margin-left:8px">
+                      </div>
+                  </div>
+                  </div>
+                  <div class="col-lg-12">
+                    <textarea class="form-control task_specifics" id="editor_2" name="task_specifics" placeholder="Enter Task Specifics" style="height:400px"></textarea>
+                  </div>
+                </div>
+                
+
+                
+                
+            </div>
+            <?php
+            if($taskmanager_page == 1) { ?>
+            <div class="form-group start_group task_specifics_copy margintop20" style="margin-top:10px !important">
+                <div class="form-title"><label style="margin-top:5px">Task Specifics:</label></div>
+                <div class="task_specifics_copy_val" style="width:100%;height:400px;background: #e2e2e2;min-height: 400px;overflow-y: scroll;padding: 7px;"></div>
+                
+                <input type="hidden" name="hidden_task_specifics" id="hidden_task_specifics" value="">
+            </div>
+            <?php } ?>
+            <div class="form-group date_group margintop20" style="margin-top:10px !important">
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">DueDate:</label>
+                </div>
+                <div class="col-md-3">
+                  <label class="input-group datepicker-only-init_date_received">
+                      <input type="text" class="form-control due_date" placeholder="Select Due Date" name="due_date" style="font-weight: 500;" required />
+                      <span class="input-group-addon">
+                          <i class="glyphicon glyphicon-calendar"></i>
+                      </span>
+                  </label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                  <label style="margin-top:5px">Project:</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="select_project" class="form-control select_project">
+                      <option value="">Select Project</option>
+                      <?php
+                          $projects = DB::table('projects')->get();
+                          if(count($projects)){
+                            foreach($projects as $project){
+                              ?>
+                              <option value="<?php echo $project->project_id; ?>"><?php echo $project->project_name; ?></option>
+                              <?php
+                            }
+                          }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-2" style="padding:0px;text-align: right;right: 44px;">
+                  <label style="margin-top:5px">Project Time:</label>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_hours" class="form-control project_hours">
+                      <option value="">HH</option>
+                      <?php
+                      for($i = 0; $i <= 23; $i++)
+                      {
+                        if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
+                <div class="col-md-1" style="padding:0px">
+                    <select name="project_mins" class="form-control project_mins">
+                      <option value="">MM</option>
+                      <?php
+                      for($i = 0; $i <= 59; $i++)
+                      {
+                         if($i < 10) { $i = '0'.$i; }
+                        ?>
+                        <option value="{{$i}}">{{$i}}</option>
+                        <?php
+                      }
+                      ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group start_group retreived_files_div margintop20" style="margin-top:10px !important">
+
+            </div>
+
+            <div class="row margintop20" style="margin-top:10px !important;clear: both; padding-top: 10px;">
+              <div class="col-lg-8">
+                <div class="form-group start_group">
+                <label>Task Files: </label>
+                <a href="javascript:" class="fa fa-plus <?php echo $faplustask; ?>" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Attachment"></a> 
+                <a href="javascript:" class="fa fa-pencil-square <?php echo $fanotepadtask; ?>" style="margin-top:10px; margin-left: 10px;" aria-hidden="true" title="Add Completion Notes"></a>
+                <a href="javascript:" class="infiles_link" style="margin-top:10px; margin-left: 10px;">Infiles</a>
+                <input type="hidden" name="hidden_infiles_id" id="hidden_infiles_id" value="">
+                <div class="img_div <?php echo $img_div_task; ?>" style="z-index:9999999; min-height: 275px">
+                  <form name="image_form" id="image_form" action="" method="post" enctype="multipart/form-data" style="text-align: left;">
+                  </form>
+                  <div class="image_div_attachments">
+                    <p>You can only upload maximum 300 files at a time. If you drop more than 300 files then the files uploading process will be crashed. </p>
+                    <form action="<?php echo URL::to('user/infile_upload_images_taskmanager_add'); ?>" method="post" enctype="multipart/form-data" class="dropzone" id="<?php echo $imageUpload_cls; ?>" style="clear:both;min-height:80px;background: #949400;color:#000;border:0px solid; height:auto; width:100%; float:left">
+                        <input name="_token" type="hidden" value="">
+                    </form>              
+                  </div>
+                 </div>
+                 <div class="<?php echo $notepad_div_notes_add; ?>" style="z-index:9999; position:absolute;display:none">
+                    <textarea name="<?php echo $notepad_contents_add; ?>" class="form-control <?php echo $notepad_contents_add; ?>" placeholder="Enter Contents"></textarea>
+                    <input type="button" name="<?php echo $notepad_submit_add; ?>" class="btn btn-sm btn-primary <?php echo $notepad_submit_add; ?>" align="left" value="Upload" style="margin-left:7px;    background: #000;margin-top:4px">
+                    <spam class="error_files_notepad_add"></spam>
+                </div>
+              </div>
+              
+              <p id="attachments_text" style="display:none; font-weight: bold;">Files Attached:</p>
+              <div id="<?php echo $add_attachments_div; ?>">
+              </div>
+              <div id="<?php echo $add_notepad_attachments_div; ?>">
+              </div>
+              <p id="attachments_infiles" style="display:none; font-weight: bold;">Linked Infiles:</p>
+              <div id="add_infiles_attachments_div">
+              </div>
+              </div>
+              <div class="col-lg-4">
+                  <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="auto_close_task" class="auto_close_task" id="auto_close_task0" value="1"/> <label for="auto_close_task0">This task is an Auto Close Task</label></div>
+                </div>
+                <div class="form-group date_group">
+                    <div class="form-title" style="font-weight:600;margin-left:-10px"><input type='checkbox' name="accept_recurring" class="accept_recurring" id="recurring_checkbox0" value="1" checked/> <label for="recurring_checkbox0">Recurring Task</label></div>
+                    <div class="accept_recurring_div">
+                      <p>This Task is repeated:</p>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox1" value="1" checked/>
+                        <label for="recurring_checkbox1">Monthly</label>
+                      </div>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox2" value="2"/>
+                        <label for="recurring_checkbox2">Weekly</label>
+                      </div>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox3" value="3"/>
+                        <label for="recurring_checkbox3">Daily</label>
+                      </div>
+                      <div class="form-title">
+                        <input type='radio' name="recurring_checkbox" class="recurring_checkbox" id="recurring_checkbox4" value="4"/>
+                        <label for="recurring_checkbox4">Specific Number of Days</label>
+                        <input type="number" name="specific_recurring" class="specific_recurring" value="" style="width: 29%;height: 25px;">
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+
+            
+            
+            
+          </div>
+          <div class="modal-footer">     
+            <input type="hidden" name="action_type" id="action_type" value="">
+            <input type="hidden" name="hidden_specific_type" id="hidden_specific_type" value="">
+            <input type="hidden" name="hidden_attachment_type" id="hidden_attachment_type" value="">
+            <input type="hidden" name="hidden_task_id_copy_task" class="hidden_task_id_copy_task" value="">
+            <input type="hidden" name="total_count_files" id="total_count_files" value="">
+            <?php 
+            if($page_segment == "vat_review") { ?>
+            <input type="hidden" name="hidden_vat_client_id" id="hidden_vat_client_id" value="">
+            <input type="hidden" name="hidden_vat_month" id="hidden_vat_month" value="">
+            <?php } ?>
+            <input type="submit" class="common_black_button make_task_live" value="Make Task Live" style="width: 100%;">
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+<?php } ?>
+
+<div class="modal fade search_company_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:99999999999">
+  <div class="modal-dialog" role="document" style="width:50%">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <a href="javascript:" class="common_black_button send_company_info" style="float:right;margin-right: 25px;">Send Email</a>
+            <h4 class="modal-title job_title">Search Company</h4>
+          </div>
+          <div class="modal-body modal_max_height">  
+            <div class="row">
+              <div class="col-md-3">
+                <h5>Company number:</h5>
+                <input type="text" name="company_number" class="form-control company_number" value="">
+              </div>
+              <div class="col-md-3">
+                <h5>Company / Business indicator:</h5>
+                <input type="radio" name="indicator" class="indicator" id="indicator_1" value="C"><label for="indicator_1" style="width:auto;  margin-top: 6px; margin-left: -33px;">Limited Company</label>
+              </div>
+              <div class="col-md-3">
+                <h5>&nbsp;</h5>
+                <input type="radio" name="indicator" class="indicator" id="indicator_2" value="B"><label for="indicator_2" style="width:auto;  margin-top: 6px;">Registered Business</label>
+              </div>
+              <div class="col-md-3">
+                <h5>&nbsp;</h5>
+                <input type="button" class="common_black_button search_company_btn" id="search_company_btn" value="Call From CRO" style="margin-top: 1px;">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-10 col-md-offset-1 table_api" style="margin-top:20px;">
+                  <table class="table">
+                    <tbody>
+                      <tr>
+                        <td>Company Number:</td>
+                        <td><input type="text" name="company_number" class="form-control company_number" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company / Business indicator:</td>
+                        <td><input type="text" name="indicator_text" class="form-control indicator_text" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company Name:</td>
+                        <td><input type="text" name="company_name" class="form-control company_name" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company Address:</td>
+                        <td><textarea name="company_address" class="form-control company_address" disabled style="height:110px"></textarea></td>
+                      </tr>
+                      <tr>
+                        <td>Company Registration Date:</td>
+                        <td><input type="text" name="company_reg_date" class="form-control company_reg_date" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company Status:</td>
+                        <td><input type="text" name="company_status_desc" class="form-control company_status_desc" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company Status Date:</td>
+                        <td><input type="text" name="company_status_date" class="form-control company_status_date" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Next ARD:</td>
+                        <td><input type="text" name="next_ar_date" class="form-control next_ar_date" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Last ARD:</td>
+                        <td><input type="text" name="last_ar_date" class="form-control last_ar_date" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Accounts Upto:</td>
+                        <td><input type="text" name="last_acc_date" class="form-control last_acc_date" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company Type:</td>
+                        <td><input type="text" name="comp_type_desc" class="form-control comp_type_desc" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company Type Code:</td>
+                        <td><input type="text" name="company_type_code" class="form-control company_type_code" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Company Status Code:</td>
+                        <td><input type="text" name="company_status_code" class="form-control company_status_code" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Place of Business:</td>
+                        <td><input type="text" name="place_of_business" class="form-control place_of_business" value="" disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Eircode:</td>
+                        <td><input type="text" name="eircode" class="form-control eircode" value="" disabled></td>
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+</div>
+<div class="modal fade emailcompany" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index:999999999999">
+  <div class="modal-dialog" role="document">
+    <form id="email_company_form" action="<?php echo URL::to('user/email_company_files_croard'); ?>" method="post" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Send Email</h4>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+            <div class="col-md-3">
+              <label>From</label>
+            </div>
+            <?php
+              $userlist = DB::table('user')->where('user_status', 0)->where('disabled',0)->orderBy('lastname','asc')->get();
+              $uname = '<option value="">Select Username</option>';
+              if(count($userlist)){
+                foreach ($userlist as $singleuser) {
+                    if($uname == '')
+                    {
+                      $uname = '<option value="'.$singleuser->user_id.'">'.$singleuser->lastname.' '.$singleuser->firstname.'</option>';
+                    }
+                    else{
+                      $uname = $uname.'<option value="'.$singleuser->user_id.'">'.$singleuser->lastname.' '.$singleuser->firstname.'</option>';
+                    }
+                  }
+              }
+            ?>
+            <div class="col-md-9">
+              <select name="select_user_company" id="select_user_company" class="form-control" title="Select the User" required>
+                <?php echo $uname; ?>
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>To</label>
+            </div>
+            <div class="col-md-9">
+              <input type="text" name="to_user_company" id="to_user_company" class="form-control" value="" required>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>CC</label>
+            </div>
+            <div class="col-md-9">
+              <input type="text" name="cc_company" class="form-control" value="<?php echo $admin_details->croard_cc_email; ?>" readonly required>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-3">
+              <label>Subject</label>
+            </div>
+            <div class="col-md-9">
+              <input type="text" name="subject_company" class="form-control subject_company" value="" required>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="col-md-12">
+              <label>Message</label>
+            </div>
+            <div class="col-md-12">
+              <textarea name="message_editor" id="editor2">
+              </textarea>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <input type="hidden" name="hidden_client_id_search_company" id="hidden_client_id_search_company" value="">
+        <input type="button" class="btn btn-primary common_black_button email_company_files_btn" value="Send Email">
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
 @yield('content')
 
 <select name="select_nominal_codes_dummy" class="form-control select_nominal_codes_dummy" style="display:none">
@@ -1436,11 +2051,45 @@ $vat_rates = DB::table('supplier_vat_rates')->get();
                     <a href="javascript:" class="common_black_button add_supplier_invoice" style="font-size:14px;font-weight: bold; float: left; margin-top:-1px ">Add Supplier</a>
                   </td>
 
-                  <td style="width:22%"></td>
+                  <td style="width:20%; font-weight:600;vertical-align: middle;">
+                    Select Accounting Period:
+                  </td>
 
-                  <td style="width:11%"></td>
+                  <td style="width:33%" colspan="2">
+                    <select class="form-control invoice_ac_accounting_id" style="width: 95%; font-weight:bold;" name="ac_accounting_id" required>
+                      <?php
+                      $output_account='';
+                      $accounting_period_list = DB::table('accounting_period')->orderBy('status', 'desc')->get();
+                      if(count($accounting_period_list)){
+                        foreach ($accounting_period_list as $single_account){
 
-                  <td style="width:22%"></td>
+                          if($single_account->ac_lock == 0){
+                            $lock_text = 'Locked';
+                            $color = '#E11B1C';
+                            $value = '';
+                          }
+                          else{
+                            $lock_text = 'Unlocked';
+                            $color='#33CC66';
+                            $value = $single_account->accounting_id;
+                          }
+
+                          $start_date = date('d-M-Y', strtotime($single_account->ac_start_date));
+                          $end_date = date('d-M-Y', strtotime($single_account->ac_end_date));
+
+
+                          $output_account.='<option value="'.$value.'" style="color:'.$color.'; font-weight:bold;">'.$start_date.' '.$end_date.' '.$lock_text.'</option>';
+                        }
+                      }
+                      else{
+                        $output_account='<option value="">No Records found</option>';
+                      }
+                      echo $output_account;
+                      ?>
+                    </select>
+                  </td>
+
+                  
 
                 </tr>
 
@@ -2315,6 +2964,8 @@ $vat_rates = DB::table('supplier_vat_rates')->get();
     </div>
   </div>
 </div>
+
+
 <script>
 $.ajaxQueue = [];
 var que = $.ajaxQueue;
@@ -2683,6 +3334,108 @@ $(window).change(function(e) {
 })
 
 $(window).click(function(e) {
+if($(e.target).hasClass('check_cro'))
+{
+  $("body").addClass("loading");
+  var cro = $(e.target).attr("data-element");
+  $(".company_number").val(cro);
+  $(".search_company_modal").modal("show");
+  $("#indicator_1").prop("checked",true);
+  setTimeout( function() { 
+    $(".search_company_btn").trigger("click");
+    
+  },1000);
+}
+if($(e.target).hasClass('search_company_btn'))
+{
+  var checked = $(".indicator:checked").length;
+  var company_number = $(".company_number").val();
+  var indicator = $(".indicator:checked").val();
+  if(checked < 1)
+  {
+    alert("Please select the Company / Business indicator to search for a Company");
+  }
+  else if(company_number == "")
+  {
+    alert("Please enter the Company Number to search for a Company");
+  }
+  else{
+    $("body").addClass("loading");
+    $.ajax({
+      url:"<?php echo URL::to('user/get_company_details_cro'); ?>",
+      type:"post",
+      data:{company_number:company_number,indicator:indicator},
+      success:function(result)
+      {
+        $(".table_api").html(result);
+        //$(".search_company_modal").modal("hide");
+        $("body").removeClass("loading");
+      }
+    });
+  }
+}
+if($(e.target).hasClass('send_company_info'))
+{
+  if (CKEDITOR.instances.editor2) CKEDITOR.instances.editor2.destroy();
+
+  CKEDITOR.replace('editor2',
+     {
+      height: '150px',
+     });
+
+  var company_number = $(".company_number").val();
+  var indicator_text = $('.indicator_text').val();
+  var company_name = $(".company_name").val();
+  var company_address = $(".company_address").val();
+  var company_reg_date = $(".company_reg_date").val();
+  var company_status_desc = $(".company_status_desc").val();
+  var company_status_date= $(".company_status_date").val();
+  var next_ar_date = $(".next_ar_date").val();
+  var last_ar_date = $(".last_ar_date").val();
+
+  var last_acc_date = $(".last_acc_date").val();
+  var comp_type_desc = $(".comp_type_desc").val();
+  var company_type_code = $(".company_type_code").val();
+  var company_status_code = $(".company_status_code").val();
+  var place_of_business = $(".place_of_business").val();
+  var eircode = $(".eircode").val();
+
+
+  if(company_number == "")
+  {
+    alert("Please enter the Company Number to search for a Company");
+  }
+  $.ajax({
+    url:"<?php echo URL::to('user/get_client_from_cronumber'); ?>",
+    type:"get",
+    data:{company_number:company_number,indicator_text:indicator_text,company_name:company_name,company_address:company_address,company_reg_date:company_reg_date,company_status_desc:company_status_desc,company_status_date:company_status_date,next_ar_date:next_ar_date,last_ar_date:last_ar_date,last_acc_date:last_acc_date,comp_type_desc:comp_type_desc,company_type_code:company_type_code,company_status_code:company_status_code,place_of_business:place_of_business,eircode:eircode},
+    dataType:"json",
+    success:function(result){
+      CKEDITOR.instances['editor2'].setData(result['html']);
+      $(".subject_company").val(result['subject']);
+      $("#to_user_company").val(result['to']);
+      $("#hidden_client_id_search_company").val(result['client_id'])
+      $(".emailcompany").modal('show');
+    }
+  });
+}
+if($(e.target).hasClass('email_company_files_btn'))
+{
+  for (instance in CKEDITOR.instances) 
+  {
+      CKEDITOR.instances['editor2'].updateElement();
+  }
+  if($("#email_company_form").valid())
+  {
+    $("body").addClass("loading");
+    $('#email_company_form').ajaxForm({
+        success:function(result){
+          $("body").removeClass("loading");
+          $(".emailcompany").modal("hide");
+        }
+    }).submit();
+  }
+}
 if($(e.target).hasClass('taskmanager_rate_input')){
   e.stopPropagation();
     e.preventDefault();
@@ -3349,6 +4102,21 @@ if($(e.target).hasClass('class_general_journal')){
 }
 });
 </script>
+
+<script>
+$('#add_purchase_invoice_form').validate({
+    rules: {
+        ac_accounting_id : {required: true,},               
+    },
+    messages: {
+        ac_accounting_id : {
+          required : "You cannot save this Invoice to a Locked Accounting Period.",
+        }
+    },
+});
+</script>
+
+
 
 </body>
 

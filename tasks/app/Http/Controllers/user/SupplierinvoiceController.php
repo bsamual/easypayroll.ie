@@ -86,6 +86,7 @@ class SupplierinvoiceController extends Controller {
 		$global_filename = Input::get('global_file_name');
 		$globalid = Input::get('hidden_global_id');
 		$sno = Input::get('hidden_sno');
+		$ac_accounting_id = Input::get('ac_accounting_id');
 
 		$inv_date = explode('-',$inv_date_global);
 		$invoice_date = '';
@@ -101,6 +102,7 @@ class SupplierinvoiceController extends Controller {
 		$data['net'] = $net_global;
 		$data['vat'] = $vat_global;
 		$data['gross'] = $gross_global;
+		$data['ac_period'] = $ac_accounting_id;
 		
 		if($globalid != "") {
 			$filename = Input::get('global_file_name');
@@ -297,6 +299,7 @@ class SupplierinvoiceController extends Controller {
 		{
 			$supplier_id = $global->supplier_id;
 			$supplier_details = DB::table('suppliers')->where('id',$supplier_id)->first();
+			$ac_period = $global->ac_period;
 
 			$supplier_output = '
 			<tr>
@@ -401,6 +404,7 @@ class SupplierinvoiceController extends Controller {
             $datajson['detail_output'] = $detail_output;
             $datajson['attachment_output'] = $attachment_output;
             $datajson['supplier_id'] = $supplier_id;
+            $datajson['ac_period'] = $ac_period;
             echo json_encode($datajson);	
         }
 	}
@@ -477,6 +481,12 @@ class SupplierinvoiceController extends Controller {
 
 			$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->orderBy('id','desc')->get();
 		}
+		elseif($type == "4")
+		{
+			$invoice_ac_period = Input::get('invoice_ac_period');
+
+			$invoicelist = DB::table('supplier_global_invoice')->where('ac_period', $invoice_ac_period)->orderBy('id','desc')->get();
+		}
 		$i = 1;
 		$output = '';
 		if(count($invoicelist)){ 
@@ -491,12 +501,27 @@ class SupplierinvoiceController extends Controller {
 	              $supplier_name = $supplier_details->supplier_name;
 	              $balance = $supplier_details->opening_balance;
 	            }
+
+	            $ac_period = DB::table('accounting_period')->where('accounting_id', $global->ac_period)->first();
+
+	            $start_date = date('d M Y', strtotime($ac_period->ac_start_date));
+	            $end_date = date('d M Y', strtotime($ac_period->ac_end_date));
+
+	            if($ac_period->ac_lock == 0){              
+	              $period_color = '#E11B1C';              
+	            }
+	            else{              
+	              $period_color='#33CC66';              
+	            }
+
+
 				$output.='<tr>
 	              <td>'.$i.'</td>
-	              <td>'.$global->invoice_no.'</td>
-	              <td>'.date('d-M-Y', strtotime($global->invoice_date)).'</td>
 	              <td>'.$supplier_code.'</td>
-	              <td>'.$supplier_name.'</td>
+	              <td>'.$supplier_name.'</td>	              
+	              <td>'.date('d-M-Y', strtotime($global->invoice_date)).'</td>
+	              <td style="color:'.$period_color.'; font-weight:bold">'.$start_date.' - '.$end_date.'</td>
+	              <td>'.$global->invoice_no.'</td>
 	              <td style="text-align: right">'.number_format_invoice($balance).'</td>
 	              <td style="text-align: right">'.number_format_invoice($global->net).'</td>
 	              <td style="text-align: right">'.number_format_invoice($global->vat).'</td>
@@ -510,6 +535,7 @@ class SupplierinvoiceController extends Controller {
 		if($i == 1)
         {
           $output.='<tr>
+	          	<td align="center"></td>
 	          	<td align="center"></td>
 	          	<td align="center"></td>
 	          	<td align="center"></td>
@@ -882,14 +908,20 @@ class SupplierinvoiceController extends Controller {
 		$type = Input::get('type');
 		$from = date('Y-m-d', strtotime(Input::get('from')));
 		$to = date('Y-m-d', strtotime(Input::get('to')));
-
-
-
+		$type_date_period = Input::get('type_date_period');
+		$select_account = Input::get('select_account');
 
 		if($type == 1){
-			$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();			
+
+			if($type_date_period == 1){
+				$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+			}
+			else{
+				$invoicelist = DB::table('supplier_global_invoice')->where('ac_period',$select_account)->get();
+			}			
 
 			$columns_1 = array('S.No', 'Invoice No', 'Date', 'Supplier Code','Supplier Name', 'Net', 'VAT', 'Gross', 'Journal ID');
+			
 			$filename = 'Purchase Summary Report.csv';
 			$fileopen = fopen('public/'.$filename.'', 'w');
 		    fputcsv($fileopen, $columns_1);
@@ -919,7 +951,12 @@ class SupplierinvoiceController extends Controller {
 		}
 		elseif($type == 2){
 
-			$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->orderBy('invoice_date', 'desc')->get();			
+			if($type_date_period == 1){
+				$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->orderBy('invoice_date', 'desc')->get();
+			}
+			else{
+				$invoicelist = DB::table('supplier_global_invoice')->where('ac_period',$select_account)->orderBy('invoice_date', 'desc')->get();
+			}		
 
 			$columns_1 = array('Date', 'Invoice No', 'Supplier Code','Supplier Name', 'Debit Nominal', 'Description', 'Net', 'VAT', 'Gross');
 			$filename = 'Details Purchase Analysis.csv';
@@ -970,7 +1007,12 @@ class SupplierinvoiceController extends Controller {
 
 		}
 		else{
-			$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+			if($type_date_period == 1){
+				$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+			}
+			else{
+				$invoicelist = DB::table('supplier_global_invoice')->where('ac_period',$select_account)->get();
+			}
 
 			/*$columns_1 = array('Debit Nominal', 'Net', 'VAT', 'Gross');*/
 			$filename = 'Purchase Posting Summary Report.csv';
@@ -1145,14 +1187,22 @@ class SupplierinvoiceController extends Controller {
 		$type = Input::get('type');
 		$from = date('Y-m-d', strtotime(Input::get('from')));
 		$to = date('Y-m-d', strtotime(Input::get('to')));
-
-
-
+		$type_date_period = Input::get('type_date_period');
+		$select_account = Input::get('select_account');
 
 
 
 		if($type == 1){
-			$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();			
+
+			if($type_date_period == 1){
+				$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+			}
+			else{
+				$invoicelist = DB::table('supplier_global_invoice')->where('ac_period',$select_account)->get();
+			}
+
+
+						
 
 			$columns_1 = array('S.No', 'Invoice No', 'Date', 'Supplier Code','Supplier Name', 'Net', 'VAT', 'Gross', 'Journal ID');
 			
@@ -1199,15 +1249,23 @@ class SupplierinvoiceController extends Controller {
 		            </tr>';		            
 					$i++;
 				}
-				$output.='</tbody></table>';
+				
 			}
+			$output.='</tbody></table>';
 
 			echo json_encode(array('output' => $output));
 
 		}
 		elseif($type == 2){
 
-			$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->orderBy('invoice_date', 'desc')->get();	
+			if($type_date_period == 1){
+				$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->orderBy('invoice_date', 'desc')->get();
+			}
+			else{
+				$invoicelist = DB::table('supplier_global_invoice')->where('ac_period',$select_account)->orderBy('invoice_date', 'desc')->get();
+			}
+
+				
 
 			$i = 1;
 			$output = '<table class="table own_white_table" id="report_preview">
@@ -1268,13 +1326,21 @@ class SupplierinvoiceController extends Controller {
 					}
 					$i++;
 				}
-				$output.='</tbody></table>';
+				
 			}
+			$output.='</tbody></table>';
 			echo json_encode(array('output' => $output));
 
 		}
 		else{
-			$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+
+			if($type_date_period == 1){
+				$invoicelist = DB::table('supplier_global_invoice')->where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->get();
+			}
+			else{
+				$invoicelist = DB::table('supplier_global_invoice')->where('ac_period',$select_account)->get();
+			}
+			
 
 			
 			/*$filename = 'Purchase Posting Summary Report.csv';
@@ -1481,9 +1547,23 @@ class SupplierinvoiceController extends Controller {
 			</div>';
 
 			echo json_encode(array('output' => $output));
+		}		
+	}
+
+	public function invoice_setacperiod(){
+		$invoice_list = DB::table('supplier_global_invoice')->get();
+
+		if(count($invoice_list)){
+			foreach ($invoice_list as $single_invoice) {
+
+				$data['ac_period'] = '1001';
+				DB::table('supplier_global_invoice')->where('id', $single_invoice->id)->update($data);
+				
+			}
 		}
 
-		
+		echo 'Success';
+		exit;
 	}
 
 

@@ -2865,5 +2865,111 @@ class FinancialController extends Controller {
 		}
 
 	}
+
+
+	public function accounting_period_save(){
+		$start = Input::get('start');
+		$end = Input::get('end');
+		$desc = Input::get('desc');
+
+		$data['ac_start_date'] = date('Y-m-d', strtotime($start));
+		$data['ac_end_date'] = date('Y-m-d', strtotime($end));
+		$data['ac_description'] = $desc;
+
+		DB::table('accounting_period')->insert($data);
+
+		$accounting_period_list = DB::table('accounting_period')->get();
+		$i=1;
+		$output_ac='';
+		if(count($accounting_period_list)){
+	        foreach ($accounting_period_list as $single_account) {
+
+	          if($single_account->status == 1){
+                $status = '<a href="javascript:"><i class="fa fa-check default_account_period" style="color: #33CC66" data-element="'.$single_account->accounting_id.'"></i></a>';
+              }
+              else{
+                $status = '<a href="javascript:"><i class="fa fa-times account_period_active" data-element="'.$single_account->accounting_id.'" title="Active Default Period"  style="color: #E11B1C"></i></a>';
+              }
+
+              if($single_account->ac_lock == 0){
+                $lock = '<a href="javascript:"><i class="fa fa-lock class_account_unlock" data-element="'.$single_account->accounting_id.'" type="0" style="color: #E11B1C" title="Unlock Accounting Period"></i></a>';
+              }
+              else{
+                $lock = '<a href="javascript:"><i class="fa fa-unlock-alt class_account_lock" data-element="'.$single_account->accounting_id.'" type="1" style="color: #33CC66" title="Lock Accounting Period"></i>';
+              }
+
+
+
+
+
+	          $output_ac.='
+	            <tr>
+	              <td>'.$i.'</td>
+	              <td>'.$single_account->accounting_id.'</td>
+	              <td>'.date('d-M-Y', strtotime($single_account->ac_start_date)).'</td>
+	              <td>'.date('d-M-Y', strtotime($single_account->ac_end_date)).'</td>
+	              <td>'.$single_account->ac_description.'</td>
+	              <td style="text-align:center;">
+	                '.$status.'&nbsp; &nbsp; '.$lock.'
+	              </td>
+	            </tr>';
+	          $i++;
+	        }
+	      }
+	    else{
+	        $output_ac='
+	          <tr>
+	            <td></td>
+	            <td></td>
+	            <td>No Records</td>
+	            <td></td>
+	            <td></td>
+	            <td></td>
+	          </tr>
+	        ';
+	    }
+
+	    $accounting_period = DB::table('accounting_period')->orderBy('accounting_id', 'desc')->first();
+        $period_id = $accounting_period->accounting_id+1;
+
+	    echo json_encode(array('output' => $output_ac, 'period_id' => $period_id));
+		
+	}
+
+	public function accounting_period_set_default(){
+		$period_id = Input::get('period_id');
+
+		$accounting_period = DB::table('accounting_period')->get();
+
+		if(count($accounting_period)){
+			foreach ($accounting_period as $single_account) {
+				$data['status'] = 0;
+				DB::table('accounting_period')->where('accounting_id', $single_account->accounting_id)->update($data);
+			}
+		}
+
+		DB::table('accounting_period')->where('accounting_id', $period_id)->update(['status' => '1']);
+
+		echo json_encode(array('result' => 'success'));
+
+
+	}
+
+	public function accounting_period_lock_unlock(){
+		$period_id = Input::get('period_id');
+		$type = Input::get('type');
+
+		if($type == 0){
+			$data['ac_lock'] = 1;
+		}
+		else{
+			$data['ac_lock'] = 0;
+		}
+
+		DB::table('accounting_period')->where('accounting_id', $period_id)->update($data);
+		echo json_encode(array('result' => 'success'));
+	}
+
+
 }
 

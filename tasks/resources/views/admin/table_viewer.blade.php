@@ -12,7 +12,7 @@
 
 <link rel="stylesheet" href="<?php echo URL::to('assets/js/lightbox/colorbox.css'); ?>">
 <script src="<?php echo URL::to('assets/js/lightbox/jquery.colorbox.js'); ?>"></script>
-
+<script src="<?php echo URL::to('assets/js/waypoints/lib/jquery.waypoints.js'); ?>"></script>
 <style>
 .label_class{
   width:20%;
@@ -333,35 +333,51 @@ $(window).change(function(e) {
 
 //     return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
 // }
-$(window).scroll(function() {
+
+
+
+
+// $(window).scroll(function() {
   
-  // if (isScrolledIntoView($('.load_more_content')))
-  // {
-  //     var table_name = $(".select_table").val();
-  //     var page = $("#hidden_page").val();
-      
-  //     var nextpage = parseInt(page) + 1;
-  //     $.ajax({
-  //       url:"<?php echo URL::to('admin/show_table_viewer_append'); ?>",
-  //       type:"post",
-  //       dataType:"json",
-  //       data:{table_name:table_name,page:nextpage},
-  //       success:function(result){
-  //         $("#table_viewer_tbody").append(result['output']);
-  //         if(result['show_load_btn'] == 1){
-  //           $(".common_btn").addClass('load_more_content');
-  //           $(".common_btn").show();
-  //           $("#hidden_page").val(nextpage);
-  //         }
-  //         else{
-  //           $(".common_btn").removeClass('load_more_content');
-  //           $(".common_btn").hide();
-  //           $("#hidden_page").val(0);
-  //         }
-  //       }
-  //     })
-  // }
-});
+//   // if (isScrolledIntoView($('.load_more_content')))
+//   // {
+//   //     
+//   // }
+// });
+function waypointsval() {
+  $("#load_more_content").hide();
+  Waypoint.destroyAll();
+  var table_name = $(".select_table").val();
+  var page = $("#hidden_page").val();
+
+  var nextpage = parseInt(page) + 1;
+  $.ajax({
+     url:"<?php echo URL::to('admin/show_table_viewer_append'); ?>",
+     type:"post",
+     dataType:"json",
+     data:{table_name:table_name,page:nextpage},
+     success:function(result){
+       $("#table_viewer_tbody").append(result['output']);
+       if(result['show_load_btn'] == 1){
+         $(".common_btn").addClass('load_more_content');
+         $(".common_btn").show();
+         $("#hidden_page").val(nextpage);
+         $('#load_more_content').waypoint(function() {
+            waypointsval();
+        }, {
+            offset: '100%'
+        });
+       }
+       else{
+         $(".common_btn").removeClass('load_more_content');
+         $(".common_btn").hide();
+         $("#hidden_page").val(0);
+       }
+     }
+  })
+}
+
+
 $(window).click(function(e) {
   if($(e.target).hasClass('show_table_viewer'))
   {
@@ -377,6 +393,11 @@ $(window).click(function(e) {
         data:{table_name:table_name,page:"1"},
         success:function(result){
           $(".table_viewer_content").html(result['output']);
+          $('#load_more_content').waypoint(function() {
+              waypointsval();
+          }, {
+              offset: '100%'
+          });
         }
       })
     }

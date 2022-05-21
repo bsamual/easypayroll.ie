@@ -1893,7 +1893,7 @@ class CrmController extends Controller {
 	public function send_request_to_client_edit()
 	{
 		$id = Input::get('requestid');
-
+		
 		$to_user = Input::get('to_user');		
 		$request_details = DB::table('request_client')->where('request_id', $id)->first();
 		$category = DB::table('request_category')->where('category_id', $request_details->category_id)->first();
@@ -2124,29 +2124,34 @@ class CrmController extends Controller {
 	    }
 
 	    $client_details = DB::table('cm_clients')->where('client_id',$request_details->client_id)->first();
-
+	    
 		$output='
 		<p>Hi '.$to_user_name.', </p>
 		<p>We have complied the following list or items / information related to <b>Information Request: '.$request_details->year.' '.$category->category_name.' ('.$client_details->company.')</b> that we require from you.  Please can you get for us:</p>
 		<p><b>Subject:</b> Information Request: '.$request_details->year.' '.$category->category_name.' ('.$client_details->company.')</p>
-		<table class="table" align="center" style="border:0px solid;border-collapse:collapse">
-    		<thead>
+		<table style="border:0px solid;border-collapse:collapse">
     			<tr>
-    				<th colspan="3" style="text-align:left;height:35px">ITEMS ON THIS REQUEST</th>
+    				<th style="text-align:left;height:35px">ITEMS ON THIS REQUEST</th>
+    				<th></th>
+    				<th></th>
     			</tr>
     			'.$output_purchase_invoice.'
     			'.$output_sales_invoice.'
     			'.$output_statement.'
     			'.$output_cheque.'
     			'.$output_other.'
-    		</thead>
-    		<tbody>
-    		</tbody>
     	</table>
-
     	<p>'.$category->signature.'</p>';
 
+    	
+
+    	$pdf = PDF::loadHTML($output);
+		$pdf->stream('papers/Information Request- '.$request_details->year.' '.$category->category_name.' ('.$client_details->company.').pdf');
+		$pdf_attachment = 'Information Request- '.$request_details->year.' '.$category->category_name.' ('.$client_details->company.').pdf';
+
     	$attachments.='<img src="'.URL::to('assets/images/pdf.jpg').'" style="width:70px;float:left"><input type="checkbox" name="pdf_attachments" value="papers/'.$pdf_attachment.'||'.$pdf_attachment.'" class="attach_p" checked style="display:none"><label style="width:75%;margin-left:5px;margin-top:20px">'.$pdf_attachment.'</label>';
+
+
 
 		echo json_encode(array('subject' => 'Information Request: '.$request_details->year.' '.$category->category_name.' ('.$client_details->company.')', 'content' => $output,'user_id' => $employee->user_id,'client_id' => $client_details->client_id,'client_name' => $client_details->company,'attachments' => $attachments));
 	}

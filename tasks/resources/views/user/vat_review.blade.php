@@ -1,5 +1,6 @@
 @extends('userheader')
 @section('content')
+
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/jquery.dataTables.min.css'); ?>">
 <link rel="stylesheet" type="text/css" href="<?php echo URL::to('assets/css/fixedHeader.dataTables.min.css'); ?>">
 
@@ -9,6 +10,16 @@
 <script src="<?php echo URL::to('assets/js/jquery.form.js'); ?>"></script>
 
 <style>
+  .refresh_submitted_file{
+    float: right;
+font-weight: 800;
+font-size: 20px;
+  }
+  .floatnone{
+    float: none !important;
+font-size: 16px;
+margin-left: 10px;
+  }
   .margintop20{
   margin-top:20px !important;
   margin-bottom: 0px !important;
@@ -485,6 +496,18 @@ input:checked + .slider:before {
   font-weight: 800;
   margin-left:15px;
 }
+
+.submission_os_no{
+  color:#f00;
+  font-weight: 800;
+  margin-left:15px;
+}
+
+.submitted_no{
+  color:green;
+  font-weight: 800;
+  margin-left:15px;
+}
 .file_attachments img {width:30px !important;}
 .attachment_div p {width:18%; float:left;}
 </style>
@@ -517,7 +540,7 @@ if(!empty($_GET['import_type']))
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title job_title">Client Review</h4>
+            <h4 class="modal-title job_title client_review_title">Client Review</h4>
           </div>
           <div class="modal-body" id="client_review_body">
             <div class="col-md-6">
@@ -575,7 +598,7 @@ if(!empty($_GET['import_type']))
         </div>
   </div>
 </div>
-<div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll;z-index:99999999999">
+<!-- <div class="modal fade create_new_task_model" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;overflow-y: scroll;z-index:99999999999">
   <div class="modal-dialog modal-sm" role="document" style="width:45%">
     <form action="<?php echo URL::to('user/create_new_taskmanager_task_vat')?>" method="post" class="add_new_form" id="create_task_form">
         <div class="modal-content">
@@ -706,8 +729,6 @@ if(!empty($_GET['import_type']))
                 </div>
                 <div class="col-md-2" style="padding:0px">
                   <div style="margin-top:5px">
-                    <!-- <input type='checkbox' name="internal_checkbox" id="internal_checkbox" value="1" disabled />
-                    <label for="internal_checkbox">Internal</label> -->
                   </div>
                 </div>
             </div>
@@ -926,7 +947,7 @@ if(!empty($_GET['import_type']))
         </div>
     </form>
   </div>
-</div>
+</div> -->
 <div class="modal fade dropzone_progress_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="margin-top: 5%;z-index: 999999;">
   <div class="modal-dialog modal-sm" role="document" style="width:30%">
         <div class="modal-content">
@@ -1201,9 +1222,9 @@ if(!empty($_GET['import_type']))
               <th style="width:10%;text-align: left;">Client Code <i class="fa fa-sort sno_sort" style="float:right" aria-hidden="true"></i></th>
               <th style="width:20%;text-align: left; ;">Client Name <i class="fa fa-sort client_sort" style="float:right" aria-hidden="true"></i></th>
               <th style="width:10%;text-align: left; ">Tax No <i class="fa fa-sort tax_sort" style="float:right" aria-hidden="true"></i></th>
-              <th style="width:20%;text-align: left; "><a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="<?php echo date('m-Y', strtotime('first day of previous month')); ?>"></a> &nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="<?php echo date('m-Y', strtotime('first day of previous month')); ?>"><?php echo date('M-Y', strtotime('first day of previous month')); ?></a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_<?php echo date('m-Y', strtotime('first day of previous month')); ?>">0</spam></label></th>
-              <th style="width:20%;text-align: left; "><a href="javascript:" class="show_month_in_overlay" data-element="<?php echo date('m-Y'); ?>"><?php echo date('M-Y'); ?></a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_<?php echo date('m-Y'); ?>">0</spam></label></th>
-              <th style="width:20%;text-align: left; "><a href="javascript:" class="show_month_in_overlay" data-element="<?php echo date('m-Y', strtotime('first day of next month')); ?>"><?php echo date('M-Y', strtotime('first day of next month')); ?></a> &nbsp;&nbsp; <a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="<?php echo date('m-Y', strtotime('first day of next month')); ?>"></a> <label class="submission_due_no">No of Submission Due: <spam class="no_sub_due no_sub_due_<?php echo date('m-Y', strtotime('first day of next month')); ?>">0</spam></label></th>
+              <th style="width:20%;text-align: left; "><a href="javascript:" class="fa fa-arrow-circle-left show_prev_month" title="Extend to Prev Month" data-element="<?php echo date('m-Y', strtotime('first day of previous month')); ?>"></a> &nbsp;&nbsp;<a href="javascript:" class="show_month_in_overlay" data-element="<?php echo date('m-Y', strtotime('first day of previous month')); ?>"><?php echo date('M-Y', strtotime('first day of previous month')); ?></a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_<?php echo date('m-Y', strtotime('first day of previous month')); ?>">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_<?php echo date('m-Y', strtotime('first day of previous month')); ?>">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_<?php echo date('m-Y', strtotime('first day of previous month')); ?>">0</spam></label></th>
+              <th style="width:20%;text-align: left; "><a href="javascript:" class="show_month_in_overlay" data-element="<?php echo date('m-Y'); ?>"><?php echo date('M-Y'); ?></a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_<?php echo date('m-Y'); ?>">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_<?php echo date('m-Y'); ?>">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_<?php echo date('m-Y'); ?>">0</spam></label></th>
+              <th style="width:20%;text-align: left; "><a href="javascript:" class="show_month_in_overlay" data-element="<?php echo date('m-Y', strtotime('first day of next month')); ?>"><?php echo date('M-Y', strtotime('first day of next month')); ?></a> &nbsp;&nbsp; <a href="javascript:" class="fa fa-arrow-circle-right show_next_month" title="Extend to Next Month" data-element="<?php echo date('m-Y', strtotime('first day of next month')); ?>"></a> <label class="submission_due_no">Due: <spam class="no_sub_due no_sub_due_<?php echo date('m-Y', strtotime('first day of next month')); ?>">0</spam></label><label class="submission_os_no">OS: <spam class="no_sub_os no_sub_os_<?php echo date('m-Y', strtotime('first day of next month')); ?>">0</spam></label><label class="submitted_no">Submitted: <spam class="no_sub no_sub_<?php echo date('m-Y', strtotime('first day of next month')); ?>">0</spam></label></th>
           </tr>
         </thead>
         <tbody id="task_body">
@@ -1383,9 +1404,30 @@ function ajax_functions()
         var curr_count = $("#task_body").find("td:nth-child(5)").find(".orange_import").length;
         var next_count = $("#task_body").find("td:nth-child(6)").find(".orange_import").length;
 
+
+        var red_prev_count = $("#task_body").find("td:nth-child(4)").find(".red_import").length;
+        var red_curr_count = $("#task_body").find("td:nth-child(5)").find(".red_import").length;
+        var red_next_count = $("#task_body").find("td:nth-child(6)").find(".red_import").length;
+
+
+        var green_prev_count = $("#task_body").find("td:nth-child(4)").find(".green_import").length;
+        var green_curr_count = $("#task_body").find("td:nth-child(5)").find(".green_import").length;
+        var green_next_count = $("#task_body").find("td:nth-child(6)").find(".green_import").length;
+
+        console.log(green_prev_count+'--'+green_curr_count+'--'+green_next_count);
+
         $('.submission_due_no').eq(0).find(".no_sub_due").html(prev_count);
         $('.submission_due_no').eq(1).find(".no_sub_due").html(curr_count);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(next_count);
+
+        $('.submission_os_no').eq(0).find(".no_sub_os").html(red_prev_count);
+        $('.submission_os_no').eq(1).find(".no_sub_os").html(red_curr_count);
+        $('.submission_os_no').eq(2).find(".no_sub_os").html(red_next_count);
+
+
+        $('.submitted_no').eq(0).find(".no_sub").html(green_prev_count);
+        $('.submitted_no').eq(1).find(".no_sub").html(green_curr_count);
+        $('.submitted_no').eq(2).find(".no_sub").html(green_next_count);
       }
     })
   }); 
@@ -1415,9 +1457,28 @@ function ajax_functions()
         var curr_count = $("#task_body").find("td:nth-child(5)").find(".orange_import").length;
         var next_count = $("#task_body").find("td:nth-child(6)").find(".orange_import").length;
 
+        var red_prev_count = $("#task_body").find("td:nth-child(4)").find(".red_import").length;
+        var red_curr_count = $("#task_body").find("td:nth-child(5)").find(".red_import").length;
+        var red_next_count = $("#task_body").find("td:nth-child(6)").find(".red_import").length;
+
+
+        var green_prev_count = $("#task_body").find("td:nth-child(4)").find(".green_import").length;
+        var green_curr_count = $("#task_body").find("td:nth-child(5)").find(".green_import").length;
+        var green_next_count = $("#task_body").find("td:nth-child(6)").find(".green_import").length;
+
+        console.log(green_prev_count+'--'+green_curr_count+'--'+green_next_count);
+
         $('.submission_due_no').eq(0).find(".no_sub_due").html(prev_count);
         $('.submission_due_no').eq(1).find(".no_sub_due").html(curr_count);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(next_count);
+
+        $('.submission_os_no').eq(0).find(".no_sub_os").html(red_prev_count);
+        $('.submission_os_no').eq(1).find(".no_sub_os").html(red_curr_count);
+        $('.submission_os_no').eq(2).find(".no_sub_os").html(red_next_count);
+
+        $('.submitted_no').eq(0).find(".no_sub").html(green_prev_count);
+        $('.submitted_no').eq(1).find(".no_sub").html(green_curr_count);
+        $('.submitted_no').eq(2).find(".no_sub").html(green_next_count);
       }
     })
   }); 
@@ -1847,6 +1908,163 @@ $(window).click(function(e) {
     ascending = ascending ? false : true;
     $('#client_review_tbody').html(sorted);
   }
+  if($(e.target).hasClass('refresh_submitted_file')){
+
+    $("#input").show();
+    $("#processor").show();
+    $("#output").show();
+
+    var download_url = $(e.target).attr("data-element");
+    var client_id = $(e.target).attr("data-client");
+    var month_year = $(e.target).attr("data-month");
+    $("#input").attr("src",download_url);
+    $("#processor").attr("src","<?php echo url('pdftotext/index.html'); ?>");
+    
+    var input = document.getElementById("input");
+    var processor = document.getElementById("processor");
+    var output = document.getElementById("output");
+
+    $("body").addClass("loading"); 
+    window.addEventListener("message", function refreshlisteners(event){ 
+      if (event.source != processor.contentWindow) return;
+      switch (event.data){
+        case "ready":
+          var xhr = new XMLHttpRequest;
+          xhr.open('GET', input.getAttribute("src"), true);
+          xhr.responseType = "arraybuffer";
+          xhr.onload = function(event) {
+            processor.contentWindow.postMessage(this.response, "*");
+          };
+          xhr.send();
+        break;
+        default:
+          output.textContent = $.trim(event.data.replace(/[^a-z0-9.,:' ]+/gi, " "));
+          var error = 0;
+          console.log(output.textContent);
+          if(output.textContent.indexOf('Amended VAT3 Return') !== -1){
+            var t2_string = output.textContent.split('Amended VAT3 Return');
+            var t2_array = $.trim(t2_string[0]).split(' ');
+            var t2 = t2_array[t2_array.length-1];
+
+            var t2_string_array = $.trim(t2_string[1]).split(' ');
+
+            if($.inArray("T3",t2_string_array) !== -1){
+              var t1_string = t2_string[1].split(' Offset Instructions ');
+              var t1_array = $.trim(t1_string[1]).split(' ');
+              var t3 = t1_array[2];
+              var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
+
+            }else if($.inArray("T4",t2_string_array) !== -1){
+              var t1_string = t2_string[1].split(' Offset Instructions ');
+              var t1_array = $.trim(t1_string[1]).split(' ');
+              var t3 = t1_array[2];
+              var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+
+              if(t1 < 0){
+                t1 = (t1 * -1).toFixed(2);
+              }
+            }
+            else{
+              var error = 1;
+            }
+
+            var reg = t1_array[1];
+          }
+          else if(output.textContent.indexOf('VAT3 Return') !== -1){
+            var t2_string = output.textContent.split('VAT3 Return');
+            var t2_array = $.trim(t2_string[0]).split(' ');
+            var t2 = t2_array[t2_array.length-1];
+
+            var t2_string_array = $.trim(t2_string[1]).split(' ');
+
+            if($.inArray("T3",t2_string_array) !== -1){
+              var t1_string = t2_string[1].split(' Offset Instructions ');
+              var t1_array = $.trim(t1_string[1]).split(' ');
+              var t3 = t1_array[2];
+              var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
+
+            }else if($.inArray("T4",t2_string_array) !== -1){
+              var t1_string = t2_string[1].split(' Offset Instructions ');
+              var t1_array = $.trim(t1_string[1]).split(' ');
+              var t3 = t1_array[2];
+              var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+
+              if(t1 < 0){
+                t1 = (t1 * -1).toFixed(2);
+              }
+            }
+            else{
+              var error = 1;
+            }
+            var reg = t1_array[1];
+          }
+          else{
+            var error = 2;
+          }
+
+          if(error == 1){
+            $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:#f00>Invalid VAT3 File.</p>",width:"30%",height:"15%"});
+            $("body").removeClass("loading"); 
+            $("#input").hide();
+            $("#processor").hide();
+            $("#output").hide();
+            window.removeEventListener("message",refreshlisteners);
+          }
+          else if(error == 2){
+            $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:#f00>Invalid VAT3 File.</p>",width:"30%",height:"15%"});
+            $("body").removeClass("loading"); 
+            $("#input").hide();
+            $("#processor").hide();
+            $("#output").hide();
+            window.removeEventListener("message",refreshlisteners);
+          }
+          else if(error == 3){
+            $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:#f00>File can not be Uploaded as the Tax Numbers do not match.</p>",width:"30%",height:"15%"});
+            $("body").removeClass("loading"); 
+            $("#input").hide();
+            $("#processor").hide();
+            $("#output").hide();
+            window.removeEventListener("message",refreshlisteners);
+          }
+          else{
+            $.ajax({
+              url:"<?php echo URL::to('user/vat_refresh_upload_images'); ?>",
+              type:"post",
+              data:{client_id:client_id,month_year:month_year,t1:t1,t2:t2},
+              success:function(result)
+              {
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t1_spam").parents("p").show();
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t2_spam").parents("p").show();
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t1_spam").html(t1);
+                $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t2_spam").html(t2);
+
+                $(".shown_tr_"+client_id+"_"+month_year).find(".t1_spam_overlay").parents("p").show();
+                $(".shown_tr_"+client_id+"_"+month_year).find(".t2_spam_overlay").parents("p").show();
+
+                $(".shown_tr_"+client_id+"_"+month_year).find(".t1_spam_overlay").html(t1);
+                $(".shown_tr_"+client_id+"_"+month_year).find(".t2_spam_overlay").html(t2);
+
+                $(".shown_tr_"+client_id+"_"+month_year).find(".month_download_checkbox").prop("disabled",false);
+                $(".dropzone_progress_modal").modal("hide");
+
+                $("#processor").hide();
+                $("#output").hide();
+                $("#input").hide();
+
+                $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:green>T1 & T2 Values are updated Successfully.</p>",width:"30%",height:"15%"});
+                $("body").removeClass("loading");  
+                $("#input").hide();
+                $("#processor").hide();
+                $("#output").hide();
+                window.removeEventListener("message",refreshlisteners);
+              }
+            })
+          }
+        break;
+      }
+    });
+    
+  }
   if($(e.target).hasClass('download_selected_periods'))
   {
     var checked_count = $(".month_download_checkbox:checked").length;
@@ -1993,10 +2211,16 @@ $(window).click(function(e) {
   if($(e.target).hasClass('vat_client_class'))
   {
     var client_id = $(e.target).attr("data-element");
+    var code = $(e.target).attr("data-code");
+    var client_name = $(e.target).attr("data-client");
+
     $("#hidden_vat_client_id_overlay").val(client_id);
     $(".vat_clients_months_modal").modal("show");
     $("#client_review_tbody").html('<tr><td colspan="6" style="text-align:center">No Datas Found</td></tr>');
     $("#hide_non_return").prop("checked",false);
+
+    $(".client_review_title").html('Client Review - '+code+' '+client_name+'');
+
   }
   if($(e.target).hasClass('load_all_month_btn'))
   {
@@ -2212,9 +2436,29 @@ $(window).click(function(e) {
         var curr_count = $("#task_body").find("td:nth-child(5)").find(".orange_import").length;
         var next_count = $("#task_body").find("td:nth-child(6)").find(".orange_import").length;
 
+        var red_prev_count = $("#task_body").find("td:nth-child(4)").find(".red_import").length;
+        var red_curr_count = $("#task_body").find("td:nth-child(5)").find(".red_import").length;
+        var red_next_count = $("#task_body").find("td:nth-child(6)").find(".red_import").length;
+
+        var green_prev_count = $("#task_body").find("td:nth-child(4)").find(".green_import").length;
+        var green_curr_count = $("#task_body").find("td:nth-child(5)").find(".green_import").length;
+        var green_next_count = $("#task_body").find("td:nth-child(6)").find(".green_import").length;
+
+        console.log(green_prev_count+'--'+green_curr_count+'--'+green_next_count);
+
+
+
         $('.submission_due_no').eq(0).find(".no_sub_due").html(prev_count);
         $('.submission_due_no').eq(1).find(".no_sub_due").html(curr_count);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(next_count);
+
+        $('.submission_os_no').eq(0).find(".no_sub_os").html(red_prev_count);
+        $('.submission_os_no').eq(1).find(".no_sub_os").html(red_curr_count);
+        $('.submission_os_no').eq(2).find(".no_sub_os").html(red_next_count);
+
+        $('.submitted_no').eq(0).find(".no_sub").html(green_prev_count);
+        $('.submitted_no').eq(1).find(".no_sub").html(green_curr_count);
+        $('.submitted_no').eq(2).find(".no_sub").html(green_next_count);
       }
     })
   }
@@ -2304,9 +2548,28 @@ $(window).click(function(e) {
         var curr_count = $("#task_body").find("td:nth-child(5)").find(".orange_import").length;
         var next_count = $("#task_body").find("td:nth-child(6)").find(".orange_import").length;
 
+        var red_prev_count = $("#task_body").find("td:nth-child(4)").find(".red_import").length;
+        var red_curr_count = $("#task_body").find("td:nth-child(5)").find(".red_import").length;
+        var red_next_count = $("#task_body").find("td:nth-child(6)").find(".red_import").length;
+
+
+        var green_prev_count = $("#task_body").find("td:nth-child(4)").find(".green_import").length;
+        var green_curr_count = $("#task_body").find("td:nth-child(5)").find(".green_import").length;
+        var green_next_count = $("#task_body").find("td:nth-child(6)").find(".green_import").length;
+
+        console.log(green_prev_count+'--'+green_curr_count+'--'+green_next_count);
+
         $('.submission_due_no').eq(0).find(".no_sub_due").html(prev_count);
         $('.submission_due_no').eq(1).find(".no_sub_due").html(curr_count);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(next_count);
+
+        $('.submission_os_no').eq(0).find(".no_sub_os").html(red_prev_count);
+        $('.submission_os_no').eq(1).find(".no_sub_os").html(red_curr_count);
+        $('.submission_os_no').eq(2).find(".no_sub_os").html(red_next_count);
+
+        $('.submitted_no').eq(0).find(".no_sub").html(green_prev_count);
+        $('.submitted_no').eq(1).find(".no_sub").html(green_curr_count);
+        $('.submitted_no').eq(2).find(".no_sub").html(green_next_count);
       }
     })
   }
@@ -2406,6 +2669,14 @@ $(window).click(function(e) {
         $('.submission_due_no').eq(0).find(".no_sub_due").html(result['prev_no_sub_due']);
         $('.submission_due_no').eq(1).find(".no_sub_due").html(result['curr_no_sub_due']);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(result['next_no_sub_due']);
+
+        $('.submission_os_no').eq(0).find(".no_sub_os").html(result['prev_no_sub_os']);
+        $('.submission_os_no').eq(1).find(".no_sub_os").html(result['curr_no_sub_os']);
+        $('.submission_os_no').eq(2).find(".no_sub_os").html(result['next_no_sub_os']);
+
+        $('.submitted_no').eq(0).find(".no_sub").html(result['prev_no_sub']);
+        $('.submitted_no').eq(1).find(".no_sub").html(result['curr_no_sub']);
+        $('.submitted_no').eq(2).find(".no_sub").html(result['next_no_sub']);
 
         $(".show_month_in_overlay").eq(0).html(result['prev_month']);
         $(".show_month_in_overlay").eq(1).html(result['curr_month']);
@@ -2513,9 +2784,28 @@ $(window).click(function(e) {
         var curr_count = $("#task_body").find("td:nth-child(5)").find(".orange_import").length;
         var next_count = $("#task_body").find("td:nth-child(6)").find(".orange_import").length;
 
+        var red_prev_count = $("#task_body").find("td:nth-child(4)").find(".red_import").length;
+        var red_curr_count = $("#task_body").find("td:nth-child(5)").find(".red_import").length;
+        var red_next_count = $("#task_body").find("td:nth-child(6)").find(".red_import").length;
+
+        var green_prev_count = $("#task_body").find("td:nth-child(4)").find(".green_import").length;
+        var green_curr_count = $("#task_body").find("td:nth-child(5)").find(".green_import").length;
+        var green_next_count = $("#task_body").find("td:nth-child(6)").find(".green_import").length;
+
+        console.log(green_prev_count+'--'+green_curr_count+'--'+green_next_count);
+
         $('.submission_due_no').eq(0).find(".no_sub_due").html(prev_count);
         $('.submission_due_no').eq(1).find(".no_sub_due").html(curr_count);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(next_count);
+
+        $('.submission_os_no').eq(0).find(".no_sub_os").html(red_prev_count);
+        $('.submission_os_no').eq(1).find(".no_sub_os").html(red_curr_count);
+        $('.submission_os_no').eq(2).find(".no_sub_os").html(red_next_count);
+
+
+        $('.submitted_no').eq(0).find(".no_sub").html(green_prev_count);
+        $('.submitted_no').eq(1).find(".no_sub").html(green_curr_count);
+        $('.submitted_no').eq(2).find(".no_sub").html(green_next_count);
 
         $("body").removeClass("loading");
         ajax_functions();   
@@ -2571,10 +2861,28 @@ $(window).click(function(e) {
         var curr_count = $("#task_body").find("td:nth-child(5)").find(".orange_import").length;
         var next_count = $("#task_body").find("td:nth-child(6)").find(".orange_import").length;
 
+        var red_prev_count = $("#task_body").find("td:nth-child(4)").find(".red_import").length;
+        var red_curr_count = $("#task_body").find("td:nth-child(5)").find(".red_import").length;
+        var red_next_count = $("#task_body").find("td:nth-child(6)").find(".red_import").length;
+
+        var green_prev_count = $("#task_body").find("td:nth-child(4)").find(".green_import").length;
+        var green_curr_count = $("#task_body").find("td:nth-child(5)").find(".green_import").length;
+        var green_next_count = $("#task_body").find("td:nth-child(6)").find(".green_import").length;
+
+        console.log(green_prev_count+'--'+green_curr_count+'--'+green_next_count);
+
         $('.submission_due_no').eq(0).find(".no_sub_due").html(prev_count);
         $('.submission_due_no').eq(1).find(".no_sub_due").html(curr_count);
         $('.submission_due_no').eq(2).find(".no_sub_due").html(next_count);
 
+        $('.submission_os_no').eq(0).find(".no_sub_os").html(red_prev_count);
+        $('.submission_os_no').eq(1).find(".no_sub_os").html(red_curr_count);
+        $('.submission_os_no').eq(2).find(".no_sub_os").html(red_next_count);
+
+
+        $('.submitted_no').eq(0).find(".no_sub").html(green_prev_count);
+        $('.submitted_no').eq(1).find(".no_sub").html(green_curr_count);
+        $('.submitted_no').eq(2).find(".no_sub").html(green_next_count);
          $("body").removeClass("loading");
         ajax_functions();
       }
@@ -3033,6 +3341,246 @@ $(window).click(function(e) {
     }
   }
 });
+function draglistenerssub(event,input,processor,output,taxno)
+{
+  // if (event.source != processor.contentWindow) return;
+  // switch (event.data){
+  //   case "ready":
+  //     var xhr = new XMLHttpRequest;
+  //     xhr.open('GET', input.getAttribute("src"), true);
+  //     xhr.responseType = "arraybuffer";
+  //     xhr.onload = function(event) {
+  //       processor.contentWindow.postMessage(this.response, "*");
+  //     };
+  //     xhr.send();
+  //   break;
+  //   default:
+  //     output.textContent = $.trim(event.data.replace(/[^a-z0-9.,:' ]+/gi, " "));
+      
+  //     var error = 0;
+  //     if(output.textContent.indexOf('Amended VAT3 Return') !== -1){
+  //       var t2_string = output.textContent.split('Amended VAT3 Return');
+  //       var t2_array = $.trim(t2_string[0]).split(' ');
+  //       var t2 = t2_array[t2_array.length-1];
+
+  //       var t2_string_array = $.trim(t2_string[1]).split(' ');
+
+  //       if($.inArray("T3",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
+
+  //       }else if($.inArray("T4",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+  //       }
+  //       else{
+  //         var error = 1;
+  //       }
+
+  //       var reg = t1_array[1];
+        
+  //       $(".vat3_reg_no").html(reg);
+  //       $(".vat3_t1").html(t1);
+  //       $(".vat3_t2").html(t2);
+  //       $(".vat3_div").show();
+  //       if(reg != taxno)
+  //       {
+  //         var error = 3;
+  //       }
+        
+  //     }
+  //     else if(output.textContent.indexOf('VAT3 Return') !== -1){
+  //       var t2_string = output.textContent.split('VAT3 Return');
+  //       var t2_array = $.trim(t2_string[0]).split(' ');
+  //       var t2 = t2_array[t2_array.length-1];
+
+  //       var t2_string_array = $.trim(t2_string[1]).split(' ');
+
+  //       if($.inArray("T3",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
+
+  //       }else if($.inArray("T4",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+  //       }
+  //       else{
+  //         var error = 1;
+  //       }
+
+  //       var reg = t1_array[1];
+  //       console.log(t1+'--'+t2+'--'+reg);
+  //       $(".vat3_reg_no").html(reg);
+  //       $(".vat3_t1").html(t1);
+  //       $(".vat3_t2").html(t2);
+  //       $(".vat3_div").show();
+  //       if(reg != taxno)
+  //       {
+  //         var error = 3;
+  //       }
+        
+  //     }
+  //     else{
+  //       var error = 2;
+  //     }
+
+  //     if(error == 1){
+  //       $(".vat3_error_div").show();
+  //       $(".vat3_error").html("Invalid VAT3 File");
+  //       $(".vat3_upload_btn").hide();
+  //       $("body").removeClass("loading");       
+  //     }
+  //     else if(error == 2){
+  //       $(".vat3_error_div").show();
+  //       $(".vat3_error").html("Invalid VAT3 File");
+  //       $(".vat3_upload_btn").hide();
+  //       $("body").removeClass("loading");    
+  //     }
+  //     else if(error == 3){
+  //       $(".vat3_error_div").show();
+  //       $(".vat3_error").html("File can not be Uploaded as the Tax Numbers do not match");
+  //       $(".vat3_upload_btn").hide();
+  //       $("body").removeClass("loading");    
+  //     }
+  //     else{
+  //       $(".vat3_error_div").hide();
+  //       $(".vat3_error").html("");
+  //       $(".vat3_upload_btn").show();
+  //       $("body").removeClass("loading");    
+  //     }
+  //   break;
+  // }
+
+  // window.removeEventListener("message",draglistenerssub);
+}
+function refreshlistenerssub(event,input,processor,output,client_id,month_year)
+{
+  // if (event.source != processor.contentWindow) return;
+  // switch (event.data){
+  //   case "ready":
+  //     var xhr = new XMLHttpRequest;
+  //     xhr.open('GET', input.getAttribute("src"), true);
+  //     xhr.responseType = "arraybuffer";
+  //     xhr.onload = function(event) {
+  //       processor.contentWindow.postMessage(this.response, "*");
+  //     };
+  //     xhr.send();
+  //   break;
+  //   default:
+  //     output.textContent = $.trim(event.data.replace(/[^a-z0-9.,:' ]+/gi, " "));
+  //     var error = 0;
+  //     console.log(output.textContent);
+  //     if(output.textContent.indexOf('Amended VAT3 Return') !== -1){
+  //       var t2_string = output.textContent.split('Amended VAT3 Return');
+  //       var t2_array = $.trim(t2_string[0]).split(' ');
+  //       var t2 = t2_array[t2_array.length-1];
+
+  //       var t2_string_array = $.trim(t2_string[1]).split(' ');
+
+  //       if($.inArray("T3",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
+
+  //       }else if($.inArray("T4",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+  //       }
+  //       else{
+  //         var error = 1;
+  //       }
+
+  //       var reg = t1_array[1];
+  //     }
+  //     else if(output.textContent.indexOf('VAT3 Return') !== -1){
+  //       var t2_string = output.textContent.split('VAT3 Return');
+  //       var t2_array = $.trim(t2_string[0]).split(' ');
+  //       var t2 = t2_array[t2_array.length-1];
+
+  //       var t2_string_array = $.trim(t2_string[1]).split(' ');
+
+  //       if($.inArray("T3",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
+
+  //       }else if($.inArray("T4",t2_string_array) !== -1){
+  //         var t1_string = t2_string[1].split(' Offset Instructions ');
+  //         var t1_array = $.trim(t1_string[1]).split(' ');
+  //         var t3 = t1_array[2];
+  //         var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+  //       }
+  //       else{
+  //         var error = 1;
+  //       }
+  //       var reg = t1_array[1];
+  //     }
+  //     else{
+  //       var error = 2;
+  //     }
+
+  //     console.log(error);
+  //     if(error == 1){
+  //       $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:#f00>Invalid VAT3 File.</p>",height:"22%"});
+  //       $("body").removeClass("loading");       
+  //     }
+  //     else if(error == 2){
+  //       $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:#f00>Invalid VAT3 File.</p>",height:"22%"});
+  //       $("body").removeClass("loading");    
+  //     }
+  //     else if(error == 3){
+  //       $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:#f00>File can not be Uploaded as the Tax Numbers do not match.</p>",height:"22%"});
+  //       $("body").removeClass("loading");    
+  //     }
+  //     else{
+  //       $.ajax({
+  //         url:"<?php echo URL::to('user/vat_refresh_upload_images'); ?>",
+  //         type:"post",
+  //         data:{client_id:client_id,month_year:month_year,t1:t1,t2:t2},
+  //         success:function(result)
+  //         {
+  //           $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t1_spam").parents("p").show();
+  //           $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t2_spam").parents("p").show();
+  //           $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t1_spam").html(t1);
+  //           $(".tasks_tr_"+client_id).find("#add_files_vat_client_"+month_year).find(".t2_spam").html(t2);
+
+  //           $(".shown_tr_"+client_id+"_"+month_year).find(".t1_spam_overlay").parents("p").show();
+  //           $(".shown_tr_"+client_id+"_"+month_year).find(".t2_spam_overlay").parents("p").show();
+
+  //           $(".shown_tr_"+client_id+"_"+month_year).find(".t1_spam_overlay").html(t1);
+  //           $(".shown_tr_"+client_id+"_"+month_year).find(".t2_spam_overlay").html(t2);
+
+  //           $(".shown_tr_"+client_id+"_"+month_year).find(".month_download_checkbox").prop("disabled",false);
+  //           $(".dropzone_progress_modal").modal("hide");
+
+  //           $("#processor").hide();
+  //           $("#output").hide();
+  //           $("#input").hide();
+
+  //           $.colorbox({html:"<p style=text-align:center;margin-top:26px;font-size:18px;font-weight:600;color:#000>Updated Successfully.</p>",height:"22%"});
+  //         }
+  //       })
+  //       $("body").removeClass("loading");  
+  //       $("#input").hide();
+  //       $("#processor").hide();
+  //       $("#output").hide();  
+  //     }
+  //   break;
+  // }
+  // window.removeEventListener("message",refreshlisteners);
+}
 fileList = new Array();
 Dropzone.options.imageUpload = {
     maxFiles: 1,
@@ -3065,8 +3613,8 @@ Dropzone.options.imageUpload = {
             var input = document.getElementById("input");
             var processor = document.getElementById("processor");
             var output = document.getElementById("output");
-            
-            window.addEventListener("message", function(event){
+            var taxno = obj.tax_no;
+            window.addEventListener("message", function draglisteners(event) {
               if (event.source != processor.contentWindow) return;
               switch (event.data){
                 case "ready":
@@ -3081,7 +3629,46 @@ Dropzone.options.imageUpload = {
                 default:
                   output.textContent = $.trim(event.data.replace(/[^a-z0-9.,:' ]+/gi, " "));
                   var error = 0;
-                  if(output.textContent.indexOf('VAT3 Return') !== -1){
+                  if(output.textContent.indexOf('Amended VAT3 Return') !== -1){
+                    var t2_string = output.textContent.split('Amended VAT3 Return');
+                    var t2_array = $.trim(t2_string[0]).split(' ');
+                    var t2 = t2_array[t2_array.length-1];
+
+                    var t2_string_array = $.trim(t2_string[1]).split(' ');
+
+                    if($.inArray("T3",t2_string_array) !== -1){
+                      var t1_string = t2_string[1].split(' Offset Instructions ');
+                      var t1_array = $.trim(t1_string[1]).split(' ');
+                      var t3 = t1_array[2];
+                      var t1 = parseFloat(parseFloat(t3) + parseFloat(t2)).toFixed(2);
+
+                    }else if($.inArray("T4",t2_string_array) !== -1){
+                      var t1_string = t2_string[1].split(' Offset Instructions ');
+                      var t1_array = $.trim(t1_string[1]).split(' ');
+                      var t3 = t1_array[2];
+                      var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+
+                      if(t1 < 0){
+                        t1 = (t1 * -1).toFixed(2);
+                      }
+                    }
+                    else{
+                      var error = 1;
+                    }
+
+                    var reg = t1_array[1];
+                    
+                    $(".vat3_reg_no").html(reg);
+                    $(".vat3_t1").html(t1);
+                    $(".vat3_t2").html(t2);
+                    $(".vat3_div").show();
+                    if(reg != taxno)
+                    {
+                      var error = 3;
+                    }
+                    
+                  }
+                  else if(output.textContent.indexOf('VAT3 Return') !== -1){
                     var t2_string = output.textContent.split('VAT3 Return');
                     var t2_array = $.trim(t2_string[0]).split(' ');
                     var t2 = t2_array[t2_array.length-1];
@@ -3099,6 +3686,10 @@ Dropzone.options.imageUpload = {
                       var t1_array = $.trim(t1_string[1]).split(' ');
                       var t3 = t1_array[2];
                       var t1 = parseFloat(parseFloat(t3) - parseFloat(t2)).toFixed(2);
+
+                      if(t1 < 0){
+                        t1 = (t1 * -1).toFixed(2);
+                      }
                     }
                     else{
                       var error = 1;
@@ -3110,7 +3701,7 @@ Dropzone.options.imageUpload = {
                     $(".vat3_t1").html(t1);
                     $(".vat3_t2").html(t2);
                     $(".vat3_div").show();
-                    if(reg != obj.tax_no)
+                    if(reg != taxno)
                     {
                       var error = 3;
                     }
@@ -3144,9 +3735,12 @@ Dropzone.options.imageUpload = {
                     $(".vat3_upload_btn").show();
                     $("body").removeClass("loading");    
                   }
+
+                  window.removeEventListener("message",draglisteners);
                 break;
               }
-            }, true);
+            });
+            
         });
         this.on("complete", function (file, response) {
           if (this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {

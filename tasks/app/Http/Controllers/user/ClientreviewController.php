@@ -206,56 +206,46 @@ class ClientreviewController extends Controller {
 			}
 
 			$client_details = '
-
-			<div class="col-md-4">Client Name: </div>
-
-			<div class="col-md-8" style="font-weight:600">'.$cm_details->company.'</div>
-
-			<div class="col-md-4">Client Code: </div>
-
-			<div class="col-md-8" style="font-weight:600">'.$client_id.'</div>
-
-			<div class="col-md-4">Address: </div>
-
-			<div class="col-md-8" style="font-weight:600">';
-
-		        if($cm_details->address1 != ''){
-
-		          $client_details.=$cm_details->address1.'<br/>';
-
-		        }
-
-		        if($cm_details->address2 != ''){
-
-		          $client_details.=$cm_details->address2.'<br/>';
-
-		        }
-
-		        if($cm_details->address3 != ''){
-
-		          $client_details.=$cm_details->address3.'<br/>';
-
-		        }
-
-		        if($cm_details->address4 != ''){
-
-		          $client_details.=$cm_details->address4.'<br/>';
-
-		        }
-
-		        if($cm_details->address5 != ''){
-
-		          $client_details.=$cm_details->address5.'<br/>';
-
-		        }
-
-		    $client_details.='</div>
-
-		    <div class="col-md-4">Email: </div>
-
-			<div class="col-md-8" style="font-weight:600">'.$cm_details->email.'</div>';
-
-
+			<div class="col-md-3" style="padding:0px">
+				<h5 style="font-weight: 600">Client Name:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600">'.$cm_details->company.'</h5>
+			</div>
+			<div class="col-md-3" style="padding:0px">
+				<h5 style="font-weight: 600">Client Code:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600">'.$client_id.'</h5>
+			</div>
+			<div class="col-md-3" style="padding:0px">
+				<h5 style="font-weight: 600">Address:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600">';
+					if($cm_details->address1 != ''){
+			          $client_details.=$cm_details->address1.'<br/>';
+			        }
+			        if($cm_details->address2 != ''){
+			          $client_details.=$cm_details->address2.'<br/>';
+			        }
+			        if($cm_details->address3 != ''){
+			          $client_details.=$cm_details->address3.'<br/>';
+			        }
+			        if($cm_details->address4 != ''){
+			          $client_details.=$cm_details->address4.'<br/>';
+			        }
+			        if($cm_details->address5 != ''){
+			          $client_details.=$cm_details->address5.'<br/>';
+			        }
+				$client_details.='</h5>
+			</div>
+			<div class="col-md-3" style="padding:0px">
+				<h5 style="font-weight: 600">Email:</h5>
+			</div>
+			<div class="col-md-9" style="padding:0px">
+				<h5 style="font-weight: 600">'.$cm_details->email.'</h5>
+			</div>';
 
 			$data['client_details'] = $client_details;
 
@@ -317,8 +307,69 @@ class ClientreviewController extends Controller {
 
 			$data['receipt_year'] = $output_receipt_year;
 
+			$letter_output = '';
+			$letters = DB::table('key_docs_letters')->where('client_id',$client_id)->get();
+			if(count($letters))
+			{
+				$i = 1;
+				foreach($letters as $letter){
+					$letter_output.='<tr>
+						<td><input type="checkbox" name="key_docs_letter" class="key_docs_letter" id="key_docs_letter_'.$letter->id.'" data-element="'.$letter->id.'"><label for="key_docs_letter_'.$letter->id.'">'.$i.'</label></td>
+						<td><a href="'.URL::to($letter->url.'/'.$letter->filename).'" download>'.$letter->filename.'</a></td>
+						<td><input type="text" name="letter_notes" class="form-control letter_notes" data-element="'.$letter->id.'" value="'.$letter->notes.'" maxlength="20"></td>
+						<td><a href="javascript:" class="fa fa-trash delete_letter" data-element="'.$letter->id.'"></a></td>
+					</tr>';
+					$i++;
+				}
+			}
+			else{
+				$letter_output.='<tr>
+					<td colspan="4">No Datas Found.</td>
+				</tr>';
+			}
+			$data['letter_output'] = $letter_output;
 
 
+			$tax_output = '';
+			$taxs = DB::table('tax_clearance_files')->where('client_id',$client_id)->get();
+			if(count($taxs))
+			{
+				$i = 1;
+				foreach($taxs as $tax){
+					$tax_output.='<tr>
+						<td><input type="checkbox" name="key_docs_tax" class="key_docs_tax" id="key_docs_tax_'.$tax->id.'" data-element="'.$tax->id.'"><label for="key_docs_tax_'.$tax->id.'">'.$i.'</label></td>
+						<td><a href="'.URL::to($tax->url.'/'.$tax->filename).'" download>'.$tax->filename.'</a></td>
+						<td>'.date('d-M-Y', strtotime($tax->updatetime)).'</td>
+						<td><a href="javascript:" class="fa fa-trash delete_tax" data-element="'.$tax->id.'"></a></td>
+					</tr>';
+					$i++;
+				}
+			}
+			else{
+				$tax_output.='<tr>
+					<td colspan="4">No Datas Found.</td>
+				</tr>';
+			}
+			$data['tax_output'] = $tax_output;
+
+
+			$current_tax_output = '';
+			$current_taxs = DB::table('current_tax_clearance_files')->where('client_id',$client_id)->first();
+			if(count($current_taxs))
+			{
+				$current_tax_output.='<tr>
+						<td><a href="'.URL::to($current_taxs->url.'/'.$current_taxs->filename).'" download>'.$current_taxs->filename.'</a></td>
+						<td>'.date('d-M-Y', strtotime($current_taxs->updatetime)).'</td>
+						<td><a href="javascript:" class="fa fa-trash delete_current_tax" data-element="'.$current_taxs->id.'"></a></td>
+					</tr>';
+					$i++;
+			}
+			else{
+				$current_tax_output.='<tr>
+					<td colspan="3">No Datas Found.</td>
+				</tr>';
+			}
+			$data['current_tax_output'] = $current_tax_output;
 			echo json_encode($data);
 
 		}

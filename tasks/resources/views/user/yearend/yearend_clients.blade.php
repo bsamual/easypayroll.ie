@@ -339,33 +339,61 @@ a:hover{text-decoration: underline;}
                 $lastname = '';
                 $company = '';
               }
-              if($client->status == 0)
-              {
-                $color = 'color:#f00 !important;';
-              }
-              elseif($client->status == 1)
-              {
-                $color = 'color:#f7a001 !important;';
-              }
-              elseif($client->status == 2)
-              {
-                $color = 'color:#0000fb !important;';
-              }
-              else{
-                $color = 'color:#f00 !important;';
-              }
+              // if($client->status == 0)
+              // {
+              //   $color = 'color:#f00 !important;';
+              // }
+              // elseif($client->status == 1)
+              // {
+              //   $color = 'color:#f7a001 !important;';
+              // }
+              // elseif($client->status == 2)
+              // {
+              //   $color = 'color:#0000fb !important;';
+              // }
+              // else{
+              //   $color = 'color:#f00 !important;';
+              // }
               if($i < 10)
               {
                 $i = '0'.$i;
               }
               $remove_link = '';
               $deactive_client = '';
-              if($client->status == 0) { 
-              	if($client_details->active == "2") { $stausval = 'Inactive & Not Started'; $deactive_client = 'deactivate_tr'; } else { $stausval = 'Not Started'; } 
-              	$remove_link = '<a href="javascript:" class="common_black_button remove_from_year" data-client="'.$client->id.'">Remove From Year</a>';
+
+              // if($client->status == 0) { 
+              // 	if($client_details->active == "2") { 
+              //     $stausval = 'Inactive & Not Started'; 
+              //     $deactive_client = 'deactivate_tr'; 
+              //   } 
+              //   else { $stausval = 'Not Started'; } 
+
+              // 	$remove_link = '<a href="javascript:" class="common_black_button remove_from_year" data-client="'.$client->id.'">Remove From Year</a>';
+              // }
+              // elseif($client->status == 1) { $stausval = 'Inprogress'; }
+
+              if($client->status == 2) { 
+                $stausval = 'Completed'; 
+                $color = 'color:#0000fb !important;';
+              } else{
+                $year_end_attachments = DB::table('yearend_distribution_attachments')->where('client_id',$client->id)->get();
+                if(count($year_end_attachments))
+                {
+                  $stausval = 'Inprogress';
+                  $color = 'color:#f7a001 !important;';
+                }
+                else{
+                  if($client_details->active == "2") { 
+                    $stausval = 'Inactive & Not Started'; 
+                    $deactive_client = 'deactivate_tr'; 
+                  } 
+                  else { $stausval = 'Not Started'; } 
+                  $color = 'color:#f00 !important;';
+                  $remove_link = '<a href="javascript:" class="common_black_button remove_from_year" data-client="'.$client->id.'">Remove From Year</a>';
+                }
               }
-              elseif($client->status == 1) { $stausval = 'Inprogress'; }
-              elseif($client->status == 2) { $stausval = 'Completed'; }
+
+
               $output.='
               <tr class="task_tr client_'.$client->status.' '.$deactive_client.'">
                 <td class="sno_sort_val" style="'.$color.'text-align:left;font-weight:600">'.$i.'</td>

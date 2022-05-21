@@ -807,6 +807,138 @@ a:hover{text-decoration: underline;}
     </div>
   </div>
 </div>
+<div class="modal fade accounting_period_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false" style="z-index: 99999999999 !important; background: rgb(0,0,0,0.5);">
+  <div class="modal-dialog" role="document" style="width:50%;">
+    <div class="modal-content" style="z-index: 99999 !important">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Accounting Period</h4>
+      </div>
+      <div class="modal-body">
+        
+          <div class="row">
+            <div class="col-lg-12"><h4>Create Accounting Period</h4></div>
+            <form name="accounting_period_form" id="accounting_period_form" method="post">
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label>Period Id:</label>
+                  <?php
+                  $accounting_period = DB::table('accounting_period')->orderBy('accounting_id', 'desc')->first();
+                  $count_accounting_period = $accounting_period->accounting_id+1;
+                  ?>
+                  <input type="text" class="form-control ac_accounting_id" placeholder="Period ID" readonly value="<?php echo $count_accounting_period?>" name="ac_accounting_id">
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label>Start Date:</label>
+                  <input type="text" class="form-control ac_start_date" placeholder="Select Start Date" name="ac_start_date">
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label>End Date:</label>
+                  <input type="text" class="form-control ac_end_date" placeholder="Select End Date" name="ac_end_date">
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <div class="form-group">
+                  <label>Description:</label>
+                  <textarea class="form-control ac_description" name="ac_description" placeholder="Enter Description"></textarea>
+                </div>
+              </div>
+            </form>
+            <div class="col-lg-1" style="padding-left: 0px;">
+              <div class="form-group">
+                <label>&nbsp;</label>
+                <input type="submit" class="common_black_button ac_save" style="float: right; width: 100%" value="Save" name="">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12"><h4>List of Accounting Periods</h4></div>
+            <div class="col-lg-12" style="max-height: 500px; overflow: scroll; overflow-x:hidden;">
+              <table class="table own_table_white" id="ac_period_table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Period Id</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th style="width: 150px;">Description</th>
+                    <th style="text-align: center;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody_account_period">
+                  <?php
+                  $accounting_period_list = DB::table('accounting_period')->get();
+                  $i=1;
+                  $output_ac='';
+                  if(count($accounting_period_list)){
+                    foreach ($accounting_period_list as $single_account) {
+
+                      if($single_account->status == 1){
+                        $status = '<a href="javascript:"><i class="fa fa-check default_account_period" style="color: #33CC66" data-element="'.$single_account->accounting_id.'"></i></a>';
+                      }
+                      else{
+                        $status = '<a href="javascript:"><i class="fa fa-times account_period_active" data-element="'.$single_account->accounting_id.'" title="Active Default Period"  style="color: #E11B1C"></i></a>';
+                      }
+
+                      if($single_account->ac_lock == 0){
+                        $lock = '<a href="javascript:"><i class="fa fa-lock class_account_unlock" data-element="'.$single_account->accounting_id.'" type="0" style="color: #E11B1C" title="Unlock Accounting Period"></i></a>';
+                      }
+                      else{
+                        $lock = '<a href="javascript:"><i class="fa fa-unlock-alt class_account_lock" data-element="'.$single_account->accounting_id.'" type="1" style="color: #33CC66" title="Lock Accounting Period"></i>';
+                      }
+
+
+
+
+                      $output_ac.='
+                        <tr>
+                          <td>'.$i.'</td>
+                          <td>'.$single_account->accounting_id.'</td>
+                          <td>'.date('d-M-Y', strtotime($single_account->ac_start_date)).'</td>
+                          <td>'.date('d-M-Y', strtotime($single_account->ac_end_date)).'</td>
+                          <td>'.$single_account->ac_description.'</td>
+                          <td style="text-align:center;">
+                            '.$status.'&nbsp; &nbsp; '.$lock.'
+                          </td>
+                        </tr>';
+                      $i++;
+                    }
+                  }
+                  else{
+                    $output_ac='
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td>No Records found</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    ';
+                  }
+
+                  echo $output_ac;
+
+                  ?>
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade nominal_codes_modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog" role="document" style="width:50%">
     <div class="modal-content">
@@ -867,6 +999,7 @@ a:hover{text-decoration: underline;}
         <input type="hidden" name="request_id_email_client" id="request_id_email_client" value="">
         <input type="button" class="common_black_button bank_account_manager" value="Bank Account Manager" style="float:right">
         <a class="common_black_button" href="<?php echo URL::to('user/opening_balance_manager'); ?>" style="float:right">Opening Balances</a>
+        <a href="javascript:" class="common_black_button accounting_period" style="float:right">Accounting Period</a>
       </div>
     </div>
   </div>
@@ -1408,6 +1541,128 @@ function accept_reconciliation(count)
 }
 
 $(window).click(function(e){
+
+if($(e.target).hasClass('accounting_period')){
+  $(".accounting_period_modal").modal('show');
+}
+
+if($(e.target).hasClass('account_period_active')){
+  var pop = confirm('Do you want to mark this period as default?');
+  if(pop){
+
+    $("body").addClass("loading");
+    var period_id = $(e.target).attr("data-element");
+    $.ajax({
+      url:"<?php echo URL::to('user/accounting_period_set_default'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{period_id:period_id},
+      success:function(result){
+        $(".default_account_period").addClass("fa fa-times account_period_active");
+        $(".default_account_period").css({"color":"#E11B1C"});
+        $(".default_account_period").attr("title", 'Active Default Period');
+        $(e.target).removeClass();
+        $(e.target).addClass('fa fa-check default_account_period');
+        $(e.target).css({"color":"#33CC66"});
+        $(e.target).attr("title", '');
+        $("body").removeClass("loading");
+
+      }
+    })
+
+
+    
+
+  }
+}
+
+if($(e.target).hasClass('class_account_lock')){
+  var pop = confirm('Do you want to lock this period?');
+
+  if(pop){
+    $("body").addClass("loading");
+    var period_id = $(e.target).attr("data-element");
+    var type = $(e.target).attr("type");
+    $.ajax({
+      url:"<?php echo URL::to('user/accounting_period_lock_unlock'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{period_id:period_id, type:type},
+      success:function(result){
+       $(e.target).removeClass();
+       $(e.target).addClass('fa fa-lock class_account_unlock');
+       $(e.target).css({"color":"#E11B1C"});
+       $(e.target).attr("title", 'Unlock Accounting Period');
+       $(e.target).attr("type", '0');
+       $("body").removeClass("loading");
+
+      }
+    })
+  }
+
+
+}
+
+if($(e.target).hasClass('class_account_unlock')){
+  var pop = confirm('Do you want to unlock this period?');
+
+  if(pop){
+    $("body").addClass("loading");
+    var period_id = $(e.target).attr("data-element");
+    var type = $(e.target).attr("type");
+    $.ajax({
+      url:"<?php echo URL::to('user/accounting_period_lock_unlock'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{period_id:period_id, type:type},
+      success:function(result){
+       $(e.target).removeClass();
+       $(e.target).addClass('fa fa-unlock-alt class_account_lock');
+       $(e.target).css({"color":"#33CC66"});
+       $(e.target).attr("title", 'Lock Accounting Period');
+       $(e.target).attr("type", '1');
+       $("body").removeClass("loading");
+
+      }
+    })
+  }
+
+
+}
+
+
+
+
+
+
+
+if($(e.target).hasClass('ac_save')){
+  if($("#accounting_period_form").valid()){
+    var start = $(".ac_start_date").val();
+    var end = $(".ac_end_date").val();
+    var desc = $(".ac_description").val();
+
+    $("body").addClass("loading");
+
+    $.ajax({
+      url:"<?php echo URL::to('user/accounting_period_save'); ?>",
+      type:"post",
+      dataType:"json",
+      data:{start:start, end:end, desc:desc},
+      success:function(result){
+        $("#tbody_account_period").html(result['output']);
+        $(".ac_accounting_id").val(result['period_id']);
+        $(".ac_start_date ").val('');
+        $(".ac_end_date ").val('');
+        $(".ac_description ").val('');
+        $("body").removeClass("loading");
+
+      }
+    })
+  }
+}
+
+
 
 
 if($(e.target).hasClass('report_type_class')){
@@ -3875,6 +4130,32 @@ $('#edit_bank_form').validate({
     },
 });
 
+
+$('#accounting_period_form').validate({
+    rules: {
+        ac_accounting_id : {required: true,},
+        ac_start_date : {required: true,},
+        ac_end_date : {required:true,},
+        ac_description : {required:true,},        
+    },
+    messages: {
+        ac_accounting_id : {
+          required : "Account Period Id",
+        },
+        ac_start_date : { 
+          required : "Please Select Start Date",
+        },
+        ac_end_date : { 
+          required : "Please Select End Date",
+        },
+        ac_description : {
+          required : "Please Enter Description",
+        }
+    },
+});
+
+
+
 $(document).ready(function () {    
     $('.debit_fin_sort_val').keypress(function (e) {    
         var charCode = (e.which) ? e.which : event.keyCode    
@@ -4143,14 +4424,74 @@ $('#practice_staff_table').DataTable({
     info: false
 });
 
-
-
-
-
-/*$(document).ready(function() {
-    $(".practice_overview_modal").modal('show');
-});*/
 </script>
+
+<script>
+$(function () {
+  $(".ac_start_date").datetimepicker({
+     format: 'L',
+     format: 'DD MMM YYYY',
+     icons: {
+        time: "fa fa-clock-o",
+        date: "fa fa-calendar",
+        up: "fa fa-arrow-up",
+        down: "fa fa-arrow-down",
+        previous: "fa fa-chevron-left",
+        next: "fa fa-chevron-right",
+        today: "fa fa-clock-o",
+        clear: "fa fa-trash-o"
+    },
+  });
+  $(".ac_end_date").datetimepicker({
+     format: 'L',
+     format: 'DD MMM YYYY',
+     icons: {
+        time: "fa fa-clock-o",
+        date: "fa fa-calendar",
+        up: "fa fa-arrow-up",
+        down: "fa fa-arrow-down",
+        previous: "fa fa-chevron-left",
+        next: "fa fa-chevron-right",
+        today: "fa fa-clock-o",
+        clear: "fa fa-trash-o"
+    },
+  });
+
+  $(".ac_start_date").on("dp.change", function (e) {
+    $(".ac_end_date").val("");
+    $(".ac_description").val("");
+    $('.ac_end_date').data("DateTimePicker").minDate(e.date);
+  });
+
+
+  $(".ac_end_date").on("dp.change", function (e) {
+    var start = $(".ac_start_date").val();
+    var end = $(".ac_end_date").val();
+
+    $(".ac_description").val(start+' - '+end);
+    
+  });
+});
+
+
+$('#ac_period_table').DataTable({        
+    // autoWidth: true,
+    scrollX: false,
+    fixedColumns: false,
+    searching: false,
+    paging: false,
+    info: false,
+    order: [[ 1, "asc" ]]
+});
+
+
+</script>
+
+<!-- <script>
+$(document).ready(function() {
+    $(".accounting_period_modal").modal('show');
+});
+</script> -->
 
 
 

@@ -247,7 +247,7 @@ class CmController extends Controller {
 		$data['tax_reg1'] = Input::get('tax_reg1');
 		$data['tax_reg2'] = Input::get('tax_reg2');
 		$data['tax_reg3'] = Input::get('tax_reg3');
-		
+		$data['salutation'] = Input::get('salutation');
 		$data['email2'] = Input::get('semail');
 		$data['phone'] = Input::get('phone');
 		$data['linkcode'] = Input::get('linkcode');

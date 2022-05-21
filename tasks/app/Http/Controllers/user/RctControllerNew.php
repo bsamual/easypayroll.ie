@@ -798,11 +798,11 @@ class RctControllerNew extends Controller {
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Start Date:</td>
-          <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+          <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Finish Date:</td>
-          <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_finish[$key])).'</td>
+          <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_finish[$key])).'</td>
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Contractor Value:</td>
@@ -853,7 +853,7 @@ class RctControllerNew extends Controller {
         </tr>
         <tr>
           <td style="height:35px; text-align:left">Payment Date:</td>
-          <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+          <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
         </tr>        
         <tr>
           <td style="height:35px; text-align:left">Gross Payment:</td>
@@ -965,11 +965,11 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Start Date:</td>
-              <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+              <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Finish Date:</td>
-              <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_finish[$key])).'</td>
+              <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_finish[$key])).'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Contractor Value:</td>
@@ -1018,7 +1018,7 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Payment Date:</td>
-              <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+              <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
             </tr>        
             <tr>
               <td style="height:35px; text-align:left">Gross Payment:</td>
@@ -1122,11 +1122,11 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Start Date:</td>
-              <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+              <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Finish Date:</td>
-              <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_finish[$key])).'</td>
+              <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_finish[$key])).'</td>
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Contractor Value:</td>
@@ -1179,7 +1179,7 @@ class RctControllerNew extends Controller {
             </tr>
             <tr>
               <td style="height:35px; text-align:left">Payment Date:</td>
-              <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+              <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
             </tr>        
             <tr>
               <td style="height:35px; text-align:left">Gross Payment:</td>
@@ -1652,7 +1652,7 @@ class RctControllerNew extends Controller {
             {
               foreach($emails_sent as $sent)
               {
-                $ee.='<label>'.date('F d, Y', strtotime($sent->email_sent)).'</label>';
+                $ee.='<label>'.date('d-M-Y', strtotime($sent->email_sent)).'</label>';
               }
             }
             $outputsubmission.='
@@ -1848,13 +1848,13 @@ class RctControllerNew extends Controller {
           }
 
           $current_month = date('Y-m');
-          $prevdate = date("Y-m-05", strtotime("-1 months"));
+          $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
           $prev_date2 = date('Y-m', strtotime($prevdate));
           $active_drop='<option value="'.$current_month.'">'.date('M-Y', strtotime($current_month)).'</option>';
           for($i=0;$i<=22;$i++)
           {
             $month = $i + 1;
-            $newdate = date("Y-m-01", strtotime("-".$month." months"));
+            $newdate = date("Y-m-01", strtotime("first day of -".$month." months"));
             $formatted_date = date('M-Y', strtotime($newdate));
             $formatted_date2 = date('Y-m', strtotime($newdate));
 
@@ -1876,7 +1876,7 @@ class RctControllerNew extends Controller {
             $netval = unserialize($rctsubmission->value_net);
             $deductionval = unserialize($rctsubmission->deduction);
 
-            $prevdate = date("Y-m-05", strtotime("-1 months"));
+            $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
             $prev_date2 = date('Y-m', strtotime($prevdate));
             $data = array();
             if(count($start_date))
@@ -1997,7 +1997,7 @@ class RctControllerNew extends Controller {
     $email_text = '';
     if(count($client)){
         $current_month = date('Y-m');
-        $prevdate = date("Y-m-05", strtotime("-1 months"));
+        $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
         $prev_date2 = date('Y-m', strtotime($prevdate));
         $active_drop='<option value="'.$current_month.'">'.date('M-Y', strtotime($current_month)).'</option>';
 
@@ -2022,7 +2022,7 @@ class RctControllerNew extends Controller {
           $netval = unserialize($rctsubmission->value_net);
           $deductionval = unserialize($rctsubmission->deduction);
 
-          $prevdate = date("Y-m-05", strtotime("-1 months"));
+          $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
           $prev_date2 = date('Y-m', strtotime($prevdate));
           $data = array();
           if(count($start_date))
@@ -2099,7 +2099,7 @@ class RctControllerNew extends Controller {
         {
           foreach($emails as $email)
           {
-            $email_text.='<p>'.date('F d, Y', strtotime($email->email_sent)).'</p>';
+            $email_text.='<p>'.date('d-M-Y', strtotime($email->email_sent)).'</p>';
           }
         }
     }
@@ -2210,7 +2210,7 @@ class RctControllerNew extends Controller {
           {
             foreach($email_date as $email)
             {
-              $emails_sent.='<p class="p_email_sent">'.date('F d, Y', strtotime($email->email_sent)).'</p>';
+              $emails_sent.='<p class="p_email_sent">'.date('d-M-Y', strtotime($email->email_sent)).'</p>';
             }
           }
 
@@ -2648,11 +2648,11 @@ class RctControllerNew extends Controller {
           </tr>
           <tr>
             <td style="height:35px; text-align:left">Start Date:</td>
-            <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+            <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
           </tr>
           <tr>
             <td style="height:35px; text-align:left">Finish Date:</td>
-            <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_finish[$key])).'</td>
+            <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_finish[$key])).'</td>
           </tr>
           <tr>
             <td style="height:35px; text-align:left">Contractor Value:</td>
@@ -2713,7 +2713,7 @@ class RctControllerNew extends Controller {
           </tr>
           <tr>
             <td style="height:35px; text-align:left">Payment Date:</td>
-            <td style="text-align:right">'.date('m/d/Y', strtotime($unserialize_start[$key])).'</td>
+            <td style="text-align:right">'.date('d-M-Y', strtotime($unserialize_start[$key])).'</td>
           </tr>        
           <tr>
             <td style="height:35px; text-align:left">Gross Payment:</td>
@@ -3223,7 +3223,7 @@ class RctControllerNew extends Controller {
     $to_month='<option value="">Please select to</option>';
     if($from_date != ''){
       $current_month = date('Y-m');
-      $prevdate = date("Y-m-05", strtotime("-1 months"));
+      $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
       
 
       $to_month.='<option value="'.$current_month.'">'.date('M-Y', strtotime($current_month)).'</option>';
@@ -3374,7 +3374,7 @@ class RctControllerNew extends Controller {
               $netval = unserialize($rctsubmission->value_net);
               $deductionval = unserialize($rctsubmission->deduction);
 
-              $prevdate = date("Y-m-05", strtotime("-1 months"));
+              $prevdate = date("Y-m-05", strtotime("first day of -1 months"));
               $prev_date2 = date('Y-m', strtotime($prevdate));
               $data = array();
               if(count($start_date))

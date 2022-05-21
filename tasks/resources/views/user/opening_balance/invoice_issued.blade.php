@@ -95,7 +95,7 @@ a:hover{text-decoration: underline;}
                     </tbody>
                   </table>
                 </div>
-                <p><input type="button" name="submit_invoice_issued" class="common_black_button submit_invoice_issued" id="submit_invoice_issued" value="Submit" style="width:100%;display:none"></p>
+                <p><input type="button" name="submit_invoice_issued" class="common_black_button submit_invoice_issued" id="submit_invoice_issued" value="Apply Balances to Invoices" style="width:100%;display:none"></p>
               </div>
             </div>
             
@@ -255,7 +255,7 @@ a:hover{text-decoration: underline;}
                   <td>'.$clientname.'</td>
                   <td>'.date('d-M-Y', strtotime($invoice->invoice_date)).'</td>
                   <td>'.number_format_invoice($invoice->gross).'</td>
-                  <td><input type="text" name="outstanding_invoice" class="form-control outstanding_invoice" value="'.$invoice->outstanding_balance.'" data-element="'.$invoice->invoice_number.'" style="width:50%"></td>
+                  <td><input type="text" name="outstanding_invoice" class="form-control outstanding_invoice" value="'.number_format_invoice_empty($invoice->outstanding_balance).'" data-element="'.$invoice->invoice_number.'" style="width:50%"></td>
                 </tr>';
               }
             }
@@ -347,7 +347,12 @@ $(window).click(function(e) {
           }
           else{
             $("#import_file_tbody").html(result['output']);
-            $("#submit_invoice_issued").show();
+            if(result['error_invalid'] == 0){
+              $("#submit_invoice_issued").show();
+            }
+            else{
+              $("#submit_invoice_issued").hide();
+            }
             $("body").removeClass("loading");
           }
 
@@ -387,6 +392,13 @@ $(window).click(function(e) {
 $(".outstanding_invoice").blur(function() {
   var invoice = $(this).attr("data-element");
   var value = $(this).val();
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+
   $.ajax({
     url:"<?php echo URL::to('user/update_outstanding_invoice'); ?>",
     type:"post",
@@ -412,6 +424,13 @@ $input.on('keydown', function () {
 });
 
 function doneTyping (value,invoice) {
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+  value = value.replace(",", "");
+
     $.ajax({
       url:"<?php echo URL::to('user/update_outstanding_invoice'); ?>",
       type:"post",
